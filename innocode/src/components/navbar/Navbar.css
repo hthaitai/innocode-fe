@@ -1,0 +1,110 @@
+/* Navbar Styles */
+.navbar {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-container {
+  
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+}
+
+/* Logo */
+.navbar-logo {
+  flex-shrink: 0;
+}
+
+.logo-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo-image {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Navigation Menu */
+.navbar-menu {
+  display: flex;
+  gap: 2rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.navbar-link {
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.5rem 0;
+  transition: color 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.navbar-link:hover {
+  color: #000;
+}
+
+.navbar-link.active {
+  color: #000;
+  font-weight: 600;
+}
+
+/* Sign In Button */
+.navbar-auth {
+  flex-shrink: 0;
+}
+
+.signin-btn {
+  background-color: #f3f4f6;
+  color: #000;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.signin-btn:hover {
+  background-color: #e5e7eb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0.75rem 1rem;
+  }
+  
+  .navbar-menu {
+    gap: 1rem;
+  }
+  
+  .navbar-link {
+    font-size: 0.9rem;
+  }
+  
+  .signin-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .navbar-menu {
+    display: none;
+  }
+}
+

@@ -1,0 +1,206 @@
+/* Sidebar Styles */
+.sidebar {
+  width: 280px;
+  height: calc(
+    100vh - 84px
+  ); /* trừ chiều cao navbar (giả sử navbar cao 84px) */
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 84px; /* bắt đầu dưới Navbar */
+  z-index: 900; /* nhỏ hơn navbar */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    sans-serif;
+}
+
+/* User Profile Section */
+.user-profile {
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar-gradient {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  border-radius: 50%;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.user-role {
+  font-size: 14px;
+  color: #718096;
+  font-weight: 500;
+}
+
+/* Navigation */
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 0;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  margin: 0 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.nav-item:hover {
+  background-color: #e2e8f0;
+  color: #2d3748;
+}
+
+.nav-item.active {
+  background-color: #e2e8f0;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.nav-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.nav-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Active Indicator */
+.active-indicator {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background-color: #ff6b35;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    top: 0;
+    border-right: none;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .user-profile {
+    padding: 16px 20px;
+  }
+
+  .avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .user-name {
+    font-size: 16px;
+  }
+
+  .user-role {
+    font-size: 13px;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    overflow-x: auto;
+    padding: 8px 0;
+  }
+
+  .nav-item {
+    min-width: 120px;
+    margin: 0 4px;
+    padding: 8px 16px;
+    text-align: center;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nav-icon {
+    margin-right: 0;
+    margin-bottom: 4px;
+  }
+
+  .nav-label {
+    font-size: 12px;
+  }
+
+  .active-indicator {
+    left: 50%;
+    top: auto;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    border-radius: 2px 2px 0 0;
+  }
+}
+
+/* Scrollbar Styling */
+.sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 2px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
