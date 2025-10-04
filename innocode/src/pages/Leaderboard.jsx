@@ -1,11 +1,11 @@
 import React from 'react';
+import PageContainer from '../components/PageContainer';
 
 const Leaderboard = () => {
   return (
-    <div className="page-container">
-      <h1>Leaderboard</h1>
-      <p>View top performers and rankings</p>
-    </div>
+    <PageContainer title="Leaderboard">
+      <p className="text-gray-600">View top performers and rankings</p>
+    </PageContainer>
   );
 };
 

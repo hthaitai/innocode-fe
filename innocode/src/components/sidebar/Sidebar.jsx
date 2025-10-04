@@ -1,8 +1,28 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import './sidebar.css';
 
 const Sidebar = () => {
+  const location = useLocation();
+
+  const menuItems = [
+    { path: '/profile', label: 'Profile', icon: 'lucide:user' },
+    { path: '/dashboard', label: 'Dashboard', icon: 'lucide:layout-dashboard' },
+    { path: '/contests', label: 'Contests', icon: 'lucide:trophy' },
+    { path: '/practice', label: 'Practice', icon: 'lucide:file-spreadsheet' },
+    { path: '/team', label: 'Team', icon: 'lucide:users' },
+    { path: '/leaderboard', label: 'Leaderboard', icon: 'lucide:chart-no-axes-column' },
+    { path: '/announcements', label: 'Announcements', icon: 'lucide:bell' },
+    { path: '/help', label: 'Help', icon: 'lucide:circle-question-mark' },
+  ];
+  const isActive = (path) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
+
   return (
     <div className="sidebar">
       {/* User Profile Section */}
@@ -18,76 +38,22 @@ const Sidebar = () => {
 
       {/* Menu Items */}
       <nav className="sidebar-nav">
-        <div className="nav-item">
-          <Icon
-            icon="lucide:layout-dashboard"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Dashboard</span>
-        </div>
-
-        <div className="nav-item active">
-          <Icon
-            icon="lucide:trophy"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Contests</span>
-          <div className="active-indicator"></div>
-        </div>
-
-        <div className="nav-item">
-          <Icon
-            icon="lucide:file-spreadsheet"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Practice</span>
-        </div>
-
-        <div className="nav-item">
-          <Icon
-            icon="lucide:users"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Team</span>
-        </div>
-
-        <div className="nav-item">
-          <Icon
-            icon="lucide:chart-no-axes-column"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Leaderboard</span>
-        </div>
-
-        <div className="nav-item">
-          <Icon
-            icon="lucide:bell"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Announcements</span>
-        </div>
-
-        <div className="nav-item">
-          <Icon
-            icon="lucide:circle-question-mark"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Help</span>
-        </div>
+        {menuItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+          >
+            <Icon
+              icon={item.icon}
+              width="20"
+              height="20"
+              className="nav-icon"
+            />
+            <span className="nav-label">{item.label}</span>
+            {isActive(item.path) && <div className="active-indicator"></div>}
+          </Link>
+        ))}
       </nav>
     </div>
   );

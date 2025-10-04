@@ -3,7 +3,8 @@
   background-color: white;
   border-bottom: 1px solid #e5e7eb;
   padding: 0;
-  position: sticky;
+  width: 100%;
+  position: fixed;
   top: 0;
   z-index: 100;
 }
@@ -17,21 +18,8 @@
   padding: 0.75rem 2rem;
 }
 
-/* Logo */
-.navbar-logo {
-  flex-shrink: 0;
-}
 
-.logo-link {
-  text-decoration: none;
-  color: inherit;
-}
 
-.logo-image {
-  height: 60px;
-  width: auto;
-  object-fit: contain;
-}
 
 /* Navigation Menu */
 .navbar-menu {
@@ -82,7 +70,7 @@
   background-color: #e5e7eb;
 }
 
-/* Responsive Design */
+/* Responsive Design
 @media (max-width: 768px) {
   .navbar-container {
     padding: 0.75rem 1rem;
@@ -106,5 +94,5 @@
   .navbar-menu {
     display: none;
   }
-}
+} */
 

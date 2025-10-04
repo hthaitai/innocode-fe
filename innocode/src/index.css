@@ -14,9 +14,6 @@ body{
   padding: 0;
 }
 
-.page-container {
-  padding: 2rem;
-}
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -35,6 +32,16 @@ body{
   min-height: 80vh;
   position: relative;
   overflow: hidden;
+}
+
+/* Global logo sizing utility (60x60) */
+.logo-60,
+.logo-image,
+.login-logo img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  display: inline-block;
 }
 
 
@@ -313,4 +320,19 @@ body{
   .illustration-container {
     height: 300px;
   }
+}
+
+/* Utility: hover background gray-300 + rounded corners */
+.hover-button {
+  border-radius: 0.5rem; /* same as Tailwind rounded */
+  transition: background-color 0.15s ease;
+}
+.hover-button:hover {
+  background-color: #D1D5DB; /* tailwind gray-300 */
+}
+
+/* ensure pointer cursor on hoverable items */
+.hover-button,
+.profile-edit-button {
+  cursor: pointer;
 }

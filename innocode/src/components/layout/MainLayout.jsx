@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from '../navbar/Navbar';
 import Sidebar from '../sidebar/sidebar';
-
+import './layout.css';
 export default function MainLayout() {
   return (
     <div>
@@ -12,7 +12,7 @@ export default function MainLayout() {
             <div className="w-64">
               <Sidebar />
             </div>
-            <div className="page-content mx-[312px]  p-4">
+            <div className="page-content ">
               <Outlet />
             </div>
           </div>

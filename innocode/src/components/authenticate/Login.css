@@ -71,19 +71,7 @@
   margin-bottom: 0.5rem;
 }
 
-.password-toggle {
   background: none;
-  border: none;
-  color: #6b7280;
-  font-size: 0.9rem;
-  cursor: pointer;
-  text-decoration: underline;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-}
-
-.password-toggle:hover {
-  color: #3b82f6;
-}
 
 /* Reset Password Link */
 .reset-password-link {

@@ -7,8 +7,15 @@ import Home from './pages/Home';
 import Contests from './pages/Contests';
 import Leaderboard from './pages/Leaderboard';
 import About from './pages/About';
+import Practice from './pages/Practice';
+import Team from './pages/Team';
+import Announcements from './pages/Announcements';
+import Help from './pages/Help';
 import Login from './components/authenticate/Login';
+import Profile from './pages/Profile';
+import Dashboard from './pages/Dashboard';
 const router = createBrowserRouter([
+  { path: 'login', element: <Login /> },
   {
     element: <MainLayout />, // layout wrapper
     children: [
@@ -16,6 +23,12 @@ const router = createBrowserRouter([
       { path: 'contests', element: <Contests /> },
       { path: 'leaderboard', element: <Leaderboard /> },
       { path: 'about', element: <About /> },
+      { path: 'practice', element: <Practice /> },
+      { path: 'team', element: <Team /> },
+      { path: 'announcements', element: <Announcements /> },
+      { path: 'help', element: <Help /> },
+      { path: 'profile', element: <Profile /> },
+      { path: 'dashboard', element: <Dashboard /> },
     ],
   },
 ]);

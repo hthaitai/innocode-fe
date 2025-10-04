@@ -1,11 +1,11 @@
 import React from 'react';
+import PageContainer from '../components/PageContainer';
 
 const Contests = () => {
   return (
-    <div className="page-container">
-      <h1>Contests</h1>
-      <p>Browse and participate in coding contests</p>
-    </div>
+    <PageContainer title="Contests">
+      <p className="text-gray-600">Browse and participate in coding contests</p>
+    </PageContainer>
   );
 };
 

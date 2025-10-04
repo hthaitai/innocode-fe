@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { Link } from 'react-router-dom';
 import "./Login.css";
+import InnoCodeLogo from '../../assets/InnoCode_Logo.jpg';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,8 +18,11 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-container relative">
       <div className="login-form-container">
+        <Link to="/" className="absolute top-4 left-4 w-[60px] h-[60px]">
+          <img src={InnoCodeLogo} alt="InnoCode" className="w-full h-full object-contain" />
+        </Link>
         <div className="login-form">
           <h1 className="login-title">Sign in</h1>
           
@@ -79,7 +84,9 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <div className="login-background"></div>
+      <div className="login-background">
+        
+      </div>
     </div>
   );
 };
