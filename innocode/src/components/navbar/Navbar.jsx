@@ -5,8 +5,14 @@ import InnoCodeLogo from '../../assets/InnoCode_Logo.jpg';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const isLoggedIn = !!localStorage.getItem('token');
 
   const handleSignIn = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
     navigate('/login');
   };
 
@@ -36,11 +42,17 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Sign In Button */}
+        {/* Auth Button */}
         <div className="navbar-auth">
-          <button className="signin-btn" onClick={handleSignIn}>
-            Sign in
-          </button>
+          {isLoggedIn ? (
+            <button className="signin-btn" onClick={handleLogout}>
+              Logout
+            </button>
+          ) : (
+            <button className="signin-btn" onClick={handleSignIn}>
+              Sign in
+            </button>
+          )}
         </div>
       </div>
     </nav>
