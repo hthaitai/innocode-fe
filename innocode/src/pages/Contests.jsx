@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PageContainer from "../components/PageContainer";
 import Search from "../components/search/Search";
 import Filter from "../components/search/Filter";
 import ContestCard from "../components/contest/ContestCard";
 import { contestsData } from "../data/contestsData";
+import { BREADCRUMBS } from "../config/breadcrumbs";
 
 const Contests = () => {
   const [hasFilter, setHasFilter] = useState(true);
+  const navigate = useNavigate();
 
   const handleSearch = (searchTerm) => {
     console.log("Searching for:", searchTerm);
@@ -20,11 +23,11 @@ const Contests = () => {
 
   const handleContestClick = (contest) => {
     console.log("Clicked contest:", contest);
-    // Add navigation logic here
+    navigate(`/contest-detail/${contest.id}`);
   };
 
   return (
-    <PageContainer title="Contests" bg={false}>
+    <PageContainer breadcrumb={BREADCRUMBS.CONTESTS} bg={false}>
       <div className="w-full flex flex-col gap-[14px]">
         <div>
           <Search placeholder="Search Contests" onSearch={handleSearch} />
@@ -36,7 +39,7 @@ const Contests = () => {
             />
           )}
         </div>
-        <div className="contests-list">
+        <div className="contests-list flex flex-col gap-4">
           {contestsData.map((contest) => (
             <ContestCard
               key={contest.id}
@@ -45,8 +48,9 @@ const Contests = () => {
             />
           ))}
         </div>
+        </div>
+   
        
-      </div>
     </PageContainer>
   );
 };

@@ -14,6 +14,7 @@ import Help from './pages/Help';
 import Login from './components/authenticate/Login';
 import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
+import ContestDetail from './pages/ContestDetail';
 const router = createBrowserRouter([
   { path: 'login', element: <Login /> },
   {
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
       { path: 'help', element: <Help /> },
       { path: 'profile', element: <Profile /> },
       { path: 'dashboard', element: <Dashboard /> },
+      { path: 'contest-detail/:contestId', element: <ContestDetail /> },
     ],
   },
 ]);

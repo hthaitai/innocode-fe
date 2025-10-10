@@ -1,19 +1,18 @@
 import React from 'react';
+import PageContainer from '../components/PageContainer';
+import { BREADCRUMBS } from '../config/breadcrumbs';
 
 const Help = () => {
   return (
-    <div className="help-page">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Help</h1>
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <p className="text-gray-600">
-            Get help and support. This page will contain FAQs, documentation, and contact information.
+    <PageContainer breadcrumb={BREADCRUMBS.HELP}>
+      <div>
+          <p>
+            Get help and support. This page will contain FAQs, documentation,
+            and contact information.
           </p>
         </div>
-      </div>
-    </div>
+    </PageContainer>
   );
 };
 
 export default Help;
-

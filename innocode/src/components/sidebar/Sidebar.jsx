@@ -25,7 +25,7 @@ const menuByRole = {
 const Sidebar = () => {
   const location = useLocation();
   const role = localStorage.getItem('role');
-  const menuKeys = menuByRole[role];
+  const menuKeys = menuByRole[role] || menuByRole.student; // Fallback to student role
   const menuItems = menuKeys.map(key => allMenus[key]).filter(Boolean);
   const isActive = (path) => {
     if (path === '/') {
@@ -43,7 +43,7 @@ const Sidebar = () => {
         </div>
         <div className="user-info">
           <div className="user-name">Lộc</div>
-          <div className="user-role">{role.charAt(0).toUpperCase() + role.slice(1)} account</div>
+          <div className="user-role">{(role || 'student').charAt(0).toUpperCase() + (role || 'student').slice(1)} account</div>
         </div>
       </div>
 

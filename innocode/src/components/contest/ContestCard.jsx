@@ -1,9 +1,10 @@
 import React from 'react';
 import './ContestCard.css';
+import { Icon } from '@iconify/react';
 
 const ContestCard = ({ contest, onClick }) => {
   return (
-    <div className="contest-card" onClick={onClick}>
+    <div className="contest-card bg-white" onClick={onClick}>
       <div className="contest-card__icon">
         {contest.icon && <span className="contest-card__icon-content">{contest.icon}</span>}
       </div>
@@ -19,8 +20,8 @@ const ContestCard = ({ contest, onClick }) => {
       </div>
       
       
-      <div className="contest-card__arrow">
-        <span>&gt;</span>
+      <div className="contest-card__arrow  transition-all duration-300">
+        <Icon icon='mdi:chevron-right'></Icon>
       </div>
     </div>
   );

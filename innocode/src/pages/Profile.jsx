@@ -1,12 +1,23 @@
-import React, { useState } from "react";
-import PageContainer from "../components/PageContainer";
-import { Icon } from "@iconify/react";
+import React, { useState } from 'react';
+import PageContainer from '../components/PageContainer';
+import TabNavigation from '../components/TabNavigation';
+import { Icon } from '@iconify/react';
+import { BREADCRUMBS } from '../config/breadcrumbs';
 
 export default function Profile() {
-  const [tab, setTab] = useState("about");
+  const [tab, setTab] = useState('about');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Định nghĩa các tabs
+  const tabs = [
+    { id: 'about', label: 'About' },
+    { id: 'password', label: 'Change Password' }
+  ];
 
   return (
-    <PageContainer title="Profile">
+    <PageContainer breadcrumb={BREADCRUMBS.PROFILE}>
       <div className="grid grid-cols-12 gap-6">
         {/* Left column: avatar + meta + tabs */}
         <div className="col-span-12">
@@ -21,121 +32,217 @@ export default function Profile() {
 
           {/* tabs as buttons */}
           <div className="mb-6">
-            <nav className="flex gap-2">
-              <button
-                className={`px-4 py-2 rounded-md font-medium transition
-                  ${
-                    tab === "about"
-                      ? "bg-orange-100 text-orange-600 border-l-4 border-orange-400 shadow"
-                      : "hover:bg-gray-100"
-                  }
-                `}
-                onClick={() => setTab("about")}
-              >
-                About
-              </button>
-              <button
-                className={`px-4 py-2 rounded-md font-medium transition
-                  ${
-                    tab === "password"
-                      ? "bg-orange-100 text-orange-600 border-l-4 border-orange-400 shadow"
-                      : "hover:bg-gray-100"
-                  }
-                `}
-                onClick={() => setTab("password")}
-              >
-                Change Password
-              </button>
-            </nav>
+            <TabNavigation
+              tabs={tabs}
+              activeTab={tab}
+              onTabChange={setTab}
+            />
           </div>
         </div>
 
-        {/* Content area - two columns */}
-        <div className="col-span-12 lg:col-span-5 bg-white rounded-md p-8 border shadow-sm border-gray-200">
-          <h3 className="text-3xl ml-[100px] mt-12 font-bold mb-8 text-wrap">
-            <p>User</p> Information
-          </h3>
-          {/* placeholder content on the left */}
-        </div>
+        <div className="col-span-12">
+          <div className="bg-white  rounded-xl overflow-hidden">
+            {tab === 'about' && (
+              <div className="p-8">
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                    Personal Information
+                  </h3>
+               
+                </div>
+                <div className="space-y-6">
+                  <div className="group">
+                    <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+                      Full Name
+                    </label>
+                    <div className="relative bg-gray-50 border-2 border-gray-200 rounded-xl p-4 hover:border-orange-300 transition-all duration-200 group-hover:shadow-md">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Icon
+                            icon="mdi:account-box-outline"
+                            className="h-5 w-5 text-gray-400"
+                          />
+                          <span className="text-lg text-gray-800 font-medium">
+                            Huỳnh Thiện Lộc
+                          </span>
+                        </div>
+                        <button className="opacity-0 group-hover:opacity-100 p-2 hover:bg-orange-100 rounded-lg transition-all duration-200">
+                          <Icon
+                            icon="mdi:pencil"
+                            className="h-5 w-5 text-orange-500"
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
 
-        <div className="col-span-12 lg:col-span-7 ">
-          <div className="bg-white border border-gray-200 p-6 rounded-md shadow-sm">
-            {tab === "about" && (
-              <div className="grid gap-4">
-                {/* About content here */}
-                {/* ...existing About rows... */}
-                <div className="grid grid-cols-3 gap-4 items-center">
-                  <div className="col-span-1 border border-gray-200 shadow-sm rounded-lg p-4 text-xl text-center">
-                    Full Name
+                  <div className="group">
+                    <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+                      Email Address
+                    </label>
+                    <div className="relative bg-gray-50 border-2 border-gray-200 rounded-xl p-4 hover:border-orange-300 transition-all duration-200 group-hover:shadow-md">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Icon
+                            icon="mdi:email-outline"
+                            className="h-5 w-5 text-gray-400"
+                          />
+                          <span className="text-lg text-gray-800 font-medium">
+                            Loc@gmail.com
+                          </span>
+                        </div>
+                        <button className="opacity-0 group-hover:opacity-100 p-2 hover:bg-orange-100 rounded-lg transition-all duration-200">
+                          <Icon
+                            icon="mdi:pencil"
+                            className="h-5 w-5 text-orange-500"
+                          />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="col-span-2 shadow-sm border border-gray-200 rounded-lg p-4 text-xl flex items-center justify-between">
-                    <span>Huỳnh Thiện Lộc</span>
-                    <button className="ml-4 p-1 hover-button">
-                      <Icon icon="mdi:pencil" className="h-6 w-6" />
-                    </button>
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4 items-center">
-                  <div className="col-span-1 shadow-sm border border-gray-200 rounded-lg p-4 text-xl text-center">
-                    Email
-                  </div>
-                  <div className="col-span-2 shadow-sm border border-gray-200 rounded-lg p-4 text-xl flex items-center justify-between">
-                    <span>Loc@gmail.com</span>
-                    <button className="ml-4 p-1 hover-button">
-                      <Icon icon="mdi:pencil" className="h-6 w-6" />
-                    </button>
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4 items-center">
-                  <div className="col-span-1 shadow-sm border border-gray-200 rounded-lg p-4 text-xl text-center">
-                    Phone Number
-                  </div>
-                  <div className="col-span-2 shadow-sm border border-gray-200 rounded-lg p-4 text-xl flex items-center justify-between">
-                    <span>0123456798</span>
-                    <button className="ml-4 p-1 hover-button">
-                      <Icon icon="mdi:pencil" className="h-6 w-6" />
-                    </button>
+
+                  <div className="group">
+                    <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+                      Phone Number
+                    </label>
+                    <div className="relative bg-gray-50 border-2 border-gray-200 rounded-xl p-4 hover:border-orange-300 transition-all duration-200 group-hover:shadow-md">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Icon
+                            icon="mdi:phone-outline"
+                            className="h-5 w-5 text-gray-400"
+                          />
+                          <span className="text-lg text-gray-800 font-medium">
+                            0123456798
+                          </span>
+                        </div>
+                        <button className="opacity-0 group-hover:opacity-100 p-2 hover:bg-orange-100 rounded-lg transition-all duration-200">
+                          <Icon
+                            icon="mdi:pencil"
+                            className="h-5 w-5 text-orange-500"
+                          />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
-            {tab === "password" && (
-              <div>
-                {/* Change Password content here */}
-                <form className="space-y-4">
-                  <div>
-                    <label className="block mb-1 font-medium">
+            {tab === 'password' && (
+              <div className="p-8">
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                    Security Settings
+                  </h3>
+                  
+                </div>
+                <form className="space-y-6">
+                  <div className="group">
+                    <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
                       Current Password
                     </label>
-                    <input
-                      type="password"
-                      className="w-full border rounded px-3 py-2"
-                    />
+                    <div className="relative bg-gray-50 border-2 border-gray-200 rounded-xl p-4 hover:border-orange-300 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 transition-all duration-200 group-hover:shadow-md">
+                      <div className="flex items-center space-x-3">
+                        <Icon
+                          icon="mdi:lock-outline"
+                          className="h-5 w-5 text-gray-400"
+                        />
+                        <input
+                          type={showCurrentPassword ? 'text' : 'password'}
+                          placeholder="Enter your current password"
+                          className="flex-1 outline-none bg-transparent text-lg text-gray-800 placeholder-gray-400"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowCurrentPassword(!showCurrentPassword)
+                          }
+                          className="p-2 hover:bg-orange-100 rounded-lg transition-all duration-200"
+                        >
+                          <Icon
+                            icon={
+                              showCurrentPassword ? 'mdi:eye-off' : 'mdi:eye'
+                            }
+                            className="h-5 w-5 text-gray-500 hover:text-orange-500"
+                          />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block mb-1 font-medium">
+
+                  <div className="group">
+                    <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
                       New Password
                     </label>
-                    <input
-                      type="password"
-                      className="w-full border rounded px-3 py-2"
-                    />
+                    <div className="relative bg-gray-50 border-2 border-gray-200 rounded-xl p-4 hover:border-orange-300 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 transition-all duration-200 group-hover:shadow-md">
+                      <div className="flex items-center space-x-3">
+                        <Icon
+                          icon="mdi:lock-plus-outline"
+                          className="h-5 w-5 text-gray-400"
+                        />
+                        <input
+                          type={showNewPassword ? 'text' : 'password'}
+                          placeholder="Enter your new password"
+                          className="flex-1 outline-none bg-transparent text-lg text-gray-800 placeholder-gray-400"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          className="p-2 hover:bg-orange-100 rounded-lg transition-all duration-200"
+                        >
+                          <Icon
+                            icon={showNewPassword ? 'mdi:eye-off' : 'mdi:eye'}
+                            className="h-5 w-5 text-gray-500 hover:text-orange-500"
+                          />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block mb-1 font-medium">
+
+                  <div className="group">
+                    <label className="block text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
                       Confirm New Password
                     </label>
-                    <input
-                      type="password"
-                      className="w-full border rounded px-3 py-2"
-                    />
+                    <div className="relative bg-gray-50 border-2 border-gray-200 rounded-xl p-4 hover:border-orange-300 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 transition-all duration-200 group-hover:shadow-md">
+                      <div className="flex items-center space-x-3">
+                        <Icon
+                          icon="mdi:lock-check-outline"
+                          className="h-5 w-5 text-gray-400"
+                        />
+                        <input
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          placeholder="Confirm your new password"
+                          className="flex-1 outline-none bg-transparent text-lg text-gray-800 placeholder-gray-400"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          className="p-2 hover:bg-orange-100 rounded-lg transition-all duration-200"
+                        >
+                          <Icon
+                            icon={
+                              showConfirmPassword ? 'mdi:eye-off' : 'mdi:eye'
+                            }
+                            className="h-5 w-5 text-gray-500 hover:text-orange-500"
+                          />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    type="submit"
-                    className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-                  >
-                    Save
-                  </button>
+
+                  <div className="flex justify-end pt-4">
+                    <button
+                      type="submit"
+                      className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-xl text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <Icon icon="mdi:check" className="h-5 w-5" />
+                        <span>Update Password</span>
+                      </div>
+                    </button>
+                  </div>
                 </form>
               </div>
             )}
