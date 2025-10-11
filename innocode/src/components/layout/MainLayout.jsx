@@ -11,10 +11,10 @@ export default function MainLayout() {
 
   return (
     <div>
-      <div className="layout ">
+      <div >
         <Navbar />
         <div className="main-content ">
-          <div className="flex">
+          <div className="flex w-full">
             {!hideSidebar && (
               <div className="w-64">
                 <Sidebar />
