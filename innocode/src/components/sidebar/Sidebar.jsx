@@ -1,8 +1,39 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import './sidebar.css';
 
+const allMenus = {
+  profile: { path: '/profile', label: 'Profile', icon: 'lucide:user' },
+  dashboard: { path: '/dashboard', label: 'Dashboard', icon: 'lucide:layout-dashboard' },
+  contests: { path: '/contests', label: 'Contests', icon: 'lucide:trophy' },
+  practice: { path: '/practice', label: 'Practice', icon: 'lucide:file-spreadsheet' },
+  team: { path: '/team', label: 'Team', icon: 'lucide:users' },
+  leaderboard: { path: '/leaderboard', label: 'Leaderboard', icon: 'lucide:chart-no-axes-column' },
+  announcements: { path: '/announcements', label: 'Announcements', icon: 'lucide:bell' },
+  help: { path: '/help', label: 'Help', icon: 'lucide:circle-question-mark' },
+  certificate: { path: '/certificate', label: 'Certificate', icon: 'lucide:award' },
+};
+
+const menuByRole = {
+  student: ['profile', 'contests', 'practice', 'team', 'leaderboard', 'announcements', 'certificate','help' ],
+  organizer: ['profile', 'dashboard', 'leaderboard', 'announcements'],
+  judge: ['profile', 'dashboard', 'contests', 'announcements'],
+  admin: ['profile', 'dashboard', 'leaderboard', 'announcements', 'help'],
+};
+
 const Sidebar = () => {
+  const location = useLocation();
+  const role = localStorage.getItem('role');
+  const menuKeys = menuByRole[role] || menuByRole.student; // Fallback to student role
+  const menuItems = menuKeys.map(key => allMenus[key]).filter(Boolean);
+  const isActive = (path) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
+
   return (
     <div className="sidebar">
       {/* User Profile Section */}
@@ -12,82 +43,28 @@ const Sidebar = () => {
         </div>
         <div className="user-info">
           <div className="user-name">Lộc</div>
-          <div className="user-role">Student account</div>
+          <div className="user-role">{(role || 'student').charAt(0).toUpperCase() + (role || 'student').slice(1)} account</div>
         </div>
       </div>
 
       {/* Menu Items */}
       <nav className="sidebar-nav">
-        <div className="nav-item">
-          <Icon
-            icon="lucide:layout-dashboard"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Dashboard</span>
-        </div>
-
-        <div className="nav-item active">
-          <Icon
-            icon="lucide:trophy"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Contests</span>
-          <div className="active-indicator"></div>
-        </div>
-
-        <div className="nav-item">
-          <Icon
-            icon="lucide:file-spreadsheet"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Practice</span>
-        </div>
-
-        <div className="nav-item">
-          <Icon
-            icon="lucide:users"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Team</span>
-        </div>
-
-        <div className="nav-item">
-          <Icon
-            icon="lucide:chart-no-axes-column"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Leaderboard</span>
-        </div>
-
-        <div className="nav-item">
-          <Icon
-            icon="lucide:bell"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Announcements</span>
-        </div>
-
-        <div className="nav-item">
-          <Icon
-            icon="lucide:circle-question-mark"
-            width="20"
-            height="20"
-            className="nav-icon"
-          />
-          <span className="nav-label">Help</span>
-        </div>
+        {menuItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+          >
+            <Icon
+              icon={item.icon}
+              width="20"
+              height="20"
+              className="nav-icon"
+            />
+            <span className="nav-label">{item.label}</span>
+            {isActive(item.path) && <div className="active-indicator"></div>}
+          </Link>
+        ))}
       </nav>
     </div>
   );

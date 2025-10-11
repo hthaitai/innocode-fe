@@ -1,8 +1,6 @@
 .layout {
   display: flex;
-  flex-direction: column;
   height: 100vh;
-
 }
 
 .main-content {
@@ -13,6 +11,8 @@
 
 .page-content {
   flex: 1;
-  padding: 20px;
+  width: 1200px;
+  margin-inline: 200px;
+  padding: calc(var(--spacing) * 4) /* 1rem = 16px */;
   overflow-y: auto;
 }
