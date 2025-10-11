@@ -7,22 +7,18 @@ import React from 'react';
  * @param {string} props.activeTab - ID của tab đang active
  * @param {Function} props.onTabChange - Callback function khi tab thay đổi
  * @param {string} props.className - CSS classes bổ sung cho container
- * @param {string} props.activeColor - Màu cho tab active (default: 'orange')
- * @param {string} props.hoverColor - Màu hover cho tab inactive (default: 'gray')
  */
 export default function TabNavigation({
   tabs = [],
   activeTab,
   onTabChange,
   className = '',
-  activeColor = 'orange',
-  hoverColor = 'gray'
 }) {
   const getActiveClasses = (isActive) => {
     if (isActive) {
-      return `bg-${activeColor}-100 text-${activeColor}-600 border-b-4 border-${activeColor}-400 shadow`;
+      return `bg-orange-100 text-orange-600 border-b-4 border-orange-400 shadow`;
     }
-    return `hover:bg-${hoverColor}-100`;
+    return `hover:bg-gray-100 text-gray-600`;
   };
 
   return (

@@ -50,7 +50,7 @@ const ContestDetail = () => {
 
             {/* RIGHT */}
             <div className="flex flex-col gap-4 w-[320px]">
-              <CountdownTimer targetDate="2025-10-11T10:00:00+07:00" />
+              <CountdownTimer targetDate="2025-10-12T10:00:00+07:00" />
               <div className="bg-gray-500 h-[280px]"></div>
             </div>
           </div>
