@@ -1,18 +1,30 @@
-.layout {
-  display: flex;
-  height: 100vh;
-}
-
 .main-content {
   display: flex;
-  flex: 1;
-  margin-top: 84px; /* trừ chiều cao Navbar */
+  margin-top: 84px; /* height of Navbar */
+  margin-left: 312px; /* push content to the right of fixed sidebar */
+  height: calc(100vh - 84px);
+  overflow: hidden;
+}
+
+.page-sidebar {
+  position: fixed; /* Stay in place */
+  top: 84px; /* below Navbar (adjust to match Navbar height) */
+  left: 0;
+  width: 312px;
+  height: calc(100vh - 84px); /* full screen minus navbar */
+  padding: calc(var(--spacing) * 4); /* scroll within itself if needed */
+  box-sizing: border-box;
 }
 
 .page-content {
   flex: 1;
-  width: 1200px;
-  margin-inline: 200px;
-  padding: calc(var(--spacing) * 4) /* 1rem = 16px */;
+  padding-left: calc(var(--spacing) * 5); /* 1rem = 16px */
+  padding-right: calc(var(--spacing) * 5);
+  padding-bottom: calc(var(--spacing) * 5);
   overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.content-wrapper {
+  max-width: 1024px;
+  margin: 0 auto;
 }

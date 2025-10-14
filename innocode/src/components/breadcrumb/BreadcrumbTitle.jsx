@@ -34,7 +34,7 @@ const BreadcrumbTitle = ({ items = [], paths = [] }) => {
   };
 
   return (
-    <div className="flex items-center gap-2 text-3xl font-bold">
+    <div className="flex items-center gap-2 text-[28px] leading-[36px] font-semibold">
       {items.map((item, index) => (
         <React.Fragment key={index}>
           {index > 0 && (
