@@ -20,6 +20,10 @@ export const BREADCRUMBS = {
   CONTEST_EDIT: (contestTitle) => ['Contests', contestTitle, 'Edit'],
   TEAM_CREATE: ['Team', 'Create Team'],
   TEAM_DETAIL: (teamName) => ['Team', teamName],
+  CONTEST_PROCESSING: (contestTitle) => ['Contests', contestTitle, 'Processing'],
+  CONTEST_RESULTS: (contestTitle) => ['Contests', contestTitle, 'Results'],
+  CONTEST_LEADERBOARD: (contestTitle) => ['Contests', contestTitle, 'Leaderboard'],
+  CONTEST_SUBMISSIONS: (contestTitle) => ['Contests', contestTitle, 'Submissions'],
   
   // Admin pages
   ADMIN_DASHBOARD: ['Admin', 'Dashboard'],
@@ -33,10 +37,62 @@ export const BREADCRUMBS = {
   UNAUTHORIZED: ['Unauthorized'],
 };
 
+// Breadcrumb paths configuration for navigation
+export const BREADCRUMB_PATHS = {
+  // Main pages
+  HOME: ['/'],
+  CONTESTS: ['/contests'],
+  CONTEST_DETAIL: (contestId) => ['/contests', `/contest-detail/${contestId}`],
+  PRACTICE: ['/practice'],
+  TEAM: ['/team'],
+  LEADERBOARD: ['/leaderboard'],
+  ANNOUNCEMENTS: ['/announcements'],
+  HELP: ['/help'],
+  PROFILE: ['/profile'],
+  DASHBOARD: ['/dashboard'],
+  ABOUT: ['/about'],
+  
+  // Sub-pages
+  PROFILE_ABOUT: ['/profile'],
+  PROFILE_PASSWORD: ['/profile'],
+  CONTEST_CREATE: ['/contests'],
+  CONTEST_EDIT: (contestId) => ['/contests', `/contest-detail/${contestId}`],
+  TEAM_CREATE: ['/team'],
+  TEAM_DETAIL: (teamId) => ['/team', `/team/${teamId}`],
+  CONTEST_PROCESSING: (contestId) => ['/contests', `/contest-detail/${contestId}`, `/contest-processing/${contestId}`],
+  CONTEST_RESULTS: (contestId) => ['/contests', `/contest-detail/${contestId}`, `/contest-results/${contestId}`],
+  CONTEST_LEADERBOARD: (contestId) => ['/contests', `/contest-detail/${contestId}`, `/contest-leaderboard/${contestId}`],
+  CONTEST_SUBMISSIONS: (contestId) => ['/contests', `/contest-detail/${contestId}`, `/contest-submissions/${contestId}`],
+  
+  // Admin pages
+  ADMIN_DASHBOARD: ['/admin', '/admin/dashboard'],
+  ADMIN_CONTESTS: ['/admin', '/admin/contests'],
+  ADMIN_USERS: ['/admin', '/admin/users'],
+  ADMIN_TEAMS: ['/admin', '/admin/teams'],
+  ADMIN_ANNOUNCEMENTS: ['/admin', '/admin/announcements'],
+  
+  // Error pages
+  NOT_FOUND: ['/'],
+  UNAUTHORIZED: ['/'],
+};
+
 // Helper function to create dynamic breadcrumb
 export const createBreadcrumb = (type, ...params) => {
   if (typeof BREADCRUMBS[type] === 'function') {
     return BREADCRUMBS[type](...params);
   }
   return BREADCRUMBS[type] || ['Home'];
+};
+
+// Helper function to create breadcrumb with paths for navigation
+export const createBreadcrumbWithPaths = (type, ...params) => {
+  const items = typeof BREADCRUMBS[type] === 'function' 
+    ? BREADCRUMBS[type](...params) 
+    : BREADCRUMBS[type] || ['Home'];
+    
+  const paths = typeof BREADCRUMB_PATHS[type] === 'function'
+    ? BREADCRUMB_PATHS[type](...params)
+    : BREADCRUMB_PATHS[type] || ['/'];
+    
+  return { items, paths };
 };

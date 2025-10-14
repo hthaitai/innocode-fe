@@ -3,6 +3,7 @@ import { BreadcrumbTitle } from './breadcrumb';
 
 export default function PageContainer({
   breadcrumb,
+  breadcrumbPaths, // Thêm prop mới cho paths
   children,
   className = '',
   actions = null,
@@ -14,7 +15,10 @@ export default function PageContainer({
         {breadcrumb && (
           <div className="breadcrumb-fixed">
             {breadcrumb ? (
-              <BreadcrumbTitle items={breadcrumb} />
+              <BreadcrumbTitle 
+                items={breadcrumb} 
+                paths={breadcrumbPaths} 
+              />
             ) : (
               <h1 className="text-3xl font-bold text-gray-800">
                 {title}
