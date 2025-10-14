@@ -345,7 +345,7 @@ body{
   left: 450px; /* bên phải sidebar */
   right: 0;
   z-index: 40;
-  background-color: #F3F3F3;
+  background-color: green;
   padding: 1rem 2rem;
   display: flex;
   align-items: center;

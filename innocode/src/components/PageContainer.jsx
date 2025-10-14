@@ -1,40 +1,35 @@
-import React from 'react';
-import { BreadcrumbTitle } from './breadcrumb';
+import React from "react"
+import { BreadcrumbTitle } from "./breadcrumb"
 
 export default function PageContainer({
   breadcrumb,
   breadcrumbPaths, // Thêm prop mới cho paths
   children,
-  className = '',
+  className = "",
   actions = null,
   bg = true,
 }) {
   return (
-    <div className={`p-2 ${className}`}>
-      <div className="container mx-auto px-4 py-2">
+    <div className={`${className}`}>
+      <div className="">
         {breadcrumb && (
-          <div className="breadcrumb-fixed">
+          <div className="bg-[#f3f3f3] sticky top-0 z-10 flex items-center justify-between py-5">
             {breadcrumb ? (
-              <BreadcrumbTitle 
-                items={breadcrumb} 
-                paths={breadcrumbPaths} 
-              />
+              <BreadcrumbTitle items={breadcrumb} paths={breadcrumbPaths} />
             ) : (
-              <h1 className="text-3xl font-bold text-gray-800">
-                {title}
-              </h1>
+              <h1>{title}</h1>
             )}
             {actions && <div className="ml-4">{actions}</div>}
           </div>
         )}
         <div
-          className={`min-h-[650px] rounded-lg p-2 ${
-            bg ? 'bg-white shadow-md' : ''
-          } ${breadcrumb ? 'mt-20' : ''}`}
+          className={`min-h-[68px] rounded-[5px] p-5 ${
+            bg ? "bg-white border border-[#E5E5E5]" : ""
+          } ${breadcrumb ? "" : ""}`}
         >
           {children}
         </div>
       </div>
     </div>
-  );
+  )
 }
