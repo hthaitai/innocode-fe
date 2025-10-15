@@ -23,8 +23,8 @@ export default function PageContainer({
           </div>
         )}
         <div
-          className={`min-h-[68px] rounded-[5px] p-5 ${
-            bg ? "bg-white border border-[#E5E5E5]" : ""
+          className={` ${
+            bg ? "" : ""
           } ${breadcrumb ? "" : ""}`}
         >
           {children}
