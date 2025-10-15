@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import PageContainer from '../components/PageContainer';
-import TabNavigation from '../components/TabNavigation';
+import PageContainer from '../../components/PageContainer';
+import TabNavigation from '../../components/TabNavigation';
 import { Icon } from '@iconify/react';
-import { BREADCRUMBS } from '../config/breadcrumbs';
+import { BREADCRUMBS } from '../../config/breadcrumbs';
 
 export default function Profile() {
   const [tab, setTab] = useState('about');

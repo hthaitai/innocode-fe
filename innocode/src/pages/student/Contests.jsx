@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PageContainer from "../components/PageContainer";
-import Search from "../components/search/Search";
-import Filter from "../components/search/Filter";
-import ContestCard from "../components/contest/ContestCard";
-import { contestsData } from "../data/contestsData";
-import { BREADCRUMBS } from "../config/breadcrumbs";
+import PageContainer from "../../components/PageContainer";
+import Search from "../../components/search/Search";
+import Filter from "../../components/search/Filter";
+import ContestCard from "../../components/contest/ContestCard";
+import { contestsData } from "../../data/contestsData";
+import { BREADCRUMBS } from "../../config/breadcrumbs";
 
 const Contests = () => {
   const [hasFilter, setHasFilter] = useState(true);

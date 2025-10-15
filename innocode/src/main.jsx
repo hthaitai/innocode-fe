@@ -3,20 +3,24 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';
-import Home from './pages/Home';
-import Contests from './pages/Contests';
-import Leaderboard from './pages/Leaderboard';
-import About from './pages/About';
-import Practice from './pages/Practice';
-import Team from './pages/Team';
-import Announcements from './pages/Announcements';
-import Help from './pages/Help';
-import Login from './components/authenticate/Login';
-import Profile from './pages/Profile';
-import Dashboard from './pages/Dashboard';
-import ContestDetail from './pages/ContestDetail';
-import ContestProcessing from './pages/ContestProcessing';
+// Common pages
+import Home from './pages/common/Home';
+import About from './pages/common/About';
+import Profile from './pages/common/Profile';
+import Dashboard from './pages/common/Dashboard';
+import Announcements from './pages/common/Announcements';
+// Student pages
+import Contests from './pages/student/Contests';
+import ContestDetail from './pages/student/ContestDetail';
+import ContestProcessing from './pages/student/ContestProcessing';
+import Practice from './pages/student/Practice';
+import Team from './pages/student/Team';
+import Leaderboard from './pages/student/Leaderboard';
+import Help from './pages/student/Help';
+// Organizer pages
 import OrganizerContests from './pages/organizer/OrganizerContests';
+// Auth
+import Login from './components/authenticate/Login';
 const router = createBrowserRouter([
   { path: 'login', element: <Login /> },
   {

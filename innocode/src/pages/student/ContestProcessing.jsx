@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PageContainer from "../components/PageContainer";
-import { contestsData } from "../data/contestsData";
-import { createBreadcrumbWithPaths, BREADCRUMBS } from "../config/breadcrumbs";
-import Quiz from "../components/quiz/Quiz";
-import { quizQuestions, quizConfig } from "../data/quizData";
+import PageContainer from "../../components/PageContainer";
+import { contestsData } from "../../data/contestsData";
+import { createBreadcrumbWithPaths, BREADCRUMBS } from "../../config/breadcrumbs";
+import Quiz from "../../components/quiz/Quiz";
+import { quizQuestions, quizConfig } from "../../data/quizData";
 
 const ContestProcessing = () => {
   const { contestId } = useParams();

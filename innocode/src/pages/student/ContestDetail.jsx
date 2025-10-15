@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import PageContainer from "../components/PageContainer";
-import { contestsData } from "../data/contestsData";
-import { createBreadcrumbWithPaths, BREADCRUMBS } from "../config/breadcrumbs";
-import TabNavigation from "../components/TabNavigation";
-import CountdownTimer from "../components/countdowntimer/countdownTimer";
+import PageContainer from "../../components/PageContainer";
+import { contestsData } from "../../data/contestsData";
+import { createBreadcrumbWithPaths, BREADCRUMBS } from "../../config/breadcrumbs";
+import TabNavigation from "../../components/TabNavigation";
+import CountdownTimer from "../../components/countdowntimer/countdownTimer";
 
 const ContestDetail = () => {
   const { contestId } = useParams();
