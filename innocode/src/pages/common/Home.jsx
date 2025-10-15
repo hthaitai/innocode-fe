@@ -22,7 +22,7 @@ const Home = () => {
             <div className="hero-illustration">
               <div className="illustration-container">
                 <div className="classroom-scene">
-                  <div className="students-studying">
+                  {/* <div className="students-studying">
                     <div className="student student-1"></div>
                     <div className="student student-2"></div>
                     <div className="student student-3"></div>
@@ -35,7 +35,7 @@ const Home = () => {
                     <div className="bookshelf left"></div>
                     <div className="bookshelf right"></div>
                     <div className="window"></div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

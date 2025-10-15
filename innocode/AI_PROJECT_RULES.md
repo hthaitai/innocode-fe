@@ -1,7 +1,9 @@
 # InnoCode - AI Development Rules & Guidelines
 
 ## 🎯 Project Overview
+
 **InnoCode** là một nền tảng thi lập trình trực tuyến dành cho học sinh trung học phổ thông, cung cấp:
+
 - Hệ thống chấm điểm tự động
 - Cuộc thi đa vòng
 - Bảng xếp hạng thời gian thực
@@ -10,49 +12,51 @@
 ## 🎨 Design System & UI/UX Guidelines
 
 ### Color Palette
+
 ```css
 /* Primary Colors */
---primary-orange: #ff6b35;        /* Main brand color */
---primary-orange-hover: #e55a2b;  /* Hover state */
---secondary-orange: #f7931e;      /* Secondary brand */
---accent-orange: #ffd89b;         /* Light accent */
+--primary-orange: #ff6b35; /* Main brand color */
+--primary-orange-hover: #e55a2b; /* Hover state */
+--secondary-orange: #f7931e; /* Secondary brand */
+--accent-orange: #ffd89b; /* Light accent */
 
 /* Neutral Colors */
---background-main: #F3F3F3;       /* Main background */
---white: #ffffff;                 /* Cards, containers */
---text-primary: #2d3748;          /* Main text */
---text-secondary: #4a5568;        /* Secondary text */
---text-muted: #6b7280;            /* Muted text */
---text-light: #9ca3af;            /* Placeholder text */
+--background-main: #f3f3f3; /* Main background */
+--white: #ffffff; /* Cards, containers */
+--text-primary: #2d3748; /* Main text */
+--text-secondary: #4a5568; /* Secondary text */
+--text-muted: #6b7280; /* Muted text */
+--text-light: #9ca3af; /* Placeholder text */
 
 /* UI Colors */
---border-light: #e5e7eb;          /* Light borders */
---border-medium: #d1d5db;         /* Medium borders */
---hover-gray: #e2e8f0;            /* Hover backgrounds */
---hover-light: #f9fafb;           /* Light hover */
+--border-light: #e5e7eb; /* Light borders */
+--border-medium: #d1d5db; /* Medium borders */
+--hover-gray: #e2e8f0; /* Hover backgrounds */
+--hover-light: #f9fafb; /* Light hover */
 
 /* Status Colors */
---success: #34a853;               /* Success states */
---error: #ea4335;                 /* Error states */
---warning: #fbbc05;               /* Warning states */
---info: #3b82f6;                  /* Info/links */
+--success: #34a853; /* Success states */
+--error: #ea4335; /* Error states */
+--warning: #fbbc05; /* Warning states */
+--info: #3b82f6; /* Info/links */
 ```
 
 ### Typography
+
 ```css
 /* Font Family */
 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 
 /* Font Sizes */
---text-xs: 0.8rem;      /* 12.8px - Legal text, small labels */
---text-sm: 0.9rem;      /* 14.4px - Form labels, small text */
---text-base: 1rem;      /* 16px - Body text, inputs */
---text-lg: 1.1rem;      /* 17.6px - Descriptions */
---text-xl: 1.25rem;     /* 20px - Hero descriptions */
---text-2xl: 1.5rem;     /* 24px - Section titles */
---text-3xl: 2rem;       /* 32px - Page titles */
---text-4xl: 2.5rem;     /* 40px - Home container titles */
---text-5xl: 3.5rem;     /* 56px - Hero titles */
+--text-xs: 0.8rem; /* 12.8px - Legal text, small labels */
+--text-sm: 0.9rem; /* 14.4px - Form labels, small text */
+--text-base: 1rem; /* 16px - Body text, inputs */
+--text-lg: 1.1rem; /* 17.6px - Descriptions */
+--text-xl: 1.25rem; /* 20px - Hero descriptions */
+--text-2xl: 1.5rem; /* 24px - Section titles */
+--text-3xl: 2rem; /* 32px - Page titles */
+--text-4xl: 2.5rem; /* 40px - Home container titles */
+--text-5xl: 3.5rem; /* 56px - Hero titles */
 
 /* Font Weights */
 --font-normal: 400;
@@ -62,36 +66,39 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif
 ```
 
 ### Spacing System
+
 ```css
 /* Spacing Scale (based on 4px grid) */
---space-1: 0.25rem;     /* 4px */
---space-2: 0.5rem;      /* 8px */
---space-3: 0.75rem;     /* 12px */
---space-4: 1rem;        /* 16px */
---space-5: 1.25rem;     /* 20px */
---space-6: 1.5rem;      /* 24px */
---space-8: 2rem;        /* 32px */
---space-10: 2.5rem;     /* 40px */
---space-12: 3rem;       /* 48px */
---space-16: 4rem;       /* 64px */
---space-20: 5rem;       /* 80px */
+--space-1: 0.25rem; /* 4px */
+--space-2: 0.5rem; /* 8px */
+--space-3: 0.75rem; /* 12px */
+--space-4: 1rem; /* 16px */
+--space-5: 1.25rem; /* 20px */
+--space-6: 1.5rem; /* 24px */
+--space-8: 2rem; /* 32px */
+--space-10: 2.5rem; /* 40px */
+--space-12: 3rem; /* 48px */
+--space-16: 4rem; /* 64px */
+--space-20: 5rem; /* 80px */
 ```
 
 ### Border Radius
+
 ```css
 /* Border Radius Scale */
---radius-sm: 4px;       /* Small elements */
---radius-md: 6px;       /* Buttons, inputs */
---radius-lg: 8px;       /* Cards, containers */
---radius-xl: 12px;      /* CTA buttons */
---radius-2xl: 20px;     /* Rounded buttons */
---radius-3xl: 24px;     /* Large containers */
---radius-full: 50%;     /* Circular elements */
+--radius-sm: 4px; /* Small elements */
+--radius-md: 6px; /* Buttons, inputs */
+--radius-lg: 8px; /* Cards, containers */
+--radius-xl: 12px; /* CTA buttons */
+--radius-2xl: 20px; /* Rounded buttons */
+--radius-3xl: 24px; /* Large containers */
+--radius-full: 50%; /* Circular elements */
 ```
 
 ### Component Guidelines
 
 #### Buttons
+
 ```css
 /* Primary Button */
 .primary-button {
@@ -128,6 +135,7 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif
 ```
 
 #### Cards
+
 ```css
 .contest-card {
   background: var(--white);
@@ -143,6 +151,7 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif
 ```
 
 #### Form Elements
+
 ```css
 .form-input {
   width: 100%;
@@ -162,28 +171,39 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif
 ### Layout Structure
 
 #### Main Layout
+
 - **Navbar**: Fixed top, height 84px, white background
 - **Sidebar**: Fixed left, width 280px, starts below navbar
 - **Main Content**: Margin-left 280px, margin-top 84px
 - **Page Content**: Max-width 1200px, centered with 200px margins
 
 #### Responsive Breakpoints
+
 ```css
 /* Mobile First Approach */
 @media (max-width: 768px) {
-  .sidebar { width: 100%; position: relative; }
-  .main-content { margin-left: 0; }
-  .page-content { margin-inline: 1rem; }
+  .sidebar {
+    width: 100%;
+    position: relative;
+  }
+  .main-content {
+    margin-left: 0;
+  }
+  .page-content {
+    margin-inline: 1rem;
+  }
 }
 ```
 
 ### Icon Guidelines
+
 - **Size**: 20px for small icons, 24px for medium, 60px for logos
 - **Style**: Outline style preferred, consistent stroke width
 - **Color**: Inherit from parent text color
 - **Library**: @iconify/react for consistency
 
 ### Animation & Transitions
+
 ```css
 /* Standard Transitions */
 --transition-fast: 0.15s ease;
@@ -203,6 +223,7 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif
 ## 🏗️ Technical Guidelines
 
 ### File Structure
+
 ```
 src/
 ├── components/          # Reusable UI components
@@ -217,18 +238,21 @@ src/
 ```
 
 ### Naming Conventions
+
 - **Components**: PascalCase (e.g., `ContestCard.jsx`)
 - **Files**: kebab-case for CSS (e.g., `contest-card.css`)
 - **Classes**: kebab-case (e.g., `.contest-card__title`)
 - **Variables**: camelCase (e.g., `userName`)
 
 ### CSS Organization
+
 1. **Layout styles** first
 2. **Component styles** second
 3. **Utility classes** last
 4. **Responsive styles** at the end of each section
 
 ### Component Structure
+
 ```jsx
 // 1. Imports
 import React from 'react';
@@ -239,11 +263,7 @@ const ComponentName = ({ prop1, prop2 }) => {
   // 3. State and hooks
   // 4. Event handlers
   // 5. Render logic
-  return (
-    <div className="component-name">
-      {/* JSX content */}
-    </div>
-  );
+  return <div className="component-name">{/* JSX content */}</div>;
 };
 
 // 6. Export
@@ -253,12 +273,14 @@ export default ComponentName;
 ## 🎯 Content Guidelines
 
 ### Tone & Voice
+
 - **Professional yet approachable**
 - **Clear and concise**
 - **Encouraging for students**
 - **Technical but accessible**
 
 ### Text Hierarchy
+
 1. **Hero titles**: Bold, large, attention-grabbing
 2. **Section titles**: Medium weight, clear structure
 3. **Body text**: Regular weight, readable
@@ -268,18 +290,21 @@ export default ComponentName;
 ## 🚀 Development Best Practices
 
 ### Performance
+
 - Use CSS custom properties for consistent theming
 - Optimize images and assets
 - Implement lazy loading for large components
 - Use React.memo for expensive components
 
 ### Accessibility
+
 - Maintain proper color contrast ratios
 - Use semantic HTML elements
 - Include proper ARIA labels
 - Ensure keyboard navigation support
 
 ### Code Quality
+
 - Follow consistent naming conventions
 - Write self-documenting code
 - Use meaningful variable names
@@ -288,12 +313,14 @@ export default ComponentName;
 ## 📱 Responsive Design
 
 ### Mobile-First Approach
+
 - Design for mobile first, then enhance for larger screens
 - Use relative units (rem, em, %) over fixed units (px)
 - Test on multiple device sizes
 - Ensure touch targets are at least 44px
 
 ### Breakpoint Strategy
+
 - **Mobile**: < 768px
 - **Tablet**: 768px - 1024px
 - **Desktop**: > 1024px
@@ -301,15 +328,110 @@ export default ComponentName;
 ## 🔧 Tools & Dependencies
 
 ### Core Stack
+
 - **React 19.1.1** - UI framework
 - **Vite** - Build tool
 - **Tailwind CSS 4.1.13** - Utility-first CSS
 - **React Router DOM 7.9.3** - Routing
 
 ### Development Tools
+
 - **ESLint** - Code linting
 - **@iconify/react** - Icon library
 
 ---
 
+### ERD diagram
+
+1. User & Role Management
+
+Every user must have a unique email and fullname, and belongs to a role (mentor, student, admin, etc.).
+
+AI can auto-detect inactive or blocked accounts based on status and last activity_logs.
+
+2. School & Province Integrity
+
+Every school must be linked to a valid province.
+
+AI can auto-suggest school-province relationships based on context (e.g. text matching or address parsing).
+
+3. Mentor & Student Enrollment Rules
+
+A user cannot be both mentor and student in the same school unless explicitly permitted.
+
+One user_id + school_id combination must be unique for both mentors and students.
+
+AI can detect role conflicts, e.g. same user appears as mentor and student.
+
+4. Contest & Round Logic
+
+Contest year + name must be unique.
+
+Contest can only have defined status: draft → published → finalized. AI can auto-detect ready-to-publish contests based on missing data.
+
+Rounds must have a start < end time.
+
+5. Team Formation Rules
+
+A team belongs to one contest and one school.
+
+Each team must have only one mentor, and unique student members.
+
+AI can auto-assign teams or validate missing captain roles.
+
+6. Problem & Test Case Constraints
+
+Each round can have only one problem (round_id unique).
+
+Test cases must be public or hidden, with weights > 0.
+
+AI can auto-generate hidden test cases for fairness.
+
+7. Submission Rules
+
+A team can submit multiple times per problem, but latest version counts unless locked.
+
+submitted_by_student_id must be part of team_members.
+
+AI can detect plagiarism, auto-score via judging models, or flag abnormal runtime/memory.
+
+8. Leaderboard Integrity
+
+Leaderboard entries must be materialized snapshots, not directly edited.
+
+AI can recalculate rankings dynamically based on weighted scores.
+
+9. Appeal Processing Rules
+
+Appeals can target a submission or MCQ attempt.
+
+Appeals must have owner_id and state transitions: open → under_review → accepted/rejected/escalated.
+
+AI can auto-categorize appeals via NLP and suggest decisions.
+
+10. Certificate Generation
+
+Certificates are issued per team or per student based on template.
+
+AI can auto-generate certificate text/personalization.
+
+11. MCQ Assessment Rules
+
+Test questions have weights and order.
+
+A student can attempt only once per round/test (if enforced).
+
+AI can provide adaptive feedback or detect cheating patterns.
+
+12. Notification & Logging Rules
+
+Every major action (submit, freeze, login) must create an activity_log.
+
+Notifications can be AI-optimized based on user engagement patterns.
+
+13. Global Config & Automation
+
+Config table controls system-wide thresholds (e.g. submission limits, scoring formula).
+
+AI can auto-recommend better configurations based on analytics.
 **Lưu ý**: Khi phát triển bất kỳ component hoặc tính năng mới nào, hãy tuân thủ nghiêm ngặt các quy tắc này để đảm bảo tính nhất quán trong toàn bộ dự án InnoCode.

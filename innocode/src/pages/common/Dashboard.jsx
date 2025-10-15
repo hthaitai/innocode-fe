@@ -1,6 +1,6 @@
 import React from 'react';
-import PageContainer from '../components/PageContainer';
-import { BREADCRUMBS } from '../config/breadcrumbs';
+import PageContainer from '../../components/PageContainer';
+import { BREADCRUMBS } from '../../config/breadcrumbs';
 
 const Dashboard = () => {
   return (
