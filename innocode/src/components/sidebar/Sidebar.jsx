@@ -7,6 +7,7 @@ const allMenus = {
   profile: { path: '/profile', label: 'Profile', icon: 'lucide:user' },
   dashboard: { path: '/dashboard', label: 'Dashboard', icon: 'lucide:layout-dashboard' },
   contests: { path: '/contests', label: 'Contests', icon: 'lucide:trophy' },
+  organizerContests: { path: '/organizer/contests', label: 'Contests', icon: 'lucide:trophy' },
   practice: { path: '/practice', label: 'Practice', icon: 'lucide:file-spreadsheet' },
   team: { path: '/team', label: 'Team', icon: 'lucide:users' },
   leaderboard: { path: '/leaderboard', label: 'Leaderboard', icon: 'lucide:chart-no-axes-column' },
@@ -17,7 +18,7 @@ const allMenus = {
 
 const menuByRole = {
   student: ['profile', 'contests', 'practice', 'team', 'leaderboard', 'announcements', 'certificate','help' ],
-  organizer: ['profile', 'dashboard', 'leaderboard', 'announcements'],
+  organizer: ['profile', 'organizerContests'],
   judge: ['profile', 'dashboard', 'contests', 'announcements'],
   admin: ['profile', 'dashboard', 'leaderboard', 'announcements', 'help'],
 };
@@ -57,8 +58,6 @@ const Sidebar = () => {
           >
             <Icon
               icon={item.icon}
-              width="20"
-              height="20"
               className="nav-icon"
             />
             <span className="nav-label">{item.label}</span>

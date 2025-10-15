@@ -16,6 +16,7 @@ import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
 import ContestDetail from './pages/ContestDetail';
 import ContestProcessing from './pages/ContestProcessing';
+import OrganizerContests from './pages/organizer/OrganizerContests';
 const router = createBrowserRouter([
   { path: 'login', element: <Login /> },
   {
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'contests', element: <Contests /> },
+      { path: 'organizer/contests', element: <OrganizerContests /> },
       { path: 'leaderboard', element: <Leaderboard /> },
       { path: 'about', element: <About /> },
       { path: 'practice', element: <Practice /> },
