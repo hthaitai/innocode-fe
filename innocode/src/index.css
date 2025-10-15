@@ -371,3 +371,8 @@ body{
   opacity: 0.6 !important;
 }
 
+
+
+.button-orange {
+  @apply bg-[#E05307] border border-[#E2601A] border-b-[#863204] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px]
+}
