@@ -44,4 +44,5 @@ export const contestsDataOrganizer = [
     status: "published",
     created_at: "2023-11-20 10:00:00",
   },
+
 ];

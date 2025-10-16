@@ -371,8 +371,14 @@ body{
   opacity: 0.6 !important;
 }
 
-
+.button-white {
+  @apply bg-white border border-[#ECECEC] border-b-[#D3D3D3] rounded-[5px] min-w-[130px] min-h-[32px] text-[14px] leading-[20px] cursor-pointer
+  hover:bg-[#FAFAFA] 
+  active:opacity-50
+}
 
 .button-orange {
-  @apply bg-[#E05307] border border-[#E2601A] border-b-[#863204] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px]
+  @apply bg-[#E05307] border border-[#E2601A] border-b-[#863204] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] cursor-pointer
+  hover:bg-[#E2631F] 
+  active:bg-[#E47336]
 }
