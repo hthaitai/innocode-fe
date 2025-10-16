@@ -1,98 +1,142 @@
 // Breadcrumb configuration for the entire project
 export const BREADCRUMBS = {
   // Main pages
-  HOME: ['Home'],
-  CONTESTS: ['Contests'],
-  CONTEST_DETAIL: (contestTitle) => ['Contests', contestTitle],
-  PRACTICE: ['Practice'],
-  TEAM: ['Team'],
-  LEADERBOARD: ['Leaderboard'],
-  ANNOUNCEMENTS: ['Announcements'],
-  HELP: ['Help'],
-  PROFILE: ['Profile'],
-  DASHBOARD: ['Dashboard'],
-  ABOUT: ['About'],
-  
+  HOME: ["Home"],
+  CONTESTS: ["Contests"],
+  CONTEST_DETAIL: (contestTitle) => ["Contests", contestTitle],
+  PRACTICE: ["Practice"],
+  TEAM: ["Team"],
+  LEADERBOARD: ["Leaderboard"],
+  ANNOUNCEMENTS: ["Announcements"],
+  HELP: ["Help"],
+  PROFILE: ["Profile"],
+  DASHBOARD: ["Dashboard"],
+  ABOUT: ["About"],
+
   // Sub-pages
-  PROFILE_ABOUT: ['Profile', 'Personal Information'],
-  PROFILE_PASSWORD: ['Profile', 'Change Password'],
-  CONTEST_CREATE: ['Contests', 'Create Contest'],
-  CONTEST_EDIT: (contestTitle) => ['Contests', contestTitle, 'Edit'],
-  TEAM_CREATE: ['Team', 'Create Team'],
-  TEAM_DETAIL: (teamName) => ['Team', teamName],
-  CONTEST_PROCESSING: (contestTitle) => ['Contests', contestTitle, 'Processing'],
-  CONTEST_RESULTS: (contestTitle) => ['Contests', contestTitle, 'Results'],
-  CONTEST_LEADERBOARD: (contestTitle) => ['Contests', contestTitle, 'Leaderboard'],
-  CONTEST_SUBMISSIONS: (contestTitle) => ['Contests', contestTitle, 'Submissions'],
-  
+  PROFILE_ABOUT: ["Profile", "Personal Information"],
+  PROFILE_PASSWORD: ["Profile", "Change Password"],
+  CONTEST_CREATE: ["Contests", "Create Contest"],
+  CONTEST_EDIT: (contestTitle) => ["Contests", contestTitle, "Edit"],
+  TEAM_CREATE: ["Team", "Create Team"],
+  TEAM_DETAIL: (teamName) => ["Team", teamName],
+  CONTEST_PROCESSING: (contestTitle) => [
+    "Contests",
+    contestTitle,
+    "Processing",
+  ],
+  CONTEST_RESULTS: (contestTitle) => ["Contests", contestTitle, "Results"],
+  CONTEST_LEADERBOARD: (contestTitle) => [
+    "Contests",
+    contestTitle,
+    "Leaderboard",
+  ],
+  CONTEST_SUBMISSIONS: (contestTitle) => [
+    "Contests",
+    contestTitle,
+    "Submissions",
+  ],
+
   // Admin pages
-  ADMIN_DASHBOARD: ['Admin', 'Dashboard'],
-  ADMIN_CONTESTS: ['Admin', 'Contests'],
-  ADMIN_USERS: ['Admin', 'Users'],
-  ADMIN_TEAMS: ['Admin', 'Teams'],
-  ADMIN_ANNOUNCEMENTS: ['Admin', 'Announcements'],
-  
+  ADMIN_DASHBOARD: ["Admin", "Dashboard"],
+  ADMIN_CONTESTS: ["Admin", "Contests"],
+  ADMIN_USERS: ["Admin", "Users"],
+  ADMIN_TEAMS: ["Admin", "Teams"],
+  ADMIN_ANNOUNCEMENTS: ["Admin", "Announcements"],
+
+  // Organizer pages
+  ORGANIZER_CONTESTS: ["Organizer", "Contests"],
+  ORGANIZER_CONTEST_DETAIL: (contestName) => [
+    "Contests",
+    contestName,
+  ],
+
   // Error pages
-  NOT_FOUND: ['Not Found'],
-  UNAUTHORIZED: ['Unauthorized'],
-};
+  NOT_FOUND: ["Not Found"],
+  UNAUTHORIZED: ["Unauthorized"],
+}
 
 // Breadcrumb paths configuration for navigation
 export const BREADCRUMB_PATHS = {
   // Main pages
-  HOME: ['/'],
-  CONTESTS: ['/contests'],
-  CONTEST_DETAIL: (contestId) => ['/contests', `/contest-detail/${contestId}`],
-  PRACTICE: ['/practice'],
-  TEAM: ['/team'],
-  LEADERBOARD: ['/leaderboard'],
-  ANNOUNCEMENTS: ['/announcements'],
-  HELP: ['/help'],
-  PROFILE: ['/profile'],
-  DASHBOARD: ['/dashboard'],
-  ABOUT: ['/about'],
-  
+  HOME: ["/"],
+  CONTESTS: ["/contests"],
+  CONTEST_DETAIL: (contestId) => ["/contests", `/contest-detail/${contestId}`],
+  PRACTICE: ["/practice"],
+  TEAM: ["/team"],
+  LEADERBOARD: ["/leaderboard"],
+  ANNOUNCEMENTS: ["/announcements"],
+  HELP: ["/help"],
+  PROFILE: ["/profile"],
+  DASHBOARD: ["/dashboard"],
+  ABOUT: ["/about"],
+
   // Sub-pages
-  PROFILE_ABOUT: ['/profile'],
-  PROFILE_PASSWORD: ['/profile'],
-  CONTEST_CREATE: ['/contests'],
-  CONTEST_EDIT: (contestId) => ['/contests', `/contest-detail/${contestId}`],
-  TEAM_CREATE: ['/team'],
-  TEAM_DETAIL: (teamId) => ['/team', `/team/${teamId}`],
-  CONTEST_PROCESSING: (contestId) => ['/contests', `/contest-detail/${contestId}`, `/contest-processing/${contestId}`],
-  CONTEST_RESULTS: (contestId) => ['/contests', `/contest-detail/${contestId}`, `/contest-results/${contestId}`],
-  CONTEST_LEADERBOARD: (contestId) => ['/contests', `/contest-detail/${contestId}`, `/contest-leaderboard/${contestId}`],
-  CONTEST_SUBMISSIONS: (contestId) => ['/contests', `/contest-detail/${contestId}`, `/contest-submissions/${contestId}`],
-  
+  PROFILE_ABOUT: ["/profile"],
+  PROFILE_PASSWORD: ["/profile"],
+  CONTEST_CREATE: ["/contests"],
+  CONTEST_EDIT: (contestId) => ["/contests", `/contest-detail/${contestId}`],
+  TEAM_CREATE: ["/team"],
+  TEAM_DETAIL: (teamId) => ["/team", `/team/${teamId}`],
+  CONTEST_PROCESSING: (contestId) => [
+    "/contests",
+    `/contest-detail/${contestId}`,
+    `/contest-processing/${contestId}`,
+  ],
+  CONTEST_RESULTS: (contestId) => [
+    "/contests",
+    `/contest-detail/${contestId}`,
+    `/contest-results/${contestId}`,
+  ],
+  CONTEST_LEADERBOARD: (contestId) => [
+    "/contests",
+    `/contest-detail/${contestId}`,
+    `/contest-leaderboard/${contestId}`,
+  ],
+  CONTEST_SUBMISSIONS: (contestId) => [
+    "/contests",
+    `/contest-detail/${contestId}`,
+    `/contest-submissions/${contestId}`,
+  ],
+
   // Admin pages
-  ADMIN_DASHBOARD: ['/admin', '/admin/dashboard'],
-  ADMIN_CONTESTS: ['/admin', '/admin/contests'],
-  ADMIN_USERS: ['/admin', '/admin/users'],
-  ADMIN_TEAMS: ['/admin', '/admin/teams'],
-  ADMIN_ANNOUNCEMENTS: ['/admin', '/admin/announcements'],
-  
+  ADMIN_DASHBOARD: ["/admin", "/admin/dashboard"],
+  ADMIN_CONTESTS: ["/admin", "/admin/contests"],
+  ADMIN_USERS: ["/admin", "/admin/users"],
+  ADMIN_TEAMS: ["/admin", "/admin/teams"],
+  ADMIN_ANNOUNCEMENTS: ["/admin", "/admin/announcements"],
+
+  // Organizer paths
+  ORGANIZER_CONTESTS: ["/organizer", "/organizer/contests"],
+  ORGANIZER_CONTEST_DETAIL: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+  ],
+
   // Error pages
-  NOT_FOUND: ['/'],
-  UNAUTHORIZED: ['/'],
-};
+  NOT_FOUND: ["/"],
+  UNAUTHORIZED: ["/"],
+}
 
 // Helper function to create dynamic breadcrumb
 export const createBreadcrumb = (type, ...params) => {
-  if (typeof BREADCRUMBS[type] === 'function') {
-    return BREADCRUMBS[type](...params);
+  if (typeof BREADCRUMBS[type] === "function") {
+    return BREADCRUMBS[type](...params)
   }
-  return BREADCRUMBS[type] || ['Home'];
-};
+  return BREADCRUMBS[type] || ["Home"]
+}
 
 // Helper function to create breadcrumb with paths for navigation
 export const createBreadcrumbWithPaths = (type, ...params) => {
-  const items = typeof BREADCRUMBS[type] === 'function' 
-    ? BREADCRUMBS[type](...params) 
-    : BREADCRUMBS[type] || ['Home'];
-    
-  const paths = typeof BREADCRUMB_PATHS[type] === 'function'
-    ? BREADCRUMB_PATHS[type](...params)
-    : BREADCRUMB_PATHS[type] || ['/'];
-    
-  return { items, paths };
-};
+  const items =
+    typeof BREADCRUMBS[type] === "function"
+      ? BREADCRUMBS[type](...params)
+      : BREADCRUMBS[type] || ["Home"]
+
+  const paths =
+    typeof BREADCRUMB_PATHS[type] === "function"
+      ? BREADCRUMB_PATHS[type](...params)
+      : BREADCRUMB_PATHS[type] || ["/"]
+
+  return { items, paths }
+}
