@@ -22,6 +22,12 @@ import OrganizerContests from "./pages/organizer/OrganizerContests"
 import OrganizerContestDetail from "./pages/organizer/OrganizerContestDetail"
 // Auth
 import Login from "./components/authenticate/Login"
+import OrganizerTeams from "./pages/organizer/OrganizerTeams"
+import OrganizerLeaderboard from "./pages/organizer/OrganizerLeaderboard"
+import OrganizerCertificates from "./pages/organizer/OrganizerCertificates"
+import OrganizerAppeals from "./pages/organizer/OrganizerAppeals"
+import OrganizerActivityLogs from "./pages/organizer/OrganizerActivityLogs"
+import OrganizerNotifications from "./pages/organizer/OrganizerNotifications"
 
 const router = createBrowserRouter([
   { path: "login", element: <Login /> },
@@ -30,8 +36,6 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "contests", element: <Contests /> },
-      { path: "organizer/contests", element: <OrganizerContests /> },
-      { path: "organizer/contests/:contestId", element: <OrganizerContestDetail /> },
       { path: "leaderboard", element: <Leaderboard /> },
       { path: "about", element: <About /> },
       { path: "practice", element: <Practice /> },
@@ -42,6 +46,28 @@ const router = createBrowserRouter([
       { path: "dashboard", element: <Dashboard /> },
       { path: "contest-detail/:contestId", element: <ContestDetail /> },
       { path: "contest-processing/:contestId", element: <ContestProcessing /> },
+
+      {
+        path: "organizer/contests",
+        children: [
+          { index: true, element: <OrganizerContests /> },
+          { path: ":contestId", element: <OrganizerContestDetail /> },
+
+          // completely separate pages:
+          { path: ":contestId/teams", element: <OrganizerTeams /> },
+          { path: ":contestId/leaderboard", element: <OrganizerLeaderboard /> },
+          {
+            path: ":contestId/certificates",
+            element: <OrganizerCertificates />,
+          },
+          { path: ":contestId/appeals", element: <OrganizerAppeals /> },
+          { path: ":contestId/activity", element: <OrganizerActivityLogs /> },
+          {
+            path: ":contestId/notifications",
+            element: <OrganizerNotifications />,
+          },
+        ],
+      },
     ],
   },
 ])
