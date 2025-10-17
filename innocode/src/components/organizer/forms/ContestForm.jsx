@@ -1,59 +1,33 @@
-import React, { useState } from "react";
+// ContestForm.jsx
+import React from "react";
 import { TextField } from "@mui/material";
 import DropdownFluent from "../../DropdownFluent";
 
 const ORANGE = "#E05307";
 const LIGHT_GRAY = "#E5E5E5";
 const TEXT_GRAY = "#7A7574";
-const INPUT_TEXT = "#333";
 
 const customBorders = (focusColor = ORANGE) => ({
-  "& label": {
-    color: TEXT_GRAY,
-    fontSize: 14,
-  },
-  "& label.Mui-focused": {
-    color: focusColor,
-  },
+  "& label": { color: TEXT_GRAY, fontSize: 14 },
+  "& label.Mui-focused": { color: focusColor },
   "& .MuiOutlinedInput-root": {
     fontSize: 14,
-    color: INPUT_TEXT,
     backgroundColor: "#fff",
     borderRadius: "5px",
-
-    "& fieldset": {
-      border: `1px solid ${LIGHT_GRAY}`,
-      borderRadius: "5px",
-      transition: "border-color 0.2s ease",
-    },
-    "&:hover fieldset": {
-      borderColor: LIGHT_GRAY, // no hover color change
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: focusColor,
-    },
+    "& fieldset": { border: `1px solid ${LIGHT_GRAY}`, borderRadius: "5px" },
+    "&:hover fieldset": { borderColor: LIGHT_GRAY },
+    "&.Mui-focused fieldset": { borderColor: focusColor },
   },
 });
 
-const ContestForm = ({ initialData = {}, onChange }) => {
-  const [formData, setFormData] = useState({
-    year: new Date().getFullYear(),
-    name: "",
-    description: "",
-    img_url: "",
-    status: "draft",
-    ...initialData,
-  });
-
+const ContestForm = ({ formData, onChange, errors }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const updated = { ...formData, [name]: value };
-    setFormData(updated);
-    onChange?.(updated);
+    onChange({ ...formData, [name]: value });
   };
 
   return (
-    <form className="flex flex-col gap-3">
+    <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
       <TextField
         label="Year"
         name="year"
@@ -63,6 +37,8 @@ const ContestForm = ({ initialData = {}, onChange }) => {
         fullWidth
         variant="outlined"
         sx={customBorders()}
+        error={!!errors.year}
+        helperText={errors.year}
       />
       <TextField
         label="Contest Name"
@@ -72,6 +48,8 @@ const ContestForm = ({ initialData = {}, onChange }) => {
         fullWidth
         variant="outlined"
         sx={customBorders()}
+        error={!!errors.name}
+        helperText={errors.name}
       />
       <TextField
         label="Description"
@@ -83,6 +61,8 @@ const ContestForm = ({ initialData = {}, onChange }) => {
         rows={4}
         variant="outlined"
         sx={customBorders()}
+        error={!!errors.description}
+        helperText={errors.description}
       />
       <TextField
         label="Image URL"
@@ -96,7 +76,7 @@ const ContestForm = ({ initialData = {}, onChange }) => {
       <DropdownFluent
         label="Status"
         value={formData.status}
-        onChange={(val) => setFormData({ ...formData, status: val })}
+        onChange={(val) => onChange({ ...formData, status: val })}
         placeholder="Select status"
         options={[
           { label: "Draft", value: "draft" },

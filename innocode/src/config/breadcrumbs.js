@@ -45,10 +45,29 @@ export const BREADCRUMBS = {
   ADMIN_ANNOUNCEMENTS: ["Admin", "Announcements"],
 
   // Organizer pages
-  ORGANIZER_CONTESTS: ["Organizer", "Contests"],
-  ORGANIZER_CONTEST_DETAIL: (contestName) => [
+  ORGANIZER_CONTESTS: ["Contests"],
+  ORGANIZER_CONTEST_DETAIL: (contestName) => ["Contests", contestName],
+  ORGANIZER_TEAMS: (contestName) => ["Contests", contestName, "Teams"],
+  ORGANIZER_LEADERBOARD: (contestName) => [
     "Contests",
     contestName,
+    "Leaderboard",
+  ],
+  ORGANIZER_CERTIFICATES: (contestName) => [
+    "Contests",
+    contestName,
+    "Certificates",
+  ],
+  ORGANIZER_APPEALS: (contestName) => ["Contests", contestName, "Appeals"],
+  ORGANIZER_ACTIVITY: (contestName) => [
+    "Contests",
+    contestName,
+    "Activity Logs",
+  ],
+  ORGANIZER_NOTIFICATIONS: (contestName) => [
+    "Contests",
+    contestName,
+    "Notifications",
   ],
 
   // Error pages
@@ -111,6 +130,36 @@ export const BREADCRUMB_PATHS = {
   ORGANIZER_CONTEST_DETAIL: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
+  ],
+  ORGANIZER_TEAMS: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/teams`,
+  ],
+  ORGANIZER_LEADERBOARD: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/leaderboard`,
+  ],
+  ORGANIZER_CERTIFICATES: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
+  ],
+  ORGANIZER_APPEALS: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/appeals`,
+  ],
+  ORGANIZER_ACTIVITY: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/activity`,
+  ],
+  ORGANIZER_NOTIFICATIONS: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/notifications`,
   ],
 
   // Error pages
