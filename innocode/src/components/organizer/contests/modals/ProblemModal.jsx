@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react"
 import BaseModal from "../../../BaseModal"
-import ContestForm from "../../forms/ContestForm"
-import { validateContest } from "../../../../utils/validationSchemas"
+import ProblemForm from "../../forms/ProblemForm"
+import { validateProblem } from "../../../../utils/validationSchemas"
 
-
-export default function ContestModal({
+export default function ProblemModal({
   isOpen,
   mode = "create", // "create" or "edit"
   initialData = {},
@@ -12,11 +11,10 @@ export default function ContestModal({
   onClose,
 }) {
   const emptyData = {
-    year: "",
-    name: "",
-    description: "",
-    img_url: "",
-    status: "draft",
+    title: "",
+    language: "python3",
+    type: "manual",
+    penalty_rate: "",
   }
 
   const [formData, setFormData] = useState(emptyData)
@@ -30,9 +28,9 @@ export default function ContestModal({
     }
   }, [isOpen, mode, initialData])
 
-  // Validate and submit
+  // --- Submit handler ---
   const handleSubmit = async () => {
-    const validationErrors = validateContest(formData)
+    const validationErrors = validateProblem(formData)
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length === 0) {
@@ -41,11 +39,11 @@ export default function ContestModal({
     }
   }
 
-  // Modal UI
+  // --- Modal UI ---
   const title =
     mode === "edit"
-      ? `Edit Contest: ${initialData.name || ""}`
-      : "Create New Contest"
+      ? `Edit Problem: ${initialData.title || `#${initialData.problem_id}`}`
+      : "Create New Problem"
 
   const footer = (
     <div className="flex justify-end gap-2">
@@ -66,7 +64,7 @@ export default function ContestModal({
       size="lg"
       footer={footer}
     >
-      <ContestForm
+      <ProblemForm
         formData={formData}
         setFormData={setFormData}
         errors={errors}

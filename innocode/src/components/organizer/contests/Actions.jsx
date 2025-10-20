@@ -1,15 +1,38 @@
+import { MoreHorizontal } from "lucide-react"
 import React, { useState, useRef, useEffect } from "react"
 import { createPortal } from "react-dom"
-import { MoreHorizontal, Pencil, Trash2, Eye } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { AnimatePresence, motion } from "framer-motion"
 
-const Actions = ({ row, onEdit, onDelete }) => {
+const Actions = ({ row, items = [] }) => {
   const [open, setOpen] = useState(false)
   const buttonRef = useRef(null)
   const menuRef = useRef(null)
-  const navigate = useNavigate()
+  const [position, setPosition] = useState({ top: 0, left: 0 })
 
-  // Close dropdown if clicked outside
+  // --- Calculate dropdown position
+  const updatePosition = () => {
+    if (!buttonRef.current) return
+    const rect = buttonRef.current.getBoundingClientRect()
+    setPosition({
+      top: rect.bottom + window.scrollY + 4, // small offset
+      left: rect.right + window.scrollX - 272, // dropdown width = 272
+    })
+  }
+
+  // --- Recalculate on open, scroll, or resize
+  useEffect(() => {
+    if (open) {
+      updatePosition()
+      window.addEventListener("scroll", updatePosition, true)
+      window.addEventListener("resize", updatePosition)
+    }
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true)
+      window.removeEventListener("resize", updatePosition)
+    }
+  }, [open])
+
+  // --- Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -25,22 +48,11 @@ const Actions = ({ row, onEdit, onDelete }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  const handleEdit = (e) => {
+  // --- Handle menu item click
+  const handleItemClick = (e, item) => {
     e.stopPropagation()
     setOpen(false)
-    if (onEdit) onEdit(row)
-  }
-
-  const handleDelete = (e) => {
-    e.stopPropagation()
-    setOpen(false)
-    if (onDelete) onDelete(row)
-  }
-
-  const handleViewDetails = (e) => {
-    e.stopPropagation()
-    setOpen(false)
-    navigate(`/organizer/contests/${row.contest_id}`) // ✅ navigate to detail page
+    item.onClick?.(row)
   }
 
   return (
@@ -49,49 +61,60 @@ const Actions = ({ row, onEdit, onDelete }) => {
         ref={buttonRef}
         onClick={(e) => {
           e.stopPropagation()
-          setOpen(!open)
+          setOpen((prev) => !prev)
         }}
-        className="p-1 rounded hover:bg-[#F2F2F2]"
       >
-        <MoreHorizontal className="w-5 h-5 text-gray-600 cursor-pointer" />
+        <MoreHorizontal className="w-5 h-5 cursor-pointer text-[#7A7574] hover:text-black transition-colors" />
       </button>
 
-      {open &&
-        createPortal(
-          <div
-            ref={menuRef}
-            className="absolute right-0 z-50 mt-2 w-[272px] border border-[#E5E5E5] bg-white rounded-[5px] shadow-lg space-y-1 p-1"
-            style={{
-              top:
-                buttonRef.current?.getBoundingClientRect().bottom +
-                window.scrollY,
-              left:
-                buttonRef.current?.getBoundingClientRect().right -
-                272 + // dropdown width
-                window.scrollX,
-            }}
-          >
-            <button
-              onClick={handleViewDetails}
-              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm hover:bg-[#F0F0F0] rounded-[5px] cursor-pointer"
+      {createPortal(
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              key="actions-menu"
+              ref={menuRef}
+              initial={{ opacity: 0, y: -6, scaleY: 0.98 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scaleY: 1,
+                transition: { duration: 0.32, ease: [0.16, 1, 0.3, 1] },
+              }}
+              exit={{
+                opacity: 0,
+                y: -4,
+                scaleY: 0.98,
+                transition: { duration: 0.2, ease: "easeInOut" },
+              }}
+              style={{
+                position: "absolute",
+                top: position.top,
+                left: position.left,
+                width: 200,
+                zIndex: 50,
+              }}
+              className="min-w-[272px] bg-white border border-[#E5E5E5] rounded-[5px] shadow-xl overflow-hidden p-1"
             >
-              <Eye className="w-4 h-4 text-gray-500" /> View Details
-            </button>
-            <button
-              onClick={handleEdit}
-              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm hover:bg-[#F0F0F0] rounded-[5px] cursor-pointer"
-            >
-              <Pencil className="w-4 h-4 text-gray-500" /> Edit
-            </button>
-            <button
-              onClick={handleDelete}
-              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm text-red-500 hover:bg-[#F0F0F0] rounded-[5px] cursor-pointer"
-            >
-              <Trash2 className="w-4 h-4 text-red-500" /> Delete
-            </button>
-          </div>,
-          document.body
-        )}
+              {items.map((item, index) => {
+                const Icon = item.icon
+                return (
+                  <motion.button
+                    key={index}
+                    onClick={(e) => handleItemClick(e, item)}
+                    className={`flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm rounded-[5px] transition-colors
+                      hover:bg-[#F0F0F0] ${item.className || ""}`}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    {Icon && <Icon className="w-4 h-4 text-[#7A7574]" />}
+                    {item.label}
+                  </motion.button>
+                )
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   )
 }

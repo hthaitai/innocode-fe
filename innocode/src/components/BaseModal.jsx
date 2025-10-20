@@ -8,11 +8,16 @@ const MODAL_SIZES = {
   full: "max-w-5xl",
 }
 
-const Modal = ({ isOpen, onClose, title, footer, size = "lg", children }) => {
+export default function BaseModal({
+  isOpen,
+  onClose,
+  title,
+  footer,
+  size = "lg",
+  children,
+}) {
   useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === "Escape") onClose()
-    }
+    const handleEsc = (e) => e.key === "Escape" && onClose()
     document.addEventListener("keydown", handleEsc)
     return () => document.removeEventListener("keydown", handleEsc)
   }, [onClose])
@@ -30,25 +35,19 @@ const Modal = ({ isOpen, onClose, title, footer, size = "lg", children }) => {
         className={`bg-white rounded-[5px] shadow-lg relative w-full ${modalSizeClass} max-h-[80vh] overflow-y-auto flex flex-col`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button Section */}
-        <div className="flex justify-end bg-[#F3F3F3]">
+        {/* Header */}
+        <div className="flex justify-between items-center bg-[#F3F3F3] px-4 py-2 border-b">
+          <h2 className="text-lg font-semibold">{title}</h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-[#C42B1C] hover:text-white transition"
+            className="p-1 hover:bg-[#C42B1C] hover:text-white rounded transition"
           >
-            <X size={20} strokeWidth={1}/>
+            <X size={20} strokeWidth={1} />
           </button>
         </div>
 
-        {/* Title Section */}
-        {title && (
-          <div className="px-6 py-2">
-            <h2 className="text-xl font-semibold">{title}</h2>
-          </div>
-        )}
-
         {/* Body */}
-        <div className="px-6 py-4 flex-1 overflow-y-auto">{children}</div>
+        <div className="p-6 flex-1 overflow-y-auto">{children}</div>
 
         {/* Footer */}
         {footer && (
@@ -60,5 +59,3 @@ const Modal = ({ isOpen, onClose, title, footer, size = "lg", children }) => {
     </div>
   )
 }
-
-export default Modal

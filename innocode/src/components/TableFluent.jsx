@@ -63,7 +63,7 @@ const TableFluent = ({ data, columns, title, onRowClick }) => {
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="hover:bg-[#F9F9F9]"
+              className="hover:bg-[#F6F6F6]"
               onClick={() => handleRowClick(row.original)}
             >
               {row.getVisibleCells().map((cell) => (

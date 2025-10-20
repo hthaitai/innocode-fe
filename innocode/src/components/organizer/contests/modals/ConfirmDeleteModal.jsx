@@ -1,4 +1,5 @@
-import Modal from "../../../Modal"
+// ConfirmDeleteModal.jsx
+import Modal from "../../../BaseModal"
 
 const ConfirmDeleteModal = ({ isOpen, item, onClose, onConfirm }) => (
   <Modal
@@ -8,8 +9,15 @@ const ConfirmDeleteModal = ({ isOpen, item, onClose, onConfirm }) => (
     size="sm"
     footer={
       <>
-        <button className="button-white" onClick={onClose}>Cancel</button>
-        <button className="button-orange" onClick={onConfirm}>Delete</button>
+        <button className="button-white" onClick={onClose}>
+          Cancel
+        </button>
+        <button
+          className="button-orange"
+          onClick={() => onConfirm(onClose)} // pass onClose function
+        >
+          Delete
+        </button>
       </>
     }
   >

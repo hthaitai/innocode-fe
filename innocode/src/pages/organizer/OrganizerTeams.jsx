@@ -10,7 +10,7 @@ const OrganizerTeams = () => {
       breadcrumb={breadcrumbData.items}
       breadcrumbPaths={breadcrumbData.paths}
     >
-      Teams for {contest?.name}
+      Teams
     </PageContainer>
   )
 }
