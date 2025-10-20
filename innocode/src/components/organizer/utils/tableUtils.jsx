@@ -6,16 +6,27 @@ export const statusColorMap = {
 }
 
 // status badge component
-export const StatusBadge = ({ status }) => (
-  <span className="flex items-center gap-2">
-    <span className={`w-2 h-2 rounded-full ${statusColorMap[status] || statusColorMap.draft}`}></span>
-    {status.charAt(0).toUpperCase() + status.slice(1)}
-  </span>
-)
+export const StatusBadge = ({ status }) => {
+  // ensure status is always a string, fallback to 'draft'
+  const safeStatus =
+    typeof status === "string" && status.trim() ? status : "draft"
+
+  return (
+    <span className="flex items-center gap-2">
+      <span
+        className={`w-2 h-2 rounded-full ${statusColorMap[safeStatus]}`}
+      ></span>
+      {safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1)}
+    </span>
+  )
+}
 
 // date formatter
 export const formatDateTime = (dateString) => {
+  if (!dateString) return "—" // Handle null, undefined, or empty
   const date = new Date(dateString)
+  if (isNaN(date.getTime())) return "—" // Handle invalid date
+
   const options = {
     day: "2-digit",
     month: "2-digit",
@@ -24,13 +35,11 @@ export const formatDateTime = (dateString) => {
     minute: "2-digit",
     hour12: true,
   }
-  const parts = new Intl.DateTimeFormat("en-US", options).formatToParts(date)
-  const day = parts.find((p) => p.type === "day").value
-  const month = parts.find((p) => p.type === "month").value
-  const year = parts.find((p) => p.type === "year").value
-  const hour = parts.find((p) => p.type === "hour").value
-  const minute = parts.find((p) => p.type === "minute").value
-  const dayPeriod = parts.find((p) => p.type === "dayPeriod").value
 
-  return `${day}/${month}/${year} ${hour}:${minute} ${dayPeriod}`
+  const parts = new Intl.DateTimeFormat("en-US", options).formatToParts(date)
+  const get = (type) => parts.find((p) => p.type === type)?.value || ""
+
+  return `${get("day")}/${get("month")}/${get("year")} ${get("hour")}:${get(
+    "minute"
+  )} ${get("dayPeriod")}`
 }

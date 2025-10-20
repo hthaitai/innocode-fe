@@ -28,6 +28,9 @@ import OrganizerCertificates from "./pages/organizer/OrganizerCertificates"
 import OrganizerAppeals from "./pages/organizer/OrganizerAppeals"
 import OrganizerActivityLogs from "./pages/organizer/OrganizerActivityLogs"
 import OrganizerNotifications from "./pages/organizer/OrganizerNotifications"
+import OrganizerRoundDetail from "./pages/organizer/OrganizerRoundDetail"
+import OrganizerProblemDetail from "./pages/organizer/OrganizerProblemDetail"
+import { ModalProvider } from "./context/ModalContext"
 
 const router = createBrowserRouter([
   { path: "login", element: <Login /> },
@@ -53,7 +56,15 @@ const router = createBrowserRouter([
           { index: true, element: <OrganizerContests /> },
           { path: ":contestId", element: <OrganizerContestDetail /> },
 
-          // completely separate pages:
+          {
+            path: ":contestId/rounds/:roundId",
+            element: <OrganizerRoundDetail />,
+          },
+          {
+            path: ":contestId/rounds/:roundId/problems/:problemId",
+            element: <OrganizerProblemDetail />,
+          },
+
           { path: ":contestId/teams", element: <OrganizerTeams /> },
           { path: ":contestId/leaderboard", element: <OrganizerLeaderboard /> },
           {
@@ -74,6 +85,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ModalProvider>
+      <RouterProvider router={router} />
+    </ModalProvider>
   </StrictMode>
 )

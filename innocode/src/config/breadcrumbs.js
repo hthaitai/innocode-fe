@@ -47,6 +47,18 @@ export const BREADCRUMBS = {
   // Organizer pages
   ORGANIZER_CONTESTS: ["Contests"],
   ORGANIZER_CONTEST_DETAIL: (contestName) => ["Contests", contestName],
+  ORGANIZER_ROUND_DETAIL: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+  ],
+  ORGANIZER_PROBLEM_DETAIL: (contestName, roundName, problemLabel) => [
+    "Contests",
+    contestName,
+    roundName,
+    problemLabel,
+  ],
+
   ORGANIZER_TEAMS: (contestName) => ["Contests", contestName, "Teams"],
   ORGANIZER_LEADERBOARD: (contestName) => [
     "Contests",
@@ -130,6 +142,17 @@ export const BREADCRUMB_PATHS = {
   ORGANIZER_CONTEST_DETAIL: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
+  ],
+  ORGANIZER_ROUND_DETAIL: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+  ],
+  ORGANIZER_PROBLEM_DETAIL: (contestId, roundId, problemId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/problems/${problemId}`,
   ],
   ORGANIZER_TEAMS: (contestId) => [
     "/organizer/contests",

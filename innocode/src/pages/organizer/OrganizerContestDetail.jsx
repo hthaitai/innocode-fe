@@ -1,105 +1,111 @@
-import React, { useState } from "react"
+import React from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import PageContainer from "../../components/PageContainer"
-import {
-  createBreadcrumbWithPaths,
-  BREADCRUMBS,
-} from "../../config/breadcrumbs"
-import { contestsDataOrganizer } from "../../data/contestsDataOrganizer"
 import DetailTable from "../../components/organizer/contests/DetailTable"
 import InfoSection from "../../components/organizer/contests/InfoSection"
 import TableFluent from "../../components/TableFluent"
 import Actions from "../../components/organizer/contests/Actions"
 import { formatDateTime } from "../../components/organizer/utils/TableUtils"
-import {
-  Award,
-  Bell,
-  Calendar,
-  ListChecks,
-  MessageCircle,
-  Trash,
-  Trophy,
-  Users,
-} from "lucide-react"
-import ContestModal from "../../components/organizer/contests/modals/ContestModal"
-import RoundModal from "../../components/organizer/contests/modals/RoundModal"
-import ConfirmDeleteModal from "../../components/organizer/contests/modals/ConfirmDeleteModal"
-import { useContestDetailState } from "../../hooks/organizer/useContestDetailState"
+import { Calendar, Pencil, Trash } from "lucide-react"
 import ContestRelatedSettings from "../../components/organizer/contests/ContestRelatedSettings"
 import { useOrganizerBreadcrumb } from "../../hooks/organizer/useOrganizerBreadcrumb"
+import { useModal } from "../../hooks/organizer/useModal"
+import { useContestDetail } from "../../hooks/organizer/useContestDetail" // <--- new hook
+import { useRounds } from "../../hooks/organizer/useRounds"
 
 const OrganizerContestDetail = () => {
-  const { contestId } = useParams()
+  const { contestId: contestIdParam } = useParams()
+  const contestId = Number(contestIdParam)
   const navigate = useNavigate()
-  const { contest, breadcrumbData } = useOrganizerBreadcrumb(
-    "ORGANIZER_CONTEST_DETAIL"
-  )
-  const [contestState, setContestState] = useState(contest)
+  const { openModal } = useModal()
+  const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_CONTEST_DETAIL")
+
   const {
-    contestModal,
-    roundModal,
-    confirmDeleteModal,
-    openContestModal,
-    openRoundModal,
-    openDeleteModal,
-    closeContestModal,
-    closeRoundModal,
-    closeDeleteModal,
+    contest,
+    loading: contestLoading,
+    error: contestError,
+    updateContest,
+    deleteContest,
+  } = useContestDetail(contestId)
+
+  const {
     rounds,
-    setRounds,
-    setContestModal,
-    setRoundModal,
-  } = useContestDetailState(contest)
+    loading: roundsLoading,
+    error: roundsError,
+    validateRound,
+    addRound,
+    updateRound,
+    deleteRound,
+  } = useRounds(Number(contestId))
 
-  // ---------- Save Handlers ----------
-  const handleContestSave = () => {
-    setContestModal((prev) => ({ ...prev, showErrors: true }))
-    const data = contestModal.formData
-    if (!data.name || !data.year || !data.description || !data.status) return
-
-    if (contestModal.mode === "create") {
-      console.log("Creating contest:", data)
-    } else {
-      setContestState((prev) => ({ ...prev, ...data }))
-      console.log("Updated contest:", { ...contestState, ...data })
-    }
-    closeContestModal()
+  const formatForInput = (dateStr) => {
+    if (!dateStr) return ""
+    const d = new Date(dateStr)
+    const yyyy = d.getFullYear()
+    const mm = String(d.getMonth() + 1).padStart(2, "0")
+    const dd = String(d.getDate()).padStart(2, "0")
+    const hh = String(d.getHours()).padStart(2, "0")
+    const min = String(d.getMinutes()).padStart(2, "0")
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}`
   }
 
-  const handleRoundSave = () => {
-    setRoundModal((prev) => ({ ...prev, showErrors: true }))
-    const data = roundModal.formData
-    if (!data.name || !data.start || !data.end || data.end < data.start) return
+  if (contestLoading)
+    return <PageContainer>Loading contest details...</PageContainer>
+  if (contestError) return <PageContainer>Error: {contestError}</PageContainer>
+  if (!contest) return <PageContainer>No contest found</PageContainer>
 
-    if (roundModal.mode === "create") {
-      setRounds((prev) => [
-        ...prev,
-        { ...data, round_id: Date.now(), contest_id: contest?.contest_id },
-      ])
-    } else {
-      setRounds((prev) =>
-        prev.map((r) => (r.round_id === data.round_id ? { ...data } : r))
-      )
-    }
-    closeRoundModal()
+  // ----- Handlers -----
+  const handleContestModal = (mode) => {
+    openModal("contest", {
+      mode,
+      initialData: contest,
+      onSubmit: async (data) => {
+        if (mode === "edit") return await updateContest(data)
+      },
+    })
   }
 
-  // ---------- Delete Handler ----------
-  const handleDelete = () => {
-    if (confirmDeleteModal.type === "round") {
-      setRounds((prev) =>
-        prev.filter((r) => r.round_id !== confirmDeleteModal.item.round_id)
-      )
-    } else if (confirmDeleteModal.type === "contest") {
-      console.log("Deleting contest:", confirmDeleteModal.item)
-      closeDeleteModal()
-      navigate("/organizer/contests")
-      return
-    }
-    closeDeleteModal()
+  const handleDeleteContest = () => {
+    openModal("confirmDelete", {
+      type: "contest",
+      item: contest,
+      onConfirm: async (onClose) => {
+        await deleteContest()
+        onClose()
+        navigate("/organizer/contests")
+      },
+    })
   }
 
-  // ---------- Round Table ----------
+  const handleRoundModal = (mode, round = {}) => {
+    const roundData = {
+      ...round,
+      start: formatForInput(round.start),
+      end: formatForInput(round.end),
+    }
+
+    openModal("round", {
+      mode,
+      initialData: roundData,
+      validate: validateRound,
+      onSubmit: async (data) => {
+        if (mode === "create") return await addRound(data)
+        if (mode === "edit") return await updateRound(round.round_id, data)
+      },
+    })
+  }
+
+  const handleDeleteRound = (round) => {
+    openModal("confirmDelete", {
+      type: "round",
+      item: round,
+      onConfirm: async (onClose) => {
+        await deleteRound(round.round_id)
+        onClose()
+      },
+    })
+  }
+
   const roundColumns = [
     { accessorKey: "name", header: "Name" },
     {
@@ -118,8 +124,19 @@ const OrganizerContestDetail = () => {
       cell: ({ row }) => (
         <Actions
           row={row.original}
-          onEdit={() => openRoundModal("edit", row.original)}
-          onDelete={() => openDeleteModal("round", row.original)}
+          items={[
+            {
+              label: "Edit",
+              icon: Pencil,
+              onClick: () => handleRoundModal("edit", row.original),
+            },
+            {
+              label: "Delete",
+              icon: Trash,
+              className: "text-red-500",
+              onClick: () => handleDeleteRound(row.original),
+            },
+          ]}
         />
       ),
     },
@@ -132,27 +149,23 @@ const OrganizerContestDetail = () => {
       bg={false}
     >
       <div className="space-y-5">
-        {/* Contest Info */}
         <InfoSection
           title="Contest Information"
-          onEdit={() => openContestModal("edit", contestState)}
+          onEdit={() => handleContestModal("edit")}
         >
           <DetailTable
             data={[
-              { label: "Name", value: contestState.name },
-              { label: "Year", value: contestState.year },
-              { label: "Description", value: contestState.description },
-              { label: "Status", value: contestState.status },
-              { label: "Created at", value: contestState.created_at },
+              { label: "Name", value: contest.name },
+              { label: "Year", value: contest.year },
+              { label: "Description", value: contest.description },
+              { label: "Status", value: contest.status },
+              { label: "Created at", value: contest.created_at },
             ]}
           />
         </InfoSection>
 
-        {/* Rounds */}
         <div>
-          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-            Rounds
-          </div>
+          <div className="text-sm font-semibold pt-3 pb-2">Rounds</div>
           <div className="space-y-1">
             <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
               <div className="flex gap-5 items-center">
@@ -166,28 +179,35 @@ const OrganizerContestDetail = () => {
               </div>
               <button
                 className="button-orange"
-                onClick={() => openRoundModal("create")}
+                onClick={() => handleRoundModal("create")}
               >
                 New Round
               </button>
             </div>
 
-            <TableFluent
-              data={rounds}
-              columns={roundColumns}
-              title="Rounds"
-              onRowClick={(round) => console.log("Clicked round:", round)}
-            />
+            {roundsLoading ? (
+              <div className="p-4 text-gray-500">Loading rounds...</div>
+            ) : roundsError ? (
+              <div className="p-4 text-red-500">{roundsError}</div>
+            ) : (
+              <TableFluent
+                data={rounds.map((r) => ({ ...r, id: r.round_id }))}
+                columns={roundColumns}
+                title="Rounds"
+                onRowClick={(round) =>
+                  navigate(
+                    `/organizer/contests/${contest.contest_id}/rounds/${round.round_id}`
+                  )
+                }
+              />
+            )}
           </div>
         </div>
 
-        <ContestRelatedSettings contestId={contestId} />
+        <ContestRelatedSettings contestId={contest.contest_id} />
 
-        {/* Delete Contest */}
         <div>
-          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-            More actions
-          </div>
+          <div className="text-sm font-semibold pt-3 pb-2">More actions</div>
           <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
             <div className="flex gap-5 items-center">
               <Trash size={20} />
@@ -195,34 +215,11 @@ const OrganizerContestDetail = () => {
                 <p className="text-[14px] leading-[20px]">Delete contest</p>
               </div>
             </div>
-            <button
-              className="button-white"
-              onClick={() => openDeleteModal("contest", contestState)}
-            >
+            <button className="button-white" onClick={handleDeleteContest}>
               Delete Contest
             </button>
           </div>
         </div>
-
-        <ContestModal
-          {...contestModal}
-          onChange={(data) =>
-            setContestModal((p) => ({ ...p, formData: data }))
-          }
-          onSave={handleContestSave}
-          onClose={closeContestModal}
-        />
-        <RoundModal
-          {...roundModal}
-          onChange={(data) => setRoundModal((p) => ({ ...p, formData: data }))}
-          onSave={handleRoundSave}
-          onClose={closeRoundModal}
-        />
-        <ConfirmDeleteModal
-          {...confirmDeleteModal}
-          onConfirm={handleDelete}
-          onClose={closeDeleteModal}
-        />
       </div>
     </PageContainer>
   )

@@ -1,15 +1,19 @@
 import React, { useState, useRef, useEffect } from "react"
 import { createPortal } from "react-dom"
-import { MoreHorizontal, Pencil, Trash2, Eye } from "lucide-react"
-import { useNavigate } from "react-router-dom"
 
-const Actions = ({ row, onEdit, onDelete }) => {
+/**
+ * Generalized Actions Dropdown Component
+ *
+ * Props:
+ * - row: The data row associated with the dropdown
+ * - items: Array of menu items [{ label, icon?, onClick, className? }]
+ */
+const Actions = ({ row, items = [] }) => {
   const [open, setOpen] = useState(false)
   const buttonRef = useRef(null)
   const menuRef = useRef(null)
-  const navigate = useNavigate()
 
-  // Close dropdown if clicked outside
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -25,22 +29,11 @@ const Actions = ({ row, onEdit, onDelete }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  const handleEdit = (e) => {
-    e.stopPropagation()
+  // Handle item click and stop event from bubbling
+  const handleItemClick = (e, item) => {
+    e.stopPropagation() // Prevent row click
     setOpen(false)
-    if (onEdit) onEdit(row)
-  }
-
-  const handleDelete = (e) => {
-    e.stopPropagation()
-    setOpen(false)
-    if (onDelete) onDelete(row)
-  }
-
-  const handleViewDetails = (e) => {
-    e.stopPropagation()
-    setOpen(false)
-    navigate(`/organizer/contests/${row.contest_id}`) // ✅ navigate to detail page
+    item.onClick?.(row)
   }
 
   return (
@@ -48,47 +41,44 @@ const Actions = ({ row, onEdit, onDelete }) => {
       <button
         ref={buttonRef}
         onClick={(e) => {
-          e.stopPropagation()
-          setOpen(!open)
+          e.stopPropagation() // Stop row click for dropdown toggle
+          setOpen((prev) => !prev)
         }}
         className="p-1 rounded hover:bg-[#F2F2F2]"
       >
-        <MoreHorizontal className="w-5 h-5 text-gray-600 cursor-pointer" />
+        <span className="w-5 h-5 text-gray-600 cursor-pointer">⋮</span>
       </button>
 
       {open &&
         createPortal(
           <div
             ref={menuRef}
-            className="absolute right-0 z-50 mt-2 w-[272px] border border-[#E5E5E5] bg-white rounded-[5px] shadow-lg space-y-1 p-1"
+            className="absolute z-50 mt-2 w-[200px] border border-[#E5E5E5] bg-white rounded-[5px] shadow-lg space-y-1 p-1"
             style={{
               top:
                 buttonRef.current?.getBoundingClientRect().bottom +
                 window.scrollY,
               left:
                 buttonRef.current?.getBoundingClientRect().right -
-                272 + // dropdown width
+                200 + // dropdown width
                 window.scrollX,
             }}
           >
-            <button
-              onClick={handleViewDetails}
-              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm hover:bg-[#F0F0F0] rounded-[5px] cursor-pointer"
-            >
-              <Eye className="w-4 h-4 text-gray-500" /> View Details
-            </button>
-            <button
-              onClick={handleEdit}
-              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm hover:bg-[#F0F0F0] rounded-[5px] cursor-pointer"
-            >
-              <Pencil className="w-4 h-4 text-gray-500" /> Edit
-            </button>
-            <button
-              onClick={handleDelete}
-              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm text-red-500 hover:bg-[#F0F0F0] rounded-[5px] cursor-pointer"
-            >
-              <Trash2 className="w-4 h-4 text-red-500" /> Delete
-            </button>
+            {items.map((item, index) => {
+              const Icon = item.icon
+              return (
+                <button
+                  key={index}
+                  onClick={(e) => handleItemClick(e, item)}
+                  className={`flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm hover:bg-[#F0F0F0] rounded-[5px] ${
+                    item.className || ""
+                  }`}
+                >
+                  {Icon && <Icon className="w-4 h-4" />}
+                  {item.label}
+                </button>
+              )
+            })}
           </div>,
           document.body
         )}
