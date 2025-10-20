@@ -49,11 +49,6 @@ const OrganizerContestDetail = () => {
     return `${yyyy}-${mm}-${dd}T${hh}:${min}`
   }
 
-  if (contestLoading)
-    return <PageContainer>Loading contest details...</PageContainer>
-  if (contestError) return <PageContainer>Error: {contestError}</PageContainer>
-  if (!contest) return <PageContainer>No contest found</PageContainer>
-
   // ----- Handlers -----
   const handleContestModal = (mode) => {
     openModal("contest", {
@@ -147,80 +142,90 @@ const OrganizerContestDetail = () => {
       breadcrumb={breadcrumbData.items}
       breadcrumbPaths={breadcrumbData.paths}
       bg={false}
+      loading={contestLoading}
+      error={contestError}
     >
-      <div className="space-y-5">
-        <InfoSection
-          title="Contest Information"
-          onEdit={() => handleContestModal("edit")}
-        >
-          <DetailTable
-            data={[
-              { label: "Name", value: contest.name },
-              { label: "Year", value: contest.year },
-              { label: "Description", value: contest.description },
-              { label: "Status", value: contest.status },
-              { label: "Created at", value: contest.created_at },
-            ]}
-          />
-        </InfoSection>
+      {!contest ? (
+        <div className="flex items-center justify-center h-[200px] text-gray-500">
+          No contest found
+        </div>
+      ) : (
+        <div className="space-y-5">
+          <InfoSection
+            title="Contest Information"
+            onEdit={() => handleContestModal("edit")}
+          >
+            <DetailTable
+              data={[
+                { label: "Name", value: contest.name },
+                { label: "Year", value: contest.year },
+                { label: "Description", value: contest.description },
+                { label: "Status", value: contest.status },
+                { label: "Created at", value: contest.created_at },
+              ]}
+            />
+          </InfoSection>
 
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">Rounds</div>
-          <div className="space-y-1">
+          <div>
+            <div className="text-sm font-semibold pt-3 pb-2">Rounds</div>
+            <div className="space-y-1">
+              <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
+                <div className="flex gap-5 items-center">
+                  <Calendar size={20} />
+                  <div>
+                    <p className="text-[14px] leading-[20px]">
+                      Round Management
+                    </p>
+                    <p className="text-[12px] leading-[16px] text-[#7A7574]">
+                      Create and manage rounds
+                    </p>
+                  </div>
+                </div>
+                <button
+                  className="button-orange"
+                  onClick={() => handleRoundModal("create")}
+                >
+                  New Round
+                </button>
+              </div>
+
+              {roundsLoading ? (
+                <div className="p-4 text-gray-500">Loading rounds...</div>
+              ) : roundsError ? (
+                <div className="p-4 text-red-500">{roundsError}</div>
+              ) : (
+                <TableFluent
+                  data={rounds.map((r) => ({ ...r, id: r.round_id }))}
+                  columns={roundColumns}
+                  title="Rounds"
+                  onRowClick={(round) =>
+                    navigate(
+                      `/organizer/contests/${contest.contest_id}/rounds/${round.round_id}`
+                    )
+                  }
+                />
+              )}
+            </div>
+          </div>
+
+          <ContestRelatedSettings contestId={contest.contest_id} />
+
+          <div>
+            <div className="text-sm font-semibold pt-3 pb-2">More actions</div>
             <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
               <div className="flex gap-5 items-center">
-                <Calendar size={20} />
+                <Trash size={20} />
                 <div>
-                  <p className="text-[14px] leading-[20px]">Round Management</p>
-                  <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                    Create and manage rounds
-                  </p>
+                  <p className="text-[14px] leading-[20px]">Delete contest</p>
                 </div>
               </div>
-              <button
-                className="button-orange"
-                onClick={() => handleRoundModal("create")}
-              >
-                New Round
+              <button className="button-white" onClick={handleDeleteContest}>
+                Delete Contest
               </button>
             </div>
-
-            {roundsLoading ? (
-              <div className="p-4 text-gray-500">Loading rounds...</div>
-            ) : roundsError ? (
-              <div className="p-4 text-red-500">{roundsError}</div>
-            ) : (
-              <TableFluent
-                data={rounds.map((r) => ({ ...r, id: r.round_id }))}
-                columns={roundColumns}
-                title="Rounds"
-                onRowClick={(round) =>
-                  navigate(
-                    `/organizer/contests/${contest.contest_id}/rounds/${round.round_id}`
-                  )
-                }
-              />
-            )}
           </div>
         </div>
-
-        <ContestRelatedSettings contestId={contest.contest_id} />
-
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">More actions</div>
-          <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-            <div className="flex gap-5 items-center">
-              <Trash size={20} />
-              <div>
-                <p className="text-[14px] leading-[20px]">Delete contest</p>
-              </div>
-            </div>
-            <button className="button-white" onClick={handleDeleteContest}>
-              Delete Contest
-            </button>
-          </div>
-        </div>
-      </div>
+      )}
     </PageContainer>
   )
 }

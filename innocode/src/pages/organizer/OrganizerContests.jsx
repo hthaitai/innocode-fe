@@ -25,7 +25,7 @@ const OrganizerContests = () => {
     deleteContest,
   } = useContests()
 
-  // ----- Unified CRUD handlers -----
+  // ----- CRUD Modals -----
   const handleContestModal = (mode, contest = {}) => {
     openModal("contest", {
       mode,
@@ -45,7 +45,7 @@ const OrganizerContests = () => {
       item: contest,
       onConfirm: async (onClose) => {
         await deleteContest(contest.contest_id)
-        onClose() // close the modal after successful deletion
+        onClose()
       },
     })
   }
@@ -53,30 +53,32 @@ const OrganizerContests = () => {
   // ----- Table Columns -----
   const contestColumns = [
     {
-      id: "name",
+      accessorKey: "name",
       header: "Name",
       cell: ({ row }) => row.original.name || "—",
     },
     {
-      id: "year",
+      accessorKey: "year",
       header: "Year",
       cell: ({ row }) => row.original.year || "—",
     },
     {
-      id: "status",
+      accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
         <StatusBadge status={row.original.status || "draft"} />
       ),
     },
     {
-      id: "created_at",
+      accessorKey: "created_at",
       header: "Created At",
       cell: ({ row }) => formatDateTime(row.original.created_at),
     },
     {
       id: "actions",
-      header: "Actions",
+      header: "",
+      enableSorting: false,
+      enableHiding: false,
       cell: ({ row }) => (
         <Actions
           row={row.original}
@@ -99,28 +101,12 @@ const OrganizerContests = () => {
   ]
 
   // ----- Render -----
-  if (loading) {
-    return (
-      <PageContainer breadcrumb={BREADCRUMBS.CONTESTS}>
-        <div className="flex items-center justify-center h-[200px] text-gray-500">
-          Loading contests...
-        </div>
-      </PageContainer>
-    )
-  }
-
-  if (error) {
-    return (
-      <PageContainer breadcrumb={BREADCRUMBS.CONTESTS}>
-        <div className="flex items-center justify-center h-[200px] text-red-500">
-          {error}
-        </div>
-      </PageContainer>
-    )
-  }
-
   return (
-    <PageContainer breadcrumb={BREADCRUMBS.CONTESTS}>
+    <PageContainer
+      breadcrumb={BREADCRUMBS.CONTESTS}
+      loading={loading}
+      error={error}
+    >
       <div className="flex flex-col gap-1">
         {/* Header */}
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">

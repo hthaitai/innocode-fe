@@ -43,13 +43,6 @@ const ProblemDetailPage = () => {
     deleteTestCase,
   } = useTestCase(contestId, roundId, problemId)
 
-  if (problemLoading || testCaseLoading)
-    return <PageContainer>Loading...</PageContainer>
-  if (problemError) return <PageContainer>Error: {problemError}</PageContainer>
-  if (testCaseError)
-    return <PageContainer>Error: {testCaseError}</PageContainer>
-  if (!problem) return <PageContainer>Problem not found</PageContainer>
-
   // --- Handlers ---
   const handleProblemModal = () => {
     openModal("problem", {
@@ -130,68 +123,76 @@ const ProblemDetailPage = () => {
     <PageContainer
       breadcrumb={breadcrumbData.items}
       breadcrumbPaths={breadcrumbData.paths}
+      loading={problemLoading || testCaseLoading}
+      error={problemError || testCaseError}
     >
-      <div className="space-y-5">
-        {/* Problem Info */}
-        <InfoSection title="Problem Information" onEdit={handleProblemModal}>
-          <DetailTable
-            data={[
-              { label: "Language", value: problem.language },
-              { label: "Type", value: problem.type },
-              { label: "Penalty Rate", value: problem.penalty_rate },
-              {
-                label: "Created At",
-                value: formatDateTime(problem.created_at),
-              },
-            ]}
-          />
-        </InfoSection>
+      {!problem ? (
+        <div className="flex items-center justify-center h-[200px] text-gray-500">
+          Problem not found
+        </div>
+      ) : (
+        <div className="space-y-5">
+          {/* Problem Info */}
+          <InfoSection title="Problem Information" onEdit={handleProblemModal}>
+            <DetailTable
+              data={[
+                { label: "Language", value: problem.language },
+                { label: "Type", value: problem.type },
+                { label: "Penalty Rate", value: problem.penalty_rate },
+                {
+                  label: "Created At",
+                  value: formatDateTime(problem.created_at),
+                },
+              ]}
+            />
+          </InfoSection>
 
-        {/* Test Cases */}
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">Test Cases</div>
-          <div className="space-y-1">
-            <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-              <div>
-                <p className="text-[14px] leading-[20px]">
-                  Test Case Management
-                </p>
-                <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                  Create and manage test cases for this problem
-                </p>
+          {/* Test Cases */}
+          <div>
+            <div className="text-sm font-semibold pt-3 pb-2">Test Cases</div>
+            <div className="space-y-1">
+              <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
+                <div>
+                  <p className="text-[14px] leading-[20px]">
+                    Test Case Management
+                  </p>
+                  <p className="text-[12px] leading-[16px] text-[#7A7574]">
+                    Create and manage test cases for this problem
+                  </p>
+                </div>
+                <button
+                  className="button-orange"
+                  onClick={() => handleTestCaseModal("create")}
+                >
+                  New Test Case
+                </button>
               </div>
-              <button
-                className="button-orange"
-                onClick={() => handleTestCaseModal("create")}
-              >
-                New Test Case
+
+              <TableFluent
+                data={testCases}
+                columns={testCaseColumns}
+                title="Test Cases"
+              />
+            </div>
+          </div>
+
+          {/* Delete Problem */}
+          <div>
+            <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
+            <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
+              <div className="flex gap-5 items-center">
+                <Trash size={20} />
+                <div>
+                  <p className="text-[14px] leading-[20px]">Delete Problem</p>
+                </div>
+              </div>
+              <button className="button-white" onClick={handleDeleteProblem}>
+                Delete Problem
               </button>
             </div>
-
-            <TableFluent
-              data={testCases}
-              columns={testCaseColumns}
-              title="Test Cases"
-            />
           </div>
         </div>
-
-        {/* Delete Problem */}
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
-          <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-            <div className="flex gap-5 items-center">
-              <Trash size={20} />
-              <div>
-                <p className="text-[14px] leading-[20px]">Delete Problem</p>
-              </div>
-            </div>
-            <button className="button-white" onClick={handleDeleteProblem}>
-              Delete Problem
-            </button>
-          </div>
-        </div>
-      </div>
+      )}
     </PageContainer>
   )
 }

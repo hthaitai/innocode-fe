@@ -53,13 +53,6 @@ const OrganizerRoundDetail = () => {
     )}:${String(d.getMinutes()).padStart(2, "0")}`
   }
 
-  if (roundLoading || problemsLoading)
-    return <PageContainer>Loading round details...</PageContainer>
-  if (roundError) return <PageContainer>Error: {roundError}</PageContainer>
-  if (problemsError)
-    return <PageContainer>Error: {problemsError}</PageContainer>
-  if (!round) return <PageContainer>Round not found</PageContainer>
-
   // ---------- Handlers ----------
   const handleRoundModal = () => {
     const formattedRound = {
@@ -150,72 +143,86 @@ const OrganizerRoundDetail = () => {
     <PageContainer
       breadcrumb={breadcrumbData.items}
       breadcrumbPaths={breadcrumbData.paths}
+      loading={roundLoading || problemsLoading}
+      error={roundError || problemsError}
     >
-      <div className="space-y-5">
-        {/* Round Info */}
-        <InfoSection title="Round Information" onEdit={handleRoundModal}>
-          <DetailTable
-            data={[
-              { label: "Name", value: round.name },
-              { label: "Start", value: formatDateTime(round.start) },
-              { label: "End", value: formatDateTime(round.end) },
-            ]}
-          />
-        </InfoSection>
+      {!round ? (
+        <div className="flex items-center justify-center h-[200px] text-gray-500">
+          Round not found
+        </div>
+      ) : (
+        <div className="space-y-5">
+          {/* Round Info */}
+          <InfoSection title="Round Information" onEdit={handleRoundModal}>
+            <DetailTable
+              data={[
+                { label: "Name", value: round.name },
+                { label: "Start", value: formatDateTime(round.start) },
+                { label: "End", value: formatDateTime(round.end) },
+              ]}
+            />
+          </InfoSection>
 
-        {/* Problems Section */}
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">Problems</div>
-          <div className="space-y-1">
+          {/* Problems Section */}
+          <div>
+            <div className="text-sm font-semibold pt-3 pb-2">Problems</div>
+            <div className="space-y-1">
+              <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
+                <div className="flex gap-5 items-center">
+                  <Calendar size={20} />
+                  <div>
+                    <p className="text-[14px] leading-[20px]">
+                      Problem Management
+                    </p>
+                    <p className="text-[12px] leading-[16px] text-[#7A7574]">
+                      Create and manage problems in this round
+                    </p>
+                  </div>
+                </div>
+                <button
+                  className="button-orange"
+                  onClick={() => handleProblemModal("create")}
+                >
+                  New Problem
+                </button>
+              </div>
+
+              {problemsLoading ? (
+                <div className="p-4 text-gray-500">Loading problems...</div>
+              ) : problemsError ? (
+                <div className="p-4 text-red-500">{problemsError}</div>
+              ) : (
+                <TableFluent
+                  data={problems}
+                  columns={problemColumns}
+                  title="Problems"
+                  onRowClick={(problem) =>
+                    navigate(
+                      `/organizer/contests/${contestId}/rounds/${roundId}/problems/${problem.problem_id}`
+                    )
+                  }
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Delete Round */}
+          <div>
+            <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
             <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
               <div className="flex gap-5 items-center">
-                <Calendar size={20} />
+                <Trash size={20} />
                 <div>
-                  <p className="text-[14px] leading-[20px]">
-                    Problem Management
-                  </p>
-                  <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                    Create and manage problems in this round
-                  </p>
+                  <p className="text-[14px] leading-[20px]">Delete Round</p>
                 </div>
               </div>
-              <button
-                className="button-orange"
-                onClick={() => handleProblemModal("create")}
-              >
-                New Problem
+              <button className="button-white" onClick={handleDeleteRound}>
+                Delete Round
               </button>
             </div>
-
-            <TableFluent
-              data={problems}
-              columns={problemColumns}
-              title="Problems"
-              onRowClick={(problem) =>
-                navigate(
-                  `/organizer/contests/${contestId}/rounds/${roundId}/problems/${problem.problem_id}`
-                )
-              }
-            />
           </div>
         </div>
-
-        {/* Delete Round */}
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
-          <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-            <div className="flex gap-5 items-center">
-              <Trash size={20} />
-              <div>
-                <p className="text-[14px] leading-[20px]">Delete Round</p>
-              </div>
-            </div>
-            <button className="button-white" onClick={handleDeleteRound}>
-              Delete Round
-            </button>
-          </div>
-        </div>
-      </div>
+      )}
     </PageContainer>
   )
 }
