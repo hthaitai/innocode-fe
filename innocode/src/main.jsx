@@ -31,6 +31,7 @@ import OrganizerNotifications from "./pages/organizer/OrganizerNotifications"
 import OrganizerRoundDetail from "./pages/organizer/OrganizerRoundDetail"
 import OrganizerProblemDetail from "./pages/organizer/OrganizerProblemDetail"
 import { ModalProvider } from "./context/ModalContext"
+import OrganizerProvinces from "./pages/organizer/OrganizerProvinces"
 
 const router = createBrowserRouter([
   { path: "login", element: <Login /> },
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
             element: <OrganizerNotifications />,
           },
         ],
+      },
+      {
+        path: "organizer/provinces",
+        element: <OrganizerProvinces />,
       },
     ],
   },

@@ -82,6 +82,8 @@ export const BREADCRUMBS = {
     "Notifications",
   ],
 
+  ORGANIZER_PROVINCES: ["Provinces"],
+
   // Error pages
   NOT_FOUND: ["Not Found"],
   UNAUTHORIZED: ["Unauthorized"],
@@ -184,6 +186,8 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/notifications`,
   ],
+
+  ORGANIZER_PROVINCES: ["/organizer", "/organizer/provinces"],
 
   // Error pages
   NOT_FOUND: ["/"],

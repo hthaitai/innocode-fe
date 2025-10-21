@@ -32,22 +32,24 @@ export default function BaseModal({
       onClick={onClose}
     >
       <div
-        className={`bg-white rounded-[5px] shadow-lg relative w-full ${modalSizeClass} max-h-[80vh] overflow-y-auto flex flex-col`}
+        className={`bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg relative w-full ${modalSizeClass} max-h-[80vh] overflow-y-auto flex flex-col`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex justify-between items-center bg-[#F3F3F3] px-4 py-2 border-b">
-          <h2 className="text-lg font-semibold">{title}</h2>
+        <div className="flex justify-end items-center bg-[#F3F3F3]">
           <button
             onClick={onClose}
-            className="p-1 hover:bg-[#C42B1C] hover:text-white rounded transition"
+            className="p-1 hover:bg-[#C42B1C] hover:text-white transition cursor-pointer"
           >
             <X size={20} strokeWidth={1} />
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-6 flex-1 overflow-y-auto">{children}</div>
+        <div className="px-5 pb-5 flex-1 overflow-y-auto">
+          <h2 className="text-[20px] leading-[26px] font-semibold pt-2 pb-5">{title}</h2>
+          {children}
+        </div>
 
         {/* Footer */}
         {footer && (
