@@ -8,6 +8,7 @@ const allMenus = {
   dashboard: { path: '/dashboard', label: 'Dashboard', icon: 'lucide:layout-dashboard' },
   contests: { path: '/contests', label: 'Contests', icon: 'lucide:trophy' },
   organizerContests: { path: '/organizer/contests', label: 'Contests', icon: 'lucide:trophy' },
+  organizerProvinces: { path: '/organizer/provinces', label: 'Provinces', icon: 'lucide:map-pin' },
   practice: { path: '/practice', label: 'Practice', icon: 'lucide:file-spreadsheet' },
   team: { path: '/team', label: 'Team', icon: 'lucide:users' },
   leaderboard: { path: '/leaderboard', label: 'Leaderboard', icon: 'lucide:chart-no-axes-column' },
@@ -18,7 +19,7 @@ const allMenus = {
 
 const menuByRole = {
   student: ['profile', 'contests', 'practice', 'team', 'leaderboard', 'announcements', 'certificate','help' ],
-  organizer: ['profile', 'organizerContests'],
+  organizer: ['profile', 'organizerContests', 'organizerProvinces'],
   judge: ['profile', 'dashboard', 'contests', 'announcements'],
   admin: ['profile', 'dashboard', 'leaderboard', 'announcements', 'help'],
 };

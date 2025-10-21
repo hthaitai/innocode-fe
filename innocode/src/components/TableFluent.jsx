@@ -32,14 +32,18 @@ const TableFluent = ({ data, columns, title, onRowClick }) => {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={`text-[12px] leading-[16px] font-normal text-[#7A7574] border-b border-r border-[#E5E5E5] whitespace-nowrap ${
-                    header.column.id === "actions" ? "text-right w-[1%]" : "text-left"
+                  className={`text-[12px] leading-[16px] font-normal text-[#7A7574] border-b border-[#E5E5E5] whitespace-nowrap ${
+                    header.column.id === "actions"
+                      ? "w-[60px] text-right"
+                      : "text-left border-r w-auto align-middle"
                   }`}
                 >
                   {header.isPlaceholder ? null : (
                     <div
                       className={`flex gap-1 items-center px-5 py-2 justify-between select-none ${
-                        header.column.getCanSort() ? "cursor-pointer hover:bg-[#F6F6F6]" : ""
+                        header.column.getCanSort()
+                          ? "cursor-pointer hover:bg-[#F6F6F6]"
+                          : ""
                       }`}
                       onClick={
                         header.column.getCanSort()
@@ -47,10 +51,17 @@ const TableFluent = ({ data, columns, title, onRowClick }) => {
                           : undefined
                       }
                     >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                       <span>
-                        {header.column.getIsSorted() === "asc" && <ChevronUp size={12} />}
-                        {header.column.getIsSorted() === "desc" && <ChevronDown size={12} />}
+                        {header.column.getIsSorted() === "asc" && (
+                          <ChevronUp size={12} />
+                        )}
+                        {header.column.getIsSorted() === "desc" && (
+                          <ChevronDown size={12} />
+                        )}
                       </span>
                     </div>
                   )}
@@ -63,14 +74,16 @@ const TableFluent = ({ data, columns, title, onRowClick }) => {
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="hover:bg-[#F6F6F6]"
+              className="hover:bg-[#F6F6F6] align-middle"
               onClick={() => handleRowClick(row.original)}
             >
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className={`text-[14px] leading-[20px] px-5 py-2 border-r border-[#E5E5E5] whitespace-nowrap ${
-                    cell.column.id === "actions" ? "text-right w-[1%]" : "text-left"
+                  className={`text-[14px] leading-[20px] border-[#E5E5E5] whitespace-nowrap align-middle ${
+                    cell.column.id === "actions"
+                      ? "w-[60px] p-2 flex justify-center items-center"
+                      : "text-left px-5 py-2 border-r"
                   }`}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

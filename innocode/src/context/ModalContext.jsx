@@ -4,6 +4,7 @@ import RoundModal from "../components/organizer/contests/modals/RoundModal"
 import ProblemModal from "../components/organizer/contests/modals/ProblemModal"
 import ConfirmDeleteModal from "../components/organizer/contests/modals/ConfirmDeleteModal"
 import TestCaseModal from "../components/organizer/contests/modals/TestCaseModal"
+import ProvinceModal from "../components/organizer/provinces/ProvinceModal"
 
 const ModalContext = createContext(null)
 
@@ -27,11 +28,12 @@ export function ModalProvider({ children }) {
 
   // ---- Modal registry ----
   const modalComponents = {
+    confirmDelete: ConfirmDeleteModal,
     contest: ContestModal,
     round: RoundModal,
-    problem: ProblemModal, // ✅ new
-    testCase: TestCaseModal, // ✅ new
-    confirmDelete: ConfirmDeleteModal,
+    problem: ProblemModal, 
+    testCase: TestCaseModal, 
+    province: ProvinceModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null
