@@ -56,8 +56,11 @@ const DropdownFluent = ({
         className="text-sm leading-5 flex justify-between items-center cursor-pointer border rounded-[5px] px-3 py-2 bg-white transition-all duration-200 border-[#ECECEC] border-b-[#D3D3D3]"
       >
         <span className="capitalize">
-          {value || placeholder || "Select..."}
+          {options.find((opt) => opt.value === value)?.label ||
+            placeholder ||
+            "Select..."}
         </span>
+
         <ChevronDown
           size={18}
           className={`text-[#7A7574] transition-transform duration-300 ${
@@ -91,7 +94,7 @@ const DropdownFluent = ({
                 width: menuPos.width,
                 zIndex: 50,
               }}
-              className="bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg overflow-hidden"
+              className="bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg overflow-y-auto max-h-[250px]"
             >
               {options.map((option) => (
                 <div

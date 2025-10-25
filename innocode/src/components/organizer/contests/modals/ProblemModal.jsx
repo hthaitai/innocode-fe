@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import BaseModal from "../../../BaseModal"
-import ProblemForm from "../../forms/ProblemForm"
 import { validateProblem } from "../../../../utils/validationSchemas"
+import ProblemForm from "../forms/ProblemForm"
 
 export default function ProblemModal({
   isOpen,

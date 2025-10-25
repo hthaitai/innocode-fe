@@ -5,6 +5,7 @@ import ProblemModal from "../components/organizer/contests/modals/ProblemModal"
 import ConfirmDeleteModal from "../components/organizer/contests/modals/ConfirmDeleteModal"
 import TestCaseModal from "../components/organizer/contests/modals/TestCaseModal"
 import ProvinceModal from "../components/organizer/provinces/ProvinceModal"
+import SchoolModal from "../components/organizer/schools/SchoolModal"
 
 const ModalContext = createContext(null)
 
@@ -34,6 +35,7 @@ export function ModalProvider({ children }) {
     problem: ProblemModal, 
     testCase: TestCaseModal, 
     province: ProvinceModal,
+    school: SchoolModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

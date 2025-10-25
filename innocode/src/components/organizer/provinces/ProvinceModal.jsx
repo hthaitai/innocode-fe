@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react"
 import BaseModal from "../../BaseModal"
 import { validateProvince } from "../../../validators/provinceValidator"
-import ProvinceForm from "../forms/ProvinceForm"
+import ProvinceForm from "./ProvinceForm"
+
 
 
 export default function ProvinceModal({

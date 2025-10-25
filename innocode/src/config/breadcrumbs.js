@@ -83,6 +83,7 @@ export const BREADCRUMBS = {
   ],
 
   ORGANIZER_PROVINCES: ["Provinces"],
+  ORGANIZER_SCHOOLS: ["Schools"],
 
   // Error pages
   NOT_FOUND: ["Not Found"],
@@ -188,6 +189,7 @@ export const BREADCRUMB_PATHS = {
   ],
 
   ORGANIZER_PROVINCES: ["/organizer", "/organizer/provinces"],
+  ORGANIZER_SCHOOLS: ["/organizer", "/organizer/schools"],
 
   // Error pages
   NOT_FOUND: ["/"],
