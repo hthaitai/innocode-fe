@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import BaseModal from "../../../BaseModal"
-import TestCaseForm from "../../forms/TestCaseForm"
 import { validateTestCase } from "../../../../utils/validationSchemas"
+import TestCaseForm from "../forms/TestCaseForm"
 
 export default function TestCaseModal({
   isOpen,

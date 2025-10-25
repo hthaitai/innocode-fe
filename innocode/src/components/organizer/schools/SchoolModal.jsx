@@ -1,29 +1,27 @@
 import React, { useState, useEffect } from "react"
-import BaseModal from "../../../BaseModal"
+import BaseModal from "../../BaseModal"
+import { validateSchool } from "../../../validators/schoolValidator"
+import SchoolForm from "./SchoolForm"
 
-import { validateContest } from "../../../../utils/validationSchemas"
-import ContestForm from "../forms/ContestForm"
 
-
-export default function ContestModal({
+export default function SchoolModal({
   isOpen,
-  mode = "create", // "create" or "edit"
+  mode = "create",
   initialData = {},
+  provinces = [],
   onSubmit,
   onClose,
 }) {
   const emptyData = {
-    year: "",
     name: "",
-    description: "",
-    img_url: "",
-    status: "draft",
+    province_id: "",
+    contact: "",
   }
 
   const [formData, setFormData] = useState(emptyData)
   const [errors, setErrors] = useState({})
 
-  // Reset form when modal opens or data changes
+  // Reset form when modal opens or mode/data changes
   useEffect(() => {
     if (isOpen) {
       setFormData(mode === "edit" ? initialData : emptyData)
@@ -33,7 +31,7 @@ export default function ContestModal({
 
   // Validate and submit
   const handleSubmit = async () => {
-    const validationErrors = validateContest(formData)
+    const validationErrors = validateSchool(formData)
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length === 0) {
@@ -42,11 +40,11 @@ export default function ContestModal({
     }
   }
 
-  // Modal UI
+  // Dynamic title + footer
   const title =
     mode === "edit"
-      ? `Edit Contest: ${initialData.name || ""}`
-      : "Create New Contest"
+      ? `Edit School: ${initialData.name || ""}`
+      : "Create New School"
 
   const footer = (
     <div className="flex justify-end gap-2">
@@ -64,13 +62,14 @@ export default function ContestModal({
       isOpen={isOpen}
       onClose={onClose}
       title={title}
-      size="lg"
+      size="md"
       footer={footer}
     >
-      <ContestForm
+      <SchoolForm
         formData={formData}
         setFormData={setFormData}
         errors={errors}
+        provinces={provinces}
       />
     </BaseModal>
   )

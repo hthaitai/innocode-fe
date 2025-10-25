@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import BaseModal from "../../../BaseModal"
-import RoundForm from "../../forms/RoundForm"
 import { validateRound } from "../../../../utils/validationSchemas"
+import RoundForm from "../forms/RoundForm"
 
 
 export default function RoundModal({
