@@ -1,25 +1,57 @@
 // color map for statuses
 export const statusColorMap = {
-  draft: "bg-[#7A7574]",
-  published: "bg-[#FFB900]",
-  finalized: "bg-[#107C10]",
+  // Contest
+  draft: "bg-[#7A7574]",       // gray
+  published: "bg-[#FFB900]",   // amber
+  running: "bg-[#0078D4]",     // blue
+  finalized: "bg-[#107C10]",   // green
+
+  // Round
+  upcoming: "bg-[#B3B3B3]",    // light gray
+  ongoing: "bg-[#0078D4]",     // blue
+  completed: "bg-[#107C10]",   // green
+  archived: "bg-[#605E5C]",    // darker gray
+
+  // Team
+  pending: "bg-[#FFB900]",     // amber
+  approved: "bg-[#107C10]",    // green
+  disqualified: "bg-[#A80000]",// red
+  completed: "bg-[#005A9E]",   // deep blue
+
+  // Submission
+  resubmitted: "bg-[#605E5C]", // gray
+  approved: "bg-[#107C10]",    // green
+  rejected: "bg-[#A80000]",    // red
+  pending_review: "bg-[#FFB900]", // amber
+  pending: "bg-[#FFB900]",     // alias
+
+  // Appeal
+  open: "bg-[#0078D4]",        // blue
+  in_review: "bg-[#FF8C00]",   // orange
+  resolved: "bg-[#107C10]",    // green
 }
 
 // status badge component
 export const StatusBadge = ({ status }) => {
-  // ensure status is always a string, fallback to 'draft'
+  // normalize and validate
   const safeStatus =
-    typeof status === "string" && status.trim() ? status : "draft"
+    typeof status === "string" && status.trim()
+      ? status.trim().toLowerCase()
+      : "draft"
+
+  const colorClass = statusColorMap[safeStatus] || "bg-[#7A7574]"
 
   return (
-    <span className="flex items-center gap-2">
-      <span
-        className={`w-2 h-2 rounded-full ${statusColorMap[safeStatus]}`}
-      ></span>
-      {safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1)}
+    <span className="flex items-center gap-2 text-sm">
+      <span className={`w-2 h-2 rounded-full ${colorClass}`} />
+      {safeStatus
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")}
     </span>
   )
 }
+
 
 // date formatter
 export const formatDateTime = (dateString) => {

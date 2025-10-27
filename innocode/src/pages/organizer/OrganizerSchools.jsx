@@ -55,7 +55,6 @@ const OrganizerSchools = () => {
         return province ? province.name : "—"
       },
     },
-
     {
       accessorKey: "contact",
       header: "Contact",
@@ -95,7 +94,7 @@ const OrganizerSchools = () => {
 
   return (
     <PageContainer
-      breadcrumb={BREADCRUMBS.CONTESTS}
+      breadcrumb={BREADCRUMBS.SCHOOLS}
       loading={loading}
       error={error}
     >

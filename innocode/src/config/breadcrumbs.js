@@ -4,6 +4,8 @@ export const BREADCRUMBS = {
   HOME: ["Home"],
   CONTESTS: ["Contests"],
   CONTEST_DETAIL: (contestTitle) => ["Contests", contestTitle],
+  PROVINCES: ["Provinces"],
+  SCHOOLS: ["Schools"],
   PRACTICE: ["Practice"],
   TEAM: ["Team"],
   LEADERBOARD: ["Leaderboard"],
@@ -60,6 +62,13 @@ export const BREADCRUMBS = {
   ],
 
   ORGANIZER_TEAMS: (contestName) => ["Contests", contestName, "Teams"],
+  ORGANIZER_TEAM_DETAIL: (contestName, teamName) => [
+    "Contests",
+    contestName,
+    "Teams",
+    teamName,
+  ],
+
   ORGANIZER_LEADERBOARD: (contestName) => [
     "Contests",
     contestName,
@@ -161,6 +170,12 @@ export const BREADCRUMB_PATHS = {
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/teams`,
+  ],
+  ORGANIZER_TEAM_DETAIL: (contestId, teamId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/teams`,
+    `/organizer/contests/${contestId}/teams/${teamId}`,
   ],
   ORGANIZER_LEADERBOARD: (contestId) => [
     "/organizer/contests",
