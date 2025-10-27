@@ -2,44 +2,18 @@ import React from "react"
 import { useNavigate } from "react-router-dom"
 import PageContainer from "../../../../components/PageContainer"
 import TableFluent from "../../../../components/TableFluent"
-import { Users, Pencil, Trash2 } from "lucide-react"
-import Actions from "../../../../components/organizer/contests/Actions"
+import { Users } from "lucide-react"
 import { useOrganizerBreadcrumb } from "../../../../hooks/organizer/useOrganizerBreadcrumb"
-import { useModal } from "../../../../hooks/organizer/useModal"
 import useSchools from "../../../../hooks/organizer/useSchools"
 import useMentors from "../../../../hooks/organizer/useMentors"
 import useTeams from "../../../../hooks/organizer/contests/teams/useTeams"
 
 const OrganizerTeams = () => {
   const navigate = useNavigate()
-  const { teams, loading, error, addTeam, updateTeam, deleteTeam } = useTeams()
-  const { openModal } = useModal()
+  const { teams, loading, error } = useTeams()
   const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_TEAMS")
   const { schools } = useSchools()
   const { mentors } = useMentors()
-
-  // ----- CRUD Modals -----
-  const handleTeamModal = (mode, team = {}) => {
-    openModal("team", {
-      mode,
-      initialData: team,
-      onSubmit: async (data) => {
-        if (mode === "create") return await addTeam(data)
-        if (mode === "edit") return await updateTeam(team.team_id, data)
-      },
-    })
-  }
-
-  const handleDeleteTeam = (team) => {
-    openModal("confirmDelete", {
-      type: "team",
-      item: team,
-      onConfirm: async (onClose) => {
-        await deleteTeam(team.team_id)
-        onClose()
-      },
-    })
-  }
 
   // ----- Table Columns -----
   const teamsColumns = [
@@ -76,36 +50,6 @@ const OrganizerTeams = () => {
         return date.toLocaleDateString()
       },
     },
-    {
-      id: "actions",
-      header: "",
-      enableSorting: false,
-      enableHiding: false,
-      cell: ({ row }) => (
-        <Actions
-          row={row.original}
-          items={[
-            {
-              label: "Edit",
-              icon: Pencil,
-              onClick: (e) => {
-                e.stopPropagation() // prevent row click
-                handleTeamModal("edit", row.original)
-              },
-            },
-            {
-              label: "Delete",
-              icon: Trash2,
-              className: "text-red-500",
-              onClick: (e) => {
-                e.stopPropagation() // prevent row click
-                handleDeleteTeam(row.original)
-              },
-            },
-          ]}
-        />
-      ),
-    },
   ]
 
   return (
@@ -121,18 +65,12 @@ const OrganizerTeams = () => {
           <div className="flex gap-5 items-center">
             <Users size={20} />
             <div>
-              <p className="text-[14px] leading-[20px]">Teams Management</p>
+              <p className="text-[14px] leading-[20px]">Teams Overview</p>
               <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                Create and manage teams for contests
+                View teams participating in contests
               </p>
             </div>
           </div>
-          <button
-            className="button-orange"
-            onClick={() => handleTeamModal("create")}
-          >
-            New Team
-          </button>
         </div>
 
         {/* Table */}
