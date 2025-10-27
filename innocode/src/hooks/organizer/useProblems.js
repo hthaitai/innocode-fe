@@ -1,120 +1,117 @@
-import { useState, useEffect, useCallback } from "react"
-import { contestService } from "../../services/mockService"
+import { useState, useCallback } from "react"
+import { problems as fakeData } from "../../data/contests/problems"
 
 export const useProblems = (contestId, roundId) => {
-  const [problems, setProblems] = useState([])
+  // ✅ Initialize from fakeData filtered by round_id
+  const [problems, setProblems] = useState(() =>
+    roundId ? fakeData.filter((p) => p.round_id === Number(roundId)) : fakeData
+  )
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const fetchProblems = useCallback(async () => {
-    if (!contestId || !roundId) return
-    setLoading(true)
-    setError(null)
-    try {
-      const contest = await contestService.getContestById(contestId)
-      const round = contest.rounds.find((r) => r.round_id === roundId)
-      if (!round) throw new Error("Round not found")
-      setProblems(round.problems || [])
-    } catch (err) {
-      console.error("Failed to fetch problems:", err)
-      setError(err.message || "Failed to load problems")
-    } finally {
-      setLoading(false)
-    }
-  }, [contestId, roundId])
+  // // ----- FETCH -----
+  // useEffect(() => {
+  //   const fetchProblems = async () => {
+  //     if (!contestId || !roundId) return
+  //     try {
+  //       setLoading(true)
+  //       setError(null)
+  //       const contest = await contestService.getContestById(contestId)
+  //       const round = contest.rounds.find((r) => r.round_id === roundId)
+  //       setProblems(round?.problems || [])
+  //     } catch (err) {
+  //       console.error(err)
+  //       setError(err.message || "Failed to load problems")
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+  //   fetchProblems()
+  // }, [contestId, roundId])
 
-  useEffect(() => {
-    fetchProblems()
-  }, [fetchProblems])
-
-  const validateProblem = useCallback((data) => {
-    const errors = {}
-    if (!data.title?.trim()) errors.title = "Title is required"
-    if (!data.language?.trim()) errors.language = "Language is required"
-    if (!data.type?.trim()) errors.type = "Type is required"
-    if (data.penalty_rate != null && isNaN(data.penalty_rate))
-      errors.penalty_rate = "Penalty rate must be a number"
-    return errors
-  }, [])
-
+  // ----- CREATE -----
   const addProblem = useCallback(
     async (data) => {
-      if (!contestId || !roundId) throw new Error("Missing contest or round ID")
+      if (!roundId) throw new Error("Missing round ID")
       setLoading(true)
       setError(null)
       try {
-        const newProblem = await contestService.addProblem(
-          contestId,
-          roundId,
-          data
-        )
+        // const newProblem = await contestService.addProblem(contestId, roundId, data)
+        const newProblem = {
+          problem_id: Date.now(),
+          created_at: new Date().toISOString(),
+          round_id: Number(roundId),
+          ...data,
+        }
+
         setProblems((prev) => [...prev, newProblem])
         return newProblem
       } catch (err) {
-        console.error("Failed to add problem:", err)
-        setError(err.message || "Failed to add problem")
+        console.error(err)
+        setError(err.message)
         throw err
       } finally {
         setLoading(false)
       }
     },
-    [contestId, roundId]
+    [roundId]
   )
 
+  // ----- UPDATE -----
   const updateProblem = useCallback(
     async (problemId, data) => {
-      if (!contestId || !roundId) throw new Error("Missing contest or round ID")
+      if (!roundId) throw new Error("Missing round ID")
       setLoading(true)
       setError(null)
       try {
-        const updated = await contestService.updateProblem(
-          contestId,
-          roundId,
-          problemId,
-          data
-        )
+        // const updated = await contestService.updateProblem(contestId, roundId, problemId, data)
+        const updated = { ...data, problem_id: problemId }
+
         setProblems((prev) =>
           prev.map((p) => (p.problem_id === problemId ? updated : p))
         )
         return updated
       } catch (err) {
-        console.error("Failed to update problem:", err)
-        setError(err.message || "Failed to update problem")
+        console.error(err)
+        setError(err.message)
         throw err
       } finally {
         setLoading(false)
       }
     },
-    [contestId, roundId]
+    [roundId]
   )
 
+  // ----- DELETE -----
   const deleteProblem = useCallback(
     async (problemId) => {
-      if (!contestId || !roundId) throw new Error("Missing contest or round ID")
+      if (!roundId) throw new Error("Missing round ID")
       setLoading(true)
       setError(null)
       try {
-        await contestService.deleteProblem(contestId, roundId, problemId)
+        // await contestService.deleteProblem(contestId, roundId, problemId)
+        console.log("[FAKE DELETE] Problem ID:", problemId)
         setProblems((prev) => prev.filter((p) => p.problem_id !== problemId))
       } catch (err) {
-        console.error("Failed to delete problem:", err)
-        setError(err.message || "Failed to delete problem")
+        console.error(err)
+        setError(err.message)
         throw err
       } finally {
         setLoading(false)
       }
     },
-    [contestId, roundId]
+    [roundId]
   )
 
   return {
     problems,
     loading,
     error,
-    fetchProblems,
-    validateProblem,
     addProblem,
     updateProblem,
     deleteProblem,
   }
 }
+
+export default useProblems

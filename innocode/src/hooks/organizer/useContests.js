@@ -1,50 +1,48 @@
-import { useState, useEffect, useCallback } from "react"
-import { contestService } from "../../services/mockService"
+import { useCallback, useState } from "react"
+import { contests as fakeData } from "../../data/contests/contests"
+import { contestService } from "../../services/contests/contestService"
 
 export const useContests = () => {
-  const [contests, setContests] = useState([])
+  const [contests, setContests] = useState(fakeData)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // ----- Fetch contests -----
-  const fetchContests = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await contestService.getContests()
-      // Ensure contests is always an array
-      setContests(Array.isArray(data) ? data : data?.data || [])
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  // ----- FETCH -----
+  // useEffect(() => {
+  //   const fetchContests = async () => {
+  //     try {
+  //       setLoading(true)
+  //       setError(null)
 
-  useEffect(() => {
-    fetchContests()
-  }, [fetchContests])
+  //       const data = await contestService.getAllContests()
+  //       setContests(Array.isArray(data) ? data : [])
+  //     } catch (err) {
+  //       console.error(err)
+  //       setError(err.message || "Failed to load contests")
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
 
-  // ----- Validation -----
-  const validateContest = useCallback((data) => {
-    const errors = {}
-    if (!data.name?.trim()) errors.name = "Contest name is required"
-    if (!data.year) errors.year = "Year is required"
-    if (!data.description?.trim())
-      errors.description = "Description is required"
-    if (!data.status) errors.status = "Status is required"
-    return errors
-  }, [])
+  //   fetchContests()
+  // }, [])
 
-  // ----- CRUD operations -----
+  // ----- CREATE -----
   const addContest = useCallback(async (data) => {
     setLoading(true)
     setError(null)
     try {
-      const newContest = await contestService.addContest(data)
+      // const newContest = await contestService.createContest(data)
+      const newContest = {
+        contest_id: Date.now(),
+        created_at: new Date().toISOString(),
+        ...data,
+      }
+
       setContests((prev) => [...prev, newContest])
       return newContest
     } catch (err) {
+      console.error(err)
       setError(err.message)
       throw err
     } finally {
@@ -52,16 +50,20 @@ export const useContests = () => {
     }
   }, [])
 
+  // ----- UPDATE -----
   const updateContest = useCallback(async (id, data) => {
     setLoading(true)
     setError(null)
     try {
-      const updated = await contestService.updateContest(id, data)
+      // const updated = await contestService.updateContest(id, data)
+      const updated = { ...data, contest_id: id }
+
       setContests((prev) =>
-        prev.map((c) => (c.contest_id === id ? updated : c))
+        prev.map((contest) => (contest.contest_id === id ? updated : contest))
       )
       return updated
     } catch (err) {
+      console.error(err)
       setError(err.message)
       throw err
     } finally {
@@ -69,13 +71,17 @@ export const useContests = () => {
     }
   }, [])
 
+  // ----- DELETE -----
   const deleteContest = useCallback(async (id) => {
     setLoading(true)
     setError(null)
     try {
-      await contestService.deleteContest(id)
-      setContests((prev) => prev.filter((c) => c.contest_id !== id))
+      // await contestService.deleteContest(id)
+      console.log("[FAKE DELETE] Contest ID:", id)
+
+      setContests((prev) => prev.filter((contest) => contest.contest_id !== id))
     } catch (err) {
+      console.error(err)
       setError(err.message)
       throw err
     } finally {
@@ -87,10 +93,10 @@ export const useContests = () => {
     contests,
     loading,
     error,
-    validateContest,
-    fetchContests,
     addContest,
     updateContest,
     deleteContest,
   }
 }
+
+export default useContests

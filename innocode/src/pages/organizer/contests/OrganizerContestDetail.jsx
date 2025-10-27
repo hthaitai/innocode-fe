@@ -1,17 +1,17 @@
 import React from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import PageContainer from "../../components/PageContainer"
-import DetailTable from "../../components/organizer/contests/DetailTable"
-import InfoSection from "../../components/organizer/contests/InfoSection"
-import TableFluent from "../../components/TableFluent"
-import Actions from "../../components/organizer/contests/Actions"
-import { formatDateTime } from "../../components/organizer/utils/TableUtils"
+import PageContainer from "../../../components/PageContainer"
+import DetailTable from "../../../components/organizer/contests/DetailTable"
+import InfoSection from "../../../components/organizer/contests/InfoSection"
+import TableFluent from "../../../components/TableFluent"
+import Actions from "../../../components/organizer/contests/Actions"
+import ContestRelatedSettings from "../../../components/organizer/contests/ContestRelatedSettings"
+import { formatDateTime } from "../../../components/organizer/utils/TableUtils"
 import { Calendar, Pencil, Trash } from "lucide-react"
-import ContestRelatedSettings from "../../components/organizer/contests/ContestRelatedSettings"
-import { useOrganizerBreadcrumb } from "../../hooks/organizer/useOrganizerBreadcrumb"
-import { useModal } from "../../hooks/organizer/useModal"
-import { useContestDetail } from "../../hooks/organizer/useContestDetail" // <--- new hook
-import { useRounds } from "../../hooks/organizer/useRounds"
+import { useModal } from "../../../hooks/organizer/useModal"
+import { useContests } from "../../../hooks/organizer/useContests"
+import { useRounds } from "../../../hooks/organizer/useRounds"
+import { useOrganizerBreadcrumb } from "../../../hooks/organizer/useOrganizerBreadcrumb"
 
 const OrganizerContestDetail = () => {
   const { contestId: contestIdParam } = useParams()
@@ -20,13 +20,14 @@ const OrganizerContestDetail = () => {
   const { openModal } = useModal()
   const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_CONTEST_DETAIL")
 
+  // ----- Hooks -----
   const {
-    contest,
-    loading: contestLoading,
-    error: contestError,
+    contests,
+    loading: contestsLoading,
+    error: contestsError,
     updateContest,
     deleteContest,
-  } = useContestDetail(contestId)
+  } = useContests()
 
   const {
     rounds,
@@ -36,8 +37,11 @@ const OrganizerContestDetail = () => {
     addRound,
     updateRound,
     deleteRound,
-  } = useRounds(Number(contestId))
+  } = useRounds(contestId)
 
+  const contest = contests.find((c) => c.contest_id === contestId)
+
+  // ----- Helpers -----
   const formatForInput = (dateStr) => {
     if (!dateStr) return ""
     const d = new Date(dateStr)
@@ -49,13 +53,14 @@ const OrganizerContestDetail = () => {
     return `${yyyy}-${mm}-${dd}T${hh}:${min}`
   }
 
-  // ----- Handlers -----
+  // ----- Contest Handlers -----
   const handleContestModal = (mode) => {
     openModal("contest", {
       mode,
       initialData: contest,
       onSubmit: async (data) => {
-        if (mode === "edit") return await updateContest(data)
+        if (mode === "edit")
+          return await updateContest(contest.contest_id, data)
       },
     })
   }
@@ -65,13 +70,14 @@ const OrganizerContestDetail = () => {
       type: "contest",
       item: contest,
       onConfirm: async (onClose) => {
-        await deleteContest()
+        await deleteContest(contest.contest_id)
         onClose()
         navigate("/organizer/contests")
       },
     })
   }
 
+  // ----- Round Handlers -----
   const handleRoundModal = (mode, round = {}) => {
     const roundData = {
       ...round,
@@ -101,6 +107,7 @@ const OrganizerContestDetail = () => {
     })
   }
 
+  // ----- Table Columns -----
   const roundColumns = [
     { accessorKey: "name", header: "Name" },
     {
@@ -137,13 +144,14 @@ const OrganizerContestDetail = () => {
     },
   ]
 
+  // ----- Render -----
   return (
     <PageContainer
       breadcrumb={breadcrumbData.items}
       breadcrumbPaths={breadcrumbData.paths}
       bg={false}
-      loading={contestLoading}
-      error={contestError}
+      loading={contestsLoading}
+      error={contestsError}
     >
       {!contest ? (
         <div className="flex items-center justify-center h-[200px] text-gray-500">
@@ -166,6 +174,7 @@ const OrganizerContestDetail = () => {
             />
           </InfoSection>
 
+          {/* Rounds */}
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">Rounds</div>
             <div className="space-y-1">
@@ -208,8 +217,10 @@ const OrganizerContestDetail = () => {
             </div>
           </div>
 
+          {/* Related settings */}
           <ContestRelatedSettings contestId={contest.contest_id} />
 
+          {/* More actions */}
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">More actions</div>
             <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">

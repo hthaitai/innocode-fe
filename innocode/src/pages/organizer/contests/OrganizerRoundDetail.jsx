@@ -1,16 +1,16 @@
 import React from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import PageContainer from "../../components/PageContainer"
-import DetailTable from "../../components/organizer/contests/DetailTable"
-import InfoSection from "../../components/organizer/contests/InfoSection"
-import TableFluent from "../../components/TableFluent"
-import Actions from "../../components/organizer/contests/Actions"
+import PageContainer from "../../../components/PageContainer"
+import DetailTable from "../../../components/organizer/contests/DetailTable"
+import InfoSection from "../../../components/organizer/contests/InfoSection"
+import TableFluent from "../../../components/TableFluent"
+import Actions from "../../../components/organizer/contests/Actions"
 import { Calendar, Trash, Pencil } from "lucide-react"
-import { formatDateTime } from "../../components/organizer/utils/TableUtils"
-import { useOrganizerBreadcrumb } from "../../hooks/organizer/useOrganizerBreadcrumb"
-import { useModal } from "../../hooks/organizer/useModal"
-import { useRoundDetail } from "../../hooks/organizer/useRoundDetail"
-import { useProblems } from "../../hooks/organizer/useProblems"
+import { formatDateTime } from "../../../components/organizer/utils/TableUtils"
+import { useOrganizerBreadcrumb } from "../../../hooks/organizer/useOrganizerBreadcrumb"
+import { useModal } from "../../../hooks/organizer/useModal"
+import { useRounds } from "../../../hooks/organizer/useRounds"
+import { useProblems } from "../../../hooks/organizer/useProblems"
 
 const OrganizerRoundDetail = () => {
   const { contestId: contestIdParam, roundId: roundIdParam } = useParams()
@@ -18,18 +18,21 @@ const OrganizerRoundDetail = () => {
   const roundId = Number(roundIdParam)
   const navigate = useNavigate()
   const { openModal } = useModal()
-
   const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_ROUND_DETAIL")
 
-  // --- Split responsibilities ---
+  // --- Rounds Hook ---
   const {
-    round,
+    rounds,
     loading: roundLoading,
     error: roundError,
     updateRound,
     deleteRound,
-  } = useRoundDetail(contestId, roundId)
+  } = useRounds(contestId)
 
+  // Find the specific round
+  const round = rounds.find((r) => r.round_id === roundId)
+
+  // --- Problems Hook ---
   const {
     problems,
     loading: problemsLoading,
@@ -40,21 +43,20 @@ const OrganizerRoundDetail = () => {
     validateProblem,
   } = useProblems(contestId, roundId)
 
-  // --- Format helpers ---
+  // --- Format helper ---
   const formatForInput = (dateStr) => {
     if (!dateStr) return ""
     const d = new Date(dateStr)
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(
-      2,
-      "0"
-    )}:${String(d.getMinutes()).padStart(2, "0")}`
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+      d.getDate()
+    ).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}:${String(
+      d.getMinutes()
+    ).padStart(2, "0")}`
   }
 
   // ---------- Handlers ----------
   const handleRoundModal = () => {
+    if (!round) return
     const formattedRound = {
       ...round,
       start: formatForInput(round.start),
@@ -64,7 +66,9 @@ const OrganizerRoundDetail = () => {
     openModal("round", {
       mode: "edit",
       initialData: formattedRound,
-      onSubmit: updateRound,
+      onSubmit: async (data) => {
+        await updateRound(round.round_id, data)
+      },
     })
   }
 
@@ -73,7 +77,7 @@ const OrganizerRoundDetail = () => {
       type: "round",
       item: round,
       onConfirm: async (onClose) => {
-        await deleteRound()
+        await deleteRound(round.round_id)
         onClose()
         navigate(`/organizer/contests/${contestId}`)
       },
@@ -87,8 +91,7 @@ const OrganizerRoundDetail = () => {
       validate: validateProblem,
       onSubmit: async (data) => {
         if (mode === "create") return await addProblem(data)
-        if (mode === "edit")
-          return await updateProblem(problem.problem_id, data)
+        if (mode === "edit") return await updateProblem(problem.problem_id, data)
       },
     })
   }
@@ -99,7 +102,7 @@ const OrganizerRoundDetail = () => {
       item: problem,
       onConfirm: async (onClose) => {
         await deleteProblem(problem.problem_id)
-        onClose() // close the modal
+        onClose()
       },
     })
   }
@@ -171,9 +174,7 @@ const OrganizerRoundDetail = () => {
                 <div className="flex gap-5 items-center">
                   <Calendar size={20} />
                   <div>
-                    <p className="text-[14px] leading-[20px]">
-                      Problem Management
-                    </p>
+                    <p className="text-[14px] leading-[20px]">Problem Management</p>
                     <p className="text-[12px] leading-[16px] text-[#7A7574]">
                       Create and manage problems in this round
                     </p>

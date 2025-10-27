@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { BREADCRUMBS } from "../../config/breadcrumbs"
 import PageContainer from "../../components/PageContainer"
 import useProvinces from "../../hooks/organizer/useProvinces"
@@ -82,7 +82,7 @@ const OrganizerProvinces = () => {
 
   return (
     <PageContainer
-      breadcrumb={BREADCRUMBS.CONTESTS}
+      breadcrumb={BREADCRUMBS.PROVINCES}
       loading={loading}
       error={error}
     >
@@ -109,7 +109,7 @@ const OrganizerProvinces = () => {
         <TableFluent
           data={provinces}
           columns={provincesColumns}
-          title="Contests"
+          title="Provinces"
         />
       </div>
     </PageContainer>

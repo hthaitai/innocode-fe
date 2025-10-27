@@ -1,18 +1,18 @@
 import React from "react"
 import { Pencil, Trash } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
-import PageContainer from "../../components/PageContainer"
-import InfoSection from "../../components/organizer/contests/InfoSection"
-import DetailTable from "../../components/organizer/contests/DetailTable"
-import TableFluent from "../../components/TableFluent"
-import Actions from "../../components/organizer/contests/Actions"
-import { formatDateTime } from "../../components/organizer/utils/TableUtils"
-import { useOrganizerBreadcrumb } from "../../hooks/organizer/useOrganizerBreadcrumb"
-import { useModal } from "../../hooks/organizer/useModal"
-import { useProblemDetail } from "../../hooks/organizer/useProblemDetail"
-import { useTestCase } from "../../hooks/organizer/useTestCase"
+import PageContainer from "../../../components/PageContainer"
+import InfoSection from "../../../components/organizer/contests/InfoSection"
+import DetailTable from "../../../components/organizer/contests/DetailTable"
+import TableFluent from "../../../components/TableFluent"
+import Actions from "../../../components/organizer/contests/Actions"
+import { formatDateTime } from "../../../components/organizer/utils/TableUtils"
+import { useOrganizerBreadcrumb } from "../../../hooks/organizer/useOrganizerBreadcrumb"
+import { useModal } from "../../../hooks/organizer/useModal"
+import { useProblems } from "../../../hooks/organizer/useProblems"
+import useTestCase from "../../../hooks/organizer/useTestCase"
 
-const ProblemDetailPage = () => {
+const OrganizerProblemDetail = () => {
   const {
     contestId: contestIdParam,
     roundId: roundIdParam,
@@ -28,12 +28,13 @@ const ProblemDetailPage = () => {
 
   // --- Hooks ---
   const {
-    problem,
-    loading: problemLoading,
-    error: problemError,
+    problems,
+    loading: problemsLoading,
+    error: problemsError,
     updateProblem,
     deleteProblem,
-  } = useProblemDetail(contestId, roundId, problemId)
+  } = useProblems(contestId, roundId)
+
   const {
     testCases,
     loading: testCaseLoading,
@@ -43,8 +44,12 @@ const ProblemDetailPage = () => {
     deleteTestCase,
   } = useTestCase(contestId, roundId, problemId)
 
+  // --- Get current problem ---
+  const problem = problems.find((p) => p.problem_id === problemId)
+
   // --- Handlers ---
   const handleProblemModal = () => {
+    if (!problem) return
     openModal("problem", {
       mode: "edit",
       initialData: { ...problem },
@@ -53,13 +58,14 @@ const ProblemDetailPage = () => {
   }
 
   const handleDeleteProblem = () => {
+    if (!problem) return
     openModal("confirmDelete", {
       type: "problem",
       item: problem,
       onConfirm: async (onClose) => {
         await deleteProblem(problem.problem_id)
         onClose()
-        navigate("/organizer/problems")
+        navigate(`/organizer/contests/${contestId}/rounds/${roundId}`)
       },
     })
   }
@@ -123,8 +129,8 @@ const ProblemDetailPage = () => {
     <PageContainer
       breadcrumb={breadcrumbData.items}
       breadcrumbPaths={breadcrumbData.paths}
-      loading={problemLoading || testCaseLoading}
-      error={problemError || testCaseError}
+      loading={problemsLoading || testCaseLoading}
+      error={problemsError || testCaseError}
     >
       {!problem ? (
         <div className="flex items-center justify-center h-[200px] text-gray-500">
@@ -197,4 +203,4 @@ const ProblemDetailPage = () => {
   )
 }
 
-export default ProblemDetailPage
+export default OrganizerProblemDetail

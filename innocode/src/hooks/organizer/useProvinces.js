@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { provinces as fakeData } from "../../data/provinces"
-import { provinceService } from "../../services/provinceService"
+import { provinces as fakeData } from "../../data/provinces/provinces"
 
 export const useProvinces = () => {
   const [provinces, setProvinces] = useState(fakeData)

@@ -1,6 +1,6 @@
 import React from "react"
-import PageContainer from "../../components/PageContainer"
-import { useOrganizerBreadcrumb } from "../../hooks/organizer/useOrganizerBreadcrumb"
+import PageContainer from "../../../components/PageContainer"
+import { useOrganizerBreadcrumb } from "../../../hooks/organizer/useOrganizerBreadcrumb"
 
 const OrganizerNotifications = () => {
   const { contest, breadcrumbData } = useOrganizerBreadcrumb(

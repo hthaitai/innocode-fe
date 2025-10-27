@@ -1,119 +1,126 @@
-import { useState, useEffect, useCallback } from "react"
-import { contestService } from "../../services/mockService"
+import { useState, useCallback } from "react"
+import { testCases as fakeData } from "../../data/contests/testCases"
+import { contestService } from "../../services/contests/contestService"
 
-export const useTestCase = (contestId, roundId, problemId) => {
-  const [testCases, setTestCases] = useState([])
+export const useTestCases = (contestId, roundId, problemId) => {
+  // ✅ Initialize test cases filtered by problem_id
+  const [testCases, setTestCases] = useState(() =>
+    problemId
+      ? fakeData.filter((tc) => tc.problem_id === Number(problemId))
+      : fakeData
+  )
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // --- Fetch all test cases for a problem ---
-  const fetchTestCases = useCallback(async () => {
-    if (!contestId || !roundId || !problemId) return
+  // // ----- FETCH -----
+  // useEffect(() => {
+  //   const fetchTestCases = async () => {
+  //     if (!contestId || !roundId || !problemId) return
+  //     try {
+  //       setLoading(true)
+  //       setError(null)
+  //       const contest = await contestService.getContestById(contestId)
+  //       const round = contest.rounds.find((r) => r.round_id === roundId)
+  //       const problem = round?.problems?.find((p) => p.problem_id === problemId)
+  //       setTestCases(problem?.test_cases || [])
+  //     } catch (err) {
+  //       console.error(err)
+  //       setError(err.message || "Failed to load test cases")
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+  //   fetchTestCases()
+  // }, [contestId, roundId, problemId])
 
-    setLoading(true)
-    setError(null)
-    try {
-      const contest = await contestService.getContestById(contestId)
-      const round = contest.rounds.find((r) => r.round_id === roundId)
-      if (!round) throw new Error("Round not found")
-
-      const problem = round.problems.find((p) => p.problem_id === problemId)
-      if (!problem) throw new Error("Problem not found")
-
-      setTestCases(problem.test_cases || [])
-    } catch (err) {
-      console.error("Failed to fetch test cases:", err)
-      setError(err.message || "Failed to load test cases")
-    } finally {
-      setLoading(false)
-    }
-  }, [contestId, roundId, problemId])
-
-  useEffect(() => {
-    fetchTestCases()
-  }, [fetchTestCases])
-
-  // --- Add a test case ---
+  // ----- CREATE -----
   const addTestCase = useCallback(
     async (data) => {
-      if (!contestId || !roundId || !problemId)
-        throw new Error("Missing contest, round, or problem ID")
+      if (!problemId) throw new Error("Missing problem ID")
 
       setLoading(true)
       setError(null)
       try {
-        const newTestCase = await contestService.addTestCase(
-          contestId,
-          roundId,
-          problemId,
-          data
-        )
+        // const newTestCase = await contestService.addTestCase(contestId, roundId, problemId, data)
+        const newTestCase = {
+          test_case_id: Date.now(),
+          created_at: new Date().toISOString(),
+          problem_id: Number(problemId),
+          ...data,
+        }
+
         setTestCases((prev) => [...prev, newTestCase])
         return newTestCase
       } catch (err) {
-        console.error("Failed to add test case:", err)
-        setError(err.message || "Failed to add test case")
+        console.error(err)
+        setError(err.message)
         throw err
       } finally {
         setLoading(false)
       }
     },
-    [contestId, roundId, problemId]
+    [problemId]
   )
 
-  // --- Update a test case ---
+  // ----- UPDATE -----
   const updateTestCase = useCallback(
-    async (testCaseId, data) => {
-      if (!contestId || !roundId || !problemId)
-        throw new Error("Missing contest, round, or problem ID")
+    async (id, data) => {
+      if (!problemId) throw new Error("Missing problem ID")
 
       setLoading(true)
       setError(null)
       try {
-        // For mock service, we’ll simulate an update by replacing locally
+        // const updated = await contestService.updateTestCase(contestId, roundId, problemId, id, data)
+        const updated = { ...data, test_case_id: id }
+
         setTestCases((prev) =>
-          prev.map((tc) => (tc.test_case_id === testCaseId ? { ...tc, ...data } : tc))
+          prev.map((tc) => (tc.test_case_id === id ? updated : tc))
         )
-        return { test_case_id: testCaseId, ...data }
+
+        return updated
       } catch (err) {
-        console.error("Failed to update test case:", err)
-        setError(err.message || "Failed to update test case")
+        console.error(err)
+        setError(err.message)
         throw err
       } finally {
         setLoading(false)
       }
     },
-    [contestId, roundId, problemId]
+    [problemId]
   )
 
-  // --- Delete a test case ---
+  // ----- DELETE -----
   const deleteTestCase = useCallback(
-    async (testCaseId) => {
-      if (!contestId || !roundId || !problemId)
-        throw new Error("Missing contest, round, or problem ID")
+    async (id) => {
+      if (!problemId) throw new Error("Missing problem ID")
 
       setLoading(true)
       setError(null)
       try {
-        setTestCases((prev) => prev.filter((tc) => tc.test_case_id !== testCaseId))
+        // await contestService.deleteTestCase(contestId, roundId, problemId, id)
+        console.log("[FAKE DELETE] Test Case ID:", id)
+
+        setTestCases((prev) => prev.filter((tc) => tc.test_case_id !== id))
       } catch (err) {
-        console.error("Failed to delete test case:", err)
-        setError(err.message || "Failed to delete test case")
+        console.error(err)
+        setError(err.message)
         throw err
       } finally {
         setLoading(false)
       }
     },
-    [contestId, roundId, problemId]
+    [problemId]
   )
 
   return {
     testCases,
     loading,
     error,
-    fetchTestCases,
     addTestCase,
     updateTestCase,
     deleteTestCase,
   }
 }
+
+export default useTestCases

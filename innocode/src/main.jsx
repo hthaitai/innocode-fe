@@ -17,22 +17,24 @@ import Practice from "./pages/student/Practice"
 import Team from "./pages/student/Team"
 import Leaderboard from "./pages/student/Leaderboard"
 import Help from "./pages/student/Help"
-// Organizer pages
-import OrganizerContests from "./pages/organizer/OrganizerContests"
-import OrganizerContestDetail from "./pages/organizer/OrganizerContestDetail"
 // Auth
 import Login from "./components/authenticate/Login"
-import OrganizerTeams from "./pages/organizer/OrganizerTeams"
-import OrganizerLeaderboard from "./pages/organizer/OrganizerLeaderboard"
-import OrganizerCertificates from "./pages/organizer/OrganizerCertificates"
-import OrganizerAppeals from "./pages/organizer/OrganizerAppeals"
-import OrganizerActivityLogs from "./pages/organizer/OrganizerActivityLogs"
-import OrganizerNotifications from "./pages/organizer/OrganizerNotifications"
-import OrganizerRoundDetail from "./pages/organizer/OrganizerRoundDetail"
-import OrganizerProblemDetail from "./pages/organizer/OrganizerProblemDetail"
 import { ModalProvider } from "./context/ModalContext"
+// Organizer pages
+import OrganizerContests from "./pages/organizer/contests/OrganizerContests"
+import OrganizerContestDetail from "./pages/organizer/contests/OrganizerContestDetail"
+import OrganizerRoundDetail from "./pages/organizer/contests/OrganizerRoundDetail"
+import OrganizerProblemDetail from "./pages/organizer/contests/OrganizerProblemDetail"
+import OrganizerTeams from "./pages/organizer/contests/teams/OrganizerTeams"
+import OrganizerTeamDetail from "./pages/organizer/contests/teams/OrganizerTeamDetail"
+import OrganizerLeaderboard from "./pages/organizer/contests/OrganizerLeaderboard"
+import OrganizerCertificates from "./pages/organizer/contests/OrganizerCertificates"
+import OrganizerAppeals from "./pages/organizer/contests/OrganizerAppeals"
+import OrganizerActivityLogs from "./pages/organizer/contests/OrganizerActivityLogs"
+import OrganizerNotifications from "./pages/organizer/contests/OrganizerNotifications"
 import OrganizerProvinces from "./pages/organizer/OrganizerProvinces"
 import OrganizerSchools from "./pages/organizer/OrganizerSchools"
+
 
 const router = createBrowserRouter([
   { path: "login", element: <Login /> },
@@ -68,6 +70,11 @@ const router = createBrowserRouter([
           },
 
           { path: ":contestId/teams", element: <OrganizerTeams /> },
+          {
+            path: ":contestId/teams/:teamId",
+            element: <OrganizerTeamDetail />,
+          },
+
           { path: ":contestId/leaderboard", element: <OrganizerLeaderboard /> },
           {
             path: ":contestId/certificates",
@@ -87,8 +94,8 @@ const router = createBrowserRouter([
       },
       {
         path: "organizer/schools",
-        element: <OrganizerSchools />
-      }
+        element: <OrganizerSchools />,
+      },
     ],
   },
 ])

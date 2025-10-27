@@ -1,23 +1,19 @@
 import React from "react"
 import { useNavigate } from "react-router-dom"
-import PageContainer from "../../components/PageContainer"
-import TableFluent from "../../components/TableFluent"
-import Actions from "../../components/organizer/contests/Actions"
-import { BREADCRUMBS } from "../../config/breadcrumbs"
+import { BREADCRUMBS } from "../../../config/breadcrumbs"
+import PageContainer from "../../../components/PageContainer"
+import TableFluent from "../../../components/TableFluent"
+import Actions from "../../../components/organizer/contests/Actions"
 import { Trophy, Pencil, Trash2 } from "lucide-react"
-import {
-  formatDateTime,
-  StatusBadge,
-} from "../../components/organizer/utils/TableUtils"
-import { useModal } from "../../hooks/organizer/useModal"
-import { useContests } from "../../hooks/organizer/useContests"
+import { formatDateTime, StatusBadge } from "../../../components/organizer/utils/TableUtils"
+import { useModal } from "../../../hooks/organizer/useModal"
+import { useContests } from "../../../hooks/organizer/useContests"
 
 const OrganizerContests = () => {
   const navigate = useNavigate()
   const { openModal } = useModal()
   const {
     contests,
-    validateContest,
     loading,
     error,
     addContest,
@@ -30,7 +26,6 @@ const OrganizerContests = () => {
     openModal("contest", {
       mode,
       initialData: contest,
-      validate: validateContest,
       onSubmit: async (data) => {
         if (mode === "create") return await addContest(data)
         if (mode === "edit")
@@ -107,8 +102,8 @@ const OrganizerContests = () => {
       loading={loading}
       error={error}
     >
-      <div className="flex flex-col gap-1">
-        {/* Header */}
+      <div className="space-y-1">
+        {/* Add Contest */}
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
           <div className="flex gap-5 items-center">
             <Trophy size={20} />
@@ -129,7 +124,7 @@ const OrganizerContests = () => {
 
         {/* Table */}
         <TableFluent
-          data={contests.map((c) => ({ ...c, id: c.contest_id }))}
+          data={contests}
           columns={contestColumns}
           title="Contests"
           onRowClick={(contest) =>

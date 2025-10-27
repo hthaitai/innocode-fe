@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { schools as fakeData } from "../../data/schools";
-import { schoolService } from "../../services/schoolService";
+import { schools as fakeData } from "../../data//schools/schools";
 
 export const useSchools = () => {
   const [schools, setSchools] = useState(fakeData);

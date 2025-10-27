@@ -1,101 +1,115 @@
-import { useState, useEffect, useCallback } from "react";
-import { contestService } from "../../services/mockService";
+import { useCallback, useState } from "react"
+import { rounds as fakeData } from "../../data/contests/rounds"
 
 export const useRounds = (contestId) => {
-  const [rounds, setRounds] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // ✅ Load rounds filtered by contestId, or all if none
+  const [rounds, setRounds] = useState(() =>
+    contestId ? fakeData.filter((r) => r.contest_id === Number(contestId)) : fakeData
+  )
 
-  const fetchRounds = useCallback(async () => {
-    if (!contestId) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const contest = await contestService.getContestById(contestId);
-      setRounds(contest.rounds || []);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [contestId]);
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  useEffect(() => {
-    fetchRounds();
-  }, [fetchRounds]);
+  // // ----- FETCH -----
+  // useEffect(() => {
+  //   const fetchRounds = async () => {
+  //     if (!contestId) return
+  //     try {
+  //       setLoading(true)
+  //       setError(null)
+  //       const data = await roundService.getAllRounds(contestId)
+  //       setRounds(Array.isArray(data) ? data : [])
+  //     } catch (err) {
+  //       console.error(err)
+  //       setError(err.message || "Failed to load rounds")
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+  //
+  //   fetchRounds()
+  // }, [contestId])
 
-  const validateRound = useCallback((data) => {
-    const errors = {};
-    if (!data.name?.trim()) errors.name = "Round name is required";
-    if (!data.start) errors.start = "Start date/time is required";
-    if (!data.end) errors.end = "End date/time is required";
-    if (data.start && data.end && new Date(data.end) < new Date(data.start)) {
-      errors.end = "End date/time cannot be before start date/time";
-    }
-    return errors;
-  }, []);
-
+  // ----- CREATE -----
   const addRound = useCallback(
     async (data) => {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
       try {
-        const newRound = await contestService.addRound(contestId, data);
-        setRounds((prev) => [...prev, newRound]);
-        return newRound;
+        // const newRound = await roundService.createRound(contestId, data)
+        const newRound = {
+          round_id: Date.now(),
+          created_at: new Date().toISOString(),
+          contest_id: contestId ? Number(contestId) : data.contest_id,
+          ...data,
+        }
+
+        setRounds((prev) => [...prev, newRound])
+        return newRound
       } catch (err) {
-        setError(err.message);
-        throw err;
+        console.error(err)
+        setError(err.message)
+        throw err
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     },
     [contestId]
-  );
+  )
 
+  // ----- UPDATE -----
   const updateRound = useCallback(
-    async (roundId, data) => {
-      setLoading(true);
-      setError(null);
+    async (id, data) => {
+      setLoading(true)
+      setError(null)
       try {
-        const updated = await contestService.updateRound(contestId, roundId, data);
-        setRounds((prev) => prev.map((r) => (r.round_id === roundId ? updated : r)));
-        return updated;
-      } catch (err) {
-        setError(err.message);
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [contestId]
-  );
+        // const updated = await roundService.updateRound(contestId, id, data)
+        const updated = { ...data, round_id: id }
 
-  const deleteRound = useCallback(
-    async (roundId) => {
-      setLoading(true);
-      setError(null);
-      try {
-        await contestService.deleteRound(contestId, roundId);
-        setRounds((prev) => prev.filter((r) => r.round_id !== roundId));
+        setRounds((prev) =>
+          prev.map((r) => (r.round_id === id ? updated : r))
+        )
+        return updated
       } catch (err) {
-        setError(err.message);
-        throw err;
+        console.error(err)
+        setError(err.message)
+        throw err
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     },
     [contestId]
-  );
+  )
+
+  // ----- DELETE -----
+  const deleteRound = useCallback(
+    async (id) => {
+      setLoading(true)
+      setError(null)
+      try {
+        // await roundService.deleteRound(contestId, id)
+        console.log("[FAKE DELETE] Round ID:", id)
+
+        setRounds((prev) => prev.filter((r) => r.round_id !== id))
+      } catch (err) {
+        console.error(err)
+        setError(err.message)
+        throw err
+      } finally {
+        setLoading(false)
+      }
+    },
+    [contestId]
+  )
 
   return {
     rounds,
     loading,
     error,
-    fetchRounds,
-    validateRound,
     addRound,
     updateRound,
     deleteRound,
-  };
-};
+  }
+}
+
+export default useRounds
