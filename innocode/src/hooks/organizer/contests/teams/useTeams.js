@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { teams as fakeData } from "../../data/teams/teams"
+import { teams as fakeData } from "../../../../data/contests/teams/teams"
 
 export const useTeams = () => {
   const [teams, setTeams] = useState(fakeData)

@@ -9,8 +9,8 @@ import Actions from "../../../components/organizer/contests/Actions"
 import { formatDateTime } from "../../../components/organizer/utils/TableUtils"
 import { useOrganizerBreadcrumb } from "../../../hooks/organizer/useOrganizerBreadcrumb"
 import { useModal } from "../../../hooks/organizer/useModal"
-import { useProblems } from "../../../hooks/organizer/useProblems"
-import useTestCase from "../../../hooks/organizer/useTestCase"
+import { useProblems } from "../../../hooks/organizer/contests/useProblems"
+import useTestCase from "../../../hooks/organizer/contests/useTestCase"
 
 const OrganizerProblemDetail = () => {
   const {

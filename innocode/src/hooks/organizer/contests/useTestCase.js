@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react"
-import { testCases as fakeData } from "../../data/contests/testCases"
-import { contestService } from "../../services/contests/contestService"
+import { testCases as fakeData } from "../../../data/contests/testCases"
+import { contestService } from "../../../services/contests/contestService"
 
 export const useTestCases = (contestId, roundId, problemId) => {
   // ✅ Initialize test cases filtered by problem_id

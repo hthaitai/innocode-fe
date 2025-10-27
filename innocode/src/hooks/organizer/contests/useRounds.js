@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { rounds as fakeData } from "../../data/contests/rounds"
+import { rounds as fakeData } from "../../../data/contests/rounds"
 
 export const useRounds = (contestId) => {
   // ✅ Load rounds filtered by contestId, or all if none

@@ -1,4 +1,4 @@
-import { teamApi } from "../../api/teamApi"
+import { teamApi } from "../../../api/teamApi"
 
 export const teamService = {
   // ----- READ ALL -----

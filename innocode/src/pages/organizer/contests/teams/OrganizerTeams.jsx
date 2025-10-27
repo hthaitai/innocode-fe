@@ -5,10 +5,10 @@ import TableFluent from "../../../../components/TableFluent"
 import { Users, Pencil, Trash2 } from "lucide-react"
 import Actions from "../../../../components/organizer/contests/Actions"
 import { useOrganizerBreadcrumb } from "../../../../hooks/organizer/useOrganizerBreadcrumb"
-import useTeams from "../../../../hooks/organizer/useTeams"
 import { useModal } from "../../../../hooks/organizer/useModal"
 import useSchools from "../../../../hooks/organizer/useSchools"
 import useMentors from "../../../../hooks/organizer/useMentors"
+import useTeams from "../../../../hooks/organizer/contests/teams/useTeams"
 
 const OrganizerTeams = () => {
   const navigate = useNavigate()

@@ -1,6 +1,6 @@
 // src/hooks/organizer/useMentors.js
 import React, { useCallback, useEffect, useState } from "react"
-import { mentors as fakeData } from "../../data/schools/mentors"
+import { mentors as fakeData } from "../../data/mentors"
 // import { mentorService } from "../../services/mentorService"
 
 export const useMentors = () => {

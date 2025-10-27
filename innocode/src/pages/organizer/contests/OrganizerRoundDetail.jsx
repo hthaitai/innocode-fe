@@ -9,18 +9,19 @@ import { Calendar, Trash, Pencil } from "lucide-react"
 import { formatDateTime } from "../../../components/organizer/utils/TableUtils"
 import { useOrganizerBreadcrumb } from "../../../hooks/organizer/useOrganizerBreadcrumb"
 import { useModal } from "../../../hooks/organizer/useModal"
-import { useRounds } from "../../../hooks/organizer/useRounds"
-import { useProblems } from "../../../hooks/organizer/useProblems"
+import { useRounds } from "../../../hooks/organizer/contests/useRounds"
+import { useProblems } from "../../../hooks/organizer/contests/useProblems"
 
 const OrganizerRoundDetail = () => {
   const { contestId: contestIdParam, roundId: roundIdParam } = useParams()
   const contestId = Number(contestIdParam)
   const roundId = Number(roundIdParam)
+
   const navigate = useNavigate()
   const { openModal } = useModal()
   const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_ROUND_DETAIL")
 
-  // --- Rounds Hook ---
+  // --- Hooks ---
   const {
     rounds,
     loading: roundLoading,
@@ -29,10 +30,6 @@ const OrganizerRoundDetail = () => {
     deleteRound,
   } = useRounds(contestId)
 
-  // Find the specific round
-  const round = rounds.find((r) => r.round_id === roundId)
-
-  // --- Problems Hook ---
   const {
     problems,
     loading: problemsLoading,
@@ -40,18 +37,21 @@ const OrganizerRoundDetail = () => {
     addProblem,
     updateProblem,
     deleteProblem,
-    validateProblem,
   } = useProblems(contestId, roundId)
+
+  const round = rounds.find((r) => r.round_id === roundId)
 
   // --- Format helper ---
   const formatForInput = (dateStr) => {
     if (!dateStr) return ""
     const d = new Date(dateStr)
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-      d.getDate()
-    ).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}:${String(
-      d.getMinutes()
-    ).padStart(2, "0")}`
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(
+      2,
+      "0"
+    )}:${String(d.getMinutes()).padStart(2, "0")}`
   }
 
   // ---------- Handlers ----------
@@ -88,10 +88,10 @@ const OrganizerRoundDetail = () => {
     openModal("problem", {
       mode,
       initialData: problem,
-      validate: validateProblem,
       onSubmit: async (data) => {
         if (mode === "create") return await addProblem(data)
-        if (mode === "edit") return await updateProblem(problem.problem_id, data)
+        if (mode === "edit")
+          return await updateProblem(problem.problem_id, data)
       },
     })
   }
@@ -174,7 +174,9 @@ const OrganizerRoundDetail = () => {
                 <div className="flex gap-5 items-center">
                   <Calendar size={20} />
                   <div>
-                    <p className="text-[14px] leading-[20px]">Problem Management</p>
+                    <p className="text-[14px] leading-[20px]">
+                      Problem Management
+                    </p>
                     <p className="text-[12px] leading-[16px] text-[#7A7574]">
                       Create and manage problems in this round
                     </p>

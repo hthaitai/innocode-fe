@@ -1,6 +1,6 @@
 import React from "react"
 import { TextField } from "@mui/material"
-import DropdownFluent from "../../../DropdownFluent"
+import DropdownFluent from "../../DropdownFluent"
 
 
 const ContestForm = ({ formData, setFormData, errors }) => {

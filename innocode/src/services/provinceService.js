@@ -1,4 +1,4 @@
-import { provinceApi } from "../../api/provinceApi"
+import { provinceApi } from "../api/provinceApi"
 
 export const provinceService = {
   // ----- READ ALL -----

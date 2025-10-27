@@ -1,12 +1,12 @@
 import { createContext, useContext, useState, useCallback } from "react"
-import ContestModal from "../components/organizer/contests/modals/ContestModal"
-import RoundModal from "../components/organizer/contests/modals/RoundModal"
-import ProblemModal from "../components/organizer/contests/modals/ProblemModal"
-import ConfirmDeleteModal from "../components/organizer/contests/modals/ConfirmDeleteModal"
-import TestCaseModal from "../components/organizer/contests/modals/TestCaseModal"
+import ContestModal from "../components/organizer/contests/ContestModal"
+import RoundModal from "../components/organizer/contests/round/RoundModal"
+import ProblemModal from "../components/organizer/contests/problem/ProblemModal"
+import ConfirmDeleteModal from "../components/organizer/contests/ConfirmDeleteModal"
+import TestCaseModal from "../components/organizer/contests/testCase/TestCaseModal"
 import ProvinceModal from "../components/organizer/provinces/ProvinceModal"
 import SchoolModal from "../components/organizer/schools/SchoolModal"
-import TeamModal from "../components/organizer/contests/modals/TeamModal"
+import TeamModal from "../components/organizer/contests/team/TeamModal"
 
 const ModalContext = createContext(null)
 

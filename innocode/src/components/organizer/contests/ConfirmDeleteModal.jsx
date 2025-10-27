@@ -1,5 +1,5 @@
 // ConfirmDeleteModal.jsx
-import Modal from "../../../BaseModal"
+import Modal from "../../BaseModal"
 
 const ConfirmDeleteModal = ({ isOpen, item, onClose, onConfirm }) => (
   <Modal

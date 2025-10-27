@@ -6,10 +6,10 @@ import InfoSection from "../../../../components/organizer/contests/InfoSection"
 import DetailTable from "../../../../components/organizer/contests/DetailTable"
 import { useOrganizerBreadcrumb } from "../../../../hooks/organizer/useOrganizerBreadcrumb"
 import { useModal } from "../../../../hooks/organizer/useModal"
-import useTeams from "../../../../hooks/organizer/useTeams"
+import useTeams from "../../../../hooks/organizer/contests/teams/useTeams"
 import useSchools from "../../../../hooks/organizer/useSchools"
 import useMentors from "../../../../hooks/organizer/useMentors"
-import { useContests } from "../../../../hooks/organizer/useContests"
+import { useContests } from "../../../../hooks/organizer/contests/useContests"
 import { formatDateTime } from "../../../../components/organizer/utils/TableUtils"
 
 const OrganizerTeamDetail = () => {

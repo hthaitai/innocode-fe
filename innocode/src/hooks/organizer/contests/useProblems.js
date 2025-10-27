@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react"
-import { problems as fakeData } from "../../data/contests/problems"
+import { problems as fakeData } from "../../../data/contests/problems"
 
 export const useProblems = (contestId, roundId) => {
   // ✅ Initialize from fakeData filtered by round_id

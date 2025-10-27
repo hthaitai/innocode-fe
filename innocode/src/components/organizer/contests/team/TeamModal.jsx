@@ -1,24 +1,31 @@
 import React, { useState, useEffect } from "react"
-import BaseModal from "../../../BaseModal"
-import { validateProblem } from "../../../../utils/validationSchemas"
-import ProblemForm from "../forms/ProblemForm"
 
-export default function ProblemModal({
+
+import BaseModal from "../../../BaseModal"
+import TeamForm from "./TeamForm"
+import { validateTeam } from "../../../../validators/teamValidator"
+import useSchools from "../../../../hooks/organizer/useSchools"
+import useMentors from "../../../../hooks/organizer/useMentors"
+
+export default function TeamModal({
   isOpen,
-  mode = "create", // "create" or "edit"
+  mode = "create",
   initialData = {},
   onSubmit,
   onClose,
 }) {
   const emptyData = {
-    title: "",
-    language: "python3",
-    type: "manual",
-    penalty_rate: "",
+    name: "",
+    school_id: null,
+    mentor_id: null,
   }
 
   const [formData, setFormData] = useState(emptyData)
   const [errors, setErrors] = useState({})
+
+  // Fetch schools and mentors from hooks
+  const { schools } = useSchools()
+  const { mentors } = useMentors()
 
   // Reset form when modal opens or data changes
   useEffect(() => {
@@ -28,9 +35,9 @@ export default function ProblemModal({
     }
   }, [isOpen, mode, initialData])
 
-  // --- Submit handler ---
+  // Validate and submit
   const handleSubmit = async () => {
-    const validationErrors = validateProblem(formData)
+    const validationErrors = validateTeam(formData)
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length === 0) {
@@ -39,11 +46,11 @@ export default function ProblemModal({
     }
   }
 
-  // --- Modal UI ---
+  // Dynamic title + footer
   const title =
     mode === "edit"
-      ? `Edit Problem: ${initialData.title || `#${initialData.problem_id}`}`
-      : "Create New Problem"
+      ? `Edit Team: ${initialData.name || ""}`
+      : "Create New Team"
 
   const footer = (
     <div className="flex justify-end gap-2">
@@ -61,13 +68,15 @@ export default function ProblemModal({
       isOpen={isOpen}
       onClose={onClose}
       title={title}
-      size="lg"
+      size="md"
       footer={footer}
     >
-      <ProblemForm
+      <TeamForm
         formData={formData}
         setFormData={setFormData}
         errors={errors}
+        schools={schools}       // ✅ pass schools
+        mentors={mentors}       // ✅ pass mentors
       />
     </BaseModal>
   )

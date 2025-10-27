@@ -9,13 +9,15 @@ import ContestRelatedSettings from "../../../components/organizer/contests/Conte
 import { formatDateTime } from "../../../components/organizer/utils/TableUtils"
 import { Calendar, Pencil, Trash } from "lucide-react"
 import { useModal } from "../../../hooks/organizer/useModal"
-import { useContests } from "../../../hooks/organizer/useContests"
-import { useRounds } from "../../../hooks/organizer/useRounds"
+import { useContests } from "../../../hooks/organizer/contests/useContests"
+import { useRounds } from "../../../hooks/organizer/contests/useRounds"
 import { useOrganizerBreadcrumb } from "../../../hooks/organizer/useOrganizerBreadcrumb"
+import { formatForInput } from "../../../utils/formatForInput"
 
 const OrganizerContestDetail = () => {
   const { contestId: contestIdParam } = useParams()
   const contestId = Number(contestIdParam)
+
   const navigate = useNavigate()
   const { openModal } = useModal()
   const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_CONTEST_DETAIL")
@@ -33,25 +35,12 @@ const OrganizerContestDetail = () => {
     rounds,
     loading: roundsLoading,
     error: roundsError,
-    validateRound,
     addRound,
     updateRound,
     deleteRound,
   } = useRounds(contestId)
 
   const contest = contests.find((c) => c.contest_id === contestId)
-
-  // ----- Helpers -----
-  const formatForInput = (dateStr) => {
-    if (!dateStr) return ""
-    const d = new Date(dateStr)
-    const yyyy = d.getFullYear()
-    const mm = String(d.getMonth() + 1).padStart(2, "0")
-    const dd = String(d.getDate()).padStart(2, "0")
-    const hh = String(d.getHours()).padStart(2, "0")
-    const min = String(d.getMinutes()).padStart(2, "0")
-    return `${yyyy}-${mm}-${dd}T${hh}:${min}`
-  }
 
   // ----- Contest Handlers -----
   const handleContestModal = (mode) => {
@@ -88,7 +77,6 @@ const OrganizerContestDetail = () => {
     openModal("round", {
       mode,
       initialData: roundData,
-      validate: validateRound,
       onSubmit: async (data) => {
         if (mode === "create") return await addRound(data)
         if (mode === "edit") return await updateRound(round.round_id, data)

@@ -1,56 +1,62 @@
 import React, { useState, useEffect } from "react"
-
-
 import BaseModal from "../../../BaseModal"
-import TeamForm from "../forms/TeamForm"
-import { validateTeam } from "../../../../validators/teamValidator"
-import useSchools from "../../../../hooks/organizer/useSchools"
-import useMentors from "../../../../hooks/organizer/useMentors"
+import RoundForm from "./RoundForm"
+import { validateRound } from "../../../../validators/roundValidator"
+import { formatForInput } from "../../../../utils/formatForInput"
 
-export default function TeamModal({
+export default function RoundModal({
   isOpen,
-  mode = "create",
+  mode = "create", // "create" or "edit"
   initialData = {},
   onSubmit,
   onClose,
 }) {
   const emptyData = {
     name: "",
-    school_id: null,
-    mentor_id: null,
+    start: "",
+    end: "",
   }
 
   const [formData, setFormData] = useState(emptyData)
   const [errors, setErrors] = useState({})
 
-  // Fetch schools and mentors from hooks
-  const { schools } = useSchools()
-  const { mentors } = useMentors()
+  // --- Helper functions ---
+  const toISO = (val) => (val ? new Date(val).toISOString() : null)
 
-  // Reset form when modal opens or data changes
+  // --- Reset form when modal opens ---
   useEffect(() => {
     if (isOpen) {
-      setFormData(mode === "edit" ? initialData : emptyData)
+      const data = mode === "edit" ? initialData : emptyData
+      setFormData({
+        ...data,
+        start: formatForInput(data.start),
+        end: formatForInput(data.end),
+      })
       setErrors({})
     }
   }, [isOpen, mode, initialData])
 
-  // Validate and submit
+  // --- Submit handler ---
   const handleSubmit = async () => {
-    const validationErrors = validateTeam(formData)
+    const validationErrors = validateRound(formData)
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length === 0) {
-      await onSubmit(formData, mode)
+      const submitData = {
+        ...formData,
+        start: toISO(formData.start),
+        end: toISO(formData.end),
+      }
+      await onSubmit(submitData, mode)
       onClose()
     }
   }
 
-  // Dynamic title + footer
+  // --- Modal UI ---
   const title =
     mode === "edit"
-      ? `Edit Team: ${initialData.name || ""}`
-      : "Create New Team"
+      ? `Edit Round: ${initialData.name || ""}`
+      : "Create New Round"
 
   const footer = (
     <div className="flex justify-end gap-2">
@@ -68,15 +74,13 @@ export default function TeamModal({
       isOpen={isOpen}
       onClose={onClose}
       title={title}
-      size="md"
+      size="lg"
       footer={footer}
     >
-      <TeamForm
+      <RoundForm
         formData={formData}
         setFormData={setFormData}
         errors={errors}
-        schools={schools}       // ✅ pass schools
-        mentors={mentors}       // ✅ pass mentors
       />
     </BaseModal>
   )

@@ -1,4 +1,4 @@
-import { schoolApi } from "../../api/schoolApi";
+import { schoolApi } from "../api/schoolApi";
 
 export const schoolService = {
   // ----- READ ALL -----

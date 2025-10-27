@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
-import { contests as fakeData } from "../../data/contests/contests"
-import { contestService } from "../../services/contests/contestService"
+import { contests as fakeData } from "../../../data/contests/contests"
+import { contestService } from "../../../services/contests/contestService"
 
 export const useContests = () => {
   const [contests, setContests] = useState(fakeData)
