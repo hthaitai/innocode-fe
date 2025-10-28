@@ -9,11 +9,9 @@ import useTeams from "../../../../hooks/organizer/contests/teams/useTeams"
 import useSchools from "../../../../hooks/organizer/useSchools"
 import useMentors from "../../../../hooks/organizer/useMentors"
 import { useContests } from "../../../../hooks/organizer/contests/useContests"
-import {
-  formatDateTime,
-  StatusBadge,
-} from "../../../../components/organizer/utils/TableUtils"
 import TableFluent from "../../../../components/TableFluent"
+import { StatusBadge } from "../../../../utils/StatusBadge"
+import { formatDateTime } from "../../../../utils/formatDateTime"
 
 const OrganizerTeamDetail = () => {
   const { teamId: teamIdParam } = useParams()

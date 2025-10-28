@@ -3,10 +3,10 @@ import {
   Users,
   Trophy,
   Award,
-  MessageCircle,
   ListChecks,
   Bell,
   ChevronRight,
+  Scale,
 } from "lucide-react"
 
 const items = [
@@ -31,7 +31,7 @@ const items = [
   {
     title: "Appeals",
     subtitle: "Review and resolve team appeals",
-    icon: <MessageCircle size={20} />,
+    icon: <Scale size={20} />,
     path: "appeals",
   },
   {

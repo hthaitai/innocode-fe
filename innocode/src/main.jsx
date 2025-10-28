@@ -29,11 +29,12 @@ import OrganizerTeams from "./pages/organizer/contests/teams/OrganizerTeams"
 import OrganizerTeamDetail from "./pages/organizer/contests/teams/OrganizerTeamDetail"
 import OrganizerLeaderboard from "./pages/organizer/contests/OrganizerLeaderboard"
 import OrganizerCertificates from "./pages/organizer/contests/OrganizerCertificates"
-import OrganizerAppeals from "./pages/organizer/contests/OrganizerAppeals"
 import OrganizerActivityLogs from "./pages/organizer/contests/OrganizerActivityLogs"
 import OrganizerNotifications from "./pages/organizer/contests/OrganizerNotifications"
 import OrganizerProvinces from "./pages/organizer/OrganizerProvinces"
 import OrganizerSchools from "./pages/organizer/OrganizerSchools"
+import OrganizerAppeals from "./pages/organizer/contests/appeals/OrganizerAppeals"
+import OrganizerAppealDetail from "./pages/organizer/contests/appeals/OrganizerAppealDetail"
 
 
 const router = createBrowserRouter([
@@ -80,7 +81,10 @@ const router = createBrowserRouter([
             path: ":contestId/certificates",
             element: <OrganizerCertificates />,
           },
+
           { path: ":contestId/appeals", element: <OrganizerAppeals /> },
+          { path: ":contestId/appeals/:appealId", element: <OrganizerAppealDetail /> },
+
           { path: ":contestId/activity", element: <OrganizerActivityLogs /> },
           {
             path: ":contestId/notifications",

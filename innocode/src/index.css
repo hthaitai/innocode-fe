@@ -386,3 +386,15 @@ body {
   hover:bg-[#E2631F] 
   active:bg-[#E47336];
 }
+
+/* Auto-attach visual grouping for consecutive InfoSections */
+.info-group > *:not(:last-child) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: none
+}
+
+.info-group > *:not(:first-child) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
