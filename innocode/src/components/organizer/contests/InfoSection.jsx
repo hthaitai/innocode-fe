@@ -21,7 +21,7 @@ const InfoSection = ({ title, onEdit, children }) => {
       </div>
 
       {/* Body */}
-      <div className="pl-[60px] p-5 min-h-[70px]">{children}</div>
+      <div className="pl-[60px] px-5 py-4 min-h-[70px]">{children}</div>
     </div>
   )
 }

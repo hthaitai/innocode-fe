@@ -6,13 +6,13 @@ import InfoSection from "../../../components/organizer/contests/InfoSection"
 import TableFluent from "../../../components/TableFluent"
 import Actions from "../../../components/organizer/contests/Actions"
 import ContestRelatedSettings from "../../../components/organizer/contests/ContestRelatedSettings"
-import { formatDateTime } from "../../../components/organizer/utils/TableUtils"
 import { Calendar, Pencil, Trash } from "lucide-react"
 import { useModal } from "../../../hooks/organizer/useModal"
 import { useContests } from "../../../hooks/organizer/contests/useContests"
 import { useRounds } from "../../../hooks/organizer/contests/useRounds"
 import { useOrganizerBreadcrumb } from "../../../hooks/organizer/useOrganizerBreadcrumb"
 import { formatForInput } from "../../../utils/formatForInput"
+import { formatDateTime } from "../../../utils/formatDateTime"
 
 const OrganizerContestDetail = () => {
   const { contestId: contestIdParam } = useParams()

@@ -1,8 +1,10 @@
 import React from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import { Users } from "lucide-react"
+
 import PageContainer from "../../../../components/PageContainer"
 import TableFluent from "../../../../components/TableFluent"
-import { Users } from "lucide-react"
+
 import { useOrganizerBreadcrumb } from "../../../../hooks/organizer/useOrganizerBreadcrumb"
 import useSchools from "../../../../hooks/organizer/useSchools"
 import useMentors from "../../../../hooks/organizer/useMentors"
@@ -10,8 +12,10 @@ import useTeams from "../../../../hooks/organizer/contests/teams/useTeams"
 
 const OrganizerTeams = () => {
   const navigate = useNavigate()
-  const { teams, loading, error } = useTeams()
+  const { contestId } = useParams()
+
   const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_TEAMS")
+  const { teams, loading, error } = useTeams()
   const { schools } = useSchools()
   const { mentors } = useMentors()
 
@@ -25,30 +29,22 @@ const OrganizerTeams = () => {
     {
       accessorKey: "school_id",
       header: "School",
-      cell: ({ row }) => {
-        const school = schools.find(
-          (s) => s.school_id === row.original.school_id
-        )
-        return school ? school.name : "—"
-      },
+      cell: ({ row }) =>
+        schools.find((s) => s.school_id === row.original.school_id)?.name ||
+        "—",
     },
     {
       accessorKey: "mentor_id",
       header: "Mentor",
-      cell: ({ row }) => {
-        const mentor = mentors.find(
-          (m) => m.mentor_id === row.original.mentor_id
-        )
-        return mentor ? mentor.user?.name || "—" : "—"
-      },
+      cell: ({ row }) =>
+        mentors.find((m) => m.mentor_id === row.original.mentor_id)?.user
+          ?.name || "—",
     },
     {
       accessorKey: "created_at",
       header: "Created At",
-      cell: ({ row }) => {
-        const date = new Date(row.original.created_at)
-        return date.toLocaleDateString()
-      },
+      cell: ({ row }) =>
+        new Date(row.original.created_at).toLocaleDateString() || "—",
     },
   ]
 
@@ -65,25 +61,24 @@ const OrganizerTeams = () => {
           <div className="flex gap-5 items-center">
             <Users size={20} />
             <div>
-              <p className="text-[14px] leading-[20px]">Teams Overview</p>
+              <p className="text-[14px] leading-[20px]">
+                Teams Overview
+              </p>
               <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                View teams participating in contests
+                View teams participating in the contest
               </p>
             </div>
           </div>
         </div>
 
-        {/* Table */}
+        {/* Teams Table */}
         <TableFluent
           data={teams}
           columns={teamsColumns}
           title="Teams"
-          onRowClick={(team) => {
-            if (!team) return
-            navigate(
-              `/organizer/contests/${team.contest_id}/teams/${team.team_id}`
-            )
-          }}
+          onRowClick={(team) =>
+            navigate(`/organizer/contests/${contestId}/teams/${team.team_id}`)
+          }
         />
       </div>
     </PageContainer>

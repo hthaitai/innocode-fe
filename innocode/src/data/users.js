@@ -1,0 +1,32 @@
+export const users = [
+  {
+    user_id: 1,
+    email: "alice@innocode.com",
+    role: "organizer",
+    fullname: "Alice Nguyen",
+    password_hash: "hashed_password_1",
+    status: "active",
+    created_at: "2025-10-01T09:00:00Z",
+    updated_at: "2025-10-05T09:00:00Z",
+  },
+  {
+    user_id: 2,
+    email: "bob@innocode.com",
+    role: "mentor",
+    fullname: "Bob Tran",
+    password_hash: "hashed_password_2",
+    status: "active",
+    created_at: "2025-09-20T14:00:00Z",
+    updated_at: "2025-09-25T14:00:00Z",
+  },
+  {
+    user_id: 3,
+    email: "charlie@innocode.com",
+    role: "judge",
+    fullname: "Charlie Le",
+    password_hash: "hashed_password_3",
+    status: "inactive",
+    created_at: "2025-09-10T07:00:00Z",
+    updated_at: "2025-09-12T07:00:00Z",
+  },
+]

@@ -6,11 +6,11 @@ import InfoSection from "../../../components/organizer/contests/InfoSection"
 import DetailTable from "../../../components/organizer/contests/DetailTable"
 import TableFluent from "../../../components/TableFluent"
 import Actions from "../../../components/organizer/contests/Actions"
-import { formatDateTime } from "../../../components/organizer/utils/TableUtils"
 import { useOrganizerBreadcrumb } from "../../../hooks/organizer/useOrganizerBreadcrumb"
 import { useModal } from "../../../hooks/organizer/useModal"
 import { useProblems } from "../../../hooks/organizer/contests/useProblems"
 import useTestCase from "../../../hooks/organizer/contests/useTestCase"
+import { formatDateTime } from "../../../utils/formatDateTime"
 
 const OrganizerProblemDetail = () => {
   const {

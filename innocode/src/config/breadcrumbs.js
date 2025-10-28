@@ -79,7 +79,15 @@ export const BREADCRUMBS = {
     contestName,
     "Certificates",
   ],
+
   ORGANIZER_APPEALS: (contestName) => ["Contests", contestName, "Appeals"],
+  ORGANIZER_APPEAL_DETAIL: (contestName, appealId) => [
+    "Contests",
+    contestName,
+    "Appeals",
+    `Appeal #${appealId}`,
+  ],
+
   ORGANIZER_ACTIVITY: (contestName) => [
     "Contests",
     contestName,
@@ -191,6 +199,12 @@ export const BREADCRUMB_PATHS = {
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/appeals`,
+  ],
+  ORGANIZER_APPEAL_DETAIL: (contestId, appealId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/appeals`,
+    `/organizer/contests/${contestId}/appeals/${appealId}`,
   ],
   ORGANIZER_ACTIVITY: (contestId) => [
     "/organizer/contests",

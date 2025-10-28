@@ -5,9 +5,10 @@ import PageContainer from "../../../components/PageContainer"
 import TableFluent from "../../../components/TableFluent"
 import Actions from "../../../components/organizer/contests/Actions"
 import { Trophy, Pencil, Trash2 } from "lucide-react"
-import { formatDateTime, StatusBadge } from "../../../components/organizer/utils/TableUtils"
 import { useModal } from "../../../hooks/organizer/useModal"
 import { useContests } from "../../../hooks/organizer/contests/useContests"
+import { StatusBadge } from "../../../utils/StatusBadge"
+import { formatDateTime } from "../../../utils/formatDateTime"
 
 const OrganizerContests = () => {
   const navigate = useNavigate()
