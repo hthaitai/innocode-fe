@@ -12,6 +12,7 @@ import { useContests } from "../../../../hooks/organizer/contests/useContests"
 import TableFluent from "../../../../components/TableFluent"
 import { StatusBadge } from "../../../../utils/StatusBadge"
 import { formatDateTime } from "../../../../utils/formatDateTime"
+import useAppeals from "../../../../hooks/organizer/contests/useAppeals"
 
 const OrganizerTeamDetail = () => {
   const { teamId: teamIdParam } = useParams()
@@ -24,12 +25,14 @@ const OrganizerTeamDetail = () => {
   const { teams, loading, error } = useTeams()
   const { schools } = useSchools()
   const { mentors } = useMentors()
+  const { appeals } = useAppeals()
 
   // data relations
   const team = teams.find((t) => t.team_id === teamId)
   const contest = team && contests.find((c) => c.contest_id === team.contest_id)
   const school = team && schools.find((s) => s.school_id === team.school_id)
   const mentor = team && mentors.find((m) => m.mentor_id === team.mentor_id)
+  const appeal = team && appeals.filter((a) => a.team_id === team.team_id)
 
   const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_TEAM_DETAIL", {
     contest,
@@ -49,15 +52,6 @@ const OrganizerTeamDetail = () => {
       title: "Final Project",
       status: "approved",
       submitted_at: "2025-10-25T10:20:00Z",
-    },
-  ]
-
-  const appeals = [
-    {
-      id: 1,
-      issue: "Scoring clarification",
-      status: "resolved",
-      created_at: "2025-10-24T12:00:00Z",
     },
   ]
 
@@ -87,7 +81,7 @@ const OrganizerTeamDetail = () => {
   ]
 
   const appealColumns = [
-    { accessorKey: "issue", header: "Issue" },
+    { accessorKey: "reason", header: "Reason" },
     {
       accessorKey: "status",
       header: "Status",
@@ -161,7 +155,11 @@ const OrganizerTeamDetail = () => {
               </div>
             </div>
 
-            <TableFluent data={members} columns={memberColumns} title="Members" />
+            <TableFluent
+              data={members}
+              columns={memberColumns}
+              title="Members"
+            />
           </div>
         </div>
 
@@ -173,7 +171,9 @@ const OrganizerTeamDetail = () => {
               <div className="flex gap-5 items-center">
                 <FileText size={20} />
                 <div>
-                  <p className="text-[14px] leading-[20px]">Submission Records</p>
+                  <p className="text-[14px] leading-[20px]">
+                    Submission Records
+                  </p>
                   <p className="text-[12px] leading-[16px] text-[#7A7574]">
                     View all team submissions
                   </p>
@@ -205,7 +205,11 @@ const OrganizerTeamDetail = () => {
               </div>
             </div>
 
-            <TableFluent data={appeals} columns={appealColumns} title="Appeals" />
+            <TableFluent
+              data={appeal}
+              columns={appealColumns}
+              title="Appeals"
+            />
           </div>
         </div>
 
@@ -217,7 +221,9 @@ const OrganizerTeamDetail = () => {
               <div className="flex gap-5 items-center">
                 <Award size={20} />
                 <div>
-                  <p className="text-[14px] leading-[20px]">Team Certificates</p>
+                  <p className="text-[14px] leading-[20px]">
+                    Team Certificates
+                  </p>
                   <p className="text-[12px] leading-[16px] text-[#7A7574]">
                     View issued certificates for this team
                   </p>
