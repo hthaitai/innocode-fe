@@ -9,6 +9,8 @@ import SchoolModal from "../components/organizer/schools/SchoolModal"
 import TeamModal from "../components/organizer/contests/team/TeamModal"
 import AppealStateModal from "../components/organizer/contests/appeal/AppealStateModal"
 import AppealDecisionModal from "../components/organizer/contests/appeal/AppealDecisionModal"
+import CertificateTemplateModal from "../components/organizer/contests/certificate/certificateTemplateModal"
+import IssueCertificateModal from "../components/organizer/contests/certificate/IssueCertificateModal"
 
 const ModalContext = createContext(null)
 
@@ -42,6 +44,8 @@ export function ModalProvider({ children }) {
     team: TeamModal,
     appealState: AppealStateModal,
     appealDecision: AppealDecisionModal,
+    certificateTemplate: CertificateTemplateModal,
+    issueCertificate: IssueCertificateModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null
