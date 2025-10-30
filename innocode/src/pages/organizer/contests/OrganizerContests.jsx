@@ -104,7 +104,7 @@ const OrganizerContests = () => {
       error={error}
     >
       <div className="space-y-1">
-        {/* Add Contest */}
+        {/* Add Contest Section */}
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
           <div className="flex gap-5 items-center">
             <Trophy size={20} />

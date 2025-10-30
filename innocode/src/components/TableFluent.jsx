@@ -10,10 +10,6 @@ import { ChevronUp, ChevronDown } from "lucide-react"
 const TableFluent = ({ data, columns, title, onRowClick }) => {
   const [sorting, setSorting] = useState([])
 
-  const handleRowClick = (row) => {
-    onRowClick?.(row)
-  }
-
   const table = useReactTable({
     data,
     columns,
@@ -22,6 +18,9 @@ const TableFluent = ({ data, columns, title, onRowClick }) => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
+
+  // detect whether rows should be clickable
+  const isClickable = typeof onRowClick === "function"
 
   return (
     <div className="border border-[#E5E5E5] bg-white rounded-[5px] overflow-x-auto relative">
@@ -70,12 +69,18 @@ const TableFluent = ({ data, columns, title, onRowClick }) => {
             </tr>
           ))}
         </thead>
+
         <tbody>
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="hover:bg-[#F6F6F6] align-middle"
-              onClick={() => handleRowClick(row.original)}
+              className={`
+                hover:bg-[#F6F6F6] align-middle transition-colors
+                ${isClickable ? "cursor-pointer" : "cursor-default"}
+              `}
+              onClick={() => {
+                if (isClickable) onRowClick(row.original)
+              }}
             >
               {row.getVisibleCells().map((cell) => (
                 <td
