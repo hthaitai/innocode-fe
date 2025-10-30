@@ -1,0 +1,42 @@
+export const leaderboard = [
+  {
+    entry_id: 1,
+    contest_id: 1,
+    team_id: 1,
+    rank: 1,
+    score: 97.5,
+    snapshot_at: "2025-10-30T09:00:00Z",
+  },
+  {
+    entry_id: 2,
+    contest_id: 1,
+    team_id: 2,
+    rank: 2,
+    score: 94.3,
+    snapshot_at: "2025-10-30T09:00:00Z",
+  },
+  {
+    entry_id: 3,
+    contest_id: 1,
+    team_id: 3,
+    rank: 3,
+    score: 91.8,
+    snapshot_at: "2025-10-30T09:00:00Z",
+  },
+  {
+    entry_id: 4,
+    contest_id: 1,
+    team_id: 4,
+    rank: 4,
+    score: 88.4,
+    snapshot_at: "2025-10-30T09:00:00Z",
+  },
+  {
+    entry_id: 5,
+    contest_id: 1,
+    team_id: 5,
+    rank: 5,
+    score: 85.2,
+    snapshot_at: "2025-10-30T09:00:00Z",
+  },
+]

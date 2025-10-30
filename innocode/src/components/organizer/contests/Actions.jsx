@@ -101,7 +101,7 @@ const Actions = ({ row, items = [] }) => {
                   <motion.button
                     key={index}
                     onClick={(e) => handleItemClick(e, item)}
-                    className={`flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm rounded-[5px] transition-colors
+                    className={`cursor-pointer flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm rounded-[5px] transition-colors
                       hover:bg-[#F0F0F0] ${item.className || ""}`}
                     whileTap={{ scale: 0.97 }}
                   >
