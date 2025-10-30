@@ -2,32 +2,63 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import InnoCodeLogo from "../../assets/InnoCode_Logo.jpg";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
+  const {login, isAuthenticated, loading} = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   // Giả lập tài khoản: email: admin@gmail.com, password: 123456
+  //   if (email === "student@gmail.com" && password === "123456") {
+  //     localStorage.setItem("token", "mock-token");
+  //     localStorage.setItem("role","student");
+  //     localStorage.setItem("name","Ten la Student");
+  //     setError("");
+  //     navigate("/"); // hoặc trang bạn muốn chuyển đến sau đăng nhập
+  //   }else if (email === "organizer@gmail.com" && password === "123456") { 
+  //     localStorage.setItem("token", "mock-token");
+  //     localStorage.setItem("role","organizer"); 
+  //     localStorage.setItem("name","Ten la organizer");
+  //     setError("");
+  //     navigate("/"); // hoặc trang bạn muốn chuyển đến sau đăng nhập
+  //   }
+  //    else {
+  //     setError("wrong email or password");
+  //   }
+  // };
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Giả lập tài khoản: email: admin@gmail.com, password: 123456
-    if (email === "student@gmail.com" && password === "123456") {
-      localStorage.setItem("token", "mock-token");
-      localStorage.setItem("role","student");
-      localStorage.setItem("name","Ten la Student");
-      setError("");
-      navigate("/"); // hoặc trang bạn muốn chuyển đến sau đăng nhập
-    }else if (email === "organizer@gmail.com" && password === "123456") { 
-      localStorage.setItem("token", "mock-token");
-      localStorage.setItem("role","organizer"); 
-      localStorage.setItem("name","Ten la organizer");
-      setError("");
-      navigate("/"); // hoặc trang bạn muốn chuyển đến sau đăng nhập
-    }
-     else {
-      setError("wrong email or password");
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      // Gọi login từ AuthContext
+      await login({ email, password });
+      
+      // Redirect based on role (optional)
+      // const user = authService.getUser();
+      // if (user.role === 'organizer') {
+      //   navigate("/organizer/contests");
+      // } else {
+      //   navigate("/");
+      // }
+      
+      navigate("/");
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(
+        err.response?.data?.message || 
+        "Wrong email or password. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
