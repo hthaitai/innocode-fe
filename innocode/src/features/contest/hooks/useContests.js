@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { contests as fakeData } from '@/data/contests/contests'
+import { contests as fakeData } from "@/data/contests/contests"
 import { contestService } from "@/features/contest/services/contestService"
 
 export const useContests = () => {
