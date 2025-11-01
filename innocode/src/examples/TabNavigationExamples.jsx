@@ -1,7 +1,7 @@
 // Ví dụ sử dụng TabNavigation ở các trang khác
 
 import React, { useState } from 'react';
-import TabNavigation from '../components/TabNavigation';
+import TabNavigation from '@/shared/components/TabNavigation';
 
 // Ví dụ 1: Sử dụng trong Dashboard
 export function DashboardExample() {

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { authService } from "../services/auth/authService";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authService } from "@/features/auth/services/authService";
 
 const AuthContext = createContext(null);
 
@@ -12,11 +12,7 @@ export const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       try {
         const token = authService.getToken();
-        const storedUser = authService.getUser();
-        
-        console.log("🔍 Init Auth - Token:", token);
-        console.log("🔍 Init Auth - User:", storedUser);
-        
+        const storedUser = authService.getUser();        
         if (token && storedUser && token !== 'null') {
           setUser(storedUser);
           setIsAuthenticated(true);
@@ -29,7 +25,6 @@ export const AuthProvider = ({ children }) => {
       } finally {
         // QUAN TRỌNG: Luôn set loading = false
         setLoading(false);
-        console.log("✅ Init Auth completed");
       }
     };
 
@@ -43,7 +38,6 @@ export const AuthProvider = ({ children }) => {
       
       const data = await authService.login(credentials);
       
-      console.log("✅ Login successful:", data);
       
       setUser(data.user);
       setIsAuthenticated(true);
@@ -91,7 +85,6 @@ export const AuthProvider = ({ children }) => {
     logout,
   };
 
-  console.log("🎯 AuthContext state:", { user, loading, isAuthenticated });
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

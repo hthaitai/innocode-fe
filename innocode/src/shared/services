@@ -1,0 +1,87 @@
+// services/mockUserService.js
+
+import { userData } from "../data/userData"
+
+// Helper để giả lập API async
+const delay = (value, time = 500) =>
+  new Promise((resolve) => setTimeout(() => resolve(value), time))
+
+export const userService = {
+  // --- USERS ---
+
+  getUsers: async () => {
+    return delay([...userData])
+  },
+
+  getUserById: async (id) => {
+    const user = userData.find((u) => u.user_id === id)
+    if (!user) throw new Error("User not found")
+    return delay(user)
+  },
+
+  addUser: async (data) => {
+    const newId = userData.length
+      ? Math.max(...userData.map((u) => u.user_id)) + 1
+      : 1
+
+    const newUser = {
+      user_id: newId,
+      ...data,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      status: data.status || "active",
+    }
+
+    userData.push(newUser)
+    return delay(newUser)
+  },
+
+  updateUser: async (id, data) => {
+    const index = userData.findIndex((u) => u.user_id === id)
+    if (index === -1) throw new Error("User not found")
+
+    userData[index] = {
+      ...userData[index],
+      ...data,
+      updated_at: new Date().toISOString(),
+    }
+
+    return delay(userData[index])
+  },
+
+  deleteUser: async (id) => {
+    const index = userData.findIndex((u) => u.user_id === id)
+    if (index === -1) throw new Error("User not found")
+
+    const deleted = userData.splice(index, 1)[0]
+    return delay(deleted)
+  },
+
+  // --- FILTERS & HELPERS ---
+
+  getUsersByRole: async (role) => {
+    const filtered = userData.filter((u) => u.role === role)
+    return delay(filtered)
+  },
+
+  getActiveUsers: async () => {
+    const active = userData.filter((u) => u.status === "active")
+    return delay(active)
+  },
+
+  blockUser: async (id) => {
+    const user = userData.find((u) => u.user_id === id)
+    if (!user) throw new Error("User not found")
+    user.status = "blocked"
+    user.updated_at = new Date().toISOString()
+    return delay(user)
+  },
+
+  setUserStatus: async (id, status) => {
+    const user = userData.find((u) => u.user_id === id)
+    if (!user) throw new Error("User not found")
+    user.status = status
+    user.updated_at = new Date().toISOString()
+    return delay(user)
+  },
+}
