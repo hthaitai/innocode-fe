@@ -1,41 +1,43 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import MainLayout from "./shared/components/layout/MainLayout";
+import { StrictMode } from "react"
+import { createRoot } from "react-dom/client"
+import "./index.css"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import MainLayout from "./shared/components/layout/MainLayout"
 // Common pages
-import Home from "./features/common/pages/Home";
-import About from "./features/common/pages/About";
-import Profile from "./features/common/pages/Profile";
-import Dashboard from "./features/common/pages/Dashboard";
-import Announcements from "./features/common/pages/Announcements";
+import Home from "./features/common/pages/Home"
+import About from "./features/common/pages/About"
+import Profile from "./features/common/pages/Profile"
+import Dashboard from "./features/common/pages/Dashboard"
+import Announcements from "./features/common/pages/Announcements"
 // Student pages
-import Contests from "./features/student/pages/Contests";
-import ContestDetail from "./features/student/pages/ContestDetail";
-import ContestProcessing from "./features/student/pages/ContestProcessing";
-import Practice from "./features/student/pages/Practice";
-import Team from "./features/student/pages/Team";
-import Leaderboard from "./features/student/pages/Leaderboard";
-import Help from "./features/student/pages/Help";
+import Contests from "./features/student/pages/Contests"
+import ContestDetail from "./features/student/pages/ContestDetail"
+import ContestProcessing from "./features/student/pages/ContestProcessing"
+import Practice from "./features/student/pages/Practice"
+import Team from "./features/student/pages/Team"
+import Leaderboard from "./features/student/pages/Leaderboard"
+import Help from "./features/student/pages/Help"
 // Auth
-import Login from "./features/auth/components/Login";
-import { ModalProvider } from "./context/ModalContext";
-import { AuthProvider } from "./context/AuthContext";
+import Login from "./features/auth/components/Login"
+import { ModalProvider } from "./context/ModalContext"
+import { AuthProvider } from "./context/AuthContext"
 // Organizer pages
-import OrganizerContests from "./features/contest/pages/OrganizerContests";
-import OrganizerContestDetail from "./features/contest/pages/OrganizerContestDetail";
-import OrganizerRoundDetail from "./features/contest/subfeatures/rounds/pages/OrganizerRoundDetail";
-import OrganizerProblemDetail from "./features/contest/subfeatures/problems/pages/OrganizerProblemDetail";
-import OrganizerTeams from "./features/contest/subfeatures/teams/pages/OrganizerTeams";
-import OrganizerTeamDetail from "./features/contest/subfeatures/teams/pages/OrganizerTeamDetail";
-import OrganizerLeaderboard from "./features/contest/subfeatures/leaderboard/pages/OrganizerLeaderboard";
-import OrganizerCertificates from "./features/contest/subfeatures/certificates/pages/OrganizerCertificates";
-import OrganizerActivityLogs from "./features/contest/pages/OrganizerActivityLogs";
-import OrganizerNotifications from "./features/contest/pages/OrganizerNotifications";
-import OrganizerProvinces from "./features/organizer/pages/OrganizerProvinces";
-import OrganizerSchools from "./features/organizer/pages/OrganizerSchools";
-import OrganizerAppeals from "./features/contest/subfeatures/appeals/pages/OrganizerAppeals";
-import OrganizerAppealDetail from "./features/contest/subfeatures/appeals/pages/OrganizerAppealDetail";
+import OrganizerContests from "./features/organizer/contest/pages/OrganizerContests"
+import OrganizerContestDetail from "./features/organizer/contest/pages/OrganizerContestDetail"
+import OrganizerRoundDetail from "./features/organizer/contest/subfeatures/rounds/pages/OrganizerRoundDetail"
+import OrganizerProblemDetail from "./features/organizer/contest/subfeatures/problems/pages/OrganizerProblemDetail"
+import OrganizerTeams from "./features/organizer/contest/subfeatures/teams/pages/OrganizerTeams"
+import OrganizerTeamDetail from "./features/organizer/contest/subfeatures/teams/pages/OrganizerTeamDetail"
+import OrganizerLeaderboard from "./features/organizer/contest/subfeatures/leaderboard/pages/OrganizerLeaderboard"
+import OrganizerCertificates from "./features/organizer/contest/subfeatures/certificates/pages/OrganizerCertificates"
+import OrganizerAppeals from "./features/organizer/contest/subfeatures/appeals/pages/OrganizerAppeals"
+import OrganizerAppealDetail from "./features/organizer/contest/subfeatures/appeals/pages/OrganizerAppealDetail"
+import OrganizerActivityLogs from "./features/organizer/contest/subfeatures/activity-logs/pages/OrganizerActivityLogs"
+import OrganizerNotifications from "./features/organizer/contest/subfeatures/notifications/pages/OrganizerNotifications"
+import OrganizerProvinces from "./features/organizer/province/pages/OrganizerProvinces"
+import OrganizerSchools from "./features/organizer/school/pages/OrganizerSchools"
+import { Provider } from "react-redux"
+import { store } from "./store/store"
 
 const router = createBrowserRouter([
   { path: "login", element: <Login /> },
@@ -104,14 +106,16 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+])
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AuthProvider>
-      <ModalProvider>
-        <RouterProvider router={router} />
-      </ModalProvider>
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <ModalProvider>
+          <RouterProvider router={router} />
+        </ModalProvider>
+      </AuthProvider>
+    </Provider>
   </StrictMode>
-);
+)

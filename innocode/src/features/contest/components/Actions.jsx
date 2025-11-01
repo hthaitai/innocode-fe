@@ -102,10 +102,9 @@ const Actions = ({ row, items = [] }) => {
                     key={index}
                     onClick={(e) => handleItemClick(e, item)}
                     className={`cursor-pointer flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm rounded-[5px] transition-colors
-                      hover:bg-[#F0F0F0] ${item.className || ""}`}
-                    whileTap={{ scale: 0.97 }}
+                      hover:bg-[#F0F0F0] active:bg-[#F3F3F3] ${item.className || ""}`}
                   >
-                    {Icon && <Icon className="w-4 h-4 text-[#7A7574]" />}
+                    {Icon && <Icon className="w-4 h-4" />}
                     {item.label}
                   </motion.button>
                 )
