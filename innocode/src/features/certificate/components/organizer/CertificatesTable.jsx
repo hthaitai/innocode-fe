@@ -1,11 +1,11 @@
 import React from "react"
 import { Award, Download, Trash2 } from "lucide-react"
 import TableFluent from "@/shared/components/TableFluent"
-import { useModal } from "@/features/organizer/hooks/useModal"
 import useCertificates from "@/features/certificate/hooks/useCertificates"
 import useCertificateTemplates from "@/features/certificate/hooks/useCertificateTemplates"
 import useTeams from "@/features/team/hooks/useTeams"
 import Actions from "../../../../shared/components/Actions"
+import { useModal } from "../../../../shared/hooks/useModal"
 
 export default function CertificatesTable() {
   const { openModal } = useModal()

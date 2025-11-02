@@ -1,5 +1,5 @@
 import React from "react"
-import { TextField } from "@mui/material"
+import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 
 const languages = [
@@ -14,55 +14,54 @@ const types = [
   { value: "auto", label: "Auto" },
 ]
 
-export default function ProblemForm({ formData, setFormData, errors = {} }) {
+export default function ProblemForm({
+  formData,
+  setFormData,
+  errors = {},
+  setErrors = () => {}, // ✅ allows parent (ProblemModal) to control error state
+}) {
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined })) // ✅ clear error on input
   }
 
   const handleSelect = (value, field) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined })) // ✅ clear error on select
   }
 
   return (
     <div className="flex flex-col gap-3">
       {/* Language */}
-      <div className="flex flex-col">
-        <DropdownFluent
-          label="Language"
-          value={formData.language}
-          placeholder="Select language"
-          options={languages}
-          onChange={(value) => handleSelect(value, "language")}
-        />
-        {errors.language && (
-          <span className="text-red-500 text-xs">{errors.language}</span>
-        )}
-      </div>
+      <DropdownFluent
+        label="Language"
+        value={formData.language}
+        placeholder="Select language"
+        options={languages}
+        onChange={(value) => handleSelect(value, "language")}
+        error={!!errors.language}
+        helperText={errors.language}
+      />
 
       {/* Type */}
-      <div className="flex flex-col">
-        <DropdownFluent
-          label="Type"
-          value={formData.type}
-          placeholder="Select type"
-          options={types}
-          onChange={(value) => handleSelect(value, "type")}
-        />
-        {errors.type && (
-          <span className="text-red-500 text-xs">{errors.type}</span>
-        )}
-      </div>
+      <DropdownFluent
+        label="Type"
+        value={formData.type}
+        placeholder="Select type"
+        options={types}
+        onChange={(value) => handleSelect(value, "type")}
+        error={!!errors.type}
+        helperText={errors.type}
+      />
 
       {/* Penalty Rate */}
-      <TextField
+      <TextFieldFluent
         label="Penalty Rate"
         name="penalty_rate"
         type="number"
         value={formData.penalty_rate || ""}
         onChange={handleChange}
-        fullWidth
-        variant="outlined"
         error={!!errors.penalty_rate}
         helperText={errors.penalty_rate}
       />

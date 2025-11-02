@@ -47,6 +47,11 @@ const allMenus = {
     label: "Schools",
     icon: "lucide:school",
   },
+  organizerNotifications: {
+  path: "/organizer/notifications",
+  label: "Notifications",
+  icon: "lucide:bell",
+},
 
   // Common menus
   announcements: {
@@ -73,7 +78,7 @@ const menuByRole = {
     "organizerContests",
     "organizerProvinces",
     "organizerSchools",
-    "announcements",
+    "organizerNotifications",
     "help",
   ],
   judge: ["profile", "dashboard", "contests", "announcements", "help"],

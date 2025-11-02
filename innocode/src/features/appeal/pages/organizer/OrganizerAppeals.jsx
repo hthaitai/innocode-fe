@@ -5,13 +5,12 @@ import { Scale } from "lucide-react"
 import PageContainer from '@/shared/components/PageContainer'
 import TableFluent from '@/shared/components/TableFluent'
 
-import { useOrganizerBreadcrumb } from "@/features/organizer/hooks/useOrganizerBreadcrumb"
 import useAppeals from "@/features/appeal/hooks/useAppeals"
 import useTeams from "@/features/team/hooks/useTeams"
 import useUsers from "@/shared/hooks/useUsers"
 import { formatDateTime } from '@/shared/utils/formatDateTime'
 import { StatusBadge } from "@/shared/utils/StatusBadge"
-
+import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
 
 const OrganizerAppeals = () => {
   const navigate = useNavigate()

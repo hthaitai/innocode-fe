@@ -1,33 +1,40 @@
 import React from "react"
-import { TextField } from "@mui/material"
+import TextFieldFluent from "@/shared/components/TextFieldFluent"
 
-export default function ProvinceForm({ formData, setFormData, errors }) {
+export default function ProvinceForm({
+  formData,
+  setFormData,
+  errors,
+  setErrors,
+}) {
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+
+    // Clear field-specific error when user types
+    if (errors?.[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }))
+    }
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <TextField
+      <TextFieldFluent
         label="Province Name"
         name="name"
         value={formData.name || ""}
         onChange={handleChange}
-        fullWidth
-        variant="outlined"
-        error={!!errors.name}
-        helperText={errors.name}
+        error={!!errors?.name}
+        helperText={errors?.name}
       />
-      <TextField
+
+      <TextFieldFluent
         label="Address"
         name="address"
         value={formData.address || ""}
         onChange={handleChange}
-        fullWidth
-        variant="outlined"
-        error={!!errors.address}
-        helperText={errors.address}
+        error={!!errors?.address}
+        helperText={errors?.address}
       />
     </div>
   )

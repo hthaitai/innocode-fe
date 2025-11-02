@@ -78,7 +78,7 @@ export default function BaseModal({
             </div>
 
             {/* Body */}
-            <div className="px-5 pb-5 flex-1 overflow-y-auto">
+            <div className="px-6 pb-5 flex-1 overflow-y-auto">
               <h2 className="text-[20px] leading-[26px] font-semibold pt-2 pb-5">
                 {title}
               </h2>

@@ -1,9 +1,9 @@
 import React from "react"
 import { FileBadge, Pencil, Trash2 } from "lucide-react"
 import TableFluent from "@/shared/components/TableFluent"
-import { useModal } from "@/features/organizer/hooks/useModal"
 import useCertificateTemplates from "@/features/certificate/hooks/useCertificateTemplates"
 import Actions from "../../../../shared/components/Actions"
+import { useModal } from "../../../../shared/hooks/useModal"
 
 export default function CertificateTemplatesTable() {
   const {

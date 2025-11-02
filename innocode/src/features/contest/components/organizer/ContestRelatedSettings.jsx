@@ -40,12 +40,12 @@ const items = [
   //   icon: <ListChecks size={20} />,
   //   path: "activity",
   // },
-  {
-    title: "Notifications",
-    subtitle: "Manage notifications and announcements",
-    icon: <Bell size={20} />,
-    path: "notifications",
-  },
+  // {
+  //   title: "Notifications",
+  //   subtitle: "Manage notifications and announcements",
+  //   icon: <Bell size={20} />,
+  //   path: "notifications",
+  // },
 ]
 
 const ContestRelatedSettings = ({ contestId }) => (

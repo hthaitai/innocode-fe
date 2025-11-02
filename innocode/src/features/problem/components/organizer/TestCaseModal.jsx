@@ -70,6 +70,7 @@ export default function TestCaseModal({
         formData={formData}
         setFormData={setFormData}
         errors={errors}
+        setErrors={setErrors}
       />
     </BaseModal>
   )

@@ -6,6 +6,7 @@ export const BREADCRUMBS = {
   CONTEST_DETAIL: (contestTitle) => ["Contests", contestTitle],
   PROVINCES: ["Provinces"],
   SCHOOLS: ["Schools"],
+  NOTIFICATIONS: ["Notifications"],
   PRACTICE: ["Practice"],
   TEAM: ["Team"],
   LEADERBOARD: ["Leaderboard"],

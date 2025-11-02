@@ -5,9 +5,9 @@ import TableFluent from '@/shared/components/TableFluent'
 import { Trophy } from "lucide-react"
 import useLeaderboard from '@/features/leaderboard/hooks/useLeaderboard'
 import { formatDateTime } from "@/shared/utils/formatDateTime"
-import { useOrganizerBreadcrumb } from '@/features/organizer/hooks/useOrganizerBreadcrumb'
 import useTeams from '@/features/team/hooks/useTeams'
 import ToggleSwitchFluent from '@/shared/components/ToggleSwitchFluent'
+import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
 
 const OrganizerLeaderboard = () => {
   const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_LEADERBOARD")

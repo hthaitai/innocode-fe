@@ -69,6 +69,7 @@ export default function ContestModal({
         formData={formData}
         setFormData={setFormData}
         errors={errors}
+        setErrors={setErrors}
       />
     </BaseModal>
   )

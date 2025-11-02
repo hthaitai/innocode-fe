@@ -1,16 +1,16 @@
 import React from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import PageContainer from '@/shared/components/PageContainer'
-import TableFluent from '@/shared/components/TableFluent'
+import PageContainer from "@/shared/components/PageContainer"
+import TableFluent from "@/shared/components/TableFluent"
 import { Calendar, Trash, Pencil } from "lucide-react"
-import { useOrganizerBreadcrumb } from '@/features/organizer/hooks/useOrganizerBreadcrumb'
-import { useModal } from '@/features/organizer/hooks/useModal'
-import { useRounds } from '@/features/round/hooks/useRounds'
-import { useProblems } from '@/features/problem/hooks/useProblems'
+import { useRounds } from "@/features/round/hooks/useRounds"
+import { useProblems } from "@/features/problem/hooks/useProblems"
 import { formatDateTime } from "@/shared/utils/formatDateTime"
 import InfoSection from "../../../../shared/components/InfoSection"
 import DetailTable from "../../../../shared/components/DetailTable"
 import Actions from "../../../../shared/components/Actions"
+import { useModal } from "../../../../shared/hooks/useModal"
+import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
 
 const OrganizerRoundDetail = () => {
   const { contestId: contestIdParam, roundId: roundIdParam } = useParams()
@@ -110,13 +110,26 @@ const OrganizerRoundDetail = () => {
   // ---------- Problem Table ----------
   const problemColumns = [
     { accessorKey: "problem_id", header: "ID" },
-    { accessorKey: "language", header: "Language" },
-    { accessorKey: "type", header: "Type" },
-    { accessorKey: "penalty_rate", header: "Penalty Rate" },
+    {
+      accessorKey: "language",
+      header: "Language",
+      cell: ({ row }) => row.original.language || "—",
+    },
+    {
+      accessorKey: "type",
+      header: "Type",
+      cell: ({ row }) => row.original.type || "—",
+    },
+    {
+      accessorKey: "penalty_rate",
+      header: "Penalty Rate",
+      cell: ({ row }) => row.original.penalty_rate || "—",
+    },
     {
       accessorKey: "created_at",
       header: "Created At",
-      cell: ({ row }) => formatDateTime(row.original.created_at),
+      cell: ({ row }) =>
+        row.original.created_at ? formatDateTime(row.original.created_at) : "—",
     },
     {
       id: "actions",

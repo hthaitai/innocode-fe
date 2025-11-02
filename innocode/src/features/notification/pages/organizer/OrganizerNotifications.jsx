@@ -2,10 +2,11 @@ import React from "react"
 import { Bell, Eye, Trash2 } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
-import { useModal } from "@/features/organizer/hooks/useModal"
 import useOrganizerNotifications from "../../hooks/useOrganizerNotifications"
-import { useOrganizerBreadcrumb } from "@/features/organizer/hooks/useOrganizerBreadcrumb"
 import Actions from "../../../../shared/components/Actions"
+import { BREADCRUMBS } from "@/config/breadcrumbs"
+import { formatDateTime } from "../../../../shared/utils/formatDateTime"
+import { useModal } from "../../../../shared/hooks/useModal"
 
 const OrganizerNotifications = () => {
   const {
@@ -17,7 +18,6 @@ const OrganizerNotifications = () => {
   } = useOrganizerNotifications()
 
   const { openModal } = useModal()
-  const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_NOTIFICATIONS")
 
   // ----- CRUD Modals -----
   const handleNotificationModal = (mode, notification = {}) => {
@@ -65,7 +65,7 @@ const OrganizerNotifications = () => {
     {
       accessorKey: "sent_at",
       header: "Sent At",
-      cell: ({ row }) => new Date(row.original.sent_at).toLocaleString() || "—",
+      cell: ({ row }) => formatDateTime(row.original.sent_at),
     },
     {
       accessorKey: "sent_by",
@@ -101,8 +101,7 @@ const OrganizerNotifications = () => {
 
   return (
     <PageContainer
-      breadcrumb={breadcrumbData.items}
-      breadcrumbPaths={breadcrumbData.paths}
+      breadcrumb={BREADCRUMBS.NOTIFICATIONS}
       loading={loading}
       error={error}
     >

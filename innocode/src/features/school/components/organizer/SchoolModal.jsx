@@ -69,6 +69,7 @@ export default function SchoolModal({
         formData={formData}
         setFormData={setFormData}
         errors={errors}
+        setErrors={setErrors}
         provinces={provinces}
       />
     </BaseModal>

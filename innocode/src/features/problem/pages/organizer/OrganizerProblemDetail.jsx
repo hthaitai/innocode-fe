@@ -3,14 +3,14 @@ import { Pencil, Trash } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 import PageContainer from '@/shared/components/PageContainer'
 import TableFluent from '@/shared/components/TableFluent'
-import { useOrganizerBreadcrumb } from '@/features/organizer/hooks/useOrganizerBreadcrumb'
-import { useModal } from '@/features/organizer/hooks/useModal'
 import { useProblems } from '@/features/problem/hooks/useProblems'
 import useTestCase from '@/features/problem/hooks/useTestCase'
 import { formatDateTime } from "@/shared/utils/formatDateTime"
 import InfoSection from "../../../../shared/components/InfoSection"
 import DetailTable from "../../../../shared/components/DetailTable"
 import Actions from "../../../../shared/components/Actions"
+import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
+import { useModal } from "../../../../shared/hooks/useModal"
 
 const OrganizerProblemDetail = () => {
   const {
