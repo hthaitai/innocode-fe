@@ -34,12 +34,12 @@ const items = [
     icon: <Scale size={20} />,
     path: "appeals",
   },
-  {
-    title: "Activity Logs",
-    subtitle: "View contest-related user actions",
-    icon: <ListChecks size={20} />,
-    path: "activity",
-  },
+  // {
+  //   title: "Activity Logs",
+  //   subtitle: "View contest-related user actions",
+  //   icon: <ListChecks size={20} />,
+  //   path: "activity",
+  // },
   {
     title: "Notifications",
     subtitle: "Manage notifications and announcements",
