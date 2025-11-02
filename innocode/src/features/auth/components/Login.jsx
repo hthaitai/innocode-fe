@@ -13,50 +13,49 @@ const Login = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   // Giả lập tài khoản: email: admin@gmail.com, password: 123456
-  //   if (email === "student@gmail.com" && password === "123456") {
-  //     localStorage.setItem("token", "mock-token");
-  //     localStorage.setItem("role","student");
-  //     localStorage.setItem("name","Ten la Student");
-  //     setError("");
-  //     navigate("/"); // hoặc trang bạn muốn chuyển đến sau đăng nhập
-  //   }else if (email === "organizer@gmail.com" && password === "123456") { 
-  //     localStorage.setItem("token", "mock-token");
-  //     localStorage.setItem("role","organizer"); 
-  //     localStorage.setItem("name","Ten la organizer");
-  //     setError("");
-  //     navigate("/"); // hoặc trang bạn muốn chuyển đến sau đăng nhập
-  //   }
-  //    else {
-  //     setError("wrong email or password");
-  //   }
-  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsSubmitting(true);
 
     try {
-      // Gọi login từ AuthContext
       await login({ email, password });
-      
-      // Redirect based on role (optional)
-      // const user = authService.getUser();
-      // if (user.role === 'organizer') {
-      //   navigate("/organizer/contests");
-      // } else {
-      //   navigate("/");
-      // }
-      
       navigate("/");
     } catch (err) {
       console.error("Login error:", err);
-      setError(
-        err.response?.data?.message || 
-        "Wrong email or password. Please try again."
-      );
+      
+      // Xử lý các loại lỗi khác nhau
+      if (err.code === 'ECONNABORTED' || err.message.includes('timeout')) {
+        setError("Request timeout. Please check your connection and try again.");
+      } else if (err.response) {
+        // Lỗi từ server (có response)
+        const status = err.response.status;
+        const message = err.response.data?.message;
+        
+        switch (status) {
+          case 401:
+            setError(message || "Wrong email or password. Please try again.");
+            break;
+          case 403:
+            setError("Account is disabled or not verified.");
+            break;
+          case 429:
+            setError("Too many login attempts. Please try again later.");
+            break;
+          case 500:
+            setError("Server error. Please try again later.");
+            break;
+          default:
+            setError(message || "An error occurred. Please try again.");
+        }
+      } else if (err.request) {
+        // Request được gửi nhưng không nhận được response
+        setError("Cannot connect to server. Please check your internet connection.");
+      } else {
+        // Lỗi khác
+        setError("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }

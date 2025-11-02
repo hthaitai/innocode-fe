@@ -96,3 +96,11 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export const ROLES = {
+  ADMIN: 'admin',
+  ORGANIZER: 'organizer',
+  STUDENT: 'student',
+  JUDGE: 'judge',
+  STAFF: 'staff',
+}
