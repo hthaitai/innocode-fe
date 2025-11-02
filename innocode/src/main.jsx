@@ -5,8 +5,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import MainLayout from "./shared/components/layout/MainLayout"
 import { Provider } from "react-redux"
 import { store } from "./store/store"
-import { Provider } from "react-redux"
-import { store } from "./store/store"
 // Common pages
 import Home from "./features/common/pages/Home";
 import About from "./features/common/pages/About";
