@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client"
 import "./index.css"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import MainLayout from "./shared/components/layout/MainLayout"
+import { Provider } from "react-redux"
+import { store } from "./store/store"
 // Common pages
 import Home from "./features/common/pages/Home"
 import About from "./features/common/pages/About"
@@ -21,23 +23,21 @@ import Help from "./features/contest/student/Help"
 import Login from "./features/auth/components/Login"
 import { ModalProvider } from "./context/ModalContext"
 import { AuthProvider } from "./context/AuthContext"
+import OrganizerContests from "./features/contest/pages/organizer/OrganizerContests"
+import OrganizerContestDetail from "./features/contest/pages/organizer/OrganizerContestDetail"
+import OrganizerRoundDetail from "./features/round/pages/organizer/OrganizerRoundDetail"
+import OrganizerProblemDetail from "./features/problem/pages/organizer/OrganizerProblemDetail"
+import OrganizerTeams from "./features/team/pages/organizer/OrganizerTeams"
+import OrganizerTeamDetail from "./features/team/pages/organizer/OrganizerTeamDetail"
+import OrganizerLeaderboard from "./features/leaderboard/pages/organizer/OrganizerLeaderboard"
+import OrganizerCertificates from "./features/certificate/pages/organizer/OrganizerCertificates"
+import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals"
+import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail"
+import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications"
+import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces"
+import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools"
 // Organizer pages
-import OrganizerContests from "./features/contest/organizer/pages/OrganizerContests"
-import OrganizerContestDetail from "./features/contest/organizer/pages/OrganizerContestDetail"
-import OrganizerRoundDetail from "./features/contest/organizer/subfeatures/rounds/pages/OrganizerRoundDetail"
-import OrganizerProblemDetail from "./features/contest/organizer/subfeatures/problems/pages/OrganizerProblemDetail"
-import OrganizerTeams from "./features/contest/organizer/subfeatures/teams/pages/OrganizerTeams"
-import OrganizerTeamDetail from "./features/contest/organizer/subfeatures/teams/pages/OrganizerTeamDetail"
-import OrganizerLeaderboard from "./features/contest/organizer/subfeatures/leaderboard/pages/OrganizerLeaderboard"
-import OrganizerCertificates from "./features/contest/organizer/subfeatures/certificates/pages/OrganizerCertificates"
-import OrganizerAppeals from "./features/contest/organizer/subfeatures/appeals/pages/OrganizerAppeals"
-import OrganizerAppealDetail from "./features/contest/organizer/subfeatures/appeals/pages/OrganizerAppealDetail"
-import OrganizerActivityLogs from "./features/contest/organizer/subfeatures/activity-logs/pages/OrganizerActivityLogs"
-import OrganizerNotifications from "./features/contest/organizer/subfeatures/notifications/pages/OrganizerNotifications"
-import OrganizerProvinces from "./features/province/pages/OrganizerProvinces"
-import OrganizerSchools from "./features/school/pages/OrganizerSchools"
-import { Provider } from "react-redux"
-import { store } from "./store/store"
+
 
 const router = createBrowserRouter([
   { path: "login", element: <Login /> },
@@ -89,7 +89,7 @@ const router = createBrowserRouter([
             element: <OrganizerAppealDetail />,
           },
 
-          { path: ":contestId/activity", element: <OrganizerActivityLogs /> },
+          // { path: ":contestId/activity", element: <OrganizerActivityLogs /> },
           {
             path: ":contestId/notifications",
             element: <OrganizerNotifications />,
