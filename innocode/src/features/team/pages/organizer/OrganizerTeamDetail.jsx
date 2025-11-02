@@ -2,9 +2,7 @@ import React from "react"
 import { Award, BookOpen, FileText, Users } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 import PageContainer from '@/shared/components/PageContainer'
-import { useOrganizerBreadcrumb } from "@/features/organizer/hooks/useOrganizerBreadcrumb"
 import useTeams from "@/features/team/hooks/useTeams"
-import useMentors from "@/features/organizer/hooks/useMentors"
 import TableFluent from '@/shared/components/TableFluent'
 import { StatusBadge } from '@/shared/utils/StatusBadge'
 import { formatDateTime } from "@/shared/utils/formatDateTime"
@@ -13,6 +11,8 @@ import useContests from "../../../contest/hooks/useContests"
 import InfoSection from "../../../../shared/components/InfoSection"
 import DetailTable from "../../../../shared/components/DetailTable"
 import useSchools from "../../../school/hooks/useSchools"
+import useMentors from "../../../../shared/hooks/useMentors"
+import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
 
 const OrganizerTeamDetail = () => {
   const { teamId: teamIdParam } = useParams()

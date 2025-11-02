@@ -1,8 +1,8 @@
 import React from "react"
 import PageContainer from '@/shared/components/PageContainer'
-import { useOrganizerBreadcrumb } from '@/features/organizer/hooks/useOrganizerBreadcrumb'
 import CertificateTemplatesTable from "../../components/organizer/CertificateTemplatesTable"
 import CertificatesTable from "../../components/organizer/CertificatesTable"
+import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
 
 const OrganizerCertificates = () => {
   const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_CERTIFICATES")

@@ -5,10 +5,10 @@ import { Users } from "lucide-react"
 import PageContainer from '@/shared/components/PageContainer'
 import TableFluent from '@/shared/components/TableFluent'
 
-import { useOrganizerBreadcrumb } from "@/features/organizer/hooks/useOrganizerBreadcrumb"
-import useMentors from "@/features/organizer/hooks/useMentors"
 import useTeams from "@/features/team/hooks/useTeams"
 import useSchools from "../../../school/hooks/useSchools"
+import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
+import useMentors from "../../../../shared/hooks/useMentors"
 
 const OrganizerTeams = () => {
   const navigate = useNavigate()

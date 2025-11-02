@@ -1,49 +1,34 @@
 import React, { useState, useEffect } from "react"
 import BaseModal from "@/shared/components/BaseModal"
-import ProblemForm from "./ProblemForm"
-import { validateProblem } from "@/shared/validators/problemValidator"
+import NotificationForm from "./NotificationForm"
+import { validateNotification } from "@/shared/validators/notificationValidator"
 
-export default function ProblemModal({
-  isOpen,
-  mode = "create", // "create" or "edit"
-  initialData = {},
-  onSubmit,
-  onClose,
-}) {
+export default function NotificationModal({ isOpen, onSubmit, onClose }) {
   const emptyData = {
-    title: "",
-    language: "python3",
-    type: "manual",
-    penalty_rate: "",
+    type: "",
+    channel: "web",
+    payload: "",
   }
 
   const [formData, setFormData] = useState(emptyData)
   const [errors, setErrors] = useState({})
 
-  // Reset form when modal opens or data changes
   useEffect(() => {
     if (isOpen) {
-      setFormData(mode === "edit" ? initialData : emptyData)
+      setFormData(emptyData)
       setErrors({})
     }
-  }, [isOpen, mode, initialData])
+  }, [isOpen])
 
-  // --- Submit handler ---
   const handleSubmit = async () => {
-    const validationErrors = validateProblem(formData)
+    const validationErrors = validateNotification(formData)
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length === 0) {
-      await onSubmit(formData, mode)
+      await onSubmit(formData) // sendNotification() in parent
       onClose()
     }
   }
-
-  // --- Modal UI ---
-  const title =
-    mode === "edit"
-      ? `Edit Problem: ${initialData.title || `#${initialData.problem_id}`}`
-      : "Create New Problem"
 
   const footer = (
     <div className="flex justify-end gap-2">
@@ -51,7 +36,7 @@ export default function ProblemModal({
         Cancel
       </button>
       <button type="button" className="button-orange" onClick={handleSubmit}>
-        {mode === "edit" ? "Save Changes" : "Create"}
+        Send Notification
       </button>
     </div>
   )
@@ -60,11 +45,11 @@ export default function ProblemModal({
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title={title}
-      size="lg"
+      title="Send Notification"
+      size="md"
       footer={footer}
     >
-      <ProblemForm
+      <NotificationForm
         formData={formData}
         setFormData={setFormData}
         errors={errors}

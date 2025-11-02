@@ -4,15 +4,15 @@ import { Paperclip } from "lucide-react"
 import PageContainer from '@/shared/components/PageContainer'
 import TableFluent from '@/shared/components/TableFluent'
 import { formatDateTime } from '@/shared/utils/formatDateTime'
-import { useOrganizerBreadcrumb } from "@/features/organizer/hooks/useOrganizerBreadcrumb"
 import useAppeals from "@/features/appeal/hooks/useAppeals"
 import useTeams from "@/features/team/hooks/useTeams"
 import useUsers from "@/shared/hooks/useUsers"
-import { useModal } from "@/features/organizer/hooks/useModal"
 import useContests from "../../../contest/hooks/useContests"
 import InfoSection from "../../../../shared/components/InfoSection"
 import DetailTable from "../../../../shared/components/DetailTable"
 import DetailTableSection from "../../../../shared/components/DetailTableSection"
+import { useModal } from "../../../../shared/hooks/useModal"
+import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
 
 const OrganizerAppealDetail = () => {
   const { contestId: contestIdParam, appealId: appealIdParam } = useParams()

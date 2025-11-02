@@ -2,11 +2,11 @@ import React, { useState } from "react"
 import { BREADCRUMBS } from '@/config/breadcrumbs'
 import PageContainer from "@/shared/components/PageContainer"
 import { School, Pencil, Trash2 } from "lucide-react"
-import { useModal } from '@/features/organizer/hooks/useModal'
 import TableFluent from "@/shared/components/TableFluent"
 import useSchools from "../../hooks/useSchools"
 import Actions from "../../../../shared/components/Actions"
 import useProvinces from "../../../province/hooks/useProvinces"
+import { useModal } from "../../../../shared/hooks/useModal"
 
 const OrganizerSchools = () => {
   const { schools, loading, error, addSchool, updateSchool, deleteSchool } =

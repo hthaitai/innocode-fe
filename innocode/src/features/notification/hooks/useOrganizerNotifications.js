@@ -1,16 +1,18 @@
-import { useCallback, useEffect, useState } from "react"
-import { notifications as fakeData } from "@/data/notifications"
+import React, { useCallback, useEffect, useState } from "react"
+import { notifications as fakeData } from "@/data/notifications" // placeholder for mock data
 
 export const useOrganizerNotifications = () => {
   const [notifications, setNotifications] = useState(fakeData)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
+  // ----- FETCH -----
   // useEffect(() => {
   //   const fetchNotifications = async () => {
   //     try {
   //       setLoading(true)
   //       setError(null)
+  //
   //       const data = await notificationService.getAllNotifications()
   //       setNotifications(data)
   //     } catch (err) {
@@ -20,6 +22,7 @@ export const useOrganizerNotifications = () => {
   //       setLoading(false)
   //     }
   //   }
+  //
   //   fetchNotifications()
   // }, [])
 
@@ -28,13 +31,19 @@ export const useOrganizerNotifications = () => {
     setLoading(true)
     setError(null)
     try {
-      // const newNotification = await notificationService.create(data)
+      // 🔹 Skip API call, just simulate
+      // const newNotification = await notificationService.createNotification(data)
+
       const newNotification = {
         notification_id: Date.now(),
-        title: data.title,
-        message: data.message,
-        created_at: new Date().toISOString(),
+        user_id: data.user_id || null, // organizer might send to system-wide
+        type: data.type,
+        channel: data.channel,
+        payload: data.payload,
+        sent_at: new Date().toISOString(),
+        sent_by: "Organizer", // inferred for UI
       }
+
       setNotifications((prev) => [newNotification, ...prev])
       return newNotification
     } catch (err) {
@@ -50,9 +59,12 @@ export const useOrganizerNotifications = () => {
     setLoading(true)
     setError(null)
     try {
-      // await notificationService.delete(id)
+      // await notificationService.deleteNotification(id)
       console.log("[FAKE DELETE] Notification ID:", id)
-      setNotifications((prev) => prev.filter((n) => n.notification_id !== id))
+
+      setNotifications((prev) =>
+        prev.filter((n) => n.notification_id !== id)
+      )
     } catch (err) {
       setError(err.message)
       throw err

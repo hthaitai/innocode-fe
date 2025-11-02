@@ -4,10 +4,8 @@ import { BREADCRUMBS } from "@/config/breadcrumbs"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import { Trophy, Pencil, Trash2 } from "lucide-react"
-import { useModal } from "@/features/organizer/hooks/useModal"
 import { StatusBadge } from "@/shared/utils/StatusBadge"
 import { formatDateTime } from "@/shared/utils/formatDateTime"
-import useContests from "../../../contest/hooks/useContests"
 import {
   addContest,
   updateContest,
@@ -15,6 +13,7 @@ import {
 } from "@/store/slices/contestSlice"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import Actions from "../../../../shared/components/Actions"
+import { useModal } from "../../../../shared/hooks/useModal"
 
 const OrganizerContests = () => {
   const navigate = useNavigate()

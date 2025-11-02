@@ -3,9 +3,9 @@ import { BREADCRUMBS } from '@/config/breadcrumbs'
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import { MapPin, Pencil, Trash2 } from "lucide-react"
-import { useModal } from '@/features/organizer/hooks/useModal'
 import useProvinces from "../../hooks/useProvinces"
 import Actions from "../../../../shared/components/Actions"
+import { useModal } from "../../../../shared/hooks/useModal"
 
 const OrganizerProvinces = () => {
   const {

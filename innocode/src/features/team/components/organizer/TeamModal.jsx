@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react"
 import BaseModal from "@/shared/components/BaseModal"
 import TeamForm from "./TeamForm"
 import { validateTeam } from "@/shared/validators/teamValidator"
-import useMentors from "@/features/organizer/hooks/useMentors"
 import useSchools from "../../../school/hooks/useSchools"
+import useMentors from "../../../../shared/hooks/useMentors"
 
 export default function TeamModal({
   isOpen,

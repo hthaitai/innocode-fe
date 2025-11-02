@@ -68,6 +68,7 @@ export default function ProvinceModal({
         formData={formData}
         setFormData={setFormData}
         errors={errors}
+        setErrors={setErrors}
       />
     </BaseModal>
   )

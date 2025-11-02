@@ -3,8 +3,6 @@ import { useParams, useNavigate } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import { Calendar, Pencil, Trash } from "lucide-react"
-import { useModal } from "@/features/organizer/hooks/useModal"
-import { useOrganizerBreadcrumb } from "@/features/organizer/hooks/useOrganizerBreadcrumb"
 import { formatForInput } from "@/shared/utils/formatForInput"
 import { formatDateTime } from "@/shared/utils/formatDateTime"
 import useContests from "../../../contest/hooks/useContests"
@@ -13,6 +11,8 @@ import ContestRelatedSettings from "../../components/organizer/ContestRelatedSet
 import InfoSection from "../../../../shared/components/InfoSection"
 import DetailTable from "../../../../shared/components/DetailTable"
 import Actions from "../../../../shared/components/Actions"
+import { useModal } from "../../../../shared/hooks/useModal"
+import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
 
 const OrganizerContestDetail = () => {
   const { contestId: contestIdParam } = useParams()
