@@ -2,18 +2,34 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg";
+import { useAuth } from '@/context/AuthContext';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem('token');
+  const { user, logout, isAuthenticated } = useAuth();
 
   const handleSignIn = () => {
     navigate('/login');
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    logout();
     navigate('/login');
+  };
+
+  // Xác định link Contests dựa theo role
+  const getContestsLink = () => {
+    if (!isAuthenticated || !user) return '/contests';
+    
+    switch(user.role) {
+      case 'organizer':
+        return '/organizer/contests';
+      case 'student':
+      case 'judge':
+      case 'admin':
+      default:
+        return '/contests';
+    }
   };
 
   return (
@@ -31,7 +47,7 @@ const Navbar = () => {
           <Link to="/" className="navbar-link">
             Home
           </Link>
-          <Link to="/contests" className="navbar-link">
+          <Link to={getContestsLink()} className="navbar-link">
             Contests
           </Link>
           <Link to="/leaderboard" className="navbar-link">
@@ -44,7 +60,7 @@ const Navbar = () => {
 
         {/* Auth Button */}
         <div className="navbar-auth">
-          {isLoggedIn ? (
+          {isAuthenticated ? (
             <button className="signin-btn" onClick={handleLogout}>
               Logout
             </button>

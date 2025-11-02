@@ -1,38 +1,96 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Icon } from '@iconify/react';
-import './sidebar.css';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Icon } from "@iconify/react";
+import "./sidebar.css";
+import { useAuth } from "@/context/AuthContext";
 
 const allMenus = {
-  profile: { path: '/profile', label: 'Profile', icon: 'lucide:user' },
-  dashboard: { path: '/dashboard', label: 'Dashboard', icon: 'lucide:layout-dashboard' },
-  contests: { path: '/contests', label: 'Contests', icon: 'lucide:trophy' },
-  organizerContests: { path: '/organizer/contests', label: 'Contests', icon: 'lucide:trophy' },
-  organizerProvinces: { path: '/organizer/provinces', label: 'Provinces', icon: 'lucide:map-pin' },
-  organizerSchools: { path: '/organizer/schools', label: 'Schools', icon: 'lucide:school'},
-  practice: { path: '/practice', label: 'Practice', icon: 'lucide:file-spreadsheet' },
-  team: { path: '/team', label: 'Team', icon: 'lucide:users' },
-  leaderboard: { path: '/leaderboard', label: 'Leaderboard', icon: 'lucide:chart-no-axes-column' },
-  announcements: { path: '/announcements', label: 'Announcements', icon: 'lucide:bell' },
-  help: { path: '/help', label: 'Help', icon: 'lucide:circle-question-mark' },
-  certificate: { path: '/certificate', label: 'Certificate', icon: 'lucide:award' },
+  profile: { path: "/profile", label: "Profile", icon: "lucide:user" },
+  dashboard: {
+    path: "/dashboard",
+    label: "Dashboard",
+    icon: "lucide:layout-dashboard",
+  },
+
+  // Student menus
+  contests: { path: "/contests", label: "Contests", icon: "lucide:trophy" },
+  practice: {
+    path: "/practice",
+    label: "Practice",
+    icon: "lucide:file-spreadsheet",
+  },
+  team: { path: "/team", label: "Team", icon: "lucide:users" },
+  leaderboard: {
+    path: "/leaderboard",
+    label: "Leaderboard",
+    icon: "lucide:chart-no-axes-column",
+  },
+  certificate: {
+    path: "/certificate",
+    label: "Certificate",
+    icon: "lucide:award",
+  },
+
+  // Organizer menus
+  organizerContests: {
+    path: "/organizer/contests",
+    label: "Contests",
+    icon: "lucide:trophy",
+  },
+  organizerProvinces: {
+    path: "/organizer/provinces",
+    label: "Provinces",
+    icon: "lucide:map-pin",
+  },
+  organizerSchools: {
+    path: "/organizer/schools",
+    label: "Schools",
+    icon: "lucide:school",
+  },
+
+  // Common menus
+  announcements: {
+    path: "/announcements",
+    label: "Announcements",
+    icon: "lucide:bell",
+  },
+  help: { path: "/help", label: "Help", icon: "lucide:circle-question-mark" },
 };
 
 const menuByRole = {
-  student: ['profile', 'contests', 'practice', 'team', 'leaderboard', 'announcements', 'certificate','help' ],
-  organizer: ['profile', 'organizerContests', 'organizerProvinces', 'organizerSchools'],
-  judge: ['profile', 'dashboard', 'contests', 'announcements'],
-  admin: ['profile', 'dashboard', 'leaderboard', 'announcements', 'help'],
+  student: [
+    "profile",
+    "contests",
+    "practice",
+    "team",
+    "leaderboard",
+    "certificate",
+    "announcements",
+    "help",
+  ],
+  organizer: [
+    "profile",
+    "organizerContests",
+    "organizerProvinces",
+    "organizerSchools",
+    "announcements",
+    "help",
+  ],
+  judge: ["profile", "dashboard", "contests", "announcements", "help"],
+  admin: ["profile", "dashboard", "leaderboard", "announcements", "help"],
 };
 
 const Sidebar = () => {
   const location = useLocation();
-  const role = localStorage.getItem('role');
-  const menuKeys = menuByRole[role] || menuByRole.student; // Fallback to student role
-  const menuItems = menuKeys.map(key => allMenus[key]).filter(Boolean);
+  const { user } = useAuth();
+  const role = user?.role || "student"; // Get role from AuthContext instead of localStorage
+
+  const menuKeys = menuByRole[role] || menuByRole.student;
+  const menuItems = menuKeys.map((key) => allMenus[key]).filter(Boolean);
+
   const isActive = (path) => {
-    if (path === '/') {
-      return location.pathname === '/';
+    if (path === "/") {
+      return location.pathname === "/";
     }
     return location.pathname.startsWith(path);
   };
@@ -45,8 +103,10 @@ const Sidebar = () => {
           <div className="avatar-gradient"></div>
         </div>
         <div className="user-info">
-          <div className="user-name">Lộc</div>
-          <div className="user-role">{(role || 'student').charAt(0).toUpperCase() + (role || 'student').slice(1)} account</div>
+          <div className="user-name">{user?.name || "User"}</div>
+          <div className="user-role">
+            {role.charAt(0).toUpperCase() + role.slice(1)} account
+          </div>
         </div>
       </div>
 
@@ -56,12 +116,9 @@ const Sidebar = () => {
           <Link
             key={item.path}
             to={item.path}
-            className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+            className={`nav-item ${isActive(item.path) ? "active" : ""}`}
           >
-            <Icon
-              icon={item.icon}
-              className="nav-icon"
-            />
+            <Icon icon={item.icon} className="nav-icon" />
             <span className="nav-label">{item.label}</span>
             {isActive(item.path) && <div className="active-indicator"></div>}
           </Link>

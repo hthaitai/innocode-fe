@@ -3,13 +3,15 @@ import PageContainer from "@/shared/components/PageContainer";
 import TabNavigation from "@/shared/components/TabNavigation";
 import { Icon } from '@iconify/react';
 import { BREADCRUMBS } from '@/config/breadcrumbs';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function Profile() {
   const [tab, setTab] = useState('about');
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const {user} = useAuth();
+  const role = user?.role || 'student';
   // Định nghĩa các tabs
   const tabs = [
     { id: 'about', label: 'About' },
@@ -24,9 +26,9 @@ export default function Profile() {
           <div className="flex items-start gap-6 mb-6">
             <div className="w-32 h-32 rounded-full bg-gradient-to-b from-orange-400 to-orange-200 shadow-md" />
             <div>
-              <h2 className="text-3xl font-bold">Lộc</h2>
-              <div className="text-base text-gray-600">Loc@gmail.com</div>
-              <div className="text-sm text-gray-500">Judge account</div>
+              <h2 className="text-3xl font-bold">{user?.name}</h2>
+              <div className="text-base text-gray-600">{user?.email}</div>
+              <div className="text-sm text-gray-500">{role.charAt(0).toUpperCase() + role.slice(1)} account</div>
             </div>
           </div>
 
@@ -62,7 +64,7 @@ export default function Profile() {
                             className="h-5 w-5 text-gray-400"
                           />
                           <span className="text-base text-gray-800 font-medium">
-                            Huỳnh Thiện Lộc
+                            {user?.name}
                           </span>
                         </div>
                         <button className="opacity-0 group-hover:opacity-100 p-2 hover:bg-orange-100 rounded-lg transition-all duration-200">
@@ -87,7 +89,7 @@ export default function Profile() {
                             className="h-5 w-5 text-gray-400"
                           />
                           <span className="text-base text-gray-800 font-medium">
-                            Loc@gmail.com
+                            {user.email}
                           </span>
                         </div>
                         <button className="opacity-0 group-hover:opacity-100 p-2 hover:bg-orange-100 rounded-lg transition-all duration-200">
