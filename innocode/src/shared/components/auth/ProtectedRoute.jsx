@@ -1,24 +1,23 @@
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext"
-import PropTypes from "prop-types"
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 
-const ProtectedRoute = ({ children, allowedRoles = [] }) => {
-const {user, isAuthenticated, isLoading} = useAuth();
-const location = useLocation();
-if(isLoading) {
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { user, loading } = useAuth();
+
+  // Chờ loading xong mới quyết định redirect
+  if (loading) {
     return <div>Loading...</div>;
-}
-if(!isAuthenticated){
-    return <Navigate to ="/login" state={{from: location}} replace />;
+  }
 
-}
-if(allowedRoles.length > 0 && !allowedRoles.includes(user?.role)){
-    return <Navigate to ="/unauthorized" replace />;
-}
-return children;
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return children;
 };
-ProtectedRoute.propTypes = {
-    children: PropTypes.node.isRequired,
-    allowedRoles: PropTypes.arrayOf(PropTypes.string),
-}
+
 export default ProtectedRoute;
