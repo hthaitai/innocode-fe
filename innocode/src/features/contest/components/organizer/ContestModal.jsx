@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react"
 import BaseModal from "@/shared/components/BaseModal"
 import ContestForm from "./ContestForm"
-import { validateContest } from "@/shared/validators/contestValidator"
+import { useAppSelector } from "../../../../store/hooks"
+import { validateContest } from "../../validators/contestValidator"
 
 export default function ContestModal({
   isOpen,
@@ -14,12 +15,13 @@ export default function ContestModal({
     year: "",
     name: "",
     description: "",
-    img_url: "",
+    imgUrl: "",
     status: "draft",
   }
 
   const [formData, setFormData] = useState(emptyData)
   const [errors, setErrors] = useState({})
+  const { contests } = useAppSelector((s) => s.contests)
 
   // Reset form when modal opens or data changes
   useEffect(() => {
@@ -31,11 +33,19 @@ export default function ContestModal({
 
   // Validate and submit
   const handleSubmit = async () => {
-    const validationErrors = validateContest(formData)
+    const validationErrors = validateContest(formData, contests)
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length === 0) {
-      await onSubmit(formData, mode)
+      await onSubmit(
+        {
+          ...formData,
+          year: Number(formData.year),
+          start: new Date(formData.start).toISOString(),
+          end: new Date(formData.end).toISOString(),
+        },
+        mode
+      )
       onClose()
     }
   }

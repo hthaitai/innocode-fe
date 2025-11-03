@@ -2,7 +2,7 @@ import React from "react"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 
-const ContestForm = ({ formData, setFormData, errors, setErrors  }) => {
+const ContestForm = ({ formData, setFormData, errors, setErrors }) => {
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -57,7 +57,26 @@ const ContestForm = ({ formData, setFormData, errors, setErrors  }) => {
         value={formData.img_url || ""}
         onChange={handleChange}
       />
-      <DropdownFluent
+      <TextFieldFluent
+        label="Start"
+        name="start"
+        type="datetime-local"
+        value={formData.start || ""}
+        onChange={handleChange}
+        error={!!errors.start}
+        helperText={errors.start}
+      />
+
+      <TextFieldFluent
+        label="End"
+        name="end"
+        type="datetime-local"
+        value={formData.end || ""}
+        onChange={handleChange}
+        error={!!errors.end}
+        helperText={errors.end}
+      />
+      {/* <DropdownFluent
         label="Status"
         value={formData.status || "draft"}
         onChange={handleSelect}
@@ -67,7 +86,7 @@ const ContestForm = ({ formData, setFormData, errors, setErrors  }) => {
           { label: "Published", value: "published" },
           { label: "Finalized", value: "finalized" },
         ]}
-      />
+      /> */}
     </div>
   )
 }

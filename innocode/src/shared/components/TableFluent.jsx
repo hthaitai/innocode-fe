@@ -71,31 +71,41 @@ const TableFluent = ({ data, columns, title, onRowClick }) => {
         </thead>
 
         <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              className={`
-                hover:bg-[#F6F6F6] align-middle transition-colors
-                ${isClickable ? "cursor-pointer" : "cursor-default"}
-              `}
-              onClick={() => {
-                if (isClickable) onRowClick(row.original)
-              }}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className={`text-[14px] leading-[20px] border-[#E5E5E5] whitespace-nowrap align-middle ${
-                    cell.column.id === "actions"
-                      ? "w-[60px] p-2 flex justify-center items-center"
-                      : "text-left px-5 py-2 border-r"
-                  }`}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+          {data.length === 0 ? (
+            <tr>
+              <td
+                colSpan={columns.length}
+                className="text-center text-[14px] leading-[20px] text-[#7A7574] py-4"
+              >
+                No data available
+              </td>
             </tr>
-          ))}
+          ) : (
+            table.getRowModel().rows.map((row) => (
+              <tr
+                key={row.id}
+                className={`hover:bg-[#F6F6F6] align-middle transition-colors ${
+                  isClickable ? "cursor-pointer" : "cursor-default"
+                }`}
+                onClick={() => {
+                  if (isClickable) onRowClick(row.original)
+                }}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    className={`text-[14px] leading-[20px] border-[#E5E5E5] whitespace-nowrap align-middle ${
+                      cell.column.id === "actions"
+                        ? "w-[60px] p-2 flex justify-center items-center"
+                        : "text-left px-5 py-2 border-r"
+                    }`}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

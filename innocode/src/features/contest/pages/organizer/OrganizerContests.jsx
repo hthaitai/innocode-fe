@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import PageContainer from "@/shared/components/PageContainer"
@@ -7,20 +7,25 @@ import { Trophy, Pencil, Trash2 } from "lucide-react"
 import { StatusBadge } from "@/shared/utils/StatusBadge"
 import { formatDateTime } from "@/shared/utils/formatDateTime"
 import {
+  fetchContests,
   addContest,
   updateContest,
   deleteContest,
-} from "@/store/slices/contestSlice"
+} from "@/features/contest/store/contestThunks"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import Actions from "../../../../shared/components/Actions"
 import { useModal } from "../../../../shared/hooks/useModal"
 
 const OrganizerContests = () => {
   const navigate = useNavigate()
-  const { openModal } = useModal()
-
   const dispatch = useAppDispatch()
+  const { openModal } = useModal()
   const { contests, loading, error } = useAppSelector((s) => s.contests)
+
+  // Fetch contests on mount
+  useEffect(() => {
+    dispatch(fetchContests())
+  }, [dispatch])
 
   // ----- CRUD Modals -----
   const handleContestModal = (mode, contest = {}) => {
@@ -28,9 +33,14 @@ const OrganizerContests = () => {
       mode,
       initialData: contest,
       onSubmit: async (data) => {
-        if (mode === "create") return dispatch(addContest(data))
-        if (mode === "edit")
-          return dispatch(updateContest({ id: contest.contest_id, data }))
+        if (mode === "create") {
+          await dispatch(addContest(data))
+          dispatch(fetchContests())
+        }
+        if (mode === "edit") {
+          await dispatch(updateContest({ id: contest.contestId, data }))
+          dispatch(fetchContests())
+        }
       },
     })
   }
@@ -40,7 +50,7 @@ const OrganizerContests = () => {
       type: "contest",
       item: contest,
       onConfirm: async (onClose) => {
-        await dispatch(deleteContest(contest.contest_id))
+        await dispatch(deleteContest(contest.contestId))
         onClose()
       },
     })
@@ -68,7 +78,7 @@ const OrganizerContests = () => {
     {
       accessorKey: "created_at",
       header: "Created At",
-      cell: ({ row }) => formatDateTime(row.original.created_at),
+      cell: ({ row }) => formatDateTime(row.original.createdAt),
     },
     {
       id: "actions",
@@ -129,7 +139,7 @@ const OrganizerContests = () => {
           columns={contestColumns}
           title="Contests"
           onRowClick={(contest) =>
-            navigate(`/organizer/contests/${contest.contest_id}`)
+            navigate(`/organizer/contests/${contest.contestId}`)
           }
         />
       </div>
