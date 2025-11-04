@@ -54,9 +54,14 @@ export default function BaseModal({
           key="backdrop"
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 px-4"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1, transition: { duration: 0.3, ease: fluentEaseOut } }}
-          exit={{ opacity: 0, transition: { duration: 0.2, ease: fluentEaseOut } }}
-          onClick={onClose}
+          animate={{
+            opacity: 1,
+            transition: { duration: 0.3, ease: fluentEaseOut },
+          }}
+          exit={{
+            opacity: 0,
+            transition: { duration: 0.2, ease: fluentEaseOut },
+          }}
         >
           <motion.div
             key="modal"

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { fetchRounds, addRound, updateRound, deleteRound } from "./roundThunks"
+import { fetchRounds, addRound, updateRound, deleteRound } from "./roundThunk"
 
 const initialState = {
   rounds: [],

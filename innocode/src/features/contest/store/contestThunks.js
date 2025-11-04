@@ -4,10 +4,10 @@ import { contestService } from "@/features/contest/services/contestService"
 // GET all contests
 export const fetchContests = createAsyncThunk(
   "contests/fetchAll",
-  async (params, { rejectWithValue }) => {
+  async ({ pageNumber = 1, pageSize = 10 } = {}, { rejectWithValue }) => {
     try {
-      const data = await contestService.getAllContests(params)
-      return Array.isArray(data) ? data : []
+      const data = await contestService.getAllContests({ pageNumber, pageSize })
+      return data
     } catch (err) {
       return rejectWithValue(err.message || "Failed to load contests")
     }
@@ -21,7 +21,7 @@ export const addContest = createAsyncThunk(
     try {
       return await contestService.createContest(data)
     } catch (err) {
-      return rejectWithValue(err.message)
+      return rejectWithValue(err) 
     }
   }
 )

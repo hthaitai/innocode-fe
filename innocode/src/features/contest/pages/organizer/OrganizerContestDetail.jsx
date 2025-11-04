@@ -24,7 +24,7 @@ import {
   addRound,
   updateRound,
   deleteRound,
-} from "@/features/round/store/roundThunks"
+} from "../../../round/store/roundThunk"
 
 const OrganizerContestDetail = () => {
   const { contestId } = useParams()

@@ -2,10 +2,13 @@ import axiosClient from "./axiosClient"
 
 const contestApi = {
   // GET /api/contests
-  getAll: (params) => axiosClient.get("/contests", { params }),
+  getAll: ({ pageNumber, pageSize }) =>
+    axiosClient.get("/contests", {
+      params: { pageNumber, pageSize },
+    }),
 
   // POST /api/contests
-  create: (data) => axiosClient.post("/contests", data),
+  create: (data) => axiosClient.post("/contests/advanced", data),
 
   // PUT /api/contests/{id}
   update: (id, data) => axiosClient.put(`/contests/${id}`, data),

@@ -1,4 +1,4 @@
-export const validateContest = (data, existingContests = []) => {
+export const validateContest = (data) => {
   const errors = {}
   const now = new Date()
 
@@ -16,12 +16,6 @@ export const validateContest = (data, existingContests = []) => {
   const nameValue = String(data.name ?? "").trim()
   if (!nameValue) {
     errors.name = "Contest name is required"
-  } else if (
-    existingContests.some(
-      (c) => c.name === nameValue && c.year === Number(data.year)
-    )
-  ) {
-    errors.name = "A contest with this name already exists for this year"
   }
 
   // ---- Image URL ----
@@ -43,6 +37,42 @@ export const validateContest = (data, existingContests = []) => {
     errors.end = "End date must be after the start date"
   } else if (new Date(data.end) < now) {
     errors.end = "End date cannot be in the past"
+  }
+
+  // ---- Registration Dates ----
+  if (!data.registrationStart) {
+    errors.registrationStart = "Registration start date is required"
+  } else if (new Date(data.registrationStart) < now) {
+    errors.registrationStart = "Registration start cannot be in the past"
+  }
+
+  if (!data.registrationEnd) {
+    errors.registrationEnd = "Registration end date is required"
+  } else if (
+    data.registrationStart &&
+    new Date(data.registrationEnd) <= new Date(data.registrationStart)
+  ) {
+    errors.registrationEnd = "Registration end must be after registration start"
+  } else if (
+    data.start &&
+    new Date(data.registrationEnd) > new Date(data.start)
+  ) {
+    errors.registrationEnd =
+      "Registration end cannot be after contest start date"
+  }
+
+  // ---- Team Members ----
+  if (data.teamMembersMax == null || data.teamMembersMax === "") {
+    errors.teamMembersMax = "Team member limit is required"
+  } else if (data.teamMembersMax < 1 || data.teamMembersMax > 50) {
+    errors.teamMembersMax = "Team members must be between 1 and 50"
+  }
+
+  // ---- Team Limit ----
+  if (data.teamLimitMax == null || data.teamLimitMax === "") {
+    errors.teamLimitMax = "Team limit is required"
+  } else if (data.teamLimitMax < 1 || data.teamLimitMax > 10000) {
+    errors.teamLimitMax = "Team limit must be between 1 and 10000"
   }
 
   return errors

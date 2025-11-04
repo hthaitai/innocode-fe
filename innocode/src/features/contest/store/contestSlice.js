@@ -10,6 +10,14 @@ import {
 
 const initialState = {
   contests: [],
+  pagination: {
+    pageNumber: 1,
+    pageSize: 10,
+    totalPages: 1,
+    totalCount: 0,
+    hasPreviousPage: false,
+    hasNextPage: false,
+  },
   loading: false,
   error: null,
 }
@@ -27,7 +35,8 @@ const contestSlice = createSlice({
       })
       .addCase(fetchContests.fulfilled, (state, action) => {
         state.loading = false
-        state.contests = action.payload
+        state.contests = action.payload.data
+        state.pagination = action.payload.additionalData
       })
       .addCase(fetchContests.rejected, (state, action) => {
         state.loading = false
