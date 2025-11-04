@@ -1,46 +1,69 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { Calendar, Pencil, Trash } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
-import { Calendar, Pencil, Trash } from "lucide-react"
-import { formatForInput } from "@/shared/utils/formatForInput"
-import { formatDateTime } from "@/shared/utils/formatDateTime"
-import useContests from "../../../contest/hooks/useContests"
-import useRounds from "@/features/round/hooks/useRounds"
+import InfoSection from "@/shared/components/InfoSection"
+import DetailTable from "@/shared/components/DetailTable"
+import Actions from "@/shared/components/Actions"
 import ContestRelatedSettings from "../../components/organizer/ContestRelatedSettings"
-import InfoSection from "../../../../shared/components/InfoSection"
-import DetailTable from "../../../../shared/components/DetailTable"
-import Actions from "../../../../shared/components/Actions"
-import { useModal } from "../../../../shared/hooks/useModal"
-import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
+import { useModal } from "@/shared/hooks/useModal"
+import { createBreadcrumbWithPaths } from "@/config/breadcrumbs"
+import { formatDateTime } from "@/shared/utils/formatDateTime"
+import { formatForInput } from "@/shared/utils/formatForInput"
+
+// ✅ Redux imports
+import { useAppDispatch, useAppSelector } from "@/store/hooks"
+import {
+  fetchContests,
+  updateContest,
+  deleteContest,
+} from "@/features/contest/store/contestThunks"
+import {
+  fetchRounds,
+  addRound,
+  updateRound,
+  deleteRound,
+} from "../../../round/store/roundThunk"
 
 const OrganizerContestDetail = () => {
-  const { contestId: contestIdParam } = useParams()
-  const contestId = Number(contestIdParam)
-
+  const { contestId } = useParams()
   const navigate = useNavigate()
   const { openModal } = useModal()
-  const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_CONTEST_DETAIL")
+  const dispatch = useAppDispatch()
 
-  // ----- Hooks -----
+  // ----- Redux State -----
   const {
     contests,
     loading: contestsLoading,
     error: contestsError,
-    updateContest,
-    deleteContest,
-  } = useContests()
-
+  } = useAppSelector((state) => state.contests)
   const {
     rounds,
     loading: roundsLoading,
     error: roundsError,
-    addRound,
-    updateRound,
-    deleteRound,
-  } = useRounds(contestId)
+  } = useAppSelector((state) => state.rounds)
 
-  const contest = contests.find((c) => c.contest_id === contestId)
+  // ----- Fetch contests and rounds -----
+  useEffect(() => {
+    if (!contests || contests.length === 0) {
+      dispatch(fetchContests())
+    }
+  }, [dispatch, contests])
+
+  useEffect(() => {
+    if (contestId) {
+      dispatch(fetchRounds({ contestId }))
+    }
+  }, [dispatch, contestId])
+
+  const contest = contests.find((c) => c.contestId === contestId)
+
+  const { items, paths } = createBreadcrumbWithPaths(
+    "ORGANIZER_CONTEST_DETAIL",
+    contest?.name ?? "Unknown Contest",
+    contestId
+  )
 
   // ----- Contest Handlers -----
   const handleContestModal = (mode) => {
@@ -48,8 +71,10 @@ const OrganizerContestDetail = () => {
       mode,
       initialData: contest,
       onSubmit: async (data) => {
-        if (mode === "edit")
-          return await updateContest(contest.contest_id, data)
+        if (mode === "edit") {
+          await dispatch(updateContest({ id: contest.contestId, data }))
+          dispatch(fetchContests())
+        }
       },
     })
   }
@@ -59,7 +84,7 @@ const OrganizerContestDetail = () => {
       type: "contest",
       item: contest,
       onConfirm: async (onClose) => {
-        await deleteContest(contest.contest_id)
+        await dispatch(deleteContest(contest.contestId))
         onClose()
         navigate("/organizer/contests")
       },
@@ -78,8 +103,9 @@ const OrganizerContestDetail = () => {
       mode,
       initialData: roundData,
       onSubmit: async (data) => {
-        if (mode === "create") return await addRound(data)
-        if (mode === "edit") return await updateRound(round.round_id, data)
+        if (mode === "create") await dispatch(addRound({ contestId, data }))
+        if (mode === "edit")
+          await dispatch(updateRound({ id: round.round_id, data }))
       },
     })
   }
@@ -89,7 +115,7 @@ const OrganizerContestDetail = () => {
       type: "round",
       item: round,
       onConfirm: async (onClose) => {
-        await deleteRound(round.round_id)
+        await dispatch(deleteRound(round.round_id))
         onClose()
       },
     })
@@ -135,11 +161,11 @@ const OrganizerContestDetail = () => {
   // ----- Render -----
   return (
     <PageContainer
-      breadcrumb={breadcrumbData.items}
-      breadcrumbPaths={breadcrumbData.paths}
+      breadcrumb={items}
+      breadcrumbPaths={paths}
       bg={false}
-      loading={contestsLoading}
-      error={contestsError}
+      loading={contestsLoading || roundsLoading}
+      error={contestsError || roundsError}
     >
       {!contest ? (
         <div className="flex items-center justify-center h-[200px] text-gray-500">
@@ -147,17 +173,25 @@ const OrganizerContestDetail = () => {
         </div>
       ) : (
         <div className="space-y-5">
+          {/* Contest Info */}
           <InfoSection
             title="Contest Information"
             onEdit={() => handleContestModal("edit")}
           >
             <DetailTable
               data={[
+                { label: "Status", value: contest.status },
+
                 { label: "Name", value: contest.name },
                 { label: "Year", value: contest.year },
                 { label: "Description", value: contest.description },
-                { label: "Status", value: contest.status },
-                { label: "Created at", value: contest.created_at },
+                { label: "Image Url", value: contest.imageUrl },
+                { label: "Start Date", value: formatDateTime(contest.start) },
+                { label: "End Date", value: formatDateTime(contest.end) },
+                {
+                  label: "Created At",
+                  value: formatDateTime(contest.createdAt),
+                },
               ]}
             />
           </InfoSection>
@@ -197,7 +231,7 @@ const OrganizerContestDetail = () => {
                   title="Rounds"
                   onRowClick={(round) =>
                     navigate(
-                      `/organizer/contests/${contest.contest_id}/rounds/${round.round_id}`
+                      `/organizer/contests/${contest.contestId}/rounds/${round.round_id}`
                     )
                   }
                 />
@@ -205,10 +239,10 @@ const OrganizerContestDetail = () => {
             </div>
           </div>
 
-          {/* Related settings */}
-          <ContestRelatedSettings contestId={contest.contest_id} />
+          {/* Related Settings */}
+          <ContestRelatedSettings contestId={contest.contestId} />
 
-          {/* More actions */}
+          {/* Delete Contest */}
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">More actions</div>
             <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">

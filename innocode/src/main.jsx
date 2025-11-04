@@ -39,6 +39,7 @@ import OrganizerProvinces from "./features/province/pages/organizer/OrganizerPro
 import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools"
 import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications"
 import ProtectedRoute from "./shared/components/auth/ProtectedRoute"
+import { Toaster } from "react-hot-toast"
 // Organizer pages
 
 const router = createBrowserRouter([
@@ -265,6 +266,7 @@ createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <ModalProvider>
           <RouterProvider router={router} />
+          <Toaster position="top-right" reverseOrder={false} />
         </ModalProvider>
       </AuthProvider>
     </Provider>

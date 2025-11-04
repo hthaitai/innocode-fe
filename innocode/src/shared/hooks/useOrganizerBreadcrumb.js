@@ -1,64 +1,36 @@
 import { useParams } from "react-router-dom"
-import { BREADCRUMBS, BREADCRUMB_PATHS } from '@/config/breadcrumbs'
-
-// Import separated fake data sources
-import { contests as contestsData } from '@/data/contests/contests'
-import { rounds as roundsData } from "@/data/contests/rounds"
-import { problems as problemsData } from "@/data/contests/problems"
-import { testCases as testCasesData } from "@/data/contests/testCases"
-import { appeals as appealsData } from "@/data/contests/appeals" // ✅ new fake dataset (optional)
+import { useAppSelector } from "@/store/hooks"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 
 export function useOrganizerBreadcrumb(
   key = "ORGANIZER_CONTEST_DETAIL",
   options = {}
 ) {
-  const { teams: allTeams = [] } = options
   const { contestId, roundId, problemId, teamId, appealId } = useParams()
 
-  const numericContestId = contestId ? Number(contestId) : null
-  const numericRoundId = roundId ? Number(roundId) : null
-  const numericProblemId = problemId ? Number(problemId) : null
-  const numericTeamId = teamId ? Number(teamId) : null
-  const numericAppealId = appealId ? Number(appealId) : null // ✅ new param
+  // ✅ Use Redux store instead of static data
+  const { contests } = useAppSelector((s) => s.contests)
 
-  // ---- Lookup each entity separately ----
-  const contest =
-    options.contest ??
-    contestsData.find((c) => c.contest_id === numericContestId)
+  // ✅ Find the current contest using string ID (UUID safe)
+  const contest = contests.find((c) => c.contestId === contestId)
   const contestName = contest?.name ?? "Unknown Contest"
 
-  const round = roundsData.find(
-    (r) => r.round_id === numericRoundId && r.contest_id === numericContestId
-  )
-  const roundName = round?.name ?? "Unknown Round"
-
-  const problem = problemsData.find(
-    (p) =>
-      p.problem_id === numericProblemId &&
-      p.round_id === numericRoundId &&
-      p.contest_id === numericContestId
-  )
-  const problemName = problem?.name ?? `Problem ${numericProblemId ?? ""}`
-
-  const teamSource = allTeams.length ? allTeams : contest?.teams ?? []
-  const team = teamSource.find((t) => t.team_id === numericTeamId)
-  const teamName = team?.name ?? `Team ${numericTeamId ?? ""}`
-
-  const appeal =
-    options.appeal ??
-    appealsData?.find((a) => a.appeal_id === numericAppealId)
-  const appealIdLabel = `Appeal #${numericAppealId ?? ""}` // ✅ for breadcrumb label
+  // ---- Keep these for future nested entities (rounds, problems, etc.) ----
+  const round = null
+  const problem = null
+  const team = null
+  const appeal = null
 
   // ---- Breadcrumb items ----
   let items = BREADCRUMBS[key]
   if (typeof items === "function") {
     items =
       {
-        ORGANIZER_ROUND_DETAIL: () => items(contestName, roundName),
+        ORGANIZER_ROUND_DETAIL: () => items(contestName, "Unknown Round"),
         ORGANIZER_PROBLEM_DETAIL: () =>
-          items(contestName, roundName, problemName),
-        ORGANIZER_TEAM_DETAIL: () => items(contestName, teamName),
-        ORGANIZER_APPEAL_DETAIL: () => items(contestName, numericAppealId), // ✅ new handler
+          items(contestName, "Unknown Round", "Unknown Problem"),
+        ORGANIZER_TEAM_DETAIL: () => items(contestName, "Unknown Team"),
+        ORGANIZER_APPEAL_DETAIL: () => items(contestName, appealId),
       }[key]?.() ?? items(contestName)
   }
   if (!items) items = ["Not Found"]
@@ -68,21 +40,16 @@ export function useOrganizerBreadcrumb(
   if (typeof paths === "function") {
     paths =
       {
-        ORGANIZER_ROUND_DETAIL: () => paths(numericContestId, numericRoundId),
-        ORGANIZER_PROBLEM_DETAIL: () =>
-          paths(numericContestId, numericRoundId, numericProblemId),
-        ORGANIZER_TEAM_DETAIL: () => paths(numericContestId, numericTeamId),
-        ORGANIZER_APPEAL_DETAIL: () => paths(numericContestId, numericAppealId), // ✅ new handler
-      }[key]?.() ?? paths(numericContestId)
+        ORGANIZER_ROUND_DETAIL: () => paths(contestId, roundId),
+        ORGANIZER_PROBLEM_DETAIL: () => paths(contestId, roundId, problemId),
+        ORGANIZER_TEAM_DETAIL: () => paths(contestId, teamId),
+        ORGANIZER_APPEAL_DETAIL: () => paths(contestId, appealId),
+      }[key]?.() ?? paths(contestId)
   }
   if (!paths) paths = ["/"]
 
   return {
     contest,
-    round,
-    problem,
-    team,
-    appeal,
     breadcrumbData: { items, paths },
   }
 }
