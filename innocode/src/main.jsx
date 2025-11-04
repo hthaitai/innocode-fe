@@ -40,6 +40,8 @@ import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools
 import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications"
 import ProtectedRoute from "./shared/components/auth/ProtectedRoute"
 import { Toaster } from "react-hot-toast"
+import OrganizerContestCreate from "./features/contest/pages/organizer/OrganizerContestCreate"
+import OrganizerContestEdit from "./features/contest/pages/organizer/OrganizerContestEdit"
 // Organizer pages
 
 const router = createBrowserRouter([
@@ -141,6 +143,22 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <OrganizerContests />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "new",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerContestCreate />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/edit",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerContestEdit />
               </ProtectedRoute>
             ),
           },

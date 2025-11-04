@@ -3,6 +3,14 @@ import { fetchRounds, addRound, updateRound, deleteRound } from "./roundThunk"
 
 const initialState = {
   rounds: [],
+  additionalData: {
+    pageNumber: 1,
+    pageSize: 10,
+    totalPages: 1,
+    totalCount: 0,
+    hasPreviousPage: false,
+    hasNextPage: false,
+  },
   loading: false,
   error: null,
 }
@@ -20,7 +28,8 @@ const roundSlice = createSlice({
       })
       .addCase(fetchRounds.fulfilled, (state, action) => {
         state.loading = false
-        state.rounds = action.payload
+        state.rounds = action.payload.data
+        state.additionalData = action.payload.additionalData
       })
       .addCase(fetchRounds.rejected, (state, action) => {
         state.loading = false
@@ -61,9 +70,7 @@ const roundSlice = createSlice({
       })
       .addCase(deleteRound.fulfilled, (state, action) => {
         state.loading = false
-        state.rounds = state.rounds.filter(
-          (r) => r.roundId !== action.payload
-        )
+        state.rounds = state.rounds.filter((r) => r.roundId !== action.payload)
       })
       .addCase(deleteRound.rejected, (state, action) => {
         state.loading = false

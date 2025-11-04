@@ -28,7 +28,6 @@ const contestSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // FETCH CONTESTS
       .addCase(fetchContests.pending, (state) => {
         state.loading = true
         state.error = null
@@ -43,67 +42,45 @@ const contestSlice = createSlice({
         state.error = action.payload
       })
 
-      // ADD CONTEST
       .addCase(addContest.pending, (state) => {
         state.loading = true
       })
-      .addCase(addContest.fulfilled, (state, action) => {
+      .addCase(addContest.fulfilled, (state) => {
         state.loading = false
-        state.contests.push(action.payload)
       })
       .addCase(addContest.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
       })
 
-      // UPDATE CONTEST
       .addCase(updateContest.pending, (state) => {
         state.loading = true
       })
-      .addCase(updateContest.fulfilled, (state, action) => {
+      .addCase(updateContest.fulfilled, (state) => {
         state.loading = false
-        state.contests = state.contests.map((c) =>
-          c.contestId === action.payload.contestId ? action.payload : c
-        )
       })
       .addCase(updateContest.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
       })
 
-      // DELETE CONTEST
       .addCase(deleteContest.pending, (state) => {
         state.loading = true
       })
-      .addCase(deleteContest.fulfilled, (state, action) => {
+      .addCase(deleteContest.fulfilled, (state) => {
         state.loading = false
-        state.contests = state.contests.filter(
-          (c) => c.contestId !== action.payload
-        )
       })
       .addCase(deleteContest.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
       })
 
-      // PUBLISH CONTEST
-      .addCase(publishContest.fulfilled, (state, action) => {
-        const updated = action.payload
-        state.contests = state.contests.map((c) =>
-          c.contestId === updated.contestId ? updated : c
-        )
-      })
+      .addCase(publishContest.fulfilled, () => {})
       .addCase(publishContest.rejected, (state, action) => {
         state.error = action.payload
       })
 
-      // PUBLISH CONTEST IF READY
-      .addCase(publishIfReady.fulfilled, (state, action) => {
-        const updated = action.payload
-        state.contests = state.contests.map((c) =>
-          c.contestId === updated.contestId ? updated : c
-        )
-      })
+      .addCase(publishIfReady.fulfilled, () => {})
       .addCase(publishIfReady.rejected, (state, action) => {
         state.error = action.payload
       })

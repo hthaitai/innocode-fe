@@ -75,13 +75,6 @@ export default function ContestModal({
         start: fromDatetimeLocal(formData.start),
         end: fromDatetimeLocal(formData.end),
       })
-
-      toast.success(
-        mode === "edit"
-          ? "Contest updated successfully!"
-          : "Contest created successfully!"
-      )
-
       onClose()
     } catch (err) {
       // backend errors as toast

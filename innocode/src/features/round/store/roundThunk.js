@@ -1,44 +1,48 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { roundService } from "@/features/round/services/roundService"
+import { handleThunkError } from "../../../shared/utils/handleThunkError"
 
-// GET all rounds
 export const fetchRounds = createAsyncThunk(
   "rounds/fetchAll",
-  async (params, { rejectWithValue }) => {
+  async (
+    { contestId, pageNumber = 1, pageSize = 10 } = {},
+    { rejectWithValue }
+  ) => {
     try {
-      const data = await roundService.getAllRounds(params)
-      return Array.isArray(data) ? data : []
+      const data = await roundService.getAllRounds({
+        contestId,
+        pageNumber,
+        pageSize,
+      })
+      return data
     } catch (err) {
-      return rejectWithValue(err.message || "Failed to load rounds")
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// CREATE round
 export const addRound = createAsyncThunk(
   "rounds/add",
-  async (data, { rejectWithValue }) => {
+  async ({ contestId, data }, { rejectWithValue }) => {
     try {
-      return await roundService.createRound(data)
+      return await roundService.createRound(contestId, data)
     } catch (err) {
-      return rejectWithValue(err.message || "Failed to create round")
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// UPDATE round
 export const updateRound = createAsyncThunk(
   "rounds/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
       return await roundService.updateRound(id, data)
     } catch (err) {
-      return rejectWithValue(err.message || "Failed to update round")
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// DELETE round
 export const deleteRound = createAsyncThunk(
   "rounds/delete",
   async (id, { rejectWithValue }) => {
@@ -46,7 +50,7 @@ export const deleteRound = createAsyncThunk(
       await roundService.deleteRound(id)
       return id
     } catch (err) {
-      return rejectWithValue(err.message || "Failed to delete round")
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
