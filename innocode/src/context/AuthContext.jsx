@@ -42,13 +42,16 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  // Computed value: check if user is authenticated
+  const isAuthenticated = !!token && !!user;
+
   // Chờ loading xong mới render children
   if (loading) {
     return <div>Loading...</div>; // Hoặc component Spinner
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

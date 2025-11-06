@@ -70,14 +70,16 @@ export const authService = {
   // Logout
   async logout() {
     try {
+      // Try to call API logout
       await authApi.logout();
     } catch (error) {
-      console.error('❌ Logout error:', error);
+      console.error('❌ Logout API error:', error);
+      // Continue with local logout even if API fails
     } finally {
+      // Always clear local storage
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
-      window.location.href = '/login';
     }
   },
 

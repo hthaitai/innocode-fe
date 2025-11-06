@@ -23,8 +23,39 @@
   padding-bottom: calc(var(--spacing) * 5);
   overflow-y: auto;
   scrollbar-gutter: stable;
+  scroll-behavior: smooth;
 }
+
 .content-wrapper {
   max-width: 1024px;
   margin: 0 auto;
+  animation: fadeInContent 0.4s ease-out;
+}
+
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Auth Layout */
+.auth-layout {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  animation: fadeInAuth 0.5s ease-out;
+}
+
+@keyframes fadeInAuth {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

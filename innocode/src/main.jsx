@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client"
 import "./index.css"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import MainLayout from "./shared/components/layout/MainLayout"
+import AuthLayout from "./shared/components/layout/AuthLayout"
 import { Provider } from "react-redux"
 import { store } from "./store/store"
 // Common pages
@@ -18,6 +19,8 @@ import Contests from "./features/contest/student/Contests"
 import ContestDetail from "./features/contest/student/ContestDetail"
 import ContestProcessing from "./features/contest/student/ContestProcessing"
 import Practice from "./features/contest/student/Practice"
+import PracticeDetail from "./features/contest/student/PracticeDetail"
+import PracticeStart from "./features/contest/student/PracticeStart"
 import Team from "./features/contest/student/Team"
 import Leaderboard from "./features/contest/student/Leaderboard"
 import Help from "./features/contest/student/Help"
@@ -39,10 +42,23 @@ import OrganizerProvinces from "./features/province/pages/organizer/OrganizerPro
 import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools"
 import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications"
 import ProtectedRoute from "./shared/components/auth/ProtectedRoute"
+import PublicRoute from "./shared/components/auth/PublicRoute"
 // Organizer pages
 
 const router = createBrowserRouter([
-  { path: "login", element: <Login /> },
+  {
+    element: <AuthLayout />, // Auth layout wrapper
+    children: [
+      {
+        path: "login",
+        element: (
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        ),
+      },
+    ],
+  },
   { path: "unauthorized", element: <Unauthorized /> },
   {
     element: <MainLayout />, // layout wrapper
@@ -70,6 +86,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Practice />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "practice-detail/:practiceId",
+        element: (
+          <ProtectedRoute>
+            <PracticeDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "practice-start/:practiceId",
+        element: (
+          <ProtectedRoute>
+            <PracticeStart />
           </ProtectedRoute>
         ),
       },
