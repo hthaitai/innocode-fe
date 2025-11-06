@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import PageContainer from "@/shared/components/PageContainer"
@@ -7,30 +7,45 @@ import { Trophy, Pencil, Trash2 } from "lucide-react"
 import { StatusBadge } from "@/shared/utils/StatusBadge"
 import { formatDateTime } from "@/shared/utils/formatDateTime"
 import {
+  fetchContests,
   addContest,
   updateContest,
   deleteContest,
-} from "@/store/slices/contestSlice"
+} from "@/features/contest/store/contestThunks"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import Actions from "../../../../shared/components/Actions"
-import { useModal } from "../../../../shared/hooks/useModal"
+import Actions from "@/shared/components/Actions"
+import { useModal } from "@/shared/hooks/useModal"
+import { toast } from "react-hot-toast"
 
 const OrganizerContests = () => {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const { openModal } = useModal()
 
-  const dispatch = useAppDispatch()
-  const { contests, loading, error } = useAppSelector((s) => s.contests)
+  const { contests, pagination, loading, error } = useAppSelector(
+    (s) => s.contests
+  )
 
-  // ----- CRUD Modals -----
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+
+  useEffect(() => {
+    dispatch(fetchContests({ pageNumber: page, pageSize }))
+  }, [dispatch, page, pageSize])
+
   const handleContestModal = (mode, contest = {}) => {
     openModal("contest", {
       mode,
       initialData: contest,
       onSubmit: async (data) => {
-        if (mode === "create") return dispatch(addContest(data))
-        if (mode === "edit")
-          return dispatch(updateContest({ id: contest.contest_id, data }))
+        if (mode === "create") {
+          await dispatch(addContest(data)).unwrap()
+        } else {
+          await dispatch(
+            updateContest({ id: contest.contestId, data })
+          ).unwrap()
+        }
+        dispatch(fetchContests({ pageNumber: page, pageSize }))
       },
     })
   }
@@ -40,13 +55,19 @@ const OrganizerContests = () => {
       type: "contest",
       item: contest,
       onConfirm: async (onClose) => {
-        await dispatch(deleteContest(contest.contest_id))
-        onClose()
+        try {
+          await dispatch(deleteContest(contest.contestId)).unwrap()
+          toast.success("Contest deleted successfully!")
+          onClose()
+          dispatch(fetchContests({ pageNumber: page, pageSize }))
+        } catch (err) {
+          console.error(err)
+          toast.error("Failed to delete contest.")
+        }
       },
     })
   }
 
-  // ----- Table Columns -----
   const contestColumns = [
     {
       accessorKey: "name",
@@ -68,7 +89,7 @@ const OrganizerContests = () => {
     {
       accessorKey: "created_at",
       header: "Created At",
-      cell: ({ row }) => formatDateTime(row.original.created_at),
+      cell: ({ row }) => formatDateTime(row.original.createdAt),
     },
     {
       id: "actions",
@@ -96,15 +117,9 @@ const OrganizerContests = () => {
     },
   ]
 
-  // ----- Render -----
   return (
-    <PageContainer
-      breadcrumb={BREADCRUMBS.CONTESTS}
-      loading={loading}
-      error={error}
-    >
+    <PageContainer breadcrumb={BREADCRUMBS.CONTESTS}>
       <div className="space-y-1">
-        {/* Add Contest Section */}
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
           <div className="flex gap-5 items-center">
             <Trophy size={20} />
@@ -123,13 +138,16 @@ const OrganizerContests = () => {
           </button>
         </div>
 
-        {/* Table */}
         <TableFluent
           data={contests}
           columns={contestColumns}
           title="Contests"
+          pagination={pagination}
+          onPageChange={setPage}
+          loading={loading}
+          error={error}
           onRowClick={(contest) =>
-            navigate(`/organizer/contests/${contest.contest_id}`)
+            navigate(`/organizer/contests/${contest.contestId}`)
           }
         />
       </div>

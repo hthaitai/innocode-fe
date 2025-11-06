@@ -1,43 +1,47 @@
-// services/contestService.js
-import axios from "axios"
-
-const API_BASE = "https://api.example.com/contests" // Replace with your backend URL
+import contestApi from "../../../api/contestApi"
 
 export const contestService = {
-  getContests: async () => {
-    const response = await axios.get(API_BASE)
-    return response.data
+  async getAllContests({ pageNumber = 1, pageSize = 10 } = {}) {
+    const res = await contestApi.getAll({ pageNumber, pageSize })
+    return res.data 
   },
 
-  getContestById: async (id) => {
+  async createContest(data) {
     try {
-      const response = await axios.get(`${API_BASE}/${id}`)
-      return response.data
+      const res = await contestApi.create(data)
+      return res.data.data || res.data
     } catch (err) {
-      throw new Error("Contest not found")
+      throw err.response?.data || { Message: err.message || "Unknown error" }
     }
   },
 
-  addContest: async (data) => {
-    const response = await axios.post(API_BASE, data)
-    return response.data
+  async updateContest(id, data) {
+    const res = await contestApi.update(id, data)
+    return res.data
   },
 
-  updateContest: async (id, data) => {
-    try {
-      const response = await axios.put(`${API_BASE}/${id}`, data)
-      return response.data
-    } catch (err) {
-      throw new Error("Contest not found")
-    }
+  async deleteContest(id) {
+    await contestApi.delete(id)
+    return id
   },
 
-  deleteContest: async (id) => {
-    try {
-      const response = await axios.delete(`${API_BASE}/${id}`)
-      return response.data // could be deleted item or empty
-    } catch (err) {
-      throw new Error("Contest not found")
-    }
+  async publishContest(id) {
+    const res = await contestApi.publish(id)
+    return res.data
+  },
+
+  async checkPublishReady(id) {
+    const res = await contestApi.checkPublishReady(id)
+    return res.data
+  },
+
+  async publishIfReady(id) {
+    const res = await contestApi.publishIfReady(id)
+    return res.data
+  },
+
+  async advancedSearch(data) {
+    const res = await contestApi.advancedSearch(data)
+    return res.data
   },
 }

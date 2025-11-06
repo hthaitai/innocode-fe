@@ -1,22 +1,15 @@
 import React from "react"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
-import DropdownFluent from "@/shared/components/DropdownFluent"
+import { AnimatePresence, motion } from "framer-motion"
+import DateTimeFieldFluent from "../../../../shared/components/DateTimeFieldFluent"
 
-const ContestForm = ({ formData, setFormData, errors, setErrors  }) => {
+const ContestForm = ({ formData, setFormData, errors, setErrors }) => {
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type, checked } = e.target
+    const finalValue = type === "checkbox" ? checked : value
+    setFormData((prev) => ({ ...prev, [name]: finalValue }))
 
     // Clear field-specific error when user types
-    if (errors?.[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }))
-    }
-  }
-
-  const handleSelect = (value, name = "status") => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-
-    // Clear dropdown error when user selects an option
     if (errors?.[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
@@ -33,14 +26,50 @@ const ContestForm = ({ formData, setFormData, errors, setErrors  }) => {
         error={!!errors.year}
         helperText={errors.year}
       />
-      <TextFieldFluent
-        label="Contest Name"
-        name="name"
-        value={formData.name || ""}
-        onChange={handleChange}
-        error={!!errors.name}
-        helperText={errors.name}
-      />
+
+      <div className="flex flex-col">
+        <TextFieldFluent
+          label="Contest Name"
+          name="name"
+          value={formData.name || ""}
+          onChange={handleChange}
+          error={!!errors.name}
+          helperText={errors.name}
+          data-error={!!errors.name}
+        />
+
+        <AnimatePresence>
+          {errors.nameSuggestion && (
+            <motion.button
+              key="name-suggestion"
+              type="button"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => {
+                setFormData((prev) => ({
+                  ...prev,
+                  name: errors.nameSuggestion,
+                }))
+                setErrors((prev) => ({
+                  ...prev,
+                  name: "",
+                  nameSuggestion: "",
+                }))
+              }}
+              className="text-[#D32F2F] text-xs leading-4 mt-1 self-start"
+            >
+              Use suggested name:{" "}
+              <span className="hover:underline cursor-pointer">
+                {errors.nameSuggestion}
+              </span>
+              .
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+
       <TextFieldFluent
         label="Description"
         name="description"
@@ -51,22 +80,85 @@ const ContestForm = ({ formData, setFormData, errors, setErrors  }) => {
         error={!!errors.description}
         helperText={errors.description}
       />
+
       <TextFieldFluent
         label="Image URL"
-        name="img_url"
-        value={formData.img_url || ""}
+        name="imgUrl"
+        value={formData.imgUrl || ""}
         onChange={handleChange}
+        error={!!errors.imgUrl}
+        helperText={errors.imgUrl}
       />
-      <DropdownFluent
-        label="Status"
-        value={formData.status || "draft"}
-        onChange={handleSelect}
-        placeholder="Select status"
-        options={[
-          { label: "Draft", value: "draft" },
-          { label: "Published", value: "published" },
-          { label: "Finalized", value: "finalized" },
-        ]}
+
+      <DateTimeFieldFluent
+        label="Registration Start"
+        name="registrationStart"
+        type="datetime-local"
+        value={formData.registrationStart || ""}
+        onChange={handleChange}
+        error={!!errors.registrationStart}
+        helperText={errors.registrationStart}
+      />
+
+      <DateTimeFieldFluent
+        label="Registration End"
+        name="registrationEnd"
+        type="datetime-local"
+        value={formData.registrationEnd || ""}
+        onChange={handleChange}
+        error={!!errors.registrationEnd}
+        helperText={errors.registrationEnd}
+      />
+
+      <DateTimeFieldFluent
+        label="Start"
+        name="start"
+        type="datetime-local"
+        value={formData.start || ""}
+        onChange={handleChange}
+        error={!!errors.start}
+        helperText={errors.start}
+      />
+
+      <DateTimeFieldFluent
+        label="End"
+        name="end"
+        type="datetime-local"
+        value={formData.end || ""}
+        onChange={handleChange}
+        error={!!errors.end}
+        helperText={errors.end}
+      />
+
+      <TextFieldFluent
+        label="Max Team Members"
+        name="teamMembersMax"
+        type="number"
+        value={formData.teamMembersMax || ""}
+        onChange={handleChange}
+        error={!!errors.teamMembersMax}
+        helperText={errors.teamMembersMax}
+      />
+
+      <TextFieldFluent
+        label="Max Teams"
+        name="teamLimitMax"
+        type="number"
+        value={formData.teamLimitMax || ""}
+        onChange={handleChange}
+        error={!!errors.teamLimitMax}
+        helperText={errors.teamLimitMax}
+      />
+
+      <TextFieldFluent
+        label="Rewards Text"
+        name="rewardsText"
+        value={formData.rewardsText || ""}
+        onChange={handleChange}
+        multiline
+        rows={3}
+        error={!!errors.rewardsText}
+        helperText={errors.rewardsText}
       />
     </div>
   )

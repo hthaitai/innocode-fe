@@ -1,16 +1,23 @@
-import apiClient from "../lib/apiClient"
+import roundApi from "../../../api/roundApi"
 
 export const roundService = {
-  create: async (contestId, data) => {
-    const res = await apiClient.post(`/contests/${contestId}/rounds`, data)
+  async getAllRounds(params) {
+    const res = await roundApi.getAll(params)
+    return res.data?.data || []
+  },
+
+  async createRound(data) {
+    const res = await roundApi.create(data)
     return res.data
   },
-  update: async (contestId, roundId, data) => {
-    const res = await apiClient.put(`/contests/${contestId}/rounds/${roundId}`, data)
+
+  async updateRound(id, data) {
+    const res = await roundApi.update(id, data)
     return res.data
   },
-  delete: async (contestId, roundId) => {
-    const res = await apiClient.delete(`/contests/${contestId}/rounds/${roundId}`)
-    return res.data
+
+  async deleteRound(id) {
+    await roundApi.delete(id)
+    return id
   },
 }
