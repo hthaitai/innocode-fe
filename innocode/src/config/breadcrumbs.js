@@ -51,19 +51,44 @@ export const BREADCRUMBS = {
   ORGANIZER_CONTESTS: ["Contests"],
   ORGANIZER_CONTEST_CREATE: ["Contests", "New Contest"],
   ORGANIZER_CONTEST_DETAIL: (contestName) => ["Contests", contestName],
-  ORGANIZER_CONTEST_EDIT: (contestId, contestName) => ["Contests", contestName, "Edit"],
+  ORGANIZER_CONTEST_EDIT: (contestId, contestName) => [
+    "Contests",
+    contestName,
+    "Edit",
+  ],
 
-  ORGANIZER_ROUND_DETAIL: (contestName, roundName) => [
+  // Organizer rounds
+  ORGANIZER_ROUNDS: (contestId, contestName) => [
     "Contests",
     contestName,
-    roundName,
+    "Rounds",
   ],
-  ORGANIZER_PROBLEM_DETAIL: (contestName, roundName, problemLabel) => [
+  ORGANIZER_ROUND_CREATE: (contestId, contestName) => [
     "Contests",
     contestName,
-    roundName,
-    problemLabel,
+    "Rounds",
+    "New Round",
   ],
+  ORGANIZER_ROUND_DETAIL: (contestId, contestName, roundName) => [
+    "Contests",
+    contestName,
+    "Rounds",
+    roundName,
+  ],
+  ORGANIZER_ROUND_EDIT: (contestId, contestName, roundName) => [
+    "Contests",
+    contestName,
+    "Rounds",
+    roundName,
+    "Edit",
+  ],
+
+  ORGANIZER_PROBLEM_DETAIL: (
+    contestId,
+    contestName,
+    roundName,
+    problemLabel
+  ) => ["Contests", contestName, roundName, problemLabel],
 
   ORGANIZER_TEAMS: (contestName) => ["Contests", contestName, "Teams"],
   ORGANIZER_TEAM_DETAIL: (contestName, teamName) => [
@@ -163,21 +188,40 @@ export const BREADCRUMB_PATHS = {
 
   // Organizer paths
   ORGANIZER_CONTESTS: ["/organizer", "/organizer/contests"],
-
+  ORGANIZER_CONTEST_CREATE: ["/organizer/contests", "/organizer/contests/new"],
   ORGANIZER_CONTEST_DETAIL: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-  ],
-  ORGANIZER_CONTEST_CREATE: ["/organizer/contests", "/organizer/contests/new"],
-  ORGANIZER_ROUND_DETAIL: (contestId, roundId) => [
-    "/organizer/contests",
-    `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds/${roundId}`,
   ],
   ORGANIZER_CONTEST_EDIT: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/edit`,
+  ],
+
+  ORGANIZER_ROUNDS: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+  ],
+  ORGANIZER_ROUND_CREATE: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/new`,
+  ],
+  ORGANIZER_ROUND_DETAIL: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+  ],
+  ORGANIZER_ROUND_EDIT: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/edit`,
   ],
 
   ORGANIZER_PROBLEM_DETAIL: (contestId, roundId, problemId) => [

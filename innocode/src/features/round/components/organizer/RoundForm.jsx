@@ -1,13 +1,16 @@
 import React from "react"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
+import RoundInfoFields from "./RoundInfoFields"
+import ProblemTypeSelector from "./ProblemTypeSelector"
+import McqTestConfigFields from "./McqTestConfigFields"
+import ProblemConfigFields from "./ProblemConfigFields"
 
 export default function RoundForm({
   formData,
   setFormData,
   errors = {},
   setErrors,
-  contest,
-  existingRounds = [],
+  showTypeSelector = true,
 }) {
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -15,6 +18,38 @@ export default function RoundForm({
 
     if (errors?.[name]) {
       setErrors?.((prev) => ({ ...prev, [name]: "" }))
+    }
+
+    if (name === "problemType") {
+      if (value === "McqTest") {
+        setFormData((prev) => ({
+          ...prev,
+          mcqTestConfig: {
+            name: prev.mcqTestConfig?.name || "",
+            config: "temporary-config",
+          },
+          problemConfig: null,
+        }))
+      } else if (value === "Problem") {
+        // Initialize problemConfig but don't set type yet - let user choose in ProblemConfigFields
+        setFormData((prev) => ({
+          ...prev,
+          problemConfig: {
+            description: prev.problemConfig?.description || "",
+            language: prev.problemConfig?.language || "",
+            penaltyRate: prev.problemConfig?.penaltyRate ?? 0.1,
+            type: prev.problemConfig?.type || "", // User will choose Manual or AutoEvaluation
+          },
+          mcqTestConfig: null,
+        }))
+      } else {
+        // Clear both if no type selected
+        setFormData((prev) => ({
+          ...prev,
+          problemConfig: null,
+          mcqTestConfig: null,
+        }))
+      }
     }
   }
 
@@ -25,165 +60,34 @@ export default function RoundForm({
     }))
   }
 
-  const handleProblemTypeChange = (e) => {
-    const value = e.target.value
-    setFormData((prev) => {
-      const newData = { ...prev, problemType: value }
-
-      if (value === "McqTest") {
-        newData.mcqTestConfig = {
-          name: prev.mcqTestConfig?.name || "",
-          config: "temporary-config",
-        }
-        delete newData.problemConfig
-      } else {
-        newData.problemConfig = {
-          description: "",
-          language: "",
-          penaltyRate: 0.1,
-          type: value === "Manual" ? "Manual" : "AutoEvaluation",
-        }
-        delete newData.mcqTestConfig
-      }
-
-      return newData
-    })
-  }
-
-  const validateTimes = () => {
-    const { start, end } = formData
-    if (!contest) return
-
-    const contestStart = new Date(contest.start)
-    const contestEnd = new Date(contest.end)
-    const s = new Date(start)
-    const e = new Date(end)
-
-    if (s < contestStart || e > contestEnd) {
-      setErrors((prev) => ({
-        ...prev,
-        start: "Round must be within contest time.",
-      }))
-    }
-
-    const overlap = existingRounds.some((r) => {
-      const rs = new Date(r.start)
-      const re = new Date(r.end)
-      return s < re && e > rs
-    })
-    if (overlap) {
-      setErrors((prev) => ({
-        ...prev,
-        start: "Round time overlaps another round.",
-      }))
-    }
-  }
-
   return (
-    <form className="flex flex-col gap-3" onBlur={validateTimes}>
-      <TextFieldFluent
-        label="Round Name"
-        name="name"
-        value={formData.name || ""}
-        onChange={handleChange}
-        error={!!errors.name}
-        helperText={errors.name}
+    <form className="flex flex-col gap-3">
+      <RoundInfoFields
+        formData={formData}
+        errors={errors}
+        handleChange={handleChange}
       />
 
-      <TextFieldFluent
-        label="Start"
-        name="start"
-        type="datetime-local"
-        value={formData.start || ""}
-        onChange={handleChange}
-        error={!!errors.start}
-        helperText={errors.start}
-      />
-
-      <TextFieldFluent
-        label="End"
-        name="end"
-        type="datetime-local"
-        value={formData.end || ""}
-        onChange={handleChange}
-        error={!!errors.end}
-        helperText={errors.end}
-      />
-
-      {/* Problem Type Selection */}
-      <div>
-        <label className="font-semibold">Problem Type</label>
-        <select
-          name="problemType"
-          value={formData.problemType || ""}
-          onChange={handleProblemTypeChange}
-          className="border rounded p-2 w-full"
-        >
-          <option value="">Select Type</option>
-          <option value="McqTest">McqTest</option>
-          <option value="AutoEvaluation">AutoEvaluation</option>
-          <option value="Manual">Manual</option>
-        </select>
-      </div>
-
-      {/* Conditionally Render Config Section */}
-      {formData.problemType === "McqTest" && (
-        <div className="border p-3 rounded bg-gray-50">
-          <h3 className="font-semibold mb-2">MCQ Test Config</h3>
-          <TextFieldFluent
-            label="Config Name"
-            value={formData.mcqTestConfig?.name || ""}
-            onChange={(e) =>
-              handleNestedChange("mcqTestConfig", "name", e.target.value)
-            }
-          />
-          <TextFieldFluent
-            label="Config"
-            value={formData.mcqTestConfig?.config || ""}
-            onChange={(e) =>
-              handleNestedChange("mcqTestConfig", "config", e.target.value)
-            }
-          />
-        </div>
+      {showTypeSelector && (
+        <ProblemTypeSelector
+          formData={formData}
+          handleChange={handleChange}
+          errors={errors}
+        />
       )}
 
-      {formData.problemType !== "McqTest" && formData.problemType && (
-        <div className="border p-3 rounded bg-gray-50">
-          <h3 className="font-semibold mb-2">Problem Config</h3>
-          <TextFieldFluent
-            label="Description"
-            value={formData.problemConfig?.description || ""}
-            onChange={(e) =>
-              handleNestedChange("problemConfig", "description", e.target.value)
-            }
-          />
-          <TextFieldFluent
-            label="Language"
-            value={formData.problemConfig?.language || ""}
-            onChange={(e) =>
-              handleNestedChange("problemConfig", "language", e.target.value)
-            }
-          />
-          <TextFieldFluent
-            label="Penalty Rate"
-            type="number"
-            value={formData.problemConfig?.penaltyRate ?? 0.1}
-            onChange={(e) =>
-              handleNestedChange(
-                "problemConfig",
-                "penaltyRate",
-                parseFloat(e.target.value)
-              )
-            }
-          />
-          <TextFieldFluent
-            label="Type"
-            value={formData.problemConfig?.type || ""}
-            onChange={(e) =>
-              handleNestedChange("problemConfig", "type", e.target.value)
-            }
-          />
-        </div>
+      {formData.problemType === "McqTest" && (
+        <McqTestConfigFields
+          mcqTestConfig={formData.mcqTestConfig}
+          handleNestedChange={handleNestedChange}
+        />
+      )}
+
+      {formData.problemType && formData.problemType !== "McqTest" && (
+        <ProblemConfigFields
+          problemConfig={formData.problemConfig}
+          handleNestedChange={handleNestedChange}
+        />
       )}
     </form>
   )

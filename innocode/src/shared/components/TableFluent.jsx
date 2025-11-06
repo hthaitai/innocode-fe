@@ -110,7 +110,7 @@ const TableFluent = ({
         <div className="flex justify-between items-center px-5 py-3 border-t border-[#E5E5E5] ">
           <div className="text-sm leading-5 text-[#7A7574]">
             Page {pagination.pageNumber} of {pagination.totalPages} —{" "}
-            {pagination.totalCount} total contests
+            {pagination.totalCount} items
           </div>
           <div className="flex gap-2">
             <button

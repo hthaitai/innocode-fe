@@ -3,7 +3,7 @@ import { fetchRounds, addRound, updateRound, deleteRound } from "./roundThunk"
 
 const initialState = {
   rounds: [],
-  additionalData: {
+  pagination: {
     pageNumber: 1,
     pageSize: 10,
     totalPages: 1,
@@ -29,7 +29,7 @@ const roundSlice = createSlice({
       .addCase(fetchRounds.fulfilled, (state, action) => {
         state.loading = false
         state.rounds = action.payload.data
-        state.additionalData = action.payload.additionalData
+        state.pagination = action.payload.additionalData
       })
       .addCase(fetchRounds.rejected, (state, action) => {
         state.loading = false

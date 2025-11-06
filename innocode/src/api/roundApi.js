@@ -2,9 +2,9 @@ import axiosClient from "./axiosClient"
 
 const roundApi = {
   // GET /api/rounds
-  getAll: ({ contestIdSearch, pageNumber = 1, pageSize = 10 } = {}) =>
+  getAll: ({ contestIdSearch, idSearch, pageNumber = 1, pageSize = 10 } = {}) =>
     axiosClient.get("/rounds", {
-      params: { contestIdSearch, pageNumber, pageSize },
+      params: { contestIdSearch, idSearch, pageNumber, pageSize },
     }),
 
   // POST /api/rounds/{contestId}

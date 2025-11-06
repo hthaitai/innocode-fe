@@ -1,39 +1,40 @@
 import React, { useState } from "react"
-import PageContainer from "@/shared/components/PageContainer"
 import { useNavigate } from "react-router-dom"
 import { useAppDispatch } from "@/store/hooks"
 import {
   addContest,
   fetchContests,
 } from "@/features/contest/store/contestThunks"
+
+import PageContainer from "@/shared/components/PageContainer"
 import ContestForm from "../../components/organizer/ContestForm"
-import { BREADCRUMBS } from "@/config/breadcrumbs"
+
 import { validateContest } from "@/features/contest/validators/contestValidator"
 import { fromDatetimeLocal } from "@/shared/utils/dateTime"
+import { BREADCRUMBS } from "@/config/breadcrumbs"
 import { toast } from "react-hot-toast"
+
+const EMPTY_CONTEST = {
+  year: "",
+  name: "",
+  description: "",
+  imgUrl: "",
+  start: "",
+  end: "",
+  registrationStart: "",
+  registrationEnd: "",
+  teamMembersMax: "",
+  teamLimitMax: "",
+  rewardsText: "",
+  saveAsDraft: true,
+  status: "draft",
+}
 
 export default function OrganizerContestCreate() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  // Default empty state, same as in ContestModal
-  const emptyData = {
-    year: "",
-    name: "",
-    description: "",
-    imgUrl: "",
-    start: "",
-    end: "",
-    registrationStart: "",
-    registrationEnd: "",
-    teamMembersMax: "",
-    teamLimitMax: "",
-    rewardsText: "",
-    saveAsDraft: true,
-    status: "draft",
-  }
-
-  const [formData, setFormData] = useState(emptyData)
+  const [formData, setFormData] = useState(EMPTY_CONTEST)
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -86,13 +87,6 @@ export default function OrganizerContestCreate() {
   return (
     <PageContainer breadcrumb={BREADCRUMBS.ORGANIZER_CONTEST_CREATE}>
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 space-y-5">
-        <div>
-          <h2 className="text-lg font-medium">Create New Contest</h2>
-          <p className="text-sm text-gray-500">
-            Fill out the form below to add a new contest.
-          </p>
-        </div>
-
         <ContestForm
           formData={formData}
           setFormData={setFormData}

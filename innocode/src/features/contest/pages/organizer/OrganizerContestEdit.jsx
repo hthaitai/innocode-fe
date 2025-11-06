@@ -1,18 +1,36 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { toast } from "react-hot-toast"
 import PageContainer from "@/shared/components/PageContainer"
+import ContestForm from "../../components/organizer/ContestForm"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import {
   fetchContests,
   updateContest,
 } from "@/features/contest/store/contestThunks"
-import ContestForm from "../../components/organizer/ContestForm"
 import { validateContest } from "@/features/contest/validators/contestValidator"
 import { fromDatetimeLocal, toDatetimeLocal } from "@/shared/utils/dateTime"
-import { toast } from "react-hot-toast"
-import { createBreadcrumbWithPaths } from "../../../../config/breadcrumbs"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+
+// --- Helper: Initialize form data from contest ---
+const initContestForm = (data) => ({
+  year: data.year || "",
+  name: data.name || "",
+  description: data.description || "",
+  imgUrl: data.imgUrl || "",
+  start: toDatetimeLocal(data.start),
+  end: toDatetimeLocal(data.end),
+  registrationStart: toDatetimeLocal(data.registrationStart),
+  registrationEnd: toDatetimeLocal(data.registrationEnd),
+  teamMembersMax: data.teamMembersMax || "",
+  teamLimitMax: data.teamLimitMax || "",
+  rewardsText: data.rewardsText || "",
+  saveAsDraft: data.status === "draft",
+  status: data.status || "draft",
+})
 
 export default function OrganizerContestEdit() {
+  // --- Hooks ---
   const { contestId } = useParams()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -21,59 +39,44 @@ export default function OrganizerContestEdit() {
     s.contests.contests.find((c) => String(c.contestId) === String(contestId))
   )
 
+  // --- State ---
   const [formData, setFormData] = useState(null)
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // --- Load contest data ---
+  // --- Fetch & Initialize Data ---
   useEffect(() => {
     const loadContest = async () => {
-      if (!contest) {
-        const res = await dispatch(fetchContests()).unwrap()
-        const found = res.find((c) => String(c.contestId) === String(contestId))
-        if (found) initForm(found)
-      } else {
-        initForm(contest)
+      try {
+        let targetContest = contest
+        if (!targetContest) {
+          const res = await dispatch(fetchContests()).unwrap()
+          targetContest = res.find(
+            (c) => String(c.contestId) === String(contestId)
+          )
+        }
+
+        if (targetContest) {
+          setFormData(initContestForm(targetContest))
+        } else {
+          toast.error("Contest not found.")
+          navigate("/organizer/contests")
+        }
+      } catch (err) {
+        console.error(err)
+        toast.error("Failed to load contest data.")
       }
     }
 
-    const initForm = (data) => {
-      setFormData({
-        year: data.year || "",
-        name: data.name || "",
-        description: data.description || "",
-        imgUrl: data.imgUrl || "",
-        start: toDatetimeLocal(data.start),
-        end: toDatetimeLocal(data.end),
-        registrationStart: toDatetimeLocal(data.registrationStart),
-        registrationEnd: toDatetimeLocal(data.registrationEnd),
-        teamMembersMax: data.teamMembersMax || "",
-        teamLimitMax: data.teamLimitMax || "",
-        rewardsText: data.rewardsText || "",
-        saveAsDraft: data.status === "draft",
-        status: data.status || "draft",
-      })
-    }
-
     loadContest()
-  }, [contestId, contest, dispatch])
+  }, [contest, contestId, dispatch, navigate])
 
   // --- Breadcrumb setup ---
-  const { items, paths } = createBreadcrumbWithPaths(
-    "ORGANIZER_CONTEST_EDIT",
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_EDIT(
     contestId,
     contest?.name ?? "Contest Detail"
   )
-
-  if (!formData) {
-    return (
-      <PageContainer breadcrumb={items} breadcrumbPaths={paths}>
-        <div className="text-center py-10 text-gray-500">
-          Loading contest data...
-        </div>
-      </PageContainer>
-    )
-  }
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_EDIT(contestId)
 
   // --- Handle Submit ---
   const handleSubmit = async () => {
@@ -123,16 +126,18 @@ export default function OrganizerContestEdit() {
     }
   }
 
-  return (
-    <PageContainer breadcrumb={items} breadcrumbPaths={paths}>
-      <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 space-y-5">
-        <div>
-          <h2 className="text-lg font-medium">Edit Contest</h2>
-          <p className="text-sm text-gray-500">
-            Update the fields below to modify contest details.
-          </p>
-        </div>
+  // --- Loading state ---
+  if (!formData) {
+    return <PageContainer breadcrumb={breadcrumbItems} breadcrumbPaths={breadcrumbPaths} loading />
+  }
 
+  // --- Render ---
+  return (
+    <PageContainer
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
+    >
+      <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 space-y-5">
         <ContestForm
           formData={formData}
           setFormData={setFormData}

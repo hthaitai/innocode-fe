@@ -4,23 +4,20 @@ import { AlertTriangle, Trash } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import ContestRelatedSettings from "../../components/organizer/ContestRelatedSettings"
 import ContestInfo from "../../components/organizer/ContestInfo"
-import RoundsTable from "../../components/organizer/RoundsTable"
 import { createBreadcrumbWithPaths } from "@/config/breadcrumbs"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import {
   fetchContests,
-  addContest,
-  updateContest,
   deleteContest,
 } from "@/features/contest/store/contestThunks"
 import PublishContestSection from "../../components/organizer/PublishContestSection"
-import { useCrud } from "@/shared/hooks/useCrud"
-import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { useConfirmDelete } from "../../../../shared/hooks/useConfirmDelete"
 
 const OrganizerContestDetail = () => {
   const { contestId } = useParams()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const { confirmDeleteEntity } = useConfirmDelete()
 
   const { contests, pagination, loading, error } = useAppSelector(
     (state) => state.contests
@@ -31,7 +28,9 @@ const OrganizerContestDetail = () => {
     dispatch(fetchContests({ pageNumber: 1, pageSize: 50 })) // optional pagination fetch
   }, [dispatch])
 
-  const contest = contests.find((c) => String(c.contestId) === String(contestId))
+  const contest = contests.find(
+    (c) => String(c.contestId) === String(contestId)
+  )
 
   // --- Refetch logic consistent with OrganizerContests.jsx ---
   const refetchContests = () => {
@@ -39,31 +38,12 @@ const OrganizerContestDetail = () => {
     dispatch(fetchContests({ pageNumber: safePage, pageSize: 50 }))
   }
 
-  // --- useCrud setup ---
-  const { confirmDeleteEntity } = useCrud({
-    entityName: "contest",
-    createAction: addContest,
-    updateAction: updateContest,
-    deleteAction: deleteContest,
-    idKey: "contestId",
-    onSuccess: refetchContests,
-  })
-
   // --- Breadcrumb setup ---
   const { items, paths } = createBreadcrumbWithPaths(
     "ORGANIZER_CONTEST_DETAIL",
     contest?.name ?? "Contest Detail",
     contestId
   )
-
-  // --- Loading state ---
-  if (loading) {
-    return (
-      <PageContainer breadcrumb={items} breadcrumbPaths={paths} bg={false}>
-        <Spinner />
-      </PageContainer>
-    )
-  }
 
   // --- Missing contest state ---
   if (!contest) {
@@ -77,24 +57,31 @@ const OrganizerContestDetail = () => {
     )
   }
 
-  // --- Delete handler using useCrud ---
+  // --- Delete handler using useConfirmDelete ---
   const handleDeleteContest = () => {
-    confirmDeleteEntity(contest, () => navigate("/organizer/contests"))
+    confirmDeleteEntity({
+      entityName: "contest",
+      item: contest,
+      deleteAction: deleteContest,
+      idKey: "contestId",
+      onSuccess: refetchContests,
+      onNavigate: () => navigate("/organizer/contests"),
+    })
   }
 
   return (
-    <PageContainer breadcrumb={items} breadcrumbPaths={paths} bg={false}>
+    <PageContainer
+      breadcrumb={items}
+      breadcrumbPaths={paths}
+      bg={false}
+      loading={loading}
+      error={error}
+    >
       <div className="space-y-5">
         {/* Contest section */}
         <div className="space-y-1">
           <ContestInfo contest={contest} />
           <PublishContestSection contest={contest} />
-        </div>
-
-        {/* Rounds Table */}
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">Rounds</div>
-          <RoundsTable contestId={contestId} />
         </div>
 
         {/* Related Settings */}

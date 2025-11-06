@@ -4,7 +4,7 @@ import PageContainer from '@/shared/components/PageContainer'
 import TableFluent from '@/shared/components/TableFluent'
 import { Trophy } from "lucide-react"
 import useLeaderboard from '@/features/leaderboard/hooks/useLeaderboard'
-import { formatDateTime } from "@/shared/utils/formatDateTime"
+import { formatDateTime } from "@/shared/utils/dateTime"
 import useTeams from '@/features/team/hooks/useTeams'
 import ToggleSwitchFluent from '@/shared/components/ToggleSwitchFluent'
 import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"

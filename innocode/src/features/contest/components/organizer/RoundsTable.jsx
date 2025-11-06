@@ -4,18 +4,14 @@ import { Calendar, Pencil, Trash2 } from "lucide-react"
 import TableFluent from "@/shared/components/TableFluent"
 import Actions from "@/shared/components/Actions"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import {
-  fetchRounds,
-  addRound,
-  updateRound,
-  deleteRound,
-} from "@/features/round/store/roundThunk"
-import { formatDateTime } from "@/shared/utils/formatDateTime"
-import { useCrud } from "@/shared/hooks/useCrud"
+import { fetchRounds, deleteRound } from "@/features/round/store/roundThunk"
+import { formatDateTime } from "@/shared/utils/dateTime"
+import { useConfirmDelete } from "../../../../shared/hooks/useConfirmDelete"
 
 const RoundsTable = ({ contestId }) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const { confirmDeleteEntity } = useConfirmDelete()
 
   const { rounds, pagination, loading, error } = useAppSelector(
     (state) => state.rounds
@@ -34,16 +30,6 @@ const RoundsTable = ({ contestId }) => {
     const safePage = Math.min(page, pagination.totalPages || 1)
     dispatch(fetchRounds({ contestId, pageNumber: safePage, pageSize }))
   }
-
-  // CRUD setup
-  const { openEntityModal, confirmDeleteEntity } = useCrud({
-    entityName: "round",
-    createAction: (data) => addRound({ contestId, data }),
-    updateAction: updateRound,
-    deleteAction: deleteRound,
-    idKey: "round_id",
-    onSuccess: refetchRounds,
-  })
 
   const roundColumns = [
     {
@@ -71,15 +57,17 @@ const RoundsTable = ({ contestId }) => {
           row={row.original}
           items={[
             {
-              label: "Edit",
-              icon: Pencil,
-              onClick: () => openEntityModal("edit", row.original),
-            },
-            {
               label: "Delete",
               icon: Trash2,
               className: "text-red-500",
-              onClick: () => confirmDeleteEntity(row.original),
+              onClick: () =>
+                confirmDeleteEntity({
+                  entityName: "Round",
+                  item: row.original,
+                  deleteAction: deleteRound,
+                  idKey: "roundId",
+                  onSuccess: refetchRounds,
+                }),
             },
           ]}
         />
@@ -102,9 +90,11 @@ const RoundsTable = ({ contestId }) => {
         </div>
         <button
           className="button-orange"
-          onClick={() => openEntityModal("create")}
+          onClick={() =>
+            navigate(`/organizer/contests/${contestId}/rounds/new`)
+          }
         >
-          New Round
+          Add round
         </button>
       </div>
 
@@ -117,7 +107,7 @@ const RoundsTable = ({ contestId }) => {
         pagination={pagination}
         onPageChange={setPage}
         onRowClick={(round) =>
-          navigate(`/organizer/contests/${contestId}/rounds/${round.round_id}`)
+          navigate(`/organizer/contests/${contestId}/rounds/${round.roundId}`)
         }
       />
     </div>

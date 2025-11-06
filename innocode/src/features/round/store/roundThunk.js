@@ -5,12 +5,13 @@ import { handleThunkError } from "../../../shared/utils/handleThunkError"
 export const fetchRounds = createAsyncThunk(
   "rounds/fetchAll",
   async (
-    { contestId, pageNumber = 1, pageSize = 10 } = {},
+    { contestId, roundId, pageNumber = 1, pageSize = 10 } = {},
     { rejectWithValue }
   ) => {
     try {
       const data = await roundService.getAllRounds({
         contestId,
+        roundId,
         pageNumber,
         pageSize,
       })

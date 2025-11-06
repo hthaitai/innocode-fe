@@ -7,9 +7,16 @@ import {
   Bell,
   ChevronRight,
   Scale,
+  Calendar,
 } from "lucide-react"
 
 const items = [
+  {
+    title: "Rounds",
+    subtitle: "Manage and create contest rounds",
+    icon: <Calendar size={20} />,
+    path: "rounds",
+  },
   {
     title: "Teams",
     subtitle: "Manage registered teams and members",

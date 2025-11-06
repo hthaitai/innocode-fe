@@ -3,22 +3,19 @@ import { useNavigate } from "react-router-dom"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
-import { Trophy, Pencil, Trash2 } from "lucide-react"
+import { Trophy, Trash2 } from "lucide-react"
 import { StatusBadge } from "@/shared/utils/StatusBadge"
-import { formatDateTime } from "@/shared/utils/formatDateTime"
-import {
-  fetchContests,
-  addContest,
-  updateContest,
-  deleteContest,
-} from "@/features/contest/store/contestThunks"
+import { formatDateTime } from "@/shared/utils/dateTime"
+import { fetchContests } from "@/features/contest/store/contestThunks"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import Actions from "@/shared/components/Actions"
-import { useCrud } from "../../../../shared/hooks/useCrud"
+import { useConfirmDelete } from "../../../../shared/hooks/useConfirmDelete"
+import { deleteContest } from "../../store/contestThunks"
 
 const OrganizerContests = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const { confirmDeleteEntity } = useConfirmDelete()
 
   const { contests, pagination, loading, error } = useAppSelector(
     (s) => s.contests
@@ -32,20 +29,10 @@ const OrganizerContests = () => {
     dispatch(fetchContests({ pageNumber: page, pageSize }))
   }, [dispatch, page, pageSize])
 
-  // Global CRUD hook
   const refetchContests = () => {
     const safePage = Math.min(page, pagination.totalPages || 1)
     dispatch(fetchContests({ pageNumber: safePage, pageSize }))
   }
-
-  const { openEntityModal, confirmDeleteEntity } = useCrud({
-    entityName: "contest",
-    createAction: addContest,
-    updateAction: updateContest,
-    deleteAction: deleteContest,
-    idKey: "contestId",
-    onSuccess: refetchContests,
-  })
 
   const contestColumns = [
     {
@@ -79,16 +66,18 @@ const OrganizerContests = () => {
         <Actions
           row={row.original}
           items={[
-            // {
-            //   label: "Edit",
-            //   icon: Pencil,
-            //   onClick: () => openEntityModal("edit", row.original),
-            // },
             {
               label: "Delete",
               icon: Trash2,
               className: "text-red-500",
-              onClick: () => confirmDeleteEntity(row.original),
+              onClick: () =>
+                confirmDeleteEntity({
+                  entityName: "Contest",
+                  item: row.original,
+                  deleteAction: deleteContest,
+                  idKey: "contestId",
+                  onSuccess: refetchContests,
+                }),
             },
           ]}
         />
@@ -111,10 +100,9 @@ const OrganizerContests = () => {
           </div>
           <button
             className="button-orange"
-            // onClick={() => openEntityModal("create")}
             onClick={() => navigate("/organizer/contests/new")}
           >
-            New Contest
+            Add contest
           </button>
         </div>
 

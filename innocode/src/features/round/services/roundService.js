@@ -1,9 +1,10 @@
 import roundApi from "../../../api/roundApi"
 
 export const roundService = {
-  async getAllRounds({ contestId, pageNumber = 1, pageSize = 10 } = {}) {
+  async getAllRounds({ contestId, roundId, pageNumber = 1, pageSize = 10 } = {}) {
     const res = await roundApi.getAll({
       contestIdSearch: contestId,
+      idSearch: roundId,
       pageNumber,
       pageSize,
     })

@@ -1,7 +1,5 @@
 import { createContext, useContext, useState, useCallback } from "react"
 import ConfirmDeleteModal from "../shared/components/ConfirmDeleteModal"
-import ContestModal from "../features/contest/components/organizer/ContestModal"
-import RoundModal from "../features/round/components/organizer/RoundModal"
 import ProblemModal from "../features/problem/components/organizer/ProblemModal"
 import TestCaseModal from "../features/problem/components/organizer/TestCaseModal"
 import ProvinceModal from "../features/province/components/organizer/ProvinceModal"
@@ -36,8 +34,6 @@ export function ModalProvider({ children }) {
   // ---- Modal registry ----
   const modalComponents = {
     confirmDelete: ConfirmDeleteModal,
-    contest: ContestModal,
-    round: RoundModal,
     problem: ProblemModal, 
     testCase: TestCaseModal, 
     province: ProvinceModal,
