@@ -9,7 +9,7 @@ import { ChevronUp, ChevronDown } from "lucide-react"
 import { Spinner } from "./SpinnerFluent"
 
 const TableFluent = ({
-  data,
+  data = [], // ✅ Add default value to prevent undefined
   columns,
   title,
   pagination,
@@ -21,7 +21,7 @@ const TableFluent = ({
   const [sorting, setSorting] = useState([])
 
   const table = useReactTable({
-    data,
+    data: data || [], // ✅ Ensure data is always an array
     columns,
     state: { sorting },
     onSortingChange: setSorting,
@@ -94,7 +94,7 @@ const TableFluent = ({
         </thead>
 
         <tbody>
-          {data.length === 0 ? (
+          {!data || data.length === 0 ? (
             <tr>
               <td
                 colSpan={columns.length}

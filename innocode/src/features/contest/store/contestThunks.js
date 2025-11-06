@@ -6,9 +6,13 @@ export const fetchContests = createAsyncThunk(
   "contests/fetchAll",
   async ({ pageNumber = 1, pageSize = 10 } = {}, { rejectWithValue }) => {
     try {
-      const data = await contestService.getAllContests({ pageNumber, pageSize })
-      return data
+      const response = await contestService.getAllContests({ pageNumber, pageSize })
+      console.log('✅ Fetch contests response:', response) // Debug log
+      
+      // ✅ Return the full response with data and additionalData
+      return response
     } catch (err) {
+      console.error('❌ Fetch contests error:', err)
       return rejectWithValue(err.message || "Failed to load contests")
     }
   }

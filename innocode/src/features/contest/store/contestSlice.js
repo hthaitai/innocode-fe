@@ -35,8 +35,9 @@ const contestSlice = createSlice({
       })
       .addCase(fetchContests.fulfilled, (state, action) => {
         state.loading = false
-        state.contests = action.payload.data
-        state.pagination = action.payload.additionalData
+        // ✅ Handle different response structures safely
+        state.contests = action.payload?.data || action.payload || []
+        state.pagination = action.payload?.additionalData || state.pagination
       })
       .addCase(fetchContests.rejected, (state, action) => {
         state.loading = false

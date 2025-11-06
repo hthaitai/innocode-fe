@@ -7,6 +7,12 @@ const contestApi = {
       params: { pageNumber, pageSize },
     }),
 
+  // GET /api/contests with idSearch parameter
+  getById: (id) => 
+    axiosClient.get("/contests", {
+      params: { idSearch: id, pageNumber: 1, pageSize: 1 },
+    }),
+
   // POST /api/contests
   create: (data) => axiosClient.post("/contests/advanced", data),
 

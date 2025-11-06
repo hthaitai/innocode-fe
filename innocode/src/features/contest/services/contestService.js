@@ -3,7 +3,16 @@ import contestApi from "../../../api/contestApi"
 export const contestService = {
   async getAllContests({ pageNumber = 1, pageSize = 10 } = {}) {
     const res = await contestApi.getAll({ pageNumber, pageSize })
-    return res.data 
+    // ✅ Return full response with data and additionalData for organizer
+    // Student will handle in their hook
+    return res.data // Return { data: [...], additionalData: {...} }
+  },
+
+  async getContestById(id) {
+    const res = await contestApi.getById(id)
+    // API returns array with single item when using idSearch
+    const data = res.data.data || res.data
+    return Array.isArray(data) ? data[0] : data
   },
 
   async createContest(data) {
