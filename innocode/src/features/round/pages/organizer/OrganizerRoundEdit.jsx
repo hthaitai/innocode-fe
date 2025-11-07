@@ -9,7 +9,6 @@ import { validateRound } from "@/features/round/validators/roundValidator"
 import { fromDatetimeLocal, toDatetimeLocal } from "@/shared/utils/dateTime"
 import { toast } from "react-hot-toast"
 import {
-  createBreadcrumbWithPaths,
   BREADCRUMBS,
   BREADCRUMB_PATHS,
 } from "@/config/breadcrumbs"
@@ -200,11 +199,6 @@ export default function OrganizerRoundEdit() {
   return (
     <PageContainer breadcrumb={items} breadcrumbPaths={paths}>
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 space-y-5">
-        <div>
-          <h2 className="text-lg font-medium">Edit Round</h2>
-          <p className="text-sm text-gray-500">Update the fields below to modify round details.</p>
-        </div>
-
         <RoundForm
           formData={formData}
           setFormData={setFormData}
