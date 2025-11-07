@@ -93,14 +93,14 @@ const PublishContestSection = ({ contest }) => {
     ? "Checking if contest is ready to publish..."
     : isReady
     ? "Make this contest visible and active for participants."
-    : `Cannot publish: ${missingItems.join(", ") || "Contest is not ready"}`
+    : `Cannot publish: ${missingItems.join(", ") || "Contest is not ready, create rounds to publish contest"}`
 
   return (
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
       <div className="flex gap-5 items-center">
         <Upload size={20} />
         <div>
-          <p className="text-[14px] leading-[20px] font-medium">Publish contest</p>
+          <p className="text-[14px] leading-[20px]">Publish contest</p>
           <p className="text-[12px] leading-[16px] text-[#7A7574]">{helperText}</p>
         </div>
       </div>

@@ -82,6 +82,22 @@ export const BREADCRUMBS = {
     roundName,
     "Edit",
   ],
+  ORGANIZER_MCQ: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    "Rounds",
+    roundName,
+    "Quizs",
+  ],
+
+  ORGANIZER_MCQ_DETAIL: (contestName, roundName, displayId) => [
+    "Contests",
+    contestName,
+    "Rounds",
+    roundName,
+    "Quizs",
+    displayId,
+  ],
 
   ORGANIZER_PROBLEM_DETAIL: (
     contestId,
@@ -107,6 +123,18 @@ export const BREADCRUMBS = {
     "Contests",
     contestName,
     "Certificates",
+  ],
+  ORGANIZER_CERTIFICATE_ISSUE: (contestName) => [
+    "Contests",
+    contestName,
+    "Certificates",
+    "Issue Certificate",
+  ],
+  ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestName) => [
+    "Contests",
+    contestName,
+    "Certificates",
+    "New Template",
   ],
 
   ORGANIZER_APPEALS: (contestName) => ["Contests", contestName, "Appeals"],
@@ -224,6 +252,23 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/rounds/${roundId}/edit`,
   ],
 
+  ORGANIZER_MCQ: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcq`,
+  ],
+
+  ORGANIZER_MCQ_DETAIL: (contestId, roundId, questionId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcq`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcqs/${questionId}`,
+  ],
+
   ORGANIZER_PROBLEM_DETAIL: (contestId, roundId, problemId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
@@ -250,6 +295,18 @@ export const BREADCRUMB_PATHS = {
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/certificates`,
+  ],
+  ORGANIZER_CERTIFICATE_ISSUE: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
+    `/organizer/contests/${contestId}/certificates/issue`,
+  ],
+  ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
+    `/organizer/contests/${contestId}/certificates/templates/new`,
   ],
   ORGANIZER_APPEALS: (contestId) => [
     "/organizer/contests",

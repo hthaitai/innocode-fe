@@ -10,6 +10,7 @@ import {
 } from "@/features/round/store/roundThunk"
 import { useConfirmDelete } from "../../../../shared/hooks/useConfirmDelete"
 import RoundInfo from "../../components/organizer/RoundInfo"
+import RoundRelatedSettings from "../../components/organizer/RoundRelatedSettings"
 
 const OrganizerRoundDetail = () => {
   const { contestId: contestIdParam, roundId: roundIdParam } = useParams()
@@ -79,6 +80,14 @@ const OrganizerRoundDetail = () => {
     >
       <div className="space-y-5">
         <RoundInfo round={round} />
+        
+        {/* Related Settings */}
+        <div>
+          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+            Related settings
+          </div>
+          <RoundRelatedSettings contestId={contestId} round={round} />
+        </div>
 
         {/* --- Delete Round --- */}
         <div>

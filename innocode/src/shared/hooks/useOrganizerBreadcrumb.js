@@ -31,6 +31,8 @@ export function useOrganizerBreadcrumb(
           items(contestName, "Unknown Round", "Unknown Problem"),
         ORGANIZER_TEAM_DETAIL: () => items(contestName, "Unknown Team"),
         ORGANIZER_APPEAL_DETAIL: () => items(contestName, appealId),
+        ORGANIZER_CERTIFICATE_ISSUE: () => items(contestName),
+        ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: () => items(contestName),
       }[key]?.() ?? items(contestName)
   }
   if (!items) items = ["Not Found"]
