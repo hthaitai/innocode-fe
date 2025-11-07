@@ -3,16 +3,12 @@ import contestApi from "../../../api/contestApi"
 export const contestService = {
   async getAllContests({ pageNumber = 1, pageSize = 10 } = {}) {
     const res = await contestApi.getAll({ pageNumber, pageSize })
-    return res.data 
+    return res.data
   },
 
   async createContest(data) {
-    try {
-      const res = await contestApi.create(data)
-      return res.data.data || res.data
-    } catch (err) {
-      throw err.response?.data || { Message: err.message || "Unknown error" }
-    }
+    const res = await contestApi.create(data)
+    return res.data.data
   },
 
   async updateContest(id, data) {
@@ -25,18 +21,14 @@ export const contestService = {
     return id
   },
 
-  async publishContest(id) {
-    const res = await contestApi.publish(id)
-    return res.data
-  },
-
   async checkPublishReady(id) {
     const res = await contestApi.checkPublishReady(id)
+    // API returns { data: { isReady, missing, contestId }, ... }
     return res.data
   },
 
-  async publishIfReady(id) {
-    const res = await contestApi.publishIfReady(id)
+  async publishContest(id) {
+    const res = await contestApi.publishContest(id)
     return res.data
   },
 

@@ -5,7 +5,7 @@ import TableFluent from "@/shared/components/TableFluent"
 import useOrganizerNotifications from "../../hooks/useOrganizerNotifications"
 import Actions from "../../../../shared/components/Actions"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
-import { formatDateTime } from "../../../../shared/utils/formatDateTime"
+import { formatDateTime } from "@/shared/utils/dateTime"
 import { useModal } from "../../../../shared/hooks/useModal"
 
 const OrganizerNotifications = () => {

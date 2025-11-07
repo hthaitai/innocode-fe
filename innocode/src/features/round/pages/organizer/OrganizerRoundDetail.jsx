@@ -1,244 +1,101 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
-import TableFluent from "@/shared/components/TableFluent"
-import { Calendar, Trash, Pencil } from "lucide-react"
-import { useRounds } from "@/features/round/hooks/useRounds"
-import { useProblems } from "@/features/problem/hooks/useProblems"
-import { formatDateTime } from "@/shared/utils/formatDateTime"
-import InfoSection from "../../../../shared/components/InfoSection"
-import DetailTable from "../../../../shared/components/DetailTable"
-import Actions from "../../../../shared/components/Actions"
-import { useModal } from "../../../../shared/hooks/useModal"
-import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
+import { Trash } from "lucide-react"
+import { createBreadcrumbWithPaths } from "../../../../config/breadcrumbs"
+import { useAppSelector, useAppDispatch } from "@/store/hooks"
+import {
+  fetchRounds as fetchRoundsThunk,
+  deleteRound as deleteRoundThunk,
+} from "@/features/round/store/roundThunk"
+import { useConfirmDelete } from "../../../../shared/hooks/useConfirmDelete"
+import RoundInfo from "../../components/organizer/RoundInfo"
 
 const OrganizerRoundDetail = () => {
   const { contestId: contestIdParam, roundId: roundIdParam } = useParams()
-  const contestId = Number(contestIdParam)
-  const roundId = Number(roundIdParam)
-
+  const contestId = contestIdParam
+  const roundId = roundIdParam
   const navigate = useNavigate()
-  const { openModal } = useModal()
-  const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_ROUND_DETAIL")
+  const dispatch = useAppDispatch()
+  const { confirmDeleteEntity } = useConfirmDelete()
 
-  // --- Hooks ---
   const {
     rounds,
     loading: roundLoading,
     error: roundError,
-    updateRound,
-    deleteRound,
-  } = useRounds(contestId)
+  } = useAppSelector((s) => s.rounds)
+  const { contests } = useAppSelector((s) => s.contests || { contests: [] })
 
-  const {
-    problems,
-    loading: problemsLoading,
-    error: problemsError,
-    addProblem,
-    updateProblem,
-    deleteProblem,
-  } = useProblems(contestId, roundId)
+  const round = rounds.find((r) => String(r.roundId) === String(roundId))
+  const contest = contests?.find(
+    (c) => String(c.contestId) === String(contestId)
+  )
 
-  const round = rounds.find((r) => r.round_id === roundId)
-
-  // --- Format helper ---
-  const formatForInput = (dateStr) => {
-    if (!dateStr) return ""
-    const d = new Date(dateStr)
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(
-      2,
-      "0"
-    )}:${String(d.getMinutes()).padStart(2, "0")}`
-  }
-
-  // ---------- Handlers ----------
-  const handleRoundModal = () => {
-    if (!round) return
-    const formattedRound = {
-      ...round,
-      start: formatForInput(round.start),
-      end: formatForInput(round.end),
+  useEffect(() => {
+    if (roundId) {
+      dispatch(fetchRoundsThunk({ roundId, pageNumber: 1, pageSize: 10 }))
     }
-
-    openModal("round", {
-      mode: "edit",
-      initialData: formattedRound,
-      onSubmit: async (data) => {
-        await updateRound(round.round_id, data)
-      },
-    })
-  }
+  }, [dispatch, roundId])
 
   const handleDeleteRound = () => {
-    openModal("confirmDelete", {
-      type: "round",
+    if (!round) return
+    confirmDeleteEntity({
+      entityName: "Round",
       item: round,
-      onConfirm: async (onClose) => {
-        await deleteRound(round.round_id)
-        onClose()
-        navigate(`/organizer/contests/${contestId}`)
-      },
+      deleteAction: deleteRoundThunk,
+      idKey: "roundId",
+      onSuccess: () => navigate(`/organizer/contests/${contestId}/rounds`),
     })
   }
 
-  const handleProblemModal = (mode, problem = {}) => {
-    openModal("problem", {
-      mode,
-      initialData: problem,
-      onSubmit: async (data) => {
-        if (mode === "create") return await addProblem(data)
-        if (mode === "edit")
-          return await updateProblem(problem.problem_id, data)
-      },
-    })
-  }
+  const { items, paths } = createBreadcrumbWithPaths(
+    "ORGANIZER_ROUND_DETAIL",
+    contestId,
+    contest?.name ?? "Contest",
+    round?.name ?? "Round"
+  )
 
-  const handleDeleteProblem = (problem) => {
-    openModal("confirmDelete", {
-      type: "problem",
-      item: problem,
-      onConfirm: async (onClose) => {
-        await deleteProblem(problem.problem_id)
-        onClose()
-      },
-    })
+  if (!round) {
+    return (
+      <PageContainer
+        breadcrumb={items}
+        breadcrumbPaths={paths}
+        loading={roundLoading}
+        error={roundError}
+      >
+        <div className="flex items-center justify-center h-[200px] text-gray-500">
+          This round has been deleted or is no longer available.
+        </div>
+      </PageContainer>
+    )
   }
-
-  // ---------- Problem Table ----------
-  const problemColumns = [
-    { accessorKey: "problem_id", header: "ID" },
-    {
-      accessorKey: "language",
-      header: "Language",
-      cell: ({ row }) => row.original.language || "—",
-    },
-    {
-      accessorKey: "type",
-      header: "Type",
-      cell: ({ row }) => row.original.type || "—",
-    },
-    {
-      accessorKey: "penalty_rate",
-      header: "Penalty Rate",
-      cell: ({ row }) => row.original.penalty_rate || "—",
-    },
-    {
-      accessorKey: "created_at",
-      header: "Created At",
-      cell: ({ row }) =>
-        row.original.created_at ? formatDateTime(row.original.created_at) : "—",
-    },
-    {
-      id: "actions",
-      header: "",
-      cell: ({ row }) => (
-        <Actions
-          row={row.original}
-          items={[
-            {
-              label: "Edit",
-              icon: Pencil,
-              onClick: () => handleProblemModal("edit", row.original),
-            },
-            {
-              label: "Delete",
-              icon: Trash,
-              className: "text-red-500",
-              onClick: () => handleDeleteProblem(row.original),
-            },
-          ]}
-        />
-      ),
-    },
-  ]
 
   return (
     <PageContainer
-      breadcrumb={breadcrumbData.items}
-      breadcrumbPaths={breadcrumbData.paths}
-      loading={roundLoading || problemsLoading}
-      error={roundError || problemsError}
+      breadcrumb={items}
+      breadcrumbPaths={paths}
+      loading={roundLoading}
+      error={roundError}
     >
-      {!round ? (
-        <div className="flex items-center justify-center h-[200px] text-gray-500">
-          Round not found
-        </div>
-      ) : (
-        <div className="space-y-5">
-          {/* Round Info */}
-          <InfoSection title="Round Information" onEdit={handleRoundModal}>
-            <DetailTable
-              data={[
-                { label: "Name", value: round.name },
-                { label: "Start", value: formatDateTime(round.start) },
-                { label: "End", value: formatDateTime(round.end) },
-              ]}
-            />
-          </InfoSection>
+      <div className="space-y-5">
+        <RoundInfo round={round} />
 
-          {/* Problems Section */}
-          <div>
-            <div className="text-sm font-semibold pt-3 pb-2">Problems</div>
-            <div className="space-y-1">
-              <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-                <div className="flex gap-5 items-center">
-                  <Calendar size={20} />
-                  <div>
-                    <p className="text-[14px] leading-[20px]">
-                      Problem Management
-                    </p>
-                    <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                      Create and manage problems in this round
-                    </p>
-                  </div>
-                </div>
-                <button
-                  className="button-orange"
-                  onClick={() => handleProblemModal("create")}
-                >
-                  New Problem
-                </button>
+        {/* --- Delete Round --- */}
+        <div>
+          <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
+          <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
+            <div className="flex gap-5 items-center">
+              <Trash size={20} />
+              <div>
+                <p className="text-[14px] leading-[20px]">Delete round</p>
               </div>
-
-              {problemsLoading ? (
-                <div className="p-4 text-gray-500">Loading problems...</div>
-              ) : problemsError ? (
-                <div className="p-4 text-red-500">{problemsError}</div>
-              ) : (
-                <TableFluent
-                  data={problems}
-                  columns={problemColumns}
-                  title="Problems"
-                  onRowClick={(problem) =>
-                    navigate(
-                      `/organizer/contests/${contestId}/rounds/${roundId}/problems/${problem.problem_id}`
-                    )
-                  }
-                />
-              )}
             </div>
-          </div>
-
-          {/* Delete Round */}
-          <div>
-            <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
-            <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-              <div className="flex gap-5 items-center">
-                <Trash size={20} />
-                <div>
-                  <p className="text-[14px] leading-[20px]">Delete Round</p>
-                </div>
-              </div>
-              <button className="button-white" onClick={handleDeleteRound}>
-                Delete Round
-              </button>
-            </div>
+            <button className="button-white" onClick={handleDeleteRound}>
+              Delete Round
+            </button>
           </div>
         </div>
-      )}
+      </div>
     </PageContainer>
   )
 }

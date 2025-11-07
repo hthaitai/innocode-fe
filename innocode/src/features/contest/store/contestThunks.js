@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { contestService } from "@/features/contest/services/contestService"
+import { handleThunkError } from "../../../shared/utils/handleThunkError"
 
-// GET all contests
 export const fetchContests = createAsyncThunk(
   "contests/fetchAll",
   async ({ pageNumber = 1, pageSize = 10 } = {}, { rejectWithValue }) => {
@@ -9,36 +9,33 @@ export const fetchContests = createAsyncThunk(
       const data = await contestService.getAllContests({ pageNumber, pageSize })
       return data
     } catch (err) {
-      return rejectWithValue(err.message || "Failed to load contests")
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// CREATE contest
 export const addContest = createAsyncThunk(
   "contests/add",
   async (data, { rejectWithValue }) => {
     try {
       return await contestService.createContest(data)
     } catch (err) {
-      return rejectWithValue(err) 
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// UPDATE contest
 export const updateContest = createAsyncThunk(
   "contests/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
       return await contestService.updateContest(id, data)
     } catch (err) {
-      return rejectWithValue(err.message)
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// DELETE contest
 export const deleteContest = createAsyncThunk(
   "contests/delete",
   async (id, { rejectWithValue }) => {
@@ -46,24 +43,11 @@ export const deleteContest = createAsyncThunk(
       await contestService.deleteContest(id)
       return id
     } catch (err) {
-      return rejectWithValue(err.message)
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// PUBLISH contest
-export const publishContest = createAsyncThunk(
-  "contests/publish",
-  async (id, { rejectWithValue }) => {
-    try {
-      return await contestService.publishContest(id)
-    } catch (err) {
-      return rejectWithValue(err.message)
-    }
-  }
-)
-
-// CHECK if ready to publish
 export const checkPublishReady = createAsyncThunk(
   "contests/checkPublishReady",
   async (id, { rejectWithValue }) => {
@@ -71,19 +55,18 @@ export const checkPublishReady = createAsyncThunk(
       const res = await contestService.checkPublishReady(id)
       return { id, ...res }
     } catch (err) {
-      return rejectWithValue(err.message)
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// PUBLISH if ready
-export const publishIfReady = createAsyncThunk(
-  "contests/publishIfReady",
+export const publishContest = createAsyncThunk(
+  "contests/publish",
   async (id, { rejectWithValue }) => {
     try {
-      return await contestService.publishIfReady(id)
+      return await contestService.publishContest(id)
     } catch (err) {
-      return rejectWithValue(err.message)
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )

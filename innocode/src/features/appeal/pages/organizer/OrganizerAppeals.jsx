@@ -8,7 +8,7 @@ import TableFluent from '@/shared/components/TableFluent'
 import useAppeals from "@/features/appeal/hooks/useAppeals"
 import useTeams from "@/features/team/hooks/useTeams"
 import useUsers from "@/shared/hooks/useUsers"
-import { formatDateTime } from '@/shared/utils/formatDateTime'
+import { formatDateTime } from '@/shared/utils/dateTime'
 import { StatusBadge } from "@/shared/utils/StatusBadge"
 import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
 

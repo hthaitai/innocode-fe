@@ -3,24 +3,19 @@ import { useNavigate } from "react-router-dom"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
-import { Trophy, Pencil, Trash2 } from "lucide-react"
+import { Trophy, Trash2 } from "lucide-react"
 import { StatusBadge } from "@/shared/utils/StatusBadge"
-import { formatDateTime } from "@/shared/utils/formatDateTime"
-import {
-  fetchContests,
-  addContest,
-  updateContest,
-  deleteContest,
-} from "@/features/contest/store/contestThunks"
+import { formatDateTime } from "@/shared/utils/dateTime"
+import { fetchContests } from "@/features/contest/store/contestThunks"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import Actions from "@/shared/components/Actions"
-import { useModal } from "@/shared/hooks/useModal"
-import { toast } from "react-hot-toast"
+import { useConfirmDelete } from "../../../../shared/hooks/useConfirmDelete"
+import { deleteContest } from "../../store/contestThunks"
 
 const OrganizerContests = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { openModal } = useModal()
+  const { confirmDeleteEntity } = useConfirmDelete()
 
   const { contests, pagination, loading, error } = useAppSelector(
     (s) => s.contests
@@ -29,67 +24,38 @@ const OrganizerContests = () => {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
+  // Fetch contests
   useEffect(() => {
     dispatch(fetchContests({ pageNumber: page, pageSize }))
   }, [dispatch, page, pageSize])
 
-  const handleContestModal = (mode, contest = {}) => {
-    openModal("contest", {
-      mode,
-      initialData: contest,
-      onSubmit: async (data) => {
-        if (mode === "create") {
-          await dispatch(addContest(data)).unwrap()
-        } else {
-          await dispatch(
-            updateContest({ id: contest.contestId, data })
-          ).unwrap()
-        }
-        dispatch(fetchContests({ pageNumber: page, pageSize }))
-      },
-    })
-  }
-
-  const handleDeleteContest = (contest) => {
-    openModal("confirmDelete", {
-      type: "contest",
-      item: contest,
-      onConfirm: async (onClose) => {
-        try {
-          await dispatch(deleteContest(contest.contestId)).unwrap()
-          toast.success("Contest deleted successfully!")
-          onClose()
-          dispatch(fetchContests({ pageNumber: page, pageSize }))
-        } catch (err) {
-          console.error(err)
-          toast.error("Failed to delete contest.")
-        }
-      },
-    })
+  const refetchContests = () => {
+    const safePage = Math.min(page, pagination.totalPages || 1)
+    dispatch(fetchContests({ pageNumber: safePage, pageSize }))
   }
 
   const contestColumns = [
     {
       accessorKey: "name",
       header: "Name",
-      cell: ({ row }) => row.original.name || "—",
+      cell: ({ row }) => row.original?.name || "—",
     },
     {
       accessorKey: "year",
       header: "Year",
-      cell: ({ row }) => row.original.year || "—",
+      cell: ({ row }) => row.original?.year || "—",
     },
     {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
-        <StatusBadge status={row.original.status || "draft"} />
+        <StatusBadge status={row.original?.status || "Draft"} />
       ),
     },
     {
-      accessorKey: "created_at",
+      accessorKey: "createdAt",
       header: "Created At",
-      cell: ({ row }) => formatDateTime(row.original.createdAt),
+      cell: ({ row }) => formatDateTime(row.original?.createdAt),
     },
     {
       id: "actions",
@@ -101,15 +67,17 @@ const OrganizerContests = () => {
           row={row.original}
           items={[
             {
-              label: "Edit",
-              icon: Pencil,
-              onClick: () => handleContestModal("edit", row.original),
-            },
-            {
               label: "Delete",
               icon: Trash2,
               className: "text-red-500",
-              onClick: () => handleDeleteContest(row.original),
+              onClick: () =>
+                confirmDeleteEntity({
+                  entityName: "Contest",
+                  item: row.original,
+                  deleteAction: deleteContest,
+                  idKey: "contestId",
+                  onSuccess: refetchContests,
+                }),
             },
           ]}
         />
@@ -132,22 +100,21 @@ const OrganizerContests = () => {
           </div>
           <button
             className="button-orange"
-            onClick={() => handleContestModal("create")}
+            onClick={() => navigate("/organizer/contests/new")}
           >
-            New Contest
+            Add contest
           </button>
         </div>
 
         <TableFluent
           data={contests}
           columns={contestColumns}
-          title="Contests"
-          pagination={pagination}
-          onPageChange={setPage}
           loading={loading}
           error={error}
+          pagination={pagination}
+          onPageChange={setPage}
           onRowClick={(contest) =>
-            navigate(`/organizer/contests/${contest.contestId}`)
+            navigate(`/organizer/contests/${contest?.contestId}`)
           }
         />
       </div>
