@@ -21,18 +21,14 @@ export const contestService = {
     return id
   },
 
-  async publishContest(id) {
-    const res = await contestApi.publish(id)
-    return res.data
-  },
-
   async checkPublishReady(id) {
     const res = await contestApi.checkPublishReady(id)
+    // API returns { data: { isReady, missing, contestId }, ... }
     return res.data
   },
 
-  async publishIfReady(id) {
-    const res = await contestApi.publishIfReady(id)
+  async publishContest(id) {
+    const res = await contestApi.publishContest(id)
     return res.data
   },
 

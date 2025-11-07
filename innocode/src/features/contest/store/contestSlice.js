@@ -4,8 +4,8 @@ import {
   addContest,
   updateContest,
   deleteContest,
+  checkPublishReady,
   publishContest,
-  publishIfReady,
 } from "./contestThunks"
 
 const initialState = {
@@ -75,13 +75,13 @@ const contestSlice = createSlice({
         state.error = action.payload
       })
 
-      .addCase(publishContest.fulfilled, () => {})
-      .addCase(publishContest.rejected, (state, action) => {
+      .addCase(checkPublishReady.fulfilled, () => {})
+      .addCase(checkPublishReady.rejected, (state, action) => {
         state.error = action.payload
       })
 
-      .addCase(publishIfReady.fulfilled, () => {})
-      .addCase(publishIfReady.rejected, (state, action) => {
+      .addCase(publishContest.fulfilled, () => {})
+      .addCase(publishContest.rejected, (state, action) => {
         state.error = action.payload
       })
   },

@@ -80,7 +80,7 @@ export default function OrganizerContestEdit() {
 
   // --- Handle Submit ---
   const handleSubmit = async () => {
-    const validationErrors = validateContest(formData)
+    const validationErrors = validateContest(formData, { isEdit: true })
     setErrors(validationErrors)
 
     const errorCount = Object.keys(validationErrors).length
@@ -128,7 +128,13 @@ export default function OrganizerContestEdit() {
 
   // --- Loading state ---
   if (!formData) {
-    return <PageContainer breadcrumb={breadcrumbItems} breadcrumbPaths={breadcrumbPaths} loading />
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+        loading
+      />
+    )
   }
 
   // --- Render ---

@@ -48,17 +48,6 @@ export const deleteContest = createAsyncThunk(
   }
 )
 
-export const publishContest = createAsyncThunk(
-  "contests/publish",
-  async (id, { rejectWithValue }) => {
-    try {
-      return await contestService.publishContest(id)
-    } catch (err) {
-      return rejectWithValue(handleThunkError(err))
-    }
-  }
-)
-
 export const checkPublishReady = createAsyncThunk(
   "contests/checkPublishReady",
   async (id, { rejectWithValue }) => {
@@ -71,11 +60,11 @@ export const checkPublishReady = createAsyncThunk(
   }
 )
 
-export const publishIfReady = createAsyncThunk(
-  "contests/publishIfReady",
+export const publishContest = createAsyncThunk(
+  "contests/publish",
   async (id, { rejectWithValue }) => {
     try {
-      return await contestService.publishIfReady(id)
+      return await contestService.publishContest(id)
     } catch (err) {
       return rejectWithValue(handleThunkError(err))
     }
