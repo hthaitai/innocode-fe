@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
 import { contestsData } from '@/data/contestsData';
-import { createBreadcrumbWithPaths, BREADCRUMBS } from '@/config/breadcrumbs';
+import { BREADCRUMBS, BREADCRUMB_PATHS } from '@/config/breadcrumbs';
 import TabNavigation from "@/shared/components/TabNavigation";
 import CountdownTimer from "@/shared/components/countdowntimer/CountdownTimer";
 
@@ -15,14 +15,17 @@ const ContestDetail = () => {
     { id: "round", label: "Round" },
     { id: "team", label: "Team" },
   ];
-  const breadcrumbData = contest
-    ? createBreadcrumbWithPaths("CONTEST_DETAIL", contestId)
-    : { items: BREADCRUMBS.NOT_FOUND, paths: ['/'] };
+  const items = contest
+    ? BREADCRUMBS.CONTEST_DETAIL(contest.name)
+    : BREADCRUMBS.NOT_FOUND
+  const paths = contest
+    ? BREADCRUMB_PATHS.CONTEST_DETAIL(contestId)
+    : ['/']
 
   return (
     <PageContainer 
-      breadcrumb={breadcrumbData.items} 
-      breadcrumbPaths={breadcrumbData.paths}
+      breadcrumb={items} 
+      breadcrumbPaths={paths}
       bg={false}
     >
       <div className="page-container">

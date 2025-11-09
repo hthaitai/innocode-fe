@@ -2,7 +2,7 @@ import React, { useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { Trash } from "lucide-react"
-import { createBreadcrumbWithPaths } from "../../../../config/breadcrumbs"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "../../../../config/breadcrumbs"
 import { useAppSelector, useAppDispatch } from "@/store/hooks"
 import {
   fetchRounds as fetchRoundsThunk,
@@ -49,12 +49,12 @@ const OrganizerRoundDetail = () => {
     })
   }
 
-  const { items, paths } = createBreadcrumbWithPaths(
-    "ORGANIZER_ROUND_DETAIL",
+  const items = BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
     contestId,
     contest?.name ?? "Contest",
     round?.name ?? "Round"
   )
+  const paths = BREADCRUMB_PATHS.ORGANIZER_ROUND_DETAIL(contestId, roundId)
 
   if (!round) {
     return (

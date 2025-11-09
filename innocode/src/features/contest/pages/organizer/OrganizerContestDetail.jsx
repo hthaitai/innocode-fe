@@ -4,7 +4,7 @@ import { AlertTriangle, Trash } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import ContestRelatedSettings from "../../components/organizer/ContestRelatedSettings"
 import ContestInfo from "../../components/organizer/ContestInfo"
-import { createBreadcrumbWithPaths } from "@/config/breadcrumbs"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import {
   fetchContests,
@@ -39,11 +39,10 @@ const OrganizerContestDetail = () => {
   }
 
   // --- Breadcrumb setup ---
-  const { items, paths } = createBreadcrumbWithPaths(
-    "ORGANIZER_CONTEST_DETAIL",
-    contest?.name ?? "Contest Detail",
-    contestId
+  const items = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(
+    contest?.name ?? "Contest Detail"
   )
+  const paths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
 
   // --- Missing contest state ---
   if (!contest) {

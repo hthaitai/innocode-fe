@@ -33,7 +33,7 @@ export default function PageContainer({
       {/* Breadcrumb header */}
       {breadcrumb && (
         <div className="bg-[#f3f3f3] sticky top-0 z-10 flex items-center justify-between pt-4 pb-6">
-          <div className="flex-1 overflow-x-auto">
+          <div className="flex-1">
             <div className="flex items-center space-x-2 w-max">
               <BreadcrumbTitle items={breadcrumb} paths={breadcrumbPaths} />
             </div>
