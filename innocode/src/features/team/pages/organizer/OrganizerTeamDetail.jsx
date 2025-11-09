@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router-dom"
 import PageContainer from '@/shared/components/PageContainer'
 import useTeams from "@/features/team/hooks/useTeams"
 import TableFluent from '@/shared/components/TableFluent'
-import { StatusBadge } from '@/shared/utils/StatusBadge'
 import { formatDateTime } from "@/shared/utils/dateTime"
 import useAppeals from "@/features/appeal/hooks/useAppeals"
 import InfoSection from "../../../../shared/components/InfoSection"
@@ -12,6 +11,7 @@ import DetailTable from "../../../../shared/components/DetailTable"
 import useSchools from "../../../school/hooks/useSchools"
 import useMentors from "../../../../shared/hooks/useMentors"
 import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
+import StatusBadge from "../../../../shared/components/StatusBadge"
 
 const OrganizerTeamDetail = () => {
   const { teamId: teamIdParam } = useParams()

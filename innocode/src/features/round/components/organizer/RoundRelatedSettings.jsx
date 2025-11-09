@@ -21,7 +21,7 @@ const RoundRelatedSettings = ({ contestId, round }) => {
     items.push({
       title: "Manage MCQ Test",
       subtitle: "View or edit the MCQ test for this round",
-      path: `/organizer/contests/${contestId}/rounds/${round.roundId}/mcq`,
+      path: `/organizer/contests/${contestId}/rounds/${round.roundId}/mcqs`,
     })
   }
 

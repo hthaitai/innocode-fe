@@ -11,6 +11,7 @@ import AppealStateModal from "../features/appeal/components/organizer/AppealStat
 import AppealDecisionModal from "../features/appeal/components/organizer/AppealDecisionModal"
 import IssueCertificateModal from "../features/certificate/components/organizer/IssueCertificateModal"
 import NotificationModal from "../features/notification/components/organizer/NotificationModal"
+import McqWeightModal from "../features/mcq/components/organizer/McqWeightModal"
 
 const ModalContext = createContext(null)
 
@@ -46,6 +47,7 @@ export function ModalProvider({ children }) {
     appealDecision: AppealDecisionModal,
     issueCertificate: IssueCertificateModal,
     notification: NotificationModal,
+    mcqWeight: McqWeightModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

@@ -51,7 +51,7 @@ export const BREADCRUMBS = {
   ORGANIZER_CONTESTS: ["Contests"],
   ORGANIZER_CONTEST_CREATE: ["Contests", "New Contest"],
   ORGANIZER_CONTEST_DETAIL: (contestName) => ["Contests", contestName],
-  ORGANIZER_CONTEST_EDIT: (contestId, contestName) => [
+  ORGANIZER_CONTEST_EDIT: (contestName) => [
     "Contests",
     contestName,
     "Edit",
@@ -82,20 +82,29 @@ export const BREADCRUMBS = {
     roundName,
     "Edit",
   ],
+
+  //Multiple choice questions breadcrumbs 
   ORGANIZER_MCQ: (contestName, roundName) => [
     "Contests",
     contestName,
     "Rounds",
     roundName,
-    "Quizs",
+    "Quizzes",
   ],
-
+  ORGANIZER_MCQ_NEW: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    "Rounds",
+    roundName,
+    "Quizzes",
+    "New Quiz",
+  ],
   ORGANIZER_MCQ_DETAIL: (contestName, roundName, displayId) => [
     "Contests",
     contestName,
     "Rounds",
     roundName,
-    "Quizs",
+    "Quizzes",
     displayId,
   ],
 
@@ -252,20 +261,28 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/rounds/${roundId}/edit`,
   ],
 
+  //Multiple choice questions paths
   ORGANIZER_MCQ: (contestId, roundId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/rounds`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
-    `/organizer/contests/${contestId}/rounds/${roundId}/mcq`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcqs`,
   ],
-
+  ORGANIZER_MCQ_NEW: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcqs`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcqs/new`,
+  ],
   ORGANIZER_MCQ_DETAIL: (contestId, roundId, questionId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/rounds`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
-    `/organizer/contests/${contestId}/rounds/${roundId}/mcq`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcqs`,
     `/organizer/contests/${contestId}/rounds/${roundId}/mcqs/${questionId}`,
   ],
 

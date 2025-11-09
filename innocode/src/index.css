@@ -402,3 +402,12 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+/* Hide scrollbar in breadcrumb */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

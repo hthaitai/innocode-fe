@@ -3,7 +3,15 @@ import React from "react"
 const DetailTable = ({ data }) => (
   <table className="table-auto border-collapse">
     <tbody>
-      {data.map((row) => {
+      {data.map((row, index) => {
+        if (row.spacer) {
+          return (
+            <tr key={`spacer-${index}`} className="h-4">
+              <td colSpan={2}></td>
+            </tr>
+          )
+        }
+
         const displayValue =
           row.value === null || row.value === undefined || row.value === ""
             ? "-"

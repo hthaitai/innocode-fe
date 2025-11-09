@@ -23,11 +23,12 @@ const RoundInfo = ({ round }) => {
     return `${(rate * 100).toFixed(0)}%`
   }
 
-  const details = [
+  const details = []
+
+  // 🏆 Core Round Info
+  details.push(
     { label: "Round Name", value: safe(round.roundName) },
     { label: "Contest Name", value: safe(round.contestName) },
-    { label: "Start Time", value: safe(formatDateTime(round.start)) },
-    { label: "End Time", value: safe(formatDateTime(round.end)) },
     {
       label: "Round Type",
       value:
@@ -39,7 +40,15 @@ const RoundInfo = ({ round }) => {
           ? "Manual Evaluation (Judge Review)"
           : safe(round.problemType),
     },
-  ]
+    { spacer: true }
+  )
+
+  // ⏰ Timing
+  details.push(
+    { label: "Start Time", value: safe(formatDateTime(round.start)) },
+    { label: "End Time", value: safe(formatDateTime(round.end)) },
+    { spacer: true }
+  )
 
   // 🧠 MCQ Test info
   if (round.mcqTest) {
@@ -50,7 +59,7 @@ const RoundInfo = ({ round }) => {
       if (Object.keys(parsedConfig).length > 0) {
         Object.entries(parsedConfig).forEach(([key, value]) => {
           details.push({
-            label: `Config – ${key.replace(/_/g, " ")}`,
+            label: `MCQ Config – ${key.replace(/_/g, " ")}`,
             value:
               value === true
                 ? "Yes"
@@ -68,28 +77,34 @@ const RoundInfo = ({ round }) => {
         value: safe(round.mcqTest.config),
       })
     }
+
+    // Spacer after MCQ config
   }
 
   // 💻 Problem info (AutoEval / Manual)
   if (round.problem) {
     details.push(
       { label: "Problem Language", value: safe(round.problem.language) },
-      { label: "Penalty Rate", value: formatPenaltyRate(round.problem.penaltyRate) },
+      {
+        label: "Penalty Rate",
+        value: formatPenaltyRate(round.problem.penaltyRate),
+      },
       { label: "Problem Description", value: safe(round.problem.description) }
     )
   } else if (!round.mcqTest) {
-    // Only show this when neither exists
+    // Add spacer separately from the row to ensure it renders
     details.push({ label: "Problem Configuration", value: "—" })
   }
 
-  const filteredDetails = details.filter((d) => d.value !== undefined)
+  // Filter undefined values
+  const filteredDetails = details.filter(
+    (d) => d.value !== undefined || d.spacer
+  )
 
   return (
-    <InfoSection
-      title="Round Information"
-      onEdit={handleEdit}
-      children={<DetailTable data={filteredDetails} />}
-    />
+    <InfoSection title="Round Information" onEdit={handleEdit}>
+      <DetailTable data={filteredDetails} />
+    </InfoSection>
   )
 }
 

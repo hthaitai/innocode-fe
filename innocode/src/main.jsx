@@ -48,6 +48,7 @@ import OrganizerRoundCreate from "./features/round/pages/organizer/OrganizerRoun
 import OrganizerRoundEdit from "./features/round/pages/organizer/OrganizerRoundEdit"
 import OrganizerMcq from "./features/mcq/pages/OrganizerMcq"
 import OrganizerMcqDetail from "./features/mcq/pages/OrganizerMcqDetail"
+import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate"
 // Organizer pages
 
 const router = createBrowserRouter([
@@ -218,10 +219,18 @@ const router = createBrowserRouter([
 
           //Multiple choice questions
           {
-            path: ":contestId/rounds/:roundId/mcq",
+            path: ":contestId/rounds/:roundId/mcqs",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <OrganizerMcq />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/mcqs/new",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerMcqCreate />
               </ProtectedRoute>
             ),
           },
