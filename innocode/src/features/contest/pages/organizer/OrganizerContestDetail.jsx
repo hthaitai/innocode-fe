@@ -1,89 +1,64 @@
-import React, { useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import { AlertTriangle, Trash } from "lucide-react"
+import React, { useMemo } from "react"
+import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
-import ContestRelatedSettings from "../../components/organizer/ContestRelatedSettings"
-import ContestInfo from "../../components/organizer/ContestInfo"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import {
-  fetchContests,
-  deleteContest,
-} from "@/features/contest/store/contestThunks"
+import ContestInfo from "../../components/organizer/ContestInfo"
 import PublishContestSection from "../../components/organizer/PublishContestSection"
-import { useConfirmDelete } from "../../../../shared/hooks/useConfirmDelete"
+import ContestRelatedSettings from "../../components/organizer/ContestRelatedSettings"
+import RoundsList from "../../../round/components/organizer/RoundList"
+import { AlertTriangle, Trash } from "lucide-react"
+import { useContestDetail } from "../../hooks/useContestDetail"
 
 const OrganizerContestDetail = () => {
   const { contestId } = useParams()
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const { confirmDeleteEntity } = useConfirmDelete()
+  const { contest, loading, error, handleEdit, handleDelete } =
+    useContestDetail(contestId)
 
-  const { contests, pagination, loading, error } = useAppSelector(
-    (state) => state.contests
+  const breadcrumbItems = useMemo(
+    () =>
+      BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(contest?.name ?? "Contest Detail"),
+    [contest?.name]
   )
 
-  // --- Fetch contests for breadcrumb and validation ---
-  useEffect(() => {
-    dispatch(fetchContests({ pageNumber: 1, pageSize: 50 })) // optional pagination fetch
-  }, [dispatch])
-
-  const contest = contests.find(
-    (c) => String(c.contestId) === String(contestId)
+  const breadcrumbPaths = useMemo(
+    () => BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId),
+    [contestId]
   )
 
-  // --- Refetch logic consistent with OrganizerContests.jsx ---
-  const refetchContests = () => {
-    const safePage = Math.min(1, pagination.totalPages || 1)
-    dispatch(fetchContests({ pageNumber: safePage, pageSize: 50 }))
-  }
-
-  // --- Breadcrumb setup ---
-  const items = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(
-    contest?.name ?? "Contest Detail"
-  )
-  const paths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
-
-  // --- Missing contest state ---
-  if (!contest) {
+  if (!contest && !loading) {
     return (
-      <PageContainer breadcrumb={items} breadcrumbPaths={paths} bg={false}>
-        <div className="text-sm leading-5 border border-[#E5E5E5] rounded-[5px] bg-white px-5 min-h-[70px] flex items-center gap-5 text-[#7A7574]">
-          <AlertTriangle size={20} />
-          <p>This contest has been deleted or is no longer available.</p>
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <div className="flex items-center gap-3 text-sm border rounded px-4 py-3 bg-white">
+          <AlertTriangle size={18} />
+          This contest does not exist or was deleted.
         </div>
       </PageContainer>
     )
   }
 
-  // --- Delete handler using useConfirmDelete ---
-  const handleDeleteContest = () => {
-    confirmDeleteEntity({
-      entityName: "contest",
-      item: contest,
-      deleteAction: deleteContest,
-      idKey: "contestId",
-      onSuccess: refetchContests,
-      onNavigate: () => navigate("/organizer/contests"),
-    })
-  }
-
   return (
     <PageContainer
-      breadcrumb={items}
-      breadcrumbPaths={paths}
-      bg={false}
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
       loading={loading}
       error={error}
     >
       <div className="space-y-5">
-        {/* Contest section */}
         <div className="space-y-1">
-          <ContestInfo contest={contest} />
+          <ContestInfo contest={contest} onEdit={handleEdit} />
           <PublishContestSection contest={contest} />
         </div>
 
-        {/* Related Settings */}
+        <div>
+          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+            Rounds management
+          </div>
+          <RoundsList contestId={contestId} />
+        </div>
+
         <div>
           <div className="text-sm leading-5 font-semibold pt-3 pb-2">
             Related settings
@@ -91,17 +66,17 @@ const OrganizerContestDetail = () => {
           <ContestRelatedSettings contestId={contestId} />
         </div>
 
-        {/* Delete Contest */}
+        {/* Delete */}
         <div>
-          <div className="text-sm font-semibold pt-3 pb-2">More actions</div>
+          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+            Other settings
+          </div>
           <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-            <div className="flex gap-5 items-center">
+            <div className="flex items-center gap-3">
               <Trash size={20} />
-              <div>
-                <p className="text-[14px] leading-[20px]">Delete contest</p>
-              </div>
+              <span className="text-sm leading-5">Delete contest</span>
             </div>
-            <button className="button-white" onClick={handleDeleteContest}>
+            <button className="button-white" onClick={handleDelete}>
               Delete Contest
             </button>
           </div>

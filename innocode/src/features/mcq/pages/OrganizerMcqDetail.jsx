@@ -77,7 +77,7 @@ const OrganizerMcqDetail = () => {
       {!mcq ? (
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 min-h-[70px] flex items-center gap-5 text-[#7A7574]">
           <AlertTriangle size={20} />
-          <p>This MCQ question has been deleted or is no longer available.</p>
+          <p className="text-sm leading-5">This MCQ question has been deleted or is no longer available.</p>
         </div>
       ) : (
         <div className="space-y-5">

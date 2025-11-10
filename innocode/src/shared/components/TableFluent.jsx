@@ -31,8 +31,13 @@ const TableFluent = ({
         <table className="table-auto w-full border-collapse">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => {
-              const actionIndex = headerGroup.headers.findIndex(h => h.column.id === "actions")
-              const expandIndex = actionIndex === -1 ? headerGroup.headers.length - 1 : actionIndex - 1
+              const actionIndex = headerGroup.headers.findIndex(
+                (h) => h.column.id === "actions"
+              )
+              const expandIndex =
+                actionIndex === -1
+                  ? headerGroup.headers.length - 1
+                  : actionIndex - 1
 
               return (
                 <tr key={headerGroup.id}>
@@ -87,8 +92,13 @@ const TableFluent = ({
               <>
                 {table.getRowModel().rows.map((row) => {
                   const visibleCells = row.getVisibleCells()
-                  const actionIndex = visibleCells.findIndex(c => c.column.id === "actions")
-                  const expandIndex = actionIndex === -1 ? visibleCells.length - 1 : actionIndex - 1
+                  const actionIndex = visibleCells.findIndex(
+                    (c) => c.column.id === "actions"
+                  )
+                  const expandIndex =
+                    actionIndex === -1
+                      ? visibleCells.length - 1
+                      : actionIndex - 1
 
                   return (
                     <tr
@@ -110,7 +120,10 @@ const TableFluent = ({
                             }`}
                             style={isExpandingColumn ? { width: "100%" } : {}}
                           >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
                           </td>
                         )
                       })}
@@ -121,11 +134,11 @@ const TableFluent = ({
                 {/* Empty rows to keep table height consistent */}
                 {Array.from({
                   length: pageSize - table.getRowModel().rows.length,
-                }).map((_, index) => (
-                  <tr key={`empty-${index}`}>
-                    {columns.map((col) => (
+                }).map((_, rowIndex) => (
+                  <tr key={`empty-${rowIndex}`}>
+                    {columns.map((col, colIndex) => (
                       <td
-                        key={col.id}
+                        key={`empty-${rowIndex}-${colIndex}`} // unique key per row & column
                         className={`text-[14px] leading-[20px] border-[#E5E5E5] whitespace-nowrap align-middle ${
                           col.id === "actions"
                             ? "w-[60px] p-2"

@@ -41,14 +41,11 @@ import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools
 import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications"
 import ProtectedRoute from "./shared/components/auth/ProtectedRoute"
 import { Toaster } from "react-hot-toast"
-import OrganizerContestCreate from "./features/contest/pages/organizer/OrganizerContestCreate"
-import OrganizerContestEdit from "./features/contest/pages/organizer/OrganizerContestEdit"
-import OrganizerRounds from "./features/round/pages/organizer/OrganizerRounds"
-import OrganizerRoundCreate from "./features/round/pages/organizer/OrganizerRoundCreate"
-import OrganizerRoundEdit from "./features/round/pages/organizer/OrganizerRoundEdit"
 import OrganizerMcq from "./features/mcq/pages/OrganizerMcq"
 import OrganizerMcqDetail from "./features/mcq/pages/OrganizerMcqDetail"
 import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate"
+import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts"
+import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail"
 // Organizer pages
 
 const router = createBrowserRouter([
@@ -154,22 +151,6 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: "new",
-            element: (
-              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <OrganizerContestCreate />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: ":contestId/edit",
-            element: (
-              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <OrganizerContestEdit />
-              </ProtectedRoute>
-            ),
-          },
-          {
             path: ":contestId",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
@@ -180,41 +161,12 @@ const router = createBrowserRouter([
 
           // ROUNDS
           {
-            path: ":contestId/rounds",
-            children: [
-              {
-                index: true,
-                element: (
-                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerRounds />
-                  </ProtectedRoute>
-                ),
-              },
-              {
-                path: "new",
-                element: (
-                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerRoundCreate />
-                  </ProtectedRoute>
-                ),
-              },
-              {
-                path: ":roundId/edit",
-                element: (
-                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerRoundEdit />
-                  </ProtectedRoute>
-                ),
-              },
-              {
-                path: ":roundId",
-                element: (
-                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerRoundDetail />
-                  </ProtectedRoute>
-                ),
-              },
-            ],
+            path: ":contestId/rounds/:roundId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerRoundDetail />
+              </ProtectedRoute>
+            ),
           },
 
           //Multiple choice questions
@@ -239,6 +191,22 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <OrganizerMcqDetail />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/attempts",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerMcqAttempts />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/attempts/:attemptId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerMcqAttemptDetail />
               </ProtectedRoute>
             ),
           },
