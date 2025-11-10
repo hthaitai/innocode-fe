@@ -1,17 +1,30 @@
-import React from "react"
+import React, { useCallback } from "react"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
-import { useNavigate } from "react-router-dom"
+import { useModal } from "@/shared/hooks/useModal"
+import { useAppDispatch, useAppSelector } from "@/store/hooks"
+import { fetchContests } from "@/features/contest/store/contestThunks"
 
-const RoundInfo = ({ round }) => {
-  const navigate = useNavigate()
+const RoundInfo = ({ round, onUpdated }) => {
+  const { openModal } = useModal()
+  const dispatch = useAppDispatch()
+  const { pagination } = useAppSelector((state) => state.contests)
 
-  const handleEdit = () => {
-    navigate(
-      `/organizer/contests/${round.contestId}/rounds/${round.roundId}/edit`
-    )
-  }
+  const refetchContests = useCallback(() => {
+    const currentPage = pagination?.pageNumber || 1
+    const safePage = Math.min(currentPage, pagination?.totalPages || 1)
+    dispatch(fetchContests({ pageNumber: safePage, pageSize: 50 }))
+  }, [dispatch, pagination?.pageNumber, pagination?.totalPages])
+
+  const handleEdit = useCallback(() => {
+    if (!round) return
+    openModal("round", {
+      contestId: round.contestId,
+      initialData: round,
+      onUpdated: onUpdated || refetchContests,
+    })
+  }, [round, openModal, onUpdated, refetchContests])
 
   if (!round) return null
 
@@ -30,7 +43,7 @@ const RoundInfo = ({ round }) => {
     { label: "Round Name", value: safe(round.roundName) },
     { label: "Contest Name", value: safe(round.contestName) },
     {
-      label: "Round Type",
+      label: "Problem Type",
       value:
         round.problemType === "McqTest"
           ? "Multiple Choice Questions (MCQ)"

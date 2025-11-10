@@ -12,6 +12,8 @@ import AppealDecisionModal from "../features/appeal/components/organizer/AppealD
 import IssueCertificateModal from "../features/certificate/components/organizer/IssueCertificateModal"
 import NotificationModal from "../features/notification/components/organizer/NotificationModal"
 import McqWeightModal from "../features/mcq/components/organizer/McqWeightModal"
+import ContestModal from "../features/contest/components/organizer/ContestModal"
+import RoundModal from "../features/round/components/organizer/RoundModal"
 
 const ModalContext = createContext(null)
 
@@ -35,6 +37,8 @@ export function ModalProvider({ children }) {
 
   // ---- Modal registry ----
   const modalComponents = {
+    contest: ContestModal,
+    round: RoundModal,
     confirmDelete: ConfirmDeleteModal,
     confirm: ConfirmModal,
     alert: AlertModal,

@@ -17,9 +17,9 @@ const mcqApi = {
     return response.data
   },
 
-  // GET /api/quizzes/{roundId}
+  // GET /api/quizzes/rounds/{roundId}/quiz
   getQuestions: async (roundId, { pageNumber = 1, pageSize = 10 }) => {
-    const response = await axiosClient.get(`/quizzes/${roundId}`, {
+    const response = await axiosClient.get(`/quizzes/rounds/${roundId}/quiz`, {
       params: { pageNumber, pageSize },
     })
     return response.data

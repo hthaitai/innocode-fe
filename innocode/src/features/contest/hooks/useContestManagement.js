@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from "react"
 import { useAppSelector, useAppDispatch } from "@/store/hooks"
-import { fetchContests, deleteContest } from "@/features/contest/store/contestThunks"
-import { useConfirmDelete } from "@/shared/hooks/useConfirmDelete"
+import {
+  fetchContests,
+  deleteContest,
+} from "@/features/contest/store/contestThunks"
+import { useConfirmDelete } from "../../../shared/hooks/useConfirmDelete"
 
 export const useContestManagement = (pageSize = 10) => {
   const dispatch = useAppDispatch()
@@ -11,39 +14,36 @@ export const useContestManagement = (pageSize = 10) => {
   )
   const [page, setPage] = useState(1)
 
-  // Fetch contests
   useEffect(() => {
     dispatch(fetchContests({ pageNumber: page, pageSize }))
   }, [dispatch, page, pageSize])
 
-  // Refetch contests with safe page calculation
   const refetchContests = useCallback(() => {
-    const safePage = Math.min(page, pagination.totalPages || 1)
+    const safePage = Math.min(page, pagination?.totalPages || 1)
     dispatch(fetchContests({ pageNumber: safePage, pageSize }))
-  }, [dispatch, page, pageSize, pagination.totalPages])
+  }, [dispatch, page, pageSize, pagination?.totalPages])
 
-  // Handle delete contest
   const handleDelete = useCallback(
-    (contest) => {
+    (item) => {
       confirmDeleteEntity({
-        entityName: "Contest",
-        item: contest,
+        entityName: "contest",
+        item,
         deleteAction: deleteContest,
         idKey: "contestId",
         onSuccess: refetchContests,
       })
     },
-    [confirmDeleteEntity, refetchContests]
+    [confirmDeleteEntity, refetchContests] 
   )
 
   return {
-    contests,
+    contests: contests || [],
     loading,
     error,
     pagination,
     page,
     setPage,
     handleDelete,
+    refetchContests,
   }
 }
-

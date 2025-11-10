@@ -58,43 +58,22 @@ export const BREADCRUMBS = {
   ],
 
   // Organizer rounds
-  ORGANIZER_ROUNDS: (contestId, contestName) => [
-    "Contests",
-    contestName,
-    "Rounds",
-  ],
-  ORGANIZER_ROUND_CREATE: (contestId, contestName) => [
-    "Contests",
-    contestName,
-    "Rounds",
-    "New Round",
-  ],
   ORGANIZER_ROUND_DETAIL: (contestId, contestName, roundName) => [
     "Contests",
     contestName,
-    "Rounds",
     roundName,
-  ],
-  ORGANIZER_ROUND_EDIT: (contestId, contestName, roundName) => [
-    "Contests",
-    contestName,
-    "Rounds",
-    roundName,
-    "Edit",
   ],
 
   //Multiple choice questions breadcrumbs 
   ORGANIZER_MCQ: (contestName, roundName) => [
     "Contests",
     contestName,
-    "Rounds",
     roundName,
     "Quizzes",
   ],
   ORGANIZER_MCQ_NEW: (contestName, roundName) => [
     "Contests",
     contestName,
-    "Rounds",
     roundName,
     "Quizzes",
     "New Quiz",
@@ -102,10 +81,22 @@ export const BREADCRUMBS = {
   ORGANIZER_MCQ_DETAIL: (contestName, roundName, displayId) => [
     "Contests",
     contestName,
-    "Rounds",
     roundName,
     "Quizzes",
     displayId,
+  ],
+  ORGANIZER_MCQ_ATTEMPTS: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Quiz Attempts",
+  ],
+  ORGANIZER_MCQ_ATTEMPT_DETAIL: (contestName, roundName, studentName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Quiz Attempts",
+    `${studentName} - Attempt detail`,
   ],
 
   ORGANIZER_PROBLEM_DETAIL: (
@@ -236,29 +227,10 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/edit`,
   ],
 
-  ORGANIZER_ROUNDS: (contestId) => [
-    "/organizer/contests",
-    `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds`,
-  ],
-  ORGANIZER_ROUND_CREATE: (contestId) => [
-    "/organizer/contests",
-    `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds`,
-    `/organizer/contests/${contestId}/rounds/new`,
-  ],
   ORGANIZER_ROUND_DETAIL: (contestId, roundId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
-  ],
-  ORGANIZER_ROUND_EDIT: (contestId, roundId) => [
-    "/organizer/contests",
-    `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds`,
-    `/organizer/contests/${contestId}/rounds/${roundId}`,
-    `/organizer/contests/${contestId}/rounds/${roundId}/edit`,
   ],
 
   //Multiple choice questions paths
@@ -284,6 +256,21 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/rounds/${roundId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}/mcqs`,
     `/organizer/contests/${contestId}/rounds/${roundId}/mcqs/${questionId}`,
+  ],
+  ORGANIZER_MCQ_ATTEMPTS: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/attempts`,
+  ],
+  ORGANIZER_MCQ_ATTEMPT_DETAIL: (contestId, roundId, attemptId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/attempts`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/attempts/${attemptId}`,
   ],
 
   ORGANIZER_PROBLEM_DETAIL: (contestId, roundId, problemId) => [

@@ -64,3 +64,36 @@ export const updateQuestionWeights = createAsyncThunk(
     }
   }
 )
+
+// Thunk to fetch attempts for a specific round
+export const fetchAttempts = createAsyncThunk(
+  "mcq/fetchAttempts",
+  async (
+    { roundId, pageNumber = 1, pageSize = 10 } = {},
+    { rejectWithValue }
+  ) => {
+    try {
+      const data = await mcqApi.getAttempts(roundId, {
+        pageNumber,
+        pageSize,
+      })
+      return data
+    } catch (error) {
+      // Pass a useful error message to the slice
+      return rejectWithValue(handleThunkError(error))
+    }
+  }
+)
+
+// Thunk to fetch a specific attempt’s details
+export const fetchAttemptDetail = createAsyncThunk(
+  "mcq/fetchAttemptDetail",
+  async (attemptId, { rejectWithValue }) => {
+    try {
+      const data = await mcqApi.getAttemptById(attemptId)
+      return data
+    } catch (error) {
+      return rejectWithValue(handleThunkError(error))
+    }
+  }
+)

@@ -25,7 +25,21 @@ const initialState = {
 const contestSlice = createSlice({
   name: "contests",
   initialState,
-  reducers: {},
+  reducers: {
+    clearContests: (state) => {
+      state.contests = []
+      state.pagination = {
+        pageNumber: 1,
+        pageSize: 10,
+        totalPages: 1,
+        totalCount: 0,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      }
+      state.loading = false
+      state.error = null
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchContests.pending, (state) => {
@@ -77,7 +91,9 @@ const contestSlice = createSlice({
 
       .addCase(checkPublishReady.fulfilled, () => {})
       .addCase(checkPublishReady.rejected, (state, action) => {
-        state.error = action.payload
+        const message = action.payload?.Message
+        if (typeof message === "string" && message.toLowerCase() === "not found.") return
+        if (action.payload) state.error = action.payload
       })
 
       .addCase(publishContest.fulfilled, () => {})
@@ -87,4 +103,5 @@ const contestSlice = createSlice({
   },
 })
 
+export const { clearContests } = contestSlice.actions;
 export default contestSlice.reducer

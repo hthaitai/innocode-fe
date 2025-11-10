@@ -12,12 +12,6 @@ import {
 
 const items = [
   {
-    title: "Rounds",
-    subtitle: "Manage and create contest rounds",
-    icon: <Calendar size={20} />,
-    path: "rounds",
-  },
-  {
     title: "Teams",
     subtitle: "Manage registered teams and members",
     icon: <Users size={20} />,

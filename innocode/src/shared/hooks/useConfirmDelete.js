@@ -19,15 +19,15 @@ export const useConfirmDelete = () => {
       openModal("confirmDelete", {
         type: entityName,
         item,
+        message: `Are you sure you want to delete "${item.name}"?`,
         onConfirm: async (onClose) => {
           try {
-            await dispatch(deleteAction(item[idKey])).unwrap()
+            onClose() 
+            await dispatch(deleteAction({ [idKey]: item[idKey] })).unwrap()
             toast.success(`${entityName} deleted successfully!`)
-            onClose()
-            if (onNavigate) onNavigate()
-            if (onSuccess) onSuccess()
-          } catch (err) {
-            console.error(err)
+            onNavigate?.()
+            onSuccess?.()
+          } catch {
             toast.error(`Failed to delete ${entityName}.`)
           }
         },
