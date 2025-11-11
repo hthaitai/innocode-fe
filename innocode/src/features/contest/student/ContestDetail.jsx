@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import useContestDetail from '../hooks/useContestDetail';
 import CountdownTimer from '@/shared/components/countdowntimer/CountdownTimer';
-import useRounds from '../../round/hooks/useRounds';
 
 const ContestDetail = () => {
   const { contestId } = useParams();
@@ -24,14 +23,13 @@ const ContestDetail = () => {
 
   // Fetch contest data from API
   const { contest: apiContest, loading, error } = useContestDetail(contestId);
-  const {
-    rounds,
-    loading: roundsLoading,
-    error: roundsError,
-  } = useRounds(contestId);
 
   // Use API data if available
   const contest = apiContest;
+  
+  // Get rounds from contest data
+  const rounds = contest?.rounds || [];
+
 
   const breadcrumbData = contest
     ? createBreadcrumbWithPaths('CONTEST_DETAIL', contest.name || contest.title)
@@ -201,7 +199,7 @@ const ContestDetail = () => {
                   {contest.name || contest.title}
                 </h1>
                 <p className="text-lg opacity-90">
-                  Organized by {contest.createdBy}
+                  Organized by {contest.createdByName}
                 </p>
               </div>
             </div>
@@ -257,7 +255,7 @@ const ContestDetail = () => {
                 <div>
                   <div className="text-[#7A7574] text-xs">Rounds</div>
                   <div className="font-medium text-[#2d3748]">
-                    {contest.rounds || 'TBA'} Rounds
+                    {Array.isArray(contest.rounds) ? contest.rounds.length : 0} Round{Array.isArray(contest.rounds) && contest.rounds.length !== 1 ? 's' : ''}
                   </div>
                 </div>
               </div>
@@ -365,12 +363,12 @@ const ContestDetail = () => {
                     <h3 className="text-lg font-semibold text-[#2d3748]">
                       Contest Rounds
                     </h3>
-                    {roundsLoading && (
+                    {loading && (
                       <span className="text-sm text-[#7A7574]">Loading...</span>
                     )}
                   </div>
 
-                  {roundsError ? (
+                  {error ? (
                     <div className="text-center py-8">
                       <Icon
                         icon="mdi:alert-circle"
@@ -378,76 +376,145 @@ const ContestDetail = () => {
                         className="mx-auto mb-2 text-red-500 opacity-50"
                       />
                       <p className="text-[#7A7574]">Failed to load rounds</p>
-                      <p className="text-sm text-[#7A7574] mt-1">
-                        {roundsError}
-                      </p>
+                      <p className="text-sm text-[#7A7574] mt-1">{error}</p>
                     </div>
                   ) : rounds && rounds.length > 0 ? (
-                    rounds.map((round, index) => (
-                      <div
-                        key={round.roundId || index}
-                        className="border border-[#E5E5E5] rounded-[5px] p-4 hover:bg-[#f9fafb] transition-colors"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#ff6b35] text-white flex items-center justify-center text-sm font-bold">
-                              {round.roundNumber || index + 1}
+                    rounds.map((round, index) => {
+                      // ✅ Determine route based on problemType
+                      const getRoundRoute = () => {
+                        switch (round.problemType) {
+                          case 'McqTest':
+                            return `/mcq-test/${contestId}/${round.roundId}`;
+                          case 'Manual':
+                            return `/manual-problem/${contestId}/${round.roundId}`;
+                          case 'AutoEvaluation':
+                            return `/auto-evaluation/${contestId}/${round.roundId}`;
+                          default:
+                            return null;
+                        }
+                      };
+
+                      // ✅ Get button label based on problemType
+                      const getButtonLabel = () => {
+                        switch (round.problemType) {
+                          case 'McqTest':
+                            return 'Start Test';
+                          case 'Manual':
+                            return 'Start Problem';
+                          case 'AutoEvaluation':
+                            return 'Start Challenge';
+                          default:
+                            return 'Start';
+                        }
+                      };
+
+                      const roundRoute = getRoundRoute();
+
+                      return (
+                        <div
+                          key={round.roundId || index}
+                          className="border border-[#E5E5E5] rounded-[5px] p-4 hover:bg-[#f9fafb] transition-colors"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full bg-[#ff6b35] text-white flex items-center justify-center text-sm font-bold">
+                                {index + 1}
+                              </div>
+                              <h4 className="font-semibold text-[#2d3748]">
+                                {round.roundName ||
+                                  round.name ||
+                                  `Round ${index + 1}`}
+                              </h4>
                             </div>
-                            <h4 className="font-semibold text-[#2d3748]">
-                              {round.name || `Round ${index + 1}`}
-                            </h4>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`text-xs px-2 text-center py-1 rounded ${
-                                round.status === 'Closed'
-                                  ? 'bg-[#fde8e8] text-[#d93025]'
-                                  : round.status === 'Opened'
-                                  ? 'bg-[#e6f4ea] text-[#34a853]'
-                                  : 'bg-[#fef7e0] text-[#fbbc05]'
-                              }`}
-                            >
-                              {round.status}
-                            </span>
-                            {round.status === 'Opened' && (
-                              <button
-                                onClick={() => navigate(`/mcq-test/${contestId}/${round.roundId}`)}
-                                className="button-orange text-xs px-3 py-1 flex items-center gap-1"
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`text-xs px-2 text-center py-1 rounded ${
+                                  round.status === 'Closed'
+                                    ? 'bg-[#fde8e8] text-[#d93025]'
+                                    : round.status === 'Opened'
+                                    ? 'bg-[#e6f4ea] text-[#34a853]'
+                                    : 'bg-[#fef7e0] text-[#fbbc05]'
+                                }`}
                               >
-                                <Play size={12} />
-                                Start Test
-                              </button>
+                                {round.status}
+                              </span>
+                              
+                              {/* ⚠️ TEMPORARY: Status check disabled for testing */}
+                              {/* TODO: Re-enable this condition after testing is complete */}
+                              {/* BEFORE: {round.status === 'Opened' && roundRoute && ( */}
+                              {/* AFTER TESTING: Uncomment the line above and remove the line below */}
+                              {roundRoute && (
+                                <button
+                                  onClick={() => navigate(roundRoute)}
+                                  className="button-orange text-xs px-3 py-1 flex items-center gap-1"
+                                >
+                                  <Play size={12} />
+                                  {getButtonLabel()}
+                                </button>
+                              )}
+                              {/* ⚠️ END TEMPORARY CODE */}
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2 text-sm text-[#7A7574] ml-10">
+                            {/* ✅ Show MCQ Test info only for McqTest type */}
+                            {round.problemType === 'McqTest' && round.mcqTest && (
+                              <div className="flex items-center gap-2">
+                                <BookCheck size={14} />
+                                <span>{round.mcqTest.name || 'MCQ Test'}</span>
+                              </div>
+                            )}
+
+                            {/* ✅ Show Problem Type with icon */}
+                            <div className="flex items-center gap-2">
+                              <NotebookPen size={14} />
+                              <span>
+                                {round.problemType === 'McqTest'
+                                  ? 'Multiple Choice Questions'
+                                  : round.problemType === 'Manual'
+                                  ? 'Manual Problem'
+                                  : round.problemType === 'AutoEvaluation'
+                                  ? 'Auto Evaluation'
+                                  : round.problemType}
+                              </span>
+                            </div>
+
+                            {/* Duration */}
+                            {round.start && round.end && (
+                              <div className="flex items-center gap-2">
+                                <Clock size={14} />
+                                <span>
+                                  {calculateDuration(round.start, round.end)}{' '}
+                                  minutes
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Time Limit (if available) */}
+                            {round.timeLimitSeconds && (
+                              <div className="flex items-center gap-2">
+                                <Icon icon="mdi:timer-outline" width="14" />
+                                <span>
+                                  {Math.floor(round.timeLimitSeconds / 60)}{' '}
+                                  minutes time limit
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Date Range */}
+                            {round.start && round.end && (
+                              <div className="flex items-center gap-2">
+                                <Calendar size={14} />
+                                <span>
+                                  {formatDate(round.start)} -{' '}
+                                  {formatDate(round.end)}
+                                </span>
+                              </div>
                             )}
                           </div>
                         </div>
-
-                        <div className="flex flex-col gap-4 text-sm text-[#7A7574] ml-10">
-                          <div className="flex items-center gap-2">
-                            <BookCheck size={14} />
-                            <span>{round.mcqTest.name}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <NotebookPen size={14} />
-                            <span>{round.problemType}</span>
-                          </div>
-                          {round.start && (
-                            <div className="flex items-center gap-2">
-                              <Clock size={14} />
-                              <span>
-                                {calculateDuration(round.start, round.end)}{' '}
-                                minutes
-                              </span>
-                            </div>
-                          )}
-                          {round.durationMinutes && (
-                            <div className="flex items-center gap-2">
-                              <Icon icon="mdi:timer-outline" width="14" />
-                              <span>{round.durationMinutes} minutes</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))
+                      );
+                    })
                   ) : (
                     <div className="text-center py-8 text-[#7A7574]">
                       <Icon
@@ -455,7 +522,7 @@ const ContestDetail = () => {
                         width="48"
                         className="mx-auto mb-2 opacity-50"
                       />
-                      <p>No rounds scheduled yet {}</p>
+                      <p>No rounds scheduled yet</p>
                     </div>
                   )}
                 </div>
