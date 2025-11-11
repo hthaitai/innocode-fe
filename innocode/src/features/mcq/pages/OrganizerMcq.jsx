@@ -15,10 +15,12 @@ import { useModalContext } from "@/context/ModalContext"
 import McqTableAdd from "../components/organizer/McqTableAdd"
 import { useMcqManagement } from "../hooks/useMcqManagement"
 import { useMcqWeightModal } from "../hooks/useMcqWeightModal"
-import { getMcqColumns } from "../columns/mcqColumns"
+import { getMcqColumns } from "../columns/getMcqColumns"
 
 // Breadcrumbs
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useRoundDetail } from "../../round/hooks/useRoundDetail"
+import McqTableExpanded from "../components/organizer/McqTableExpanded"
 
 const OrganizerMcq = () => {
   const navigate = useNavigate()
@@ -28,6 +30,7 @@ const OrganizerMcq = () => {
   // Select contests and rounds from the Redux store
   const { contests } = useAppSelector((s) => s.contests)
   const { rounds } = useAppSelector((s) => s.rounds)
+  const { round } = useRoundDetail(contestId, roundId)
 
   // Custom hook to manage MCQs for a specific round
   const {
@@ -58,7 +61,6 @@ const OrganizerMcq = () => {
   const contest = contests.find(
     (c) => String(c.contestId) === String(contestId)
   )
-  const round = rounds.find((r) => String(r.roundId) === String(roundId))
 
   // Generate breadcrumbs for the page
   const items = BREADCRUMBS.ORGANIZER_MCQ(
@@ -87,11 +89,8 @@ const OrganizerMcq = () => {
           error={error}
           pagination={pagination}
           onPageChange={setPage}
-          onRowClick={(mcq) =>
-            navigate(
-              `/organizer/contests/${contestId}/rounds/${roundId}/mcqs/${mcq.questionId}`
-            )
-          }
+          renderSubComponent={(mcq) => <McqTableExpanded mcq={mcq} />}
+          expandAt="text"  
         />
       </div>
     </PageContainer>

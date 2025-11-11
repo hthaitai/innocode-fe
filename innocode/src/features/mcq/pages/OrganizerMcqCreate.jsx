@@ -14,6 +14,7 @@ import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import UploadCsvSection from "../components/organizer/UploadCsvSection"
 import BankSelector from "../components/organizer/BankSelector"
 import QuestionsPreviewSection from "../components/organizer/QuestionsPreviewSection"
+import { getPreviewColumns } from "../columns/getPreviewColumns"
 
 const OrganizerMcqCreate = () => {
   const { contestId, roundId } = useParams()
@@ -77,28 +78,7 @@ const OrganizerMcqCreate = () => {
     }
   }, [selectedBankQuestions.length, questionsPage, questionsPageSize])
 
-  const columns = useMemo(
-    () => [
-      { header: "#", accessorKey: "displayId", size: 50 },
-      { header: "Question Text", accessorKey: "text" },
-      {
-        header: "Options",
-        accessorKey: "optionsCount",
-        cell: (info) => `${info.getValue()} options`,
-        size: 100,
-      },
-      {
-        header: "Created At",
-        accessorKey: "createdAt",
-        cell: (info) =>
-          info.getValue()
-            ? new Date(info.getValue()).toLocaleDateString()
-            : "-",
-        size: 120,
-      },
-    ],
-    []
-  )
+  const columns = useMemo(() => getPreviewColumns(), [])
 
   const contest = contests.find(
     (c) => String(c.contestId) === String(contestId)

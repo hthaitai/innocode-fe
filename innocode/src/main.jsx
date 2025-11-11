@@ -42,7 +42,6 @@ import OrganizerNotifications from "./features/notification/pages/organizer/Orga
 import ProtectedRoute from "./shared/components/auth/ProtectedRoute"
 import { Toaster } from "react-hot-toast"
 import OrganizerMcq from "./features/mcq/pages/OrganizerMcq"
-import OrganizerMcqDetail from "./features/mcq/pages/OrganizerMcqDetail"
 import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate"
 import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts"
 import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail"
@@ -185,15 +184,7 @@ const router = createBrowserRouter([
                 <OrganizerMcqCreate />
               </ProtectedRoute>
             ),
-          },
-          {
-            path: ":contestId/rounds/:roundId/mcqs/:questionId",
-            element: (
-              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <OrganizerMcqDetail />
-              </ProtectedRoute>
-            ),
-          },
+          },        
           {
             path: ":contestId/rounds/:roundId/attempts",
             element: (

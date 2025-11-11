@@ -237,14 +237,12 @@ export const BREADCRUMB_PATHS = {
   ORGANIZER_MCQ: (contestId, roundId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}/mcqs`,
   ],
   ORGANIZER_MCQ_NEW: (contestId, roundId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}/mcqs`,
     `/organizer/contests/${contestId}/rounds/${roundId}/mcqs/new`,
@@ -252,7 +250,6 @@ export const BREADCRUMB_PATHS = {
   ORGANIZER_MCQ_DETAIL: (contestId, roundId, questionId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}/mcqs`,
     `/organizer/contests/${contestId}/rounds/${roundId}/mcqs/${questionId}`,
@@ -260,14 +257,12 @@ export const BREADCRUMB_PATHS = {
   ORGANIZER_MCQ_ATTEMPTS: (contestId, roundId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}/attempts`,
   ],
   ORGANIZER_MCQ_ATTEMPT_DETAIL: (contestId, roundId, attemptId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}/attempts`,
     `/organizer/contests/${contestId}/rounds/${roundId}/attempts/${attemptId}`,

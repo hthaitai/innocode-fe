@@ -1,5 +1,7 @@
 import { Calendar } from "lucide-react"
 import TableFluent from "@/shared/components/TableFluent"
+import McqTableExpanded from "./McqTableExpanded"
+import PreviewQuestionExpanded from "./PreviewQuestionExpanded"
 
 const QuestionsPreviewSection = ({
   selectedBankId,
@@ -41,6 +43,10 @@ const QuestionsPreviewSection = ({
         error={error}
         pagination={pagination}
         onPageChange={onPageChange}
+        renderSubComponent={(question) => (
+          <PreviewQuestionExpanded question={question} />
+        )}
+        expandAt="text"
       />
     ) : (
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-center text-[#7A7574] text-sm leading-5 min-h-[70px]">

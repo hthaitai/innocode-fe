@@ -1,7 +1,7 @@
 import axiosClient from "./axiosClient"
 
 const contestApi = {
-  // GET /api/contests
+  // GET /api/contests/my-contests
   getAll: ({ pageNumber = 1, pageSize = 10 } = {}) =>
     axiosClient.get("/contests/my-contests", {
       params: { pageNumber, pageSize },
