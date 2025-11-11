@@ -6,7 +6,7 @@ import { fetchContests } from "@/features/contest/store/contestThunks"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { useModal } from "@/shared/hooks/useModal"
-import { mapRoundList } from "../../mappers/roundMapper"
+import { mapRoundList } from "../../../round/mappers/roundMapper"
 
 const RoundsList = ({ contestId }) => {
   const navigate = useNavigate()
@@ -70,7 +70,9 @@ const RoundsList = ({ contestId }) => {
       ) : !contest ? (
         <p className="text-[#7A7574] text-sm">Loading contest...</p>
       ) : rounds.length === 0 ? (
-        <p className="text-[#7A7574] text-sm">No rounds created yet.</p>
+        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
+          No rounds created yet.
+        </div>
       ) : null}
 
       <div className="flex flex-col gap-1">

@@ -7,8 +7,8 @@ const roundApi = {
   getByContestId: (contestId) =>
     axiosClient.get("/rounds", { params: { contestIdSearch: contestId } }),
   // POST /api/rounds
-  create: (data) => axiosClient.post("/rounds", data),
-
+  create: (contestId, data) => axiosClient.post(`/rounds/${contestId}`, data),
+  
   // PUT /api/rounds/{id}
   update: (id, data) => axiosClient.put(`/rounds/${id}`, data),
 

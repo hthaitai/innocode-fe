@@ -1,5 +1,5 @@
 import React from "react"
-import DropdownFluent from "../../../../shared/components/DropdownFluent"
+import DropdownFluent from "../../../../../shared/components/DropdownFluent"
 
 const ProblemTypeSelector = ({ formData, handleChange, errors = {} }) => {
   const options = [

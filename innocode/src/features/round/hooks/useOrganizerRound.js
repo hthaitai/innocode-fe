@@ -6,7 +6,7 @@ import { deleteRound as deleteRoundThunk } from "@/features/round/store/roundThu
 import { useConfirmDelete } from "@/shared/hooks/useConfirmDelete"
 import { mapRoundList } from "../mappers/roundMapper"
 
-export const useRoundDetail = (contestId, roundId) => {
+export const useOrganizerRound = (contestId, roundId) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { confirmDeleteEntity } = useConfirmDelete()

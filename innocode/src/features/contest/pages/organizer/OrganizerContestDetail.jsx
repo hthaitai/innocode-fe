@@ -1,18 +1,33 @@
-import React, { useMemo } from "react"
-import { useParams } from "react-router-dom"
+import React, { useEffect, useMemo } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import ContestInfo from "../../components/organizer/ContestInfo"
 import PublishContestSection from "../../components/organizer/PublishContestSection"
 import ContestRelatedSettings from "../../components/organizer/ContestRelatedSettings"
-import RoundsList from "../../../round/components/organizer/RoundList"
+import RoundsList from "../../components/organizer/RoundList"
 import { AlertTriangle, Trash } from "lucide-react"
-import { useContestDetail } from "../../hooks/useContestDetail"
+import { useOrganizerContest } from "../../hooks/useOrganizerContest"
+import { useModal } from "@/shared/hooks/useModal"
 
 const OrganizerContestDetail = () => {
+  const { openModal } = useModal()
   const { contestId } = useParams()
-  const { contest, loading, error, handleEdit, handleDelete } =
-    useContestDetail(contestId)
+  const navigate = useNavigate()
+
+  const {
+    contest,
+    fetchContestDetail,
+    detailLoading: loading,
+    detailError: error,
+    handleEdit,
+    handleDelete,
+  } = useOrganizerContest()
+
+  // Fetch contest detail on mount / param change
+  useEffect(() => {
+    fetchContestDetail(contestId)
+  }, [contestId, fetchContestDetail])
 
   const breadcrumbItems = useMemo(
     () =>
@@ -31,9 +46,8 @@ const OrganizerContestDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="flex items-center gap-3 text-sm border rounded px-4 py-3 bg-white">
-          <AlertTriangle size={18} />
-          This contest does not exist or was deleted.
+        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
+          This contest has been deleted or is no longer available.
         </div>
       </PageContainer>
     )
@@ -48,7 +62,15 @@ const OrganizerContestDetail = () => {
     >
       <div className="space-y-5">
         <div className="space-y-1">
-          <ContestInfo contest={contest} onEdit={handleEdit} />
+          <ContestInfo
+            contest={contest}
+            onEdit={() =>
+              openModal("contest", {
+                initialData: contest,
+                onUpdated: () => fetchContestDetail(contestId),
+              })
+            }
+          />
           <PublishContestSection contest={contest} />
         </div>
 
@@ -76,7 +98,15 @@ const OrganizerContestDetail = () => {
               <Trash size={20} />
               <span className="text-sm leading-5">Delete contest</span>
             </div>
-            <button className="button-white" onClick={handleDelete}>
+            <button
+              className="button-white"
+              onClick={() =>
+                handleDelete({
+                  ...contest,
+                  onSuccess: () => navigate("/organizer/contests"),
+                })
+              }
+            >
               Delete Contest
             </button>
           </div>

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { useAppSelector, useAppDispatch } from "@/store/hooks"
-import { useRoundDetail } from "@/features/round/hooks/useRoundDetail"
+import { useOrganizerRound } from "@/features/round/hooks/useOrganizerRound"
 
 import { fetchManualResults } from "../store/manualProblemThunks"
 import { setSearch } from "../store/manualProblemSlice"
@@ -13,7 +13,7 @@ const ManualResultsPage = () => {
   const { contestId, roundId } = useParams()
 
   const { contests } = useAppSelector((s) => s.contests)
-  const { round } = useRoundDetail(contestId, roundId)
+  const { round } = useOrganizerRound(contestId, roundId)
 
   const { results, resultsLoading, resultsPagination, search } = useAppSelector(
     (s) => s.manualProblem

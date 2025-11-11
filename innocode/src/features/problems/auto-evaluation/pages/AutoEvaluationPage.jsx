@@ -6,7 +6,7 @@ import { Pencil, Trash2 } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import Actions from "@/shared/components/Actions"
-import { useRoundDetail } from "@/features/round/hooks/useRoundDetail"
+import { useOrganizerRound } from "@/features/round/hooks/useOrganizerRound"
 import { useAppSelector } from "@/store/hooks"
 import { useModal } from "@/shared/hooks/useModal"
 
@@ -25,7 +25,7 @@ const AutoEvaluationPage = () => {
   const { openModal } = useModal()
 
   const { contests } = useAppSelector((s) => s.contests)
-  const { round } = useRoundDetail(contestId, roundId)
+  const { round } = useOrganizerRound(contestId, roundId)
   const { loading, error, testCases, testCasePagination } = useSelector(
     (s) => s.autoEvaluation
   )

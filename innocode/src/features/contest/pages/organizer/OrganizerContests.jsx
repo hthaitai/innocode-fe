@@ -7,7 +7,7 @@ import TableFluent from "@/shared/components/TableFluent"
 
 // Contest features
 import ContestTableAdd from "../../components/organizer/ContestTableAdd"
-import { useContestManagement } from "../../hooks/useContestManagement"
+import { useOrganizerContest } from "../../hooks/useOrganizerContest"
 import { useModal } from "@/shared/hooks/useModal"
 import { getContestColumns } from "../../columns/getContestColumns"
 
@@ -18,9 +18,17 @@ const OrganizerContests = () => {
   const navigate = useNavigate()
   const { openModal } = useModal()
 
-  // Custom hook to manage contests
-  const { contests, loading, error, pagination, page, setPage, handleDelete } =
-    useContestManagement()
+  // Unified hook
+  const {
+    contests,
+    loading,
+    error,
+    pagination,
+    page,
+    setPage,
+    handleDelete,
+    refetchContests,
+  } = useOrganizerContest()
 
   // Columns including delete action - memoized
   const columns = useMemo(
@@ -28,12 +36,12 @@ const OrganizerContests = () => {
     [handleDelete, openModal]
   )
 
-  // Handle add contest - memoized to prevent unnecessary re-renders
+  // Add contest handler
   const handleAddContest = useCallback(() => {
     openModal("contest", {
-      onCreated: () => setPage(1),
+      onCreated: () => refetchContests(),
     })
-  }, [openModal, setPage])
+  }, [openModal, refetchContests])
 
   // Handle row click - memoized
   const handleRowClick = useCallback(

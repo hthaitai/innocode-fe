@@ -5,12 +5,12 @@ import { Trash } from "lucide-react"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import RoundInfo from "../../components/organizer/RoundInfo"
 import RoundRelatedSettings from "../../components/organizer/RoundRelatedSettings"
-import { useRoundDetail } from "../../hooks/useRoundDetail"
+import { useOrganizerRound } from "../../hooks/useOrganizerRound"
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
   const { contest, round, loading, error, refetch, handleDelete } =
-    useRoundDetail(contestId, roundId)
+    useOrganizerRound(contestId, roundId)
 
   const breadcrumbItems = useMemo(
     () =>
@@ -33,7 +33,7 @@ const OrganizerRoundDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="flex items-center justify-center h-[200px] text-gray-500">
+        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
           This round has been deleted or is no longer available.
         </div>
       </PageContainer>

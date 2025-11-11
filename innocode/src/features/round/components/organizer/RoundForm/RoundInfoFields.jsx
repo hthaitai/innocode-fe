@@ -1,5 +1,5 @@
 import React from "react"
-import TextFieldFluent from "../../../../shared/components/TextFieldFluent"
+import TextFieldFluent from "../../../../../shared/components/TextFieldFluent"
 
 const RoundInfoFields = ({ formData, errors, handleChange }) => {
   return (
@@ -29,6 +29,16 @@ const RoundInfoFields = ({ formData, errors, handleChange }) => {
         onChange={handleChange}
         error={!!errors.end}
         helperText={errors.end}
+      />
+      <TextFieldFluent
+        label="Time Limit (seconds)"
+        name="timeLimitSeconds"
+        type="number"
+        value={formData.timeLimitSeconds ?? ""}
+        onChange={handleChange}
+        errorMessage={errors?.timeLimitSeconds}
+        min={0}
+        placeholder="Enter time limit in seconds"
       />
     </>
   )

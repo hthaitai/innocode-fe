@@ -1,5 +1,5 @@
 import React from 'react'
-import TextFieldFluent from '../../../../shared/components/TextFieldFluent'
+import TextFieldFluent from '../../../../../shared/components/TextFieldFluent'
 
 const McqTestConfigFields = ({ mcqTestConfig, handleNestedChange }) => {
   return (
