@@ -14,6 +14,7 @@ import NotificationModal from "../features/notification/components/organizer/Not
 import McqWeightModal from "../features/mcq/components/organizer/McqWeightModal"
 import ContestModal from "../features/contest/components/organizer/ContestModal"
 import RoundModal from "../features/round/components/organizer/RoundModal"
+import AutoTestCaseModal from "../features/problems/auto-evaluation/components/AutoTestCaseModal"
 
 const ModalContext = createContext(null)
 
@@ -43,7 +44,8 @@ export function ModalProvider({ children }) {
     confirm: ConfirmModal,
     alert: AlertModal,
     problem: ProblemModal, 
-    testCase: TestCaseModal, 
+    testCase: TestCaseModal,
+    autoTestCase: AutoTestCaseModal,
     province: ProvinceModal,
     school: SchoolModal,
     team: TeamModal,

@@ -51,6 +51,10 @@ import OrganizerMcq from "./features/mcq/pages/OrganizerMcq"
 import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate"
 import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts"
 import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail"
+import ManualRubricPage from "./features/problems/manual/pages/ManualRubricPage"
+import ManualResultsPage from "./features/problems/manual/pages/ManualResultsPage"
+import AutoEvaluationPage from "./features/problems/auto-evaluation/pages/AutoEvaluationPage"
+import AutoTestResultsPage from "./features/problems/auto-evaluation/pages/AutoTestResultsPage"
 // Organizer pages
 
 const router = createBrowserRouter([
@@ -234,7 +238,7 @@ const router = createBrowserRouter([
                 <OrganizerMcqCreate />
               </ProtectedRoute>
             ),
-          },        
+          },
           {
             path: ":contestId/rounds/:roundId/attempts",
             element: (
@@ -252,11 +256,55 @@ const router = createBrowserRouter([
             ),
           },
 
+          //Manual test flow
+          {
+            path: ":contestId/rounds/:roundId/manual/rubric",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <ManualRubricPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/manual/results",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <ManualResultsPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/auto-evaluation",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <AutoEvaluationPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/auto-evaluation/results",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <AutoTestResultsPage />
+              </ProtectedRoute>
+            ),
+          },
+
           {
             path: ":contestId/rounds/:roundId/problems/:problemId",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <OrganizerProblemDetail />
+              </ProtectedRoute>
+            ),
+          },
+
+          // Auto evaluation
+          {
+            path: ":contestId/rounds/:roundId/auto-evaluation",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <AutoEvaluationPage />
               </ProtectedRoute>
             ),
           },

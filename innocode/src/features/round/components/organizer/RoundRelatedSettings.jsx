@@ -15,12 +15,20 @@ const RoundRelatedSettings = ({ contestId, round }) => {
 
   // Manual coding problem
   if (round.problemType === "Manual") {
-    items.push({
-      title: "Manage Problem",
-      subtitle: "View or edit the coding problem for this round",
-      path: `/organizer/contests/${contestId}/rounds/${round.roundId}/problem`,
-      icon: Code2,
-    })
+    items.push(
+      {
+        title: "Rubric / Criteria",
+        subtitle: "Define scoring rules and judge guidelines",
+        path: `/organizer/contests/${contestId}/rounds/${round.roundId}/manual/rubric`,
+        icon: Code2,
+      },
+      {
+        title: "Manual Results",
+        subtitle: "View submissions and assign scores",
+        path: `/organizer/contests/${contestId}/rounds/${round.roundId}/manual/results`,
+        icon: ClipboardList,
+      }
+    )
   }
 
   // MCQ Test
@@ -43,12 +51,20 @@ const RoundRelatedSettings = ({ contestId, round }) => {
 
   // Auto Evaluation
   if (round.problemType === "AutoEvaluation") {
-    items.push({
-      title: "Manage Auto Evaluation",
-      subtitle: "View or edit auto evaluation settings for this round",
-      path: `/organizer/contests/${contestId}/rounds/${round.roundId}/auto-evaluation`,
-      icon: Settings2,
-    })
+    items.push(
+      {
+        title: "Manage Auto Evaluation",
+        subtitle: "View or edit auto evaluation settings for this round",
+        path: `/organizer/contests/${contestId}/rounds/${round.roundId}/auto-evaluation`,
+        icon: Settings2,
+      },
+      {
+        title: "Auto Evaluation Results",
+        subtitle: "View auto-scored submissions",
+        path: `/organizer/contests/${contestId}/rounds/${round.roundId}/auto-evaluation/results`,
+        icon: ClipboardList,
+      }
+    )
   }
 
   return (
