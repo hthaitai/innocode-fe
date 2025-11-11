@@ -1,4 +1,4 @@
-export const validateContest = (data) => {
+export const validateContest = (data, { isEdit = false } = {}) => {
   const errors = {}
   const now = new Date()
 
@@ -26,7 +26,7 @@ export const validateContest = (data) => {
   // ---- Start Date ----
   if (!data.start) {
     errors.start = "Start date is required"
-  } else if (new Date(data.start) < now) {
+  } else if (!isEdit && new Date(data.start) < now) {
     errors.start = "Start date cannot be in the past"
   }
 
@@ -35,14 +35,14 @@ export const validateContest = (data) => {
     errors.end = "End date is required"
   } else if (data.start && new Date(data.end) <= new Date(data.start)) {
     errors.end = "End date must be after the start date"
-  } else if (new Date(data.end) < now) {
+  } else if (!isEdit && new Date(data.end) < now) {
     errors.end = "End date cannot be in the past"
   }
 
   // ---- Registration Dates ----
   if (!data.registrationStart) {
     errors.registrationStart = "Registration start date is required"
-  } else if (new Date(data.registrationStart) < now) {
+  } else if (!isEdit && new Date(data.registrationStart) < now) {
     errors.registrationStart = "Registration start cannot be in the past"
   }
 
@@ -59,6 +59,8 @@ export const validateContest = (data) => {
   ) {
     errors.registrationEnd =
       "Registration end cannot be after contest start date"
+  } else if (!isEdit && new Date(data.registrationEnd) < now) {
+    errors.registrationEnd = "Registration end cannot be in the past"
   }
 
   // ---- Team Members ----

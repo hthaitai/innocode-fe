@@ -7,6 +7,7 @@ import {
   Bell,
   ChevronRight,
   Scale,
+  Calendar,
 } from "lucide-react"
 
 const items = [
@@ -49,30 +50,25 @@ const items = [
 ]
 
 const ContestRelatedSettings = ({ contestId }) => (
-  <div>
-    <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-      Related settings
-    </div>
-    <div className="flex flex-col gap-1">
-      {items.map((item) => (
-        <Link
-          key={item.path}
-          to={`/organizer/contests/${contestId}/${item.path}`}
-          className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors"
-        >
-          <div className="flex gap-5 items-center">
-            {item.icon}
-            <div>
-              <p className="text-[14px] leading-[20px]">{item.title}</p>
-              <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                {item.subtitle}
-              </p>
-            </div>
+  <div className="flex flex-col gap-1">
+    {items.map((item) => (
+      <Link
+        key={item.path}
+        to={`/organizer/contests/${contestId}/${item.path}`}
+        className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors"
+      >
+        <div className="flex gap-5 items-center">
+          {item.icon}
+          <div>
+            <p className="text-[14px] leading-[20px]">{item.title}</p>
+            <p className="text-[12px] leading-[16px] text-[#7A7574]">
+              {item.subtitle}
+            </p>
           </div>
-          <ChevronRight size={20} className="text-[#7A7574]" />
-        </Link>
-      ))}
-    </div>
+        </div>
+        <ChevronRight size={20} className="text-[#7A7574]" />
+      </Link>
+    ))}
   </div>
 )
 

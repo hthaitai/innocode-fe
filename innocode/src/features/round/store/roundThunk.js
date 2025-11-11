@@ -1,52 +1,52 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import { roundService } from "@/features/round/services/roundService"
+import roundApi from "../../../api/roundApi"
+import { handleThunkError } from "../../../shared/utils/handleThunkError"
+import contestApi from "../../../api/contestApi"
 
-// GET all rounds
 export const fetchRounds = createAsyncThunk(
   "rounds/fetchAll",
-  async (params, { rejectWithValue }) => {
+  async ({ contestId }, { rejectWithValue }) => {
     try {
-      const data = await roundService.getAllRounds(params)
-      return Array.isArray(data) ? data : []
+      const res = await contestApi.getById(contestId)
+      return res.data.data // contest object from backend
     } catch (err) {
-      return rejectWithValue(err.message || "Failed to load rounds")
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// CREATE round
 export const addRound = createAsyncThunk(
   "rounds/add",
-  async (data, { rejectWithValue }) => {
+  async ({ contestId, data }, { rejectWithValue }) => {
     try {
-      return await roundService.createRound(data)
+      const res = await roundApi.create(contestId, data)
+      return res.data.data
     } catch (err) {
-      return rejectWithValue(err.message || "Failed to create round")
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// UPDATE round
 export const updateRound = createAsyncThunk(
   "rounds/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      return await roundService.updateRound(id, data)
+      const res = await roundApi.update(id, data)
+      return res.data
     } catch (err) {
-      return rejectWithValue(err.message || "Failed to update round")
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// DELETE round
 export const deleteRound = createAsyncThunk(
   "rounds/delete",
-  async (id, { rejectWithValue }) => {
+  async ({ roundId }, { rejectWithValue }) => {
     try {
-      await roundService.deleteRound(id)
-      return id
+      await roundApi.delete(roundId)
+      return roundId
     } catch (err) {
-      return rejectWithValue(err.message || "Failed to delete round")
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )

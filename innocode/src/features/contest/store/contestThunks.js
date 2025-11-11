@@ -1,93 +1,99 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import { contestService } from "@/features/contest/services/contestService"
+import contestApi from "@/api/contestApi"
+import { handleThunkError } from "../../../shared/utils/handleThunkError"
 
-// GET all contests
 export const fetchContests = createAsyncThunk(
   "contests/fetchAll",
   async ({ pageNumber = 1, pageSize = 10 } = {}, { rejectWithValue }) => {
     try {
-      const response = await contestService.getAllContests({ pageNumber, pageSize })
-      console.log('✅ Fetch contests response:', response) // Debug log
-      
-      // ✅ Return the full response with data and additionalData
-      return response
+      const res = await contestApi.getOrganizerContest({ pageNumber, pageSize })
+      return res.data
     } catch (err) {
-      console.error('❌ Fetch contests error:', err)
-      return rejectWithValue(err.message || "Failed to load contests")
+      // If the backend returns 404 for "no contests", treat it as an empty page
+      if (err?.response?.status === 404) {
+        return {
+          data: [],
+          additionalData: {
+            pageNumber: 1,
+            pageSize,
+            totalPages: 1,
+            totalCount: 0,
+            hasPreviousPage: false,
+            hasNextPage: false,
+          },
+        }
+      }
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// CREATE contest
 export const addContest = createAsyncThunk(
   "contests/add",
   async (data, { rejectWithValue }) => {
     try {
-      return await contestService.createContest(data)
+      const res = await contestApi.create(data)
+      return res.data.data
     } catch (err) {
-      return rejectWithValue(err) 
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// UPDATE contest
 export const updateContest = createAsyncThunk(
   "contests/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      return await contestService.updateContest(id, data)
+      const res = await contestApi.update(id, data)
+      return res.data
     } catch (err) {
-      return rejectWithValue(err.message)
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// DELETE contest
 export const deleteContest = createAsyncThunk(
   "contests/delete",
-  async (id, { rejectWithValue }) => {
+  async ({ contestId }, { rejectWithValue }) => {
     try {
-      await contestService.deleteContest(id)
-      return id
+      await contestApi.delete(contestId)
+      return contestId
     } catch (err) {
-      return rejectWithValue(err.message)
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// PUBLISH contest
-export const publishContest = createAsyncThunk(
-  "contests/publish",
-  async (id, { rejectWithValue }) => {
-    try {
-      return await contestService.publishContest(id)
-    } catch (err) {
-      return rejectWithValue(err.message)
-    }
-  }
-)
-
-// CHECK if ready to publish
 export const checkPublishReady = createAsyncThunk(
   "contests/checkPublishReady",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await contestService.checkPublishReady(id)
-      return { id, ...res }
+      const res = await contestApi.checkPublishReady(id)
+      return res.data
     } catch (err) {
-      return rejectWithValue(err.message)
+      // Treat "not ready" as a valid state, not an error
+      if (err?.response?.status === 404) {
+        return {
+          data: {
+            isReady: false,
+            missing: [],
+            contestId: id,
+          },
+        }
+      }
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )
 
-// PUBLISH if ready
-export const publishIfReady = createAsyncThunk(
-  "contests/publishIfReady",
+export const publishContest = createAsyncThunk(
+  "contests/publish",
   async (id, { rejectWithValue }) => {
     try {
-      return await contestService.publishIfReady(id)
+      const res = await contestApi.publishContest(id)
+      return res.data
     } catch (err) {
-      return rejectWithValue(err.message)
+      return rejectWithValue(handleThunkError(err))
     }
   }
 )

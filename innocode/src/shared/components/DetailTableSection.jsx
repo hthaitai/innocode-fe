@@ -1,5 +1,5 @@
 import React from "react"
-import { StatusBadge } from "@/shared/utils/StatusBadge"
+import StatusBadge from "./StatusBadge"
 
 const DetailTableSection = ({ rows = [] }) => {
   return (

@@ -5,7 +5,7 @@ import PageContainer from '@/shared/components/PageContainer'
 import TableFluent from '@/shared/components/TableFluent'
 import { useProblems } from '@/features/problem/hooks/useProblems'
 import useTestCase from '@/features/problem/hooks/useTestCase'
-import { formatDateTime } from "@/shared/utils/formatDateTime"
+import { formatDateTime } from "@/shared/utils/dateTime"
 import InfoSection from "../../../../shared/components/InfoSection"
 import DetailTable from "../../../../shared/components/DetailTable"
 import Actions from "../../../../shared/components/Actions"

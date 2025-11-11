@@ -38,6 +38,7 @@ import OrganizerTeams from "./features/team/pages/organizer/OrganizerTeams"
 import OrganizerTeamDetail from "./features/team/pages/organizer/OrganizerTeamDetail"
 import OrganizerLeaderboard from "./features/leaderboard/pages/organizer/OrganizerLeaderboard"
 import OrganizerCertificates from "./features/certificate/pages/organizer/OrganizerCertificates"
+import OrganizerCertificateTemplateCreate from "./features/certificate/pages/organizer/OrganizerCertificateTemplateCreate"
 import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals"
 import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail"
 import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces"
@@ -46,6 +47,11 @@ import OrganizerNotifications from "./features/notification/pages/organizer/Orga
 import ProtectedRoute from "./shared/components/auth/ProtectedRoute"
 import { Toaster } from "react-hot-toast"
 import PublicRoute from "./shared/components/auth/PublicRoute"
+import OrganizerMcq from "./features/mcq/pages/OrganizerMcq"
+import OrganizerMcqDetail from "./features/mcq/pages/OrganizerMcqDetail"
+import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate"
+import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts"
+import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail"
 // Organizer pages
 
 const router = createBrowserRouter([
@@ -203,6 +209,7 @@ const router = createBrowserRouter([
             ),
           },
 
+          // ROUNDS
           {
             path: ":contestId/rounds/:roundId",
             element: (
@@ -211,6 +218,49 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
+
+          //Multiple choice questions
+          {
+            path: ":contestId/rounds/:roundId/mcqs",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerMcq />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/mcqs/new",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerMcqCreate />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/mcqs/:questionId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerMcqDetail />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/attempts",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerMcqAttempts />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/attempts/:attemptId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerMcqAttemptDetail />
+              </ProtectedRoute>
+            ),
+          },
+
           {
             path: ":contestId/rounds/:roundId/problems/:problemId",
             element: (
@@ -247,11 +297,24 @@ const router = createBrowserRouter([
           },
           {
             path: ":contestId/certificates",
-            element: (
-              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <OrganizerCertificates />
-              </ProtectedRoute>
-            ),
+            children: [
+              {
+                index: true,
+                element: (
+                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                    <OrganizerCertificates />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "templates/new",
+                element: (
+                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                    <OrganizerCertificateTemplateCreate />
+                  </ProtectedRoute>
+                ),
+              },
+            ],
           },
 
           {

@@ -1,90 +1,100 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import BaseModal from "@/shared/components/BaseModal"
 import ContestForm from "./ContestForm"
-import { validateContest } from "../../validators/contestValidator"
-import { toast } from "react-hot-toast"
+import { useAppDispatch } from "@/store/hooks"
 import {
-  fromDatetimeLocal,
-  toDatetimeLocal,
-} from "../../../../shared/utils/dateTime"
+  addContest,
+  updateContest,
+  fetchContests,
+} from "@/features/contest/store/contestThunks"
+import { validateContest } from "@/features/contest/validators/contestValidator"
+import { fromDatetimeLocal } from "@/shared/utils/dateTime"
+import { toast } from "react-hot-toast"
+import { toDatetimeLocal } from "../../../../shared/utils/dateTime"
+
+const EMPTY_CONTEST = {
+  year: "",
+  name: "",
+  description: "",
+  imgUrl: "",
+  start: "",
+  end: "",
+  registrationStart: "",
+  registrationEnd: "",
+  teamMembersMax: "",
+  teamLimitMax: "",
+  rewardsText: "",
+  saveAsDraft: true,
+  status: "draft",
+}
 
 export default function ContestModal({
   isOpen,
-  mode = "create",
-  initialData = {},
-  onSubmit,
   onClose,
+  onCreated,
+  onUpdated,
+  initialData = null,
 }) {
-  const emptyData = {
-    year: "",
-    name: "",
-    description: "",
-    imgUrl: "",
-    start: "",
-    end: "",
-    registrationStart: "",
-    registrationEnd: "",
-    teamMembersMax: "",
-    teamLimitMax: "",
-    rewardsText: "",
-    saveAsDraft: true,
-    status: "draft",
-  }
-
-  const [formData, setFormData] = useState(emptyData)
+  const dispatch = useAppDispatch()
+  const [formData, setFormData] = useState(initialData || EMPTY_CONTEST)
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Reset form when opening or when initialData changes
   useEffect(() => {
-    if (isOpen) {
-      const normalized =
-        mode === "edit"
-          ? {
-              ...initialData,
-              registrationStart: toDatetimeLocal(initialData.registrationStart),
-              registrationEnd: toDatetimeLocal(initialData.registrationEnd),
-              start: toDatetimeLocal(initialData.start),
-              end: toDatetimeLocal(initialData.end),
-            }
-          : emptyData
-
-      setFormData(normalized)
-      setErrors({})
-      setIsSubmitting(false)
+    if (isOpen && initialData) {
+      setFormData({
+        ...initialData,
+        start: toDatetimeLocal(initialData.start),
+        end: toDatetimeLocal(initialData.end),
+        registrationStart: toDatetimeLocal(initialData.registrationStart),
+        registrationEnd: toDatetimeLocal(initialData.registrationEnd),
+      })
     }
-  }, [isOpen, mode, initialData])
+  }, [isOpen, initialData])
 
   const handleSubmit = async () => {
-    const validationErrors = validateContest(formData)
+    const validationErrors = validateContest(formData, {
+      isEdit: !!initialData,
+    })
     setErrors(validationErrors)
-
-    const errorCount = Object.keys(validationErrors).length
-    if (errorCount > 0) {
-      // Show toast summary for errors
-      toast.error(`Please fix ${errorCount} field${errorCount > 1 ? "s" : ""}`)
-      return // stop submission
+    if (Object.keys(validationErrors).length > 0) {
+      toast.error(
+        `Please fix ${Object.keys(validationErrors).length} field${
+          Object.keys(validationErrors).length > 1 ? "s" : ""
+        }`
+      )
+      return
     }
 
     setIsSubmitting(true)
     try {
-      await onSubmit({
+      const payload = {
         ...formData,
-        year: Number(formData.year),
-        registrationStart: fromDatetimeLocal(formData.registrationStart),
-        registrationEnd: fromDatetimeLocal(formData.registrationEnd),
         start: fromDatetimeLocal(formData.start),
         end: fromDatetimeLocal(formData.end),
-      })
+        registrationStart: fromDatetimeLocal(formData.registrationStart),
+        registrationEnd: fromDatetimeLocal(formData.registrationEnd),
+      }
 
-      toast.success(
-        mode === "edit"
-          ? "Contest updated successfully!"
-          : "Contest created successfully!"
-      )
+      if (initialData?.contestId) {
+        // Edit existing contest
+        await dispatch(
+          updateContest({ id: initialData.contestId, data: payload })
+        ).unwrap()
+        toast.success("Contest updated successfully!")
+        if (onUpdated) onUpdated()
+      } else {
+        // Create new contest
+        await dispatch(addContest(payload)).unwrap()
+        toast.success("Contest created successfully!")
+        if (onCreated) onCreated()
+      }
 
+      await dispatch(fetchContests())
       onClose()
     } catch (err) {
-      // backend errors as toast
+      console.error(err)
       if (err?.Code === "DUPLICATE") {
         toast.error(err.Message)
         if (err.AdditionalData?.suggestion) {
@@ -96,18 +106,12 @@ export default function ContestModal({
       } else if (err?.Message) {
         toast.error(err.Message)
       } else {
-        console.error(err)
         toast.error("An unexpected error occurred.")
       }
     } finally {
       setIsSubmitting(false)
     }
   }
-
-  const title =
-    mode === "edit"
-      ? `Edit Contest: ${initialData.name || ""}`
-      : "Create New Contest"
 
   const footer = (
     <div className="flex justify-end gap-2">
@@ -125,7 +129,13 @@ export default function ContestModal({
         onClick={handleSubmit}
         disabled={isSubmitting}
       >
-        {mode === "edit" ? "Save Changes" : "Create"}
+        {isSubmitting
+          ? initialData
+            ? "Updating..."
+            : "Creating..."
+          : initialData
+          ? "Update Contest"
+          : "Create Contest"}
       </button>
     </div>
   )
@@ -134,17 +144,18 @@ export default function ContestModal({
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title={title}
+      title={initialData ? "Edit Contest" : "Create New Contest"}
       size="lg"
       footer={footer}
     >
-      <ContestForm
-        formData={formData}
-        setFormData={setFormData}
-        errors={errors}
-        setErrors={setErrors}
-        loading={isSubmitting}
-      />
+      <div className="space-y-5">
+        <ContestForm
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+        />
+      </div>
     </BaseModal>
   )
 }

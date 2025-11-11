@@ -2,12 +2,14 @@ import axiosClient from "./axiosClient"
 
 const contestApi = {
   // GET /api/contests
-  getAll: ({ pageNumber, pageSize }) =>
+  getAll: ({ pageNumber = 1, pageSize = 10 } = {}) =>
     axiosClient.get("/contests", {
       params: { pageNumber, pageSize },
     }),
-
-  // GET /api/contests with idSearch parameter
+  getOrganizerContest: ({ pageNumber = 1, pageSize = 10 } = {}) =>
+    axiosClient.get("/contests/my-contests", {
+      params: { pageNumber, pageSize },
+    }),  // GET /api/contests with idSearch parameter
   getById: (id) => 
     axiosClient.get("/contests", {
       params: { idSearch: id, pageNumber: 1, pageSize: 1 },
@@ -22,17 +24,14 @@ const contestApi = {
   // DELETE /api/contests/{id}
   delete: (id) => axiosClient.delete(`/contests/${id}`),
 
-  // PUT /api/contests/{id}/publish
-  publish: (id) => axiosClient.put(`/contests/${id}/publish`),
-
   // POST /api/contests/advanced
   advancedSearch: (data) => axiosClient.post(`/contests/advanced`, data),
 
-  // GET /api/contests/{id}/publish/check
-  checkPublishReady: (id) => axiosClient.get(`/contests/${id}/publish/check`),
+  // GET /api/contest/{id}/check - check if ready to publish
+  checkPublishReady: (id) => axiosClient.get(`/contests/${id}/check`),
 
-  // POST /api/contests/{id}/publish-if-ready
-  publishIfReady: (id) => axiosClient.post(`/contests/${id}/publish-if-ready`),
+  // PUT /api/contest/{id}/publish - publish the contest
+  publishContest: (id) => axiosClient.put(`/contests/${id}/publish`),
 }
 
 export default contestApi

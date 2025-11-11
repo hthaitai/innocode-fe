@@ -4,8 +4,8 @@ import {
   addContest,
   updateContest,
   deleteContest,
+  checkPublishReady,
   publishContest,
-  publishIfReady,
 } from "./contestThunks"
 
 const initialState = {
@@ -25,10 +25,23 @@ const initialState = {
 const contestSlice = createSlice({
   name: "contests",
   initialState,
-  reducers: {},
+  reducers: {
+    clearContests: (state) => {
+      state.contests = []
+      state.pagination = {
+        pageNumber: 1,
+        pageSize: 10,
+        totalPages: 1,
+        totalCount: 0,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      }
+      state.loading = false
+      state.error = null
+    },
+  },
   extraReducers: (builder) => {
     builder
-      // FETCH CONTESTS
       .addCase(fetchContests.pending, (state) => {
         state.loading = true
         state.error = null
@@ -44,71 +57,52 @@ const contestSlice = createSlice({
         state.error = action.payload
       })
 
-      // ADD CONTEST
       .addCase(addContest.pending, (state) => {
         state.loading = true
       })
-      .addCase(addContest.fulfilled, (state, action) => {
+      .addCase(addContest.fulfilled, (state) => {
         state.loading = false
-        state.contests.push(action.payload)
       })
       .addCase(addContest.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
       })
 
-      // UPDATE CONTEST
       .addCase(updateContest.pending, (state) => {
         state.loading = true
       })
-      .addCase(updateContest.fulfilled, (state, action) => {
+      .addCase(updateContest.fulfilled, (state) => {
         state.loading = false
-        state.contests = state.contests.map((c) =>
-          c.contestId === action.payload.contestId ? action.payload : c
-        )
       })
       .addCase(updateContest.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
       })
 
-      // DELETE CONTEST
       .addCase(deleteContest.pending, (state) => {
         state.loading = true
       })
-      .addCase(deleteContest.fulfilled, (state, action) => {
+      .addCase(deleteContest.fulfilled, (state) => {
         state.loading = false
-        state.contests = state.contests.filter(
-          (c) => c.contestId !== action.payload
-        )
       })
       .addCase(deleteContest.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
       })
 
-      // PUBLISH CONTEST
-      .addCase(publishContest.fulfilled, (state, action) => {
-        const updated = action.payload
-        state.contests = state.contests.map((c) =>
-          c.contestId === updated.contestId ? updated : c
-        )
-      })
-      .addCase(publishContest.rejected, (state, action) => {
-        state.error = action.payload
+      .addCase(checkPublishReady.fulfilled, () => {})
+      .addCase(checkPublishReady.rejected, (state, action) => {
+        const message = action.payload?.Message
+        if (typeof message === "string" && message.toLowerCase() === "not found.") return
+        if (action.payload) state.error = action.payload
       })
 
-      // PUBLISH CONTEST IF READY
-      .addCase(publishIfReady.fulfilled, (state, action) => {
-        const updated = action.payload
-        state.contests = state.contests.map((c) =>
-          c.contestId === updated.contestId ? updated : c
-        )
-      })
-      .addCase(publishIfReady.rejected, (state, action) => {
+      .addCase(publishContest.fulfilled, () => {})
+      .addCase(publishContest.rejected, (state, action) => {
         state.error = action.payload
       })
   },
 })
 
+export const { clearContests } = contestSlice.actions;
 export default contestSlice.reducer
