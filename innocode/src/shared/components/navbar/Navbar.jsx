@@ -10,7 +10,7 @@ const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
-
+  
   const handleSignIn = () => {
     navigate('/login');
   };
@@ -18,6 +18,8 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     setShowDropdown(false);
+
+    navigate('/login');
   };
 
   // Close dropdown when clicking outside

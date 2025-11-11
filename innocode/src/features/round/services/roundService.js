@@ -5,7 +5,10 @@ export const roundService = {
     const res = await roundApi.getAll(params)
     return res.data?.data || []
   },
-
+  async getRoundsByContestId(contestId) {
+    const res = await roundApi.getByContestId(contestId)
+    return res.data?.data || []
+  },
   async createRound(data) {
     const res = await roundApi.create(data)
     return res.data

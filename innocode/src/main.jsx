@@ -24,8 +24,10 @@ import PracticeStart from "./features/contest/student/PracticeStart"
 import Team from "./features/contest/student/Team"
 import Leaderboard from "./features/contest/student/Leaderboard"
 import Help from "./features/contest/student/Help"
+import MCQTest from "./features/quiz/student/MCQTest"
 // Auth
 import Login from "./features/auth/components/Login"
+import Register from "./features/auth/components/Register"
 import { ModalProvider } from "./context/ModalContext"
 import { AuthProvider, ROLES } from "./context/AuthContext"
 import OrganizerContests from "./features/contest/pages/organizer/OrganizerContests"
@@ -55,6 +57,14 @@ const router = createBrowserRouter([
         element: (
           <PublicRoute>
             <Login />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: "register",
+        element: (
+          <PublicRoute>
+            <Register />
           </PublicRoute>
         ),
       },
@@ -153,6 +163,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
             <ContestDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mcq-test/:contestId/:roundId",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
+            <MCQTest />
           </ProtectedRoute>
         ),
       },

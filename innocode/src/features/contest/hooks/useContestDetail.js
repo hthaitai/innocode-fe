@@ -20,12 +20,10 @@ export const useContestDetail = (contestId) => {
         
         const data = await contestService.getContestById(contestId);
         
-        console.log('📊 Raw contest detail:', data);
         
         // Map the contest data from API format
         const mappedContest = data ? mapContestFromAPI(data) : null;
         
-        console.log('🗺️ Mapped contest detail:', mappedContest);
         
         setContest(mappedContest);
       } catch (error) {

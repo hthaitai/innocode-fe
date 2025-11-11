@@ -13,27 +13,57 @@ const calculateTimeLeft = (startDate) => {
   return 'Less than a minute';
 };
 const getStatusInfo = (status, startDate, endDate) => {
-  // If it's Draft, hide it regardless of dates
-  if (status === 'Draft') {
-    return {
-      label: 'Draft',
-      color: 'gray',
-      isVisible: false,
-    };
+  switch (status) {
+    case 'Draft':
+      return {
+        label: 'Draft',
+        color: 'gray',
+        isVisible: false,
+      };
+    case 'Published':
+      return {
+        label: 'Published',
+        color: 'green',
+        isVisible: true,
+      };
+    case 'RegistrationOpen':
+      return {
+        label: 'Registration Open',
+        color: 'green',
+        isVisible: true,
+      };
+    case 'RegistrationClosed':
+      return {
+        label: 'Registration Closed',
+        color: 'orange',
+        isVisible: true,
+      };
+    case 'Ongoing':
+      return {
+        label: 'Ongoing',
+        color: 'blue',
+        isVisible: true,
+      };
+    case 'Completed':
+      return {
+        label: 'Completed',
+        color: 'gray',
+        isVisible: true,
+      };
+    default:
+      if (!startDate || !endDate) {
+        return {
+          label: 'Unknown',
+          color: 'gray',
+          isVisible: false,
+        };
+      }
   }
-  
-  if (!startDate || !endDate) {
-    return {
-      label: 'Unknown',
-      color: 'gray',
-      isVisible: false,
-    };
-  }
-  
+
   const now = new Date();
   const start = new Date(startDate);
   const end = new Date(endDate);
-  
+
   // Calculate actual status based on dates
   if (now < start) {
     return {
@@ -82,12 +112,21 @@ export const mapContestFromAPI = (apiContest) => {
     teams: apiContest.teamLimitMax || 0,
     timeLeft: calculateTimeLeft(apiContest.start),
     statusLabel: statusInfo.label,
-    statuscolor: statusInfo.color,
+    statusColor: statusInfo.color,
     isStatusVisible: statusInfo.isVisible,
+
+    //status flags
     isDraft: apiContest.status === 'Draft',
-    isUpcoming: statusInfo.label === 'Upcoming',
-    isOngoing: statusInfo.label === 'Ongoing',
-    isCompleted: statusInfo.label === 'Completed',
+    isPublished: apiContest.status === 'Published',
+    isRegistrationOpen: apiContest.status === 'RegistrationOpen',
+    isRegistrationClosed: apiContest.status === 'RegistrationClosed',
+    isOngoing: apiContest.status === 'Ongoing',
+    isCompleted: apiContest.status === 'Completed',
+    // Legacy flags for compatibility (based on dates)
+    isUpcoming:
+      statusInfo.label === 'Upcoming' ||
+      apiContest.status === 'Published' ||
+      apiContest.status === 'RegistrationOpen',
   };
 };
 export const mapContestToAPI = (uiContest) => {

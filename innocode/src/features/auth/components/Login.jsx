@@ -84,9 +84,6 @@ const Login = () => {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    console.log('Google sign in');
-  };
 
   return (
     <div className="login-container relative">
@@ -157,14 +154,11 @@ const Login = () => {
             <span className="divider-text">OR</span>
           </div>
 
-          <button onClick={handleGoogleSignIn} className="google-signin-button">
-            <div className="google-icon">G</div>
-            Continue with Google
-          </button>
+       
 
           <div className="signup-link">
             Don't have an account yet?{' '}
-            <a href="#signup" className="signup-text">
+            <a href="/register" className="signup-text">
               Sign Up
             </a>
           </div>

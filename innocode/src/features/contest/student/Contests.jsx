@@ -15,13 +15,12 @@ const Contests = () => {
   const { contests, loading, error } = useContests();
   const [searchTerm, setSearchTerm] = useState('');
   const filteredContests = useMemo(() => {
-    // Add null/undefined check
     if (!contests || !Array.isArray(contests)) {
       return [];
     }
 
     return contests
-      .filter((contest) => !contest.isDraft)
+      .filter((contest) => contest.isStatusVisible) // ✅ Use isStatusVisible instead of !isDraft
       .filter((contest) => {
         if (!searchTerm) return true;
         return (
@@ -30,9 +29,16 @@ const Contests = () => {
         );
       });
   }, [contests, searchTerm]);
-  //Group by status
-  const ongoingContests = filteredContests.filter((c) => c.isOngoing);
-  const upcomingContests = filteredContests.filter((c) => c.isUpcoming);
+
+  // Group by status - update logic
+  const ongoingContests = filteredContests.filter(
+    (c) => c.isOngoing || c.isRegistrationOpen || c.isRegistrationClosed
+  );
+
+  const upcomingContests = filteredContests.filter(
+    (c) => c.isPublished && !c.isOngoing && !c.isCompleted
+  );
+
   const completedContests = filteredContests.filter((c) => c.isCompleted);
 
   const handleSearch = (term) => {

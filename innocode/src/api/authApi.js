@@ -8,5 +8,9 @@ export const authApi = {
   // Register
   register: (userData) => {
     return axiosClient.post("/auth/register", userData);
+  },
+  // Logout
+  logout: () => {
+    return axiosClient.post("/auth/logout");
   }
 };
