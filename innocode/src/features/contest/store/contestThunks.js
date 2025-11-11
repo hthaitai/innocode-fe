@@ -6,7 +6,7 @@ export const fetchContests = createAsyncThunk(
   "contests/fetchAll",
   async ({ pageNumber = 1, pageSize = 10 } = {}, { rejectWithValue }) => {
     try {
-      const res = await contestApi.getAll({ pageNumber, pageSize })
+      const res = await contestApi.getOrganizerContest({ pageNumber, pageSize })
       return res.data
     } catch (err) {
       // If the backend returns 404 for "no contests", treat it as an empty page

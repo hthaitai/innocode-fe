@@ -39,7 +39,9 @@ export const authService = {
   // Register
   async register(userData) {
     try {
+      console.log('📤 Register request data:', userData);
       const response = await authApi.register(userData);
+      console.log('📥 Register response:', response);
 
       const apiData = response.data.data;
 
@@ -63,6 +65,9 @@ export const authService = {
       };
     } catch (error) {
       console.error('❌ Register error:', error);
+      console.error('❌ Error response:', error.response?.data);
+      console.error('❌ Error status:', error.response?.status);
+      console.error('❌ Error message:', error.response?.data?.message);
       throw error;
     }
   },
@@ -70,14 +75,17 @@ export const authService = {
   // Logout
   async logout() {
     try {
+      // Try to call API logout
       await authApi.logout();
     } catch (error) {
-      console.error('❌ Logout error:', error);
+      console.error('❌ Logout API error:', error);
+      // Continue with local logout even if API fails
     } finally {
+      // Always clear local storage
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      
     }
   },
 

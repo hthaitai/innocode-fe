@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client"
 import "./index.css"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import MainLayout from "./shared/components/layout/MainLayout"
+import AuthLayout from "./shared/components/layout/AuthLayout"
 import { Provider } from "react-redux"
 import { store } from "./store/store"
 // Common pages
@@ -18,11 +19,15 @@ import Contests from "./features/contest/student/Contests"
 import ContestDetail from "./features/contest/student/ContestDetail"
 import ContestProcessing from "./features/contest/student/ContestProcessing"
 import Practice from "./features/contest/student/Practice"
+import PracticeDetail from "./features/contest/student/PracticeDetail"
+import PracticeStart from "./features/contest/student/PracticeStart"
 import Team from "./features/contest/student/Team"
 import Leaderboard from "./features/contest/student/Leaderboard"
 import Help from "./features/contest/student/Help"
+import MCQTest from "./features/quiz/student/MCQTest"
 // Auth
 import Login from "./features/auth/components/Login"
+import Register from "./features/auth/components/Register"
 import { ModalProvider } from "./context/ModalContext"
 import { AuthProvider, ROLES } from "./context/AuthContext"
 import OrganizerContests from "./features/contest/pages/organizer/OrganizerContests"
@@ -41,6 +46,7 @@ import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools
 import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications"
 import ProtectedRoute from "./shared/components/auth/ProtectedRoute"
 import { Toaster } from "react-hot-toast"
+import PublicRoute from "./shared/components/auth/PublicRoute"
 import OrganizerMcq from "./features/mcq/pages/OrganizerMcq"
 import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate"
 import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts"
@@ -48,7 +54,27 @@ import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptD
 // Organizer pages
 
 const router = createBrowserRouter([
-  { path: "login", element: <Login /> },
+  {
+    element: <AuthLayout />, // Auth layout wrapper
+    children: [
+      {
+        path: "login",
+        element: (
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: "register",
+        element: (
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        ),
+      },
+    ],
+  },
   { path: "unauthorized", element: <Unauthorized /> },
   {
     element: <MainLayout />, // layout wrapper
@@ -76,6 +102,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Practice />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "practice-detail/:practiceId",
+        element: (
+          <ProtectedRoute>
+            <PracticeDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "practice-start/:practiceId",
+        element: (
+          <ProtectedRoute>
+            <PracticeStart />
           </ProtectedRoute>
         ),
       },
@@ -126,6 +168,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
             <ContestDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mcq-test/:contestId/:roundId",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
+            <MCQTest />
           </ProtectedRoute>
         ),
       },

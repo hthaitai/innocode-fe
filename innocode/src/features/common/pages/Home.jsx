@@ -1,8 +1,9 @@
 import React from 'react';
+import PageContainer from '../../../shared/components/PageContainer';
 
 const Home = () => {
   return (
-    <div>
+    <PageContainer>
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-container">
@@ -47,7 +48,7 @@ const Home = () => {
         <h1>Welcome to InnoCode</h1>
         <p>Your coding competition platform</p>
       </div>
-    </div>
+    </PageContainer>
   );
 };
 

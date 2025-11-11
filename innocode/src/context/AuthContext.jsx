@@ -1,102 +1,76 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authService } from "@/features/auth/services/authService";
+import { createContext, useContext, useState, useEffect } from 'react';
+import { authService } from '@/features/auth/services/authService';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true); // Thêm loading state
 
+  // Khôi phục auth state từ localStorage khi app load
   useEffect(() => {
-    const initAuth = async () => {
+    const initializeAuth = () => {
       try {
-        const token = authService.getToken();
-        const storedUser = authService.getUser();        
-        if (token && storedUser && token !== 'null') {
+        const storedToken = authService.getToken();
+        const storedUser = authService.getUser();
+
+        if (storedToken && storedUser) {
+          setToken(storedToken);
           setUser(storedUser);
-          setIsAuthenticated(true);
         }
       } catch (error) {
-        console.error("❌ Init auth error:", error);
-        // Clear invalid data
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        console.error('❌ Initialize auth error:', error);
       } finally {
-        // QUAN TRỌNG: Luôn set loading = false
         setLoading(false);
       }
     };
 
-    initAuth();
+    initializeAuth();
   }, []);
 
   const login = async (credentials) => {
-    try {
-      setLoading(true);
-      console.log("📤 Login attempt:", credentials.email);
-      
-      const data = await authService.login(credentials);
-      
-      
-      setUser(data.user);
-      setIsAuthenticated(true);
-      return data;
-    } catch (error) {
-      console.error("❌ Login failed:", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+    const data = await authService.login(credentials);
+    setToken(data.token);
+    setUser(data.user);
+    return data;
   };
 
   const register = async (userData) => {
-    try {
-      setLoading(true);
-      const data = await authService.register(userData);
-      setUser(data.user);
-      setIsAuthenticated(true);
-      return data;
-    } catch (error) {
-      console.error("❌ Register failed:", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+    const data = await authService.register(userData);
+    setToken(data.token);
+    setUser(data.user);
+    return data;
   };
 
   const logout = async () => {
-    try {
-      await authService.logout();
-    } catch (error) {
-      console.error("❌ Logout error:", error);
-    } finally {
-      setUser(null);
-      setIsAuthenticated(false);
-    }
+    await authService.logout();
+    setToken(null);
+    setUser(null);
   };
 
-  const value = {
-    user,
-    loading,
-    isAuthenticated,
-    login,
-    register,
-    logout,
-  };
+  // Computed value: check if user is authenticated
+  const isAuthenticated = !!token && !!user;
 
+  // Chờ loading xong mới render children
+  if (loading) {
+    return <div>Loading...</div>; // Hoặc component Spinner
+  }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, token, isAuthenticated, login, register, logout, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
 };
-
 export const ROLES = {
   ADMIN: 'admin',
   ORGANIZER: 'organizer',

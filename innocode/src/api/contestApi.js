@@ -3,8 +3,16 @@ import axiosClient from "./axiosClient"
 const contestApi = {
   // GET /api/contests/my-contests
   getAll: ({ pageNumber = 1, pageSize = 10 } = {}) =>
+    axiosClient.get("/contests", {
+      params: { pageNumber, pageSize },
+    }),
+  getOrganizerContest: ({ pageNumber = 1, pageSize = 10 } = {}) =>
     axiosClient.get("/contests/my-contests", {
       params: { pageNumber, pageSize },
+    }),  // GET /api/contests with idSearch parameter
+  getById: (id) => 
+    axiosClient.get("/contests", {
+      params: { idSearch: id, pageNumber: 1, pageSize: 1 },
     }),
 
   // POST /api/contests

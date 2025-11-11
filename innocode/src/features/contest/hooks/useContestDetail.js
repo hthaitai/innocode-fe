@@ -1,64 +1,47 @@
-// src/features/contest/hooks/useContestDetail.js
-import { useEffect, useMemo, useCallback, useRef } from "react"
-import { useNavigate } from "react-router-dom"
-import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { fetchContests, deleteContest } from "../store/contestThunks"
-import { useConfirmDelete } from "@/shared/hooks/useConfirmDelete"
-import { useModal } from "@/shared/hooks/useModal"
+import { useEffect, useState } from 'react';
+import { contestService } from '@/features/contest/services/contestService';
+import { mapContestFromAPI } from '@/shared/utils/contestMapper';
 
 export const useContestDetail = (contestId) => {
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const { confirmDeleteEntity } = useConfirmDelete()
-  const { openModal } = useModal()
-
-  const { contests, pagination, loading, error } = useAppSelector(
-    (state) => state.contests
-  )
-
-  const hasFetchedRef = useRef(false)
-
-  const contest = useMemo(
-    () => contests.find((c) => String(c.contestId) === String(contestId)),
-    [contests, contestId]
-  )
+  const [contest, setContest] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!contest && !loading && !hasFetchedRef.current) {
-      hasFetchedRef.current = true
-      dispatch(fetchContests({ pageNumber: 1, pageSize: 50 }))
+    if (!contestId) {
+      setError('Contest ID is required');
+      return;
     }
-  }, [contest, loading, dispatch])
 
-  useEffect(() => {
-    hasFetchedRef.current = false
-  }, [contestId])
+    const fetchContestDetail = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const data = await contestService.getContestById(contestId);
+        
+        
+        // Map the contest data from API format
+        const mappedContest = data ? mapContestFromAPI(data) : null;
+        
+        
+        setContest(mappedContest);
+      } catch (error) {
+        console.error('❌ Error fetching contest detail:', error);
+        setError(error.message || 'Failed to load contest details');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const refetch = useCallback(() => {
-    const currentPage = pagination?.pageNumber || 1
-    const safePage = Math.min(currentPage, pagination?.totalPages || 1)
-    dispatch(fetchContests({ pageNumber: safePage, pageSize: 50 }))
-  }, [dispatch, pagination?.pageNumber, pagination?.totalPages])
+    fetchContestDetail();
+  }, [contestId]);
 
-  const handleEdit = useCallback(() => {
-    if (!contest) return
-    openModal("contest", {
-      initialData: contest,
-      onUpdated: refetch,
-    })
-  }, [openModal, contest, refetch])
+  return {
+    contest,
+    loading,
+    error,
+  };
+};
 
-  const handleDelete = useCallback(() => {
-    if (!contest) return
-    confirmDeleteEntity({
-      entityName: "contest",
-      item: contest,
-      deleteAction: deleteContest,
-      idKey: "contestId",
-      onSuccess: refetch,
-      onNavigate: () => navigate("/organizer/contests"),
-    })
-  }, [contest, confirmDeleteEntity, navigate, refetch])
-
-  return { contest, loading, error, handleEdit, handleDelete }
-}
+export default useContestDetail;
