@@ -1,4 +1,4 @@
-import axiosClient from "./axiosClient"
+import axiosClient from './axiosClient';
 
 const roundApi = {
   // GET /api/rounds
@@ -15,6 +15,6 @@ const roundApi = {
 
   // DELETE /api/rounds/{id}
   delete: (id) => axiosClient.delete(`/rounds/${id}`),
-}
+};
 
-export default roundApi
+export default roundApi;

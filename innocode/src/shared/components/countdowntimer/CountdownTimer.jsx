@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Clock } from "lucide-react";
+import { Icon } from "@iconify/react";
 
-const CountdownTimer = ({ targetDate }) => {
+const CountdownTimer = ({ 
+  targetDate, 
+  label = "Time Remaining",
+  showIcon = true,
+  compact = false,
+  onExpired = null 
+}) => {
   const calculateTimeLeft = () => {
+    if (!targetDate) return null;
     const difference = +new Date(targetDate) - +new Date();
     if (difference <= 0) return null;
     const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -12,60 +20,109 @@ const CountdownTimer = ({ targetDate }) => {
     return { days, hours, minutes, seconds };
   };
 
-
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-  const navigate = useNavigate();
-  const { contestId } = useParams();
+
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
+      const newTimeLeft = calculateTimeLeft();
+      setTimeLeft(newTimeLeft);
+      
+      // Call onExpired callback when countdown finishes
+      if (!newTimeLeft && onExpired) {
+        onExpired();
+      }
     }, 1000);
 
     return () => clearInterval(timer);
   }, [targetDate]);
 
   const pad = (n) => (n < 10 ? "0" + n : n);
-  const handleStartContest = () => {
-    navigate(`/contest-processing/${contestId}`);
-  };
-  return (
-    <div className="p-6 h-[280px] rounded-lg shadow text-center border bg-white border-gray-200">
-      <h2 className="text-lg font-semibold mb-2">Contest Starts In</h2>
-      <hr className="mb-4" />
-      {timeLeft ? (
-        <>
-          <div className="flex justify-center gap-3 mb-4">
-            {timeLeft.days > 0 && (
-              <div className="border rounded-md px-3 py-2 w-16">
-                <div className="text-xl font-bold">{pad(timeLeft.days)}</div>
-                <div className="text-xs">Days</div>
-              </div>
-            )}
-            <div className="border rounded-md px-3 py-2 w-16">
-              <div className="text-xl font-bold">{pad(timeLeft.hours)}</div>
-              <div className="text-xs">Hrs</div>
-            </div>
-            <div className="border rounded-md px-3 py-2 w-16">
-              <div className="text-xl font-bold">{pad(timeLeft.minutes)}</div>
-              <div className="text-xs">Min</div>
-            </div>
-            <div className="border rounded-md px-3 py-2 w-16">
-              <div className="text-xl font-bold">{pad(timeLeft.seconds)}</div>
-              <div className="text-xs">Sec</div>
-            </div>
+
+  // Compact version - just the timer grid
+  if (compact) {
+    return timeLeft ? (
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-[#f9fafb] rounded-[5px] p-3 text-center">
+          <div className="text-2xl font-bold text-[#2d3748]">
+            {pad(timeLeft.days)}
           </div>
-        </>
+          <div className="text-xs text-[#7A7574]">Days</div>
+        </div>
+        <div className="bg-[#f9fafb] rounded-[5px] p-3 text-center">
+          <div className="text-2xl font-bold text-[#2d3748]">
+            {pad(timeLeft.hours)}
+          </div>
+          <div className="text-xs text-[#7A7574]">Hours</div>
+        </div>
+        <div className="bg-[#f9fafb] rounded-[5px] p-3 text-center">
+          <div className="text-2xl font-bold text-[#2d3748]">
+            {pad(timeLeft.minutes)}
+          </div>
+          <div className="text-xs text-[#7A7574]">Minutes</div>
+        </div>
+        <div className="bg-[#f9fafb] rounded-[5px] p-3 text-center">
+          <div className="text-2xl font-bold text-[#2d3748]">
+            {pad(timeLeft.seconds)}
+          </div>
+          <div className="text-xs text-[#7A7574]">Seconds</div>
+        </div>
+      </div>
+    ) : (
+      <div className="text-center py-6">
+        <Icon
+          icon="mdi:clock-alert-outline"
+          width="48"
+          className="text-[#7A7574] mx-auto mb-2 opacity-50"
+        />
+        <p className="text-sm text-[#7A7574]">Time expired</p>
+      </div>
+    );
+  }
+
+  // Full version with card wrapper
+  return (
+    <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
+      {label && (
+        <h3 className="text-sm font-semibold text-[#2d3748] mb-4 flex items-center gap-2">
+          {showIcon && <Clock size={16} className="text-[#ff6b35]" />}
+          {label}
+        </h3>
+      )}
+      {timeLeft ? (
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-[#f9fafb] rounded-[5px] p-3 text-center">
+            <div className="text-2xl font-bold text-[#2d3748]">
+              {pad(timeLeft.days)}
+            </div>
+            <div className="text-xs text-[#7A7574]">Days</div>
+          </div>
+          <div className="bg-[#f9fafb] rounded-[5px] p-3 text-center">
+            <div className="text-2xl font-bold text-[#2d3748]">
+              {pad(timeLeft.hours)}
+            </div>
+            <div className="text-xs text-[#7A7574]">Hours</div>
+          </div>
+          <div className="bg-[#f9fafb] rounded-[5px] p-3 text-center">
+            <div className="text-2xl font-bold text-[#2d3748]">
+              {pad(timeLeft.minutes)}
+            </div>
+            <div className="text-xs text-[#7A7574]">Minutes</div>
+          </div>
+          <div className="bg-[#f9fafb] rounded-[5px] p-3 text-center">
+            <div className="text-2xl font-bold text-[#2d3748]">
+              {pad(timeLeft.seconds)}
+            </div>
+            <div className="text-xs text-[#7A7574]">Seconds</div>
+          </div>
+        </div>
       ) : (
-        <div className="mt-8">
-          <p className="text-lg font-semibold text-green-600 mb-3">
-            Contest Started!
-          </p>
-          <button
-            onClick={handleStartContest}
-            className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-          >
-            Start Contest
-          </button>
+        <div className="text-center py-6">
+          <Icon
+            icon="mdi:clock-alert-outline"
+            width="48"
+            className="text-[#7A7574] mx-auto mb-2 opacity-50"
+          />
+          <p className="text-sm text-[#7A7574]">Time expired</p>
         </div>
       )}
     </div>

@@ -36,11 +36,21 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  const register = async (userData) => {
+    const data = await authService.register(userData);
+    setToken(data.token);
+    setUser(data.user);
+    return data;
+  };
+
   const logout = async () => {
     await authService.logout();
     setToken(null);
     setUser(null);
   };
+
+  // Computed value: check if user is authenticated
+  const isAuthenticated = !!token && !!user;
 
   // Chờ loading xong mới render children
   if (loading) {
@@ -48,7 +58,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated, login, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

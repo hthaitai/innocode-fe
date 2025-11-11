@@ -8,7 +8,7 @@ import { Spinner } from "./SpinnerFluent"
 import TablePagination from "./TablePagination"
 
 const TableFluent = ({
-  data,
+  data = [], // ✅ Add default value to prevent undefined
   columns,
   loading = false,
   error = null,
@@ -17,7 +17,7 @@ const TableFluent = ({
   onRowClick,
 }) => {
   const table = useReactTable({
-    data,
+    data: data || [], // ✅ Ensure data is always an array
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
