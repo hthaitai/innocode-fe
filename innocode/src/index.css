@@ -387,14 +387,27 @@ body {
   active:bg-[#E47336];
 }
 
+.button-gray {
+  @apply bg-[#BFBFBF] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px];
+}
+
 /* Auto-attach visual grouping for consecutive InfoSections */
 .info-group > *:not(:last-child) {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  border-bottom: none
+  border-bottom: none;
 }
 
 .info-group > *:not(:first-child) {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+/* Hide scrollbar in breadcrumb */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

@@ -49,18 +49,62 @@ export const BREADCRUMBS = {
 
   // Organizer pages
   ORGANIZER_CONTESTS: ["Contests"],
+  ORGANIZER_CONTEST_CREATE: ["Contests", "New Contest"],
   ORGANIZER_CONTEST_DETAIL: (contestName) => ["Contests", contestName],
-  ORGANIZER_ROUND_DETAIL: (contestName, roundName) => [
+  ORGANIZER_CONTEST_EDIT: (contestName) => [
+    "Contests",
+    contestName,
+    "Edit",
+  ],
+
+  // Organizer rounds
+  ORGANIZER_ROUND_DETAIL: (contestId, contestName, roundName) => [
     "Contests",
     contestName,
     roundName,
   ],
-  ORGANIZER_PROBLEM_DETAIL: (contestName, roundName, problemLabel) => [
+
+  //Multiple choice questions breadcrumbs 
+  ORGANIZER_MCQ: (contestName, roundName) => [
     "Contests",
     contestName,
     roundName,
-    problemLabel,
+    "Quizzes",
   ],
+  ORGANIZER_MCQ_NEW: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Quizzes",
+    "New Quiz",
+  ],
+  ORGANIZER_MCQ_DETAIL: (contestName, roundName, displayId) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Quizzes",
+    displayId,
+  ],
+  ORGANIZER_MCQ_ATTEMPTS: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Quiz Attempts",
+  ],
+  ORGANIZER_MCQ_ATTEMPT_DETAIL: (contestName, roundName, studentName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Quiz Attempts",
+    `${studentName} - Attempt detail`,
+  ],
+
+  ORGANIZER_PROBLEM_DETAIL: (
+    contestId,
+    contestName,
+    roundName,
+    problemLabel
+  ) => ["Contests", contestName, roundName, problemLabel],
 
   ORGANIZER_TEAMS: (contestName) => ["Contests", contestName, "Teams"],
   ORGANIZER_TEAM_DETAIL: (contestName, teamName) => [
@@ -79,6 +123,18 @@ export const BREADCRUMBS = {
     "Contests",
     contestName,
     "Certificates",
+  ],
+  ORGANIZER_CERTIFICATE_ISSUE: (contestName) => [
+    "Contests",
+    contestName,
+    "Certificates",
+    "Issue Certificate",
+  ],
+  ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestName) => [
+    "Contests",
+    contestName,
+    "Certificates",
+    "New Template",
   ],
 
   ORGANIZER_APPEALS: (contestName) => ["Contests", contestName, "Appeals"],
@@ -160,15 +216,63 @@ export const BREADCRUMB_PATHS = {
 
   // Organizer paths
   ORGANIZER_CONTESTS: ["/organizer", "/organizer/contests"],
+  ORGANIZER_CONTEST_CREATE: ["/organizer/contests", "/organizer/contests/new"],
   ORGANIZER_CONTEST_DETAIL: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
   ],
+  ORGANIZER_CONTEST_EDIT: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/edit`,
+  ],
+
   ORGANIZER_ROUND_DETAIL: (contestId, roundId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
   ],
+
+  //Multiple choice questions paths
+  ORGANIZER_MCQ: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcqs`,
+  ],
+  ORGANIZER_MCQ_NEW: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcqs`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcqs/new`,
+  ],
+  ORGANIZER_MCQ_DETAIL: (contestId, roundId, questionId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcqs`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/mcqs/${questionId}`,
+  ],
+  ORGANIZER_MCQ_ATTEMPTS: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/attempts`,
+  ],
+  ORGANIZER_MCQ_ATTEMPT_DETAIL: (contestId, roundId, attemptId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/attempts`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/attempts/${attemptId}`,
+  ],
+
   ORGANIZER_PROBLEM_DETAIL: (contestId, roundId, problemId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
@@ -195,6 +299,18 @@ export const BREADCRUMB_PATHS = {
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/certificates`,
+  ],
+  ORGANIZER_CERTIFICATE_ISSUE: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
+    `/organizer/contests/${contestId}/certificates/issue`,
+  ],
+  ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
+    `/organizer/contests/${contestId}/certificates/templates/new`,
   ],
   ORGANIZER_APPEALS: (contestId) => [
     "/organizer/contests",

@@ -3,11 +3,10 @@ import { useParams } from "react-router-dom"
 import { Paperclip } from "lucide-react"
 import PageContainer from '@/shared/components/PageContainer'
 import TableFluent from '@/shared/components/TableFluent'
-import { formatDateTime } from '@/shared/utils/formatDateTime'
+import { formatDateTime } from '@/shared/utils/dateTime'
 import useAppeals from "@/features/appeal/hooks/useAppeals"
 import useTeams from "@/features/team/hooks/useTeams"
 import useUsers from "@/shared/hooks/useUsers"
-import useContests from "../../../contest/hooks/useContests"
 import InfoSection from "../../../../shared/components/InfoSection"
 import DetailTable from "../../../../shared/components/DetailTable"
 import DetailTableSection from "../../../../shared/components/DetailTableSection"
@@ -22,7 +21,6 @@ const OrganizerAppealDetail = () => {
   const { appeals, loading, error, updateAppeal } = useAppeals()
   const { teams } = useTeams()
   const { users } = useUsers()
-  const { contests } = useContests()
   const { openModal } = useModal()
 
   const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_APPEAL_DETAIL", {

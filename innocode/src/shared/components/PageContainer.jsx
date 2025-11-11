@@ -1,6 +1,7 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { BreadcrumbTitle } from "./breadcrumb"
+import { Spinner } from "./SpinnerFluent"
 
 export default function PageContainer({
   breadcrumb,
@@ -23,13 +24,7 @@ export default function PageContainer({
     },
   }
 
-  // Fluent-style spinner (soft, glowing orange ring)
-  const Spinner = () => (
-    <div className="flex flex-col items-center justify-center space-y-3">
-      <div className="w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
-      <p className="text-sm text-gray-500">Loading...</p>
-    </div>
-  )
+  
 
   const hasState = loading || error
 
@@ -38,7 +33,7 @@ export default function PageContainer({
       {/* Breadcrumb header */}
       {breadcrumb && (
         <div className="bg-[#f3f3f3] sticky top-0 z-10 flex items-center justify-between pt-4 pb-6">
-          <div className="flex-1 overflow-x-auto">
+          <div className="flex-1">
             <div className="flex items-center space-x-2 w-max">
               <BreadcrumbTitle items={breadcrumb} paths={breadcrumbPaths} />
             </div>

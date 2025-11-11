@@ -65,7 +65,7 @@ const DropdownFluent = ({
 
       <div
         onClick={() => !disabled && (setIsOpen(!isOpen), setFocused(true))}
-        className={`text-sm leading-5 flex justify-between items-center cursor-pointer border rounded-[5px] px-3 py-2 bg-white transition-all duration-200 ${borderClass} ${
+        className={`text-sm leading-5 flex gap-3 justify-between items-center cursor-pointer border rounded-[5px] px-3 py-2 bg-white transition-all duration-200 ${borderClass} ${
           disabled ? "opacity-60 cursor-not-allowed" : ""
         }`}
       >
@@ -76,7 +76,7 @@ const DropdownFluent = ({
         </span>
 
         <ChevronDown
-          size={18}
+          size={14}
           className={`text-[#7A7574] transition-transform duration-300 ${
             isOpen ? "rotate-180" : ""
           }`}

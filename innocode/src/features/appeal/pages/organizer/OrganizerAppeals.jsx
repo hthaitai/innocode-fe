@@ -8,9 +8,9 @@ import TableFluent from '@/shared/components/TableFluent'
 import useAppeals from "@/features/appeal/hooks/useAppeals"
 import useTeams from "@/features/team/hooks/useTeams"
 import useUsers from "@/shared/hooks/useUsers"
-import { formatDateTime } from '@/shared/utils/formatDateTime'
-import { StatusBadge } from "@/shared/utils/StatusBadge"
+import { formatDateTime } from '@/shared/utils/dateTime'
 import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
+import StatusBadge from "../../../../shared/components/StatusBadge"
 
 const OrganizerAppeals = () => {
   const navigate = useNavigate()

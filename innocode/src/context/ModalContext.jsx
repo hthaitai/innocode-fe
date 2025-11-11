@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback } from "react"
 import ConfirmDeleteModal from "../shared/components/ConfirmDeleteModal"
-import ContestModal from "../features/contest/components/organizer/ContestModal"
-import RoundModal from "../features/round/components/organizer/RoundModal"
+import ConfirmModal from "../shared/components/ConfirmModal"
+import AlertModal from "../shared/components/AlertModal"
 import ProblemModal from "../features/problem/components/organizer/ProblemModal"
 import TestCaseModal from "../features/problem/components/organizer/TestCaseModal"
 import ProvinceModal from "../features/province/components/organizer/ProvinceModal"
@@ -9,9 +9,11 @@ import SchoolModal from "../features/school/components/organizer/SchoolModal"
 import TeamModal from "../features/team/components/organizer/TeamModal"
 import AppealStateModal from "../features/appeal/components/organizer/AppealStateModal"
 import AppealDecisionModal from "../features/appeal/components/organizer/AppealDecisionModal"
-import CertificateTemplateModal from "../features/certificate/components/organizer/CertificateTemplateModal"
 import IssueCertificateModal from "../features/certificate/components/organizer/IssueCertificateModal"
 import NotificationModal from "../features/notification/components/organizer/NotificationModal"
+import McqWeightModal from "../features/mcq/components/organizer/McqWeightModal"
+import ContestModal from "../features/contest/components/organizer/ContestModal"
+import RoundModal from "../features/round/components/organizer/RoundModal"
 
 const ModalContext = createContext(null)
 
@@ -35,9 +37,11 @@ export function ModalProvider({ children }) {
 
   // ---- Modal registry ----
   const modalComponents = {
-    confirmDelete: ConfirmDeleteModal,
     contest: ContestModal,
     round: RoundModal,
+    confirmDelete: ConfirmDeleteModal,
+    confirm: ConfirmModal,
+    alert: AlertModal,
     problem: ProblemModal, 
     testCase: TestCaseModal, 
     province: ProvinceModal,
@@ -45,9 +49,9 @@ export function ModalProvider({ children }) {
     team: TeamModal,
     appealState: AppealStateModal,
     appealDecision: AppealDecisionModal,
-    certificateTemplate: CertificateTemplateModal,
     issueCertificate: IssueCertificateModal,
     notification: NotificationModal,
+    mcqWeight: McqWeightModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null
