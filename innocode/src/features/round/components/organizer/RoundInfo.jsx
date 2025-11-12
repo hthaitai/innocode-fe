@@ -4,7 +4,7 @@ import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { useModal } from "@/shared/hooks/useModal"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { fetchContests } from "@/features/contest/store/contestThunks"
+import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
 
 const RoundInfo = ({ round, onUpdated }) => {
   const { openModal } = useModal()
@@ -14,7 +14,7 @@ const RoundInfo = ({ round, onUpdated }) => {
   const refetchContests = useCallback(() => {
     const currentPage = pagination?.pageNumber || 1
     const safePage = Math.min(currentPage, pagination?.totalPages || 1)
-    dispatch(fetchContests({ pageNumber: safePage, pageSize: 50 }))
+    dispatch(fetchOrganizerContests({ pageNumber: safePage, pageSize: 50 }))
   }, [dispatch, pagination?.pageNumber, pagination?.totalPages])
 
   const handleEdit = useCallback(() => {

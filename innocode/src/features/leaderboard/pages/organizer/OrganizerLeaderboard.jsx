@@ -8,7 +8,7 @@ import { formatDateTime } from "@/shared/utils/dateTime"
 import ToggleSwitchFluent from "@/shared/components/ToggleSwitchFluent"
 import useLeaderboardSignalR from "@/features/leaderboard/hooks/useLeaderboardSignalR"
 import { fetchLeaderboardByContest } from "@/features/leaderboard/store/leaderboardThunk"
-import { fetchContests } from "@/features/contest/store/contestThunks"
+import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 
 const OrganizerLeaderboard = () => {
@@ -28,7 +28,7 @@ const OrganizerLeaderboard = () => {
 
   useEffect(() => {
     if (!contest && contestId) {
-      dispatch(fetchContests({ pageNumber: 1, pageSize: 50 }))
+      dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
     }
   }, [contest, contestId, dispatch])
 

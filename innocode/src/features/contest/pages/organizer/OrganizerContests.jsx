@@ -7,7 +7,7 @@ import TableFluent from "@/shared/components/TableFluent"
 
 // Contest features
 import ContestTableAdd from "../../components/organizer/ContestTableAdd"
-import { useOrganizerContest } from "../../hooks/useOrganizerContest"
+import { useOrganizerContestList } from "../../hooks/useOrganizerContestList"
 import { useModal } from "@/shared/hooks/useModal"
 import { getContestColumns } from "../../columns/getContestColumns"
 
@@ -26,15 +26,10 @@ const OrganizerContests = () => {
     pagination,
     page,
     setPage,
+    handleEdit,
     handleDelete,
     refetchContests,
-  } = useOrganizerContest()
-
-  // Columns including delete action - memoized
-  const columns = useMemo(
-    () => getContestColumns(handleDelete, openModal),
-    [handleDelete, openModal]
-  )
+  } = useOrganizerContestList()
 
   // Add contest handler
   const handleAddContest = useCallback(() => {
@@ -49,6 +44,12 @@ const OrganizerContests = () => {
       navigate(`/organizer/contests/${contest?.contestId}`)
     },
     [navigate]
+  )
+
+  // Columns including delete action - memoized
+  const columns = useMemo(
+    () => getContestColumns(handleEdit, handleDelete),
+    [handleEdit, handleDelete]
   )
 
   return (

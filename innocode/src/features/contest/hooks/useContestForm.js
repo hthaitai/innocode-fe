@@ -3,7 +3,6 @@ import { useAppDispatch } from "@/store/hooks"
 import {
   addContest,
   updateContest,
-  fetchContests,
 } from "@/features/contest/store/contestThunks"
 import { validateContest } from "@/features/contest/validators/contestValidator"
 import { fromDatetimeLocal, toDatetimeLocal } from "@/shared/utils/dateTime"
@@ -25,13 +24,19 @@ const EMPTY_CONTEST = {
   status: "draft",
 }
 
-export function useContestForm({ initialData, onCreated, onUpdated, onClose }) {
+export function useContestForm({
+  initialData,
+  onCreated,
+  onUpdated,
+  onClose,
+  onRefetch,
+}) {
   const dispatch = useAppDispatch()
   const [formData, setFormData] = useState(initialData || EMPTY_CONTEST)
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Populate or reset form on open
+  // Populate or reset form
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -48,7 +53,9 @@ export function useContestForm({ initialData, onCreated, onUpdated, onClose }) {
   }, [initialData])
 
   const handleSubmit = useCallback(async () => {
-    const validationErrors = validateContest(formData, { isEdit: !!initialData })
+    const validationErrors = validateContest(formData, {
+      isEdit: !!initialData,
+    })
     setErrors(validationErrors)
     const errorCount = Object.keys(validationErrors).length
     if (errorCount > 0) {
@@ -67,7 +74,9 @@ export function useContestForm({ initialData, onCreated, onUpdated, onClose }) {
       }
 
       if (initialData?.contestId) {
-        await dispatch(updateContest({ id: initialData.contestId, data: payload })).unwrap()
+        await dispatch(
+          updateContest({ id: initialData.contestId, data: payload })
+        ).unwrap()
         toast.success("Contest updated successfully!")
         onUpdated?.()
       } else {
@@ -76,7 +85,9 @@ export function useContestForm({ initialData, onCreated, onUpdated, onClose }) {
         onCreated?.()
       }
 
-      await dispatch(fetchContests())
+      // ✅ Call the shared hook's refetch method if provided
+      onRefetch?.()
+
       onClose?.()
     } catch (err) {
       console.error(err)
@@ -96,7 +107,15 @@ export function useContestForm({ initialData, onCreated, onUpdated, onClose }) {
     } finally {
       setIsSubmitting(false)
     }
-  }, [dispatch, formData, initialData, onCreated, onUpdated, onClose])
+  }, [
+    dispatch,
+    formData,
+    initialData,
+    onCreated,
+    onUpdated,
+    onClose,
+    onRefetch,
+  ])
 
   return {
     formData,

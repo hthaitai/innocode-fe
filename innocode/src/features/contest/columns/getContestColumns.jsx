@@ -4,7 +4,7 @@ import StatusBadge from "@/shared/components/StatusBadge"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { useModal } from "@/shared/hooks/useModal" // optional if using hook inside columns file
 
-export const getContestColumns = (handleDelete, openModal) => [
+export const getContestColumns = (handleEdit, handleDelete) => [
   {
     accessorKey: "name",
     header: "Name",
@@ -37,14 +37,7 @@ export const getContestColumns = (handleDelete, openModal) => [
           {
             label: "Edit",
             icon: Edit2,
-            onClick: () =>
-              openModal("contest", {
-                initialData: row.original,
-                onUpdated: () => {
-                  // optional callback after edit
-                  // e.g., refresh page or setPage(1)
-                },
-              }),
+            onClick: () => handleEdit(row.original),
           },
           {
             label: "Delete",

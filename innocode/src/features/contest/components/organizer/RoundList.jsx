@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { Calendar, ChevronRight, ListPlus } from "lucide-react"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { fetchContests } from "@/features/contest/store/contestThunks"
+import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { useModal } from "@/shared/hooks/useModal"
@@ -30,20 +30,20 @@ const RoundsList = ({ contestId }) => {
   }, [contest?.rounds])
 
   // Refetch contests to get updated rounds
-  const refetchContests = useCallback(() => {
+  const refetchOrganizerContests = useCallback(() => {
     const currentPage = pagination?.pageNumber || 1
     const safePage = Math.min(currentPage, pagination?.totalPages || 1)
-    dispatch(fetchContests({ pageNumber: safePage, pageSize: 50 }))
+    dispatch(fetchOrganizerContests({ pageNumber: safePage, pageSize: 50 }))
   }, [dispatch, pagination?.pageNumber, pagination?.totalPages])
 
   // Handle add round - memoized
   const handleAddRound = useCallback(() => {
     openModal("round", {
       contestId,
-      onCreated: refetchContests,
-      onUpdated: refetchContests,
+      onCreated: refetchOrganizerContests,
+      onUpdated: refetchOrganizerContests,
     })
-  }, [openModal, contestId, refetchContests])
+  }, [openModal, contestId, refetchOrganizerContests])
 
   return (
     <div className="space-y-1">
