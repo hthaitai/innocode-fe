@@ -91,7 +91,7 @@ export function useRoundForm({
   }, [initialData])
 
   const handleSubmit = useCallback(async () => {
-    const validationErrors = validateRound(formData, contest, existingRounds)
+    const validationErrors = validateRound(formData, contest, existingRounds, { isEdit: !!initialData })
     setErrors(validationErrors)
     const errorCount = Object.keys(validationErrors).length
     if (errorCount > 0) {

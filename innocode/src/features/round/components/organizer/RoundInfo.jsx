@@ -60,6 +60,10 @@ const RoundInfo = ({ round, onUpdated }) => {
   details.push(
     { label: "Start Time", value: safe(formatDateTime(round.start)) },
     { label: "End Time", value: safe(formatDateTime(round.end)) },
+    {
+      label: "Time Limit (seconds)",
+      value: safe(round.timeLimitSeconds),
+    },
     { spacer: true }
   )
 

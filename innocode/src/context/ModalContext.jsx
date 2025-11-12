@@ -15,6 +15,7 @@ import McqWeightModal from "../features/mcq/components/organizer/McqWeightModal"
 import ContestModal from "../features/contest/components/organizer/ContestModal"
 import RoundModal from "../features/round/components/organizer/RoundModal"
 import AutoTestCaseModal from "../features/problems/auto-evaluation/components/AutoTestCaseModal"
+import RubricModal from "../features/problems/manual/components/RubricModal.jsx"
 
 const ModalContext = createContext(null)
 
@@ -54,6 +55,7 @@ export function ModalProvider({ children }) {
     issueCertificate: IssueCertificateModal,
     notification: NotificationModal,
     mcqWeight: McqWeightModal,
+    rubric: RubricModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

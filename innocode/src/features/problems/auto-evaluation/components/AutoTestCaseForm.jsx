@@ -13,7 +13,9 @@ export default function AutoTestCaseForm({
       ...prev,
       [field]:
         field === "weight" || field === "timeLimitMs" || field === "memoryKb"
-          ? value ? Number(value) : null
+          ? value
+            ? Number(value)
+            : null
           : value,
     }))
 
@@ -24,7 +26,7 @@ export default function AutoTestCaseForm({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {/* Description */}
       <TextFieldFluent
         label="Description"
@@ -38,58 +40,53 @@ export default function AutoTestCaseForm({
       />
 
       {/* Input / Expected Output */}
-      <div className="grid grid-cols-2 gap-3">
-        <TextFieldFluent
-          label="Input"
-          multiline
-          rows={4}
-          value={formData.input ?? ""}
-          placeholder="Input"
-          onChange={handleChange("input")}
-          error={!!errors?.input}
-          helperText={errors?.input}
-        />
-        <TextFieldFluent
-          label="Expected Output"
-          multiline
-          rows={4}
-          value={formData.expectedOutput ?? ""}
-          placeholder="Expected Output"
-          onChange={handleChange("expectedOutput")}
-          error={!!errors?.expectedOutput}
-          helperText={errors?.expectedOutput}
-        />
-      </div>
+      <TextFieldFluent
+        label="Input"
+        multiline
+        rows={4}
+        value={formData.input ?? ""}
+        placeholder="Input"
+        onChange={handleChange("input")}
+        error={!!errors?.input}
+        helperText={errors?.input}
+      />
+      <TextFieldFluent
+        label="Expected Output"
+        multiline
+        rows={4}
+        value={formData.expectedOutput ?? ""}
+        placeholder="Expected Output"
+        onChange={handleChange("expectedOutput")}
+        error={!!errors?.expectedOutput}
+        helperText={errors?.expectedOutput}
+      />
 
       {/* Weight + Time + Memory */}
-      <div className="grid grid-cols-3 gap-3">
-        <TextFieldFluent
-          label="Weight"
-          type="number"
-          min={0}
-          value={formData.weight ?? 1}
-          onChange={handleChange("weight")}
-          error={!!errors?.weight}
-          helperText={errors?.weight}
-        />
-        <TextFieldFluent
-          label="Time Limit (ms)"
-          type="number"
-          min={0}
-          placeholder="Time Limit (ms)"
-          value={formData.timeLimitMs ?? ""}
-          onChange={handleChange("timeLimitMs")}
-        />
-        <TextFieldFluent
-          label="Memory (KB)"
-          type="number"
-          min={0}
-          placeholder="Memory (KB)"
-          value={formData.memoryKb ?? ""}
-          onChange={handleChange("memoryKb")}
-        />
-      </div>
+      <TextFieldFluent
+        label="Weight"
+        type="number"
+        min={0}
+        value={formData.weight ?? 1}
+        onChange={handleChange("weight")}
+        error={!!errors?.weight}
+        helperText={errors?.weight}
+      />
+      <TextFieldFluent
+        label="Time Limit (ms)"
+        type="number"
+        min={0}
+        placeholder="Time Limit (ms)"
+        value={formData.timeLimitMs ?? ""}
+        onChange={handleChange("timeLimitMs")}
+      />
+      <TextFieldFluent
+        label="Memory (KB)"
+        type="number"
+        min={0}
+        placeholder="Memory (KB)"
+        value={formData.memoryKb ?? ""}
+        onChange={handleChange("memoryKb")}
+      />
     </div>
   )
 }
-
