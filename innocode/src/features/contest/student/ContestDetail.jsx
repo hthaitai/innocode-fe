@@ -26,10 +26,9 @@ const ContestDetail = () => {
 
   // Use API data if available
   const contest = apiContest;
-  
+
   // Get rounds from contest data
   const rounds = contest?.rounds || [];
-
 
   const breadcrumbData = contest
     ? createBreadcrumbWithPaths('CONTEST_DETAIL', contest.name || contest.title)
@@ -62,14 +61,7 @@ const ContestDetail = () => {
   const handleRegister = () => {
     navigate(`/contest-processing/${contestId}`);
   };
-  const calculateDuration = (start, end) => {
-    if (!start || !end) return null;
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffMs = endDate - startDate;
-    const diffMinutes = Math.floor(diffMs / (1000 * 60));
-    return diffMinutes;
-  };
+  console.log(contest);
   // Determine countdown target and label based on contest status
   const getCountdownTarget = () => {
     if (!contest) return null;
@@ -255,7 +247,12 @@ const ContestDetail = () => {
                 <div>
                   <div className="text-[#7A7574] text-xs">Rounds</div>
                   <div className="font-medium text-[#2d3748]">
-                    {Array.isArray(contest.rounds) ? contest.rounds.length : 0} Round{Array.isArray(contest.rounds) && contest.rounds.length !== 1 ? 's' : ''}
+                    {Array.isArray(contest.rounds) ? contest.rounds.length : 0}{' '}
+                    Round
+                    {Array.isArray(contest.rounds) &&
+                    contest.rounds.length !== 1
+                      ? 's'
+                      : ''}
                   </div>
                 </div>
               </div>
@@ -438,7 +435,7 @@ const ContestDetail = () => {
                               >
                                 {round.status}
                               </span>
-                              
+
                               {/* ⚠️ TEMPORARY: Status check disabled for testing */}
                               {/* TODO: Re-enable this condition after testing is complete */}
                               {/* BEFORE: {round.status === 'Opened' && roundRoute && ( */}
@@ -458,12 +455,15 @@ const ContestDetail = () => {
 
                           <div className="flex flex-col gap-2 text-sm text-[#7A7574] ml-10">
                             {/* ✅ Show MCQ Test info only for McqTest type */}
-                            {round.problemType === 'McqTest' && round.mcqTest && (
-                              <div className="flex items-center gap-2">
-                                <BookCheck size={14} />
-                                <span>{round.mcqTest.name || 'MCQ Test'}</span>
-                              </div>
-                            )}
+                            {round.problemType === 'McqTest' &&
+                              round.mcqTest && (
+                                <div className="flex items-center gap-2">
+                                  <BookCheck size={14} />
+                                  <span>
+                                    {round.mcqTest.name || 'MCQ Test'}
+                                  </span>
+                                </div>
+                              )}
 
                             {/* ✅ Show Problem Type with icon */}
                             <div className="flex items-center gap-2">
@@ -479,24 +479,13 @@ const ContestDetail = () => {
                               </span>
                             </div>
 
-                            {/* Duration */}
-                            {round.start && round.end && (
-                              <div className="flex items-center gap-2">
-                                <Clock size={14} />
-                                <span>
-                                  {calculateDuration(round.start, round.end)}{' '}
-                                  minutes
-                                </span>
-                              </div>
-                            )}
-
                             {/* Time Limit (if available) */}
                             {round.timeLimitSeconds && (
                               <div className="flex items-center gap-2">
                                 <Icon icon="mdi:timer-outline" width="14" />
                                 <span>
                                   {Math.floor(round.timeLimitSeconds / 60)}{' '}
-                                  minutes time limit
+                                  minutes
                                 </span>
                               </div>
                             )}
@@ -634,12 +623,7 @@ const ContestDetail = () => {
               <div className="flex justify-between">
                 <span className="text-[#7A7574]">Duration:</span>
                 <span className="font-medium text-[#2d3748]">
-                  {contest.start && contest.end
-                    ? `${Math.ceil(
-                        (new Date(contest.end) - new Date(contest.start)) /
-                          (1000 * 60 * 60 * 24)
-                      )} Days`
-                    : '3 Days'}
+                  {contest.timeLimitSeconds}
                 </span>
               </div>
             </div>

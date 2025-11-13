@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import PageContainer from "@/shared/components/PageContainer";
-import { Icon } from "@iconify/react";
-import { ArrowLeft, FileText, Upload, Clock, Calendar, X } from "lucide-react";
-import useContestDetail from "@/features/contest/hooks/useContestDetail";
-import { useDropzone } from "react-dropzone";
-import useManualSubmission from "../../hooks/useManualSubmission";
+import React, { useCallback, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import PageContainer from '@/shared/components/PageContainer';
+import { Icon } from '@iconify/react';
+import { ArrowLeft, FileText, Upload, Clock, Calendar, X } from 'lucide-react';
+import useContestDetail from '@/features/contest/hooks/useContestDetail';
+import { useDropzone } from 'react-dropzone';
+import useManualSubmission from '../../hooks/useManualSubmission';
 
 const StudentManualProblem = () => {
   const { contestId, roundId } = useParams();
@@ -28,10 +28,10 @@ const StudentManualProblem = () => {
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (rejectedFiles.length > 0) {
       const rejection = rejectedFiles[0];
-      if (rejection.errors[0].code === "file-too-large") {
-        alert("File size must be less than 10MB");
-      } else if (rejection.errors[0].code === "file-invalid-type") {
-        alert("Only .zip and .rar files are allowed");
+      if (rejection.errors[0].code === 'file-too-large') {
+        alert('File size must be less than 10MB');
+      } else if (rejection.errors[0].code === 'file-invalid-type') {
+        alert('Only .zip and .rar files are allowed');
       }
     }
 
@@ -42,52 +42,58 @@ const StudentManualProblem = () => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "application/zip": [".zip"],
-      "application/x-zip-compressed": [".zip"],
-      "application/x-rar-compressed": [".rar"],
-      "application/vnd.rar": [".rar"],
+      'application/zip': ['.zip'],
+      'application/x-zip-compressed': ['.zip'],
+      'application/x-rar-compressed': ['.rar'],
+      'application/vnd.rar': ['.rar'],
     },
     maxSize: 10 * 1024 * 1024,
     multiple: false,
   });
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return "0 Bytes";
+    if (bytes === 0) return '0 Bytes';
     const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   };
   const handleRemoveFile = () => {
     setSelectedFile(null);
   };
-const handleSubmit = async () => {
-  if (!selectedFile) {
-    alert('Please select a file to submit');
-    return;
-  }
-
-  if (window.confirm(`Are you sure you want to submit "${selectedFile.name}"? You can only submit once.`)) {
-    try {
-      await submitSolution(roundId, selectedFile);
-      alert('Solution submitted successfully!');
-      // Optional: Navigate back or reset form
-      setSelectedFile(null);
-      // navigate(`/contest-detail/${contestId}`);
-    } catch (err) {
-      alert(`Failed to submit: ${err.response.data.errorMessage || err.message}`);
+  const handleSubmit = async () => {
+    if (!selectedFile) {
+      alert('Please select a file to submit');
+      return;
     }
-  }
-};
+
+    if (
+      window.confirm(
+        `Are you sure you want to submit "${selectedFile.name}"? You can only submit once.`
+      )
+    ) {
+      try {
+        await submitSolution(roundId, selectedFile);
+        alert('Solution submitted successfully!');
+        // Optional: Navigate back or reset form
+        setSelectedFile(null);
+        // navigate(`/contest-detail/${contestId}`);
+      } catch (err) {
+        alert(
+          `Failed to submit: ${err.response.data.errorMessage || err.message}`
+        );
+      }
+    }
+  };
   // ✅ Format date helper
   const formatDate = (dateString) => {
-    if (!dateString) return "TBA";
+    if (!dateString) return 'TBA';
     const date = new Date(dateString);
-    return date.toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -185,7 +191,7 @@ const handleSubmit = async () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-[#2d3748]">
-                  {round.roundName || round.name || "Manual Problem"}
+                  {round.roundName || round.name || 'Manual Problem'}
                 </h1>
                 <p className="text-sm text-[#7A7574]">
                   {contest.name} • Round {round.roundName}
@@ -196,11 +202,11 @@ const handleSubmit = async () => {
             {/* Status Badge */}
             <span
               className={`text-xs px-3 py-1 rounded ${
-                round.status === "Closed"
-                  ? "bg-[#fde8e8] text-[#d93025]"
-                  : round.status === "Opened"
-                  ? "bg-[#e6f4ea] text-[#34a853]"
-                  : "bg-[#fef7e0] text-[#fbbc05]"
+                round.status === 'Closed'
+                  ? 'bg-[#fde8e8] text-[#d93025]'
+                  : round.status === 'Opened'
+                  ? 'bg-[#e6f4ea] text-[#34a853]'
+                  : 'bg-[#fef7e0] text-[#fbbc05]'
               }`}
             >
               {round.status}
@@ -268,7 +274,7 @@ const handleSubmit = async () => {
                     className="text-[#7A7574]"
                   />
                   <span className="text-[#7A7574]">Penalty Rate:</span>
-                  <span className="text-[#2d3748] font-medium">
+                  <span className="text-[#dd4b4b] font-medium">
                     {(problem.penaltyRate * 100).toFixed(0)}%
                   </span>
                 </div>
@@ -309,8 +315,8 @@ const handleSubmit = async () => {
               {...getRootProps()}
               className={`border-2 border-dashed rounded-[8px] p-8 text-center transition-colors cursor-pointer ${
                 isDragActive
-                  ? "border-[#ff6b35] bg-[#fff5f2]"
-                  : "border-[#E5E5E5] bg-white hover:border-[#ff6b35] hover:bg-[#fff5f2]"
+                  ? 'border-[#ff6b35] bg-[#fff5f2]'
+                  : 'border-[#E5E5E5] bg-white hover:border-[#ff6b35] hover:bg-[#fff5f2]'
               }`}
             >
               <input {...getInputProps()} />
@@ -354,11 +360,13 @@ const handleSubmit = async () => {
                   />
                   <p className="text-[#7A7574] mb-4">
                     {isDragActive
-                      ? "Drop the file here..."
-                      : "Drag and drop your solution file here, or click to browse"}
+                      ? 'Drop the file here...'
+                      : 'Drag and drop your solution file here, or click to browse'}
                   </p>
                   <div className="button-orange inline-flex items-center gap-2">
-                    <Icon icon="mdi:file-upload" />
+                    <div className="ml-[5px]">
+                      <Icon icon="mdi:file-upload" />
+                    </div>
                     Choose File
                   </div>
                   <p className="text-xs text-[#7A7574] mt-3">
