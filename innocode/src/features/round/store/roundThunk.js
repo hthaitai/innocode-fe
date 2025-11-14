@@ -8,6 +8,7 @@ export const fetchRounds = createAsyncThunk(
   async ({ contestId }, { rejectWithValue }) => {
     try {
       const res = await contestApi.getById(contestId)
+      console.log(res)
       return res.data.data // contest object from backend
     } catch (err) {
       return rejectWithValue(handleThunkError(err))

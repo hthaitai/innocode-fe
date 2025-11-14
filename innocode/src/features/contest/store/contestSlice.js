@@ -7,10 +7,12 @@ import {
   deleteContest,
   checkPublishReady,
   publishContest,
+  fetchContestById,
 } from "./contestThunks"
 
 const initialState = {
   contests: [],
+  contest: null,
   pagination: {
     pageNumber: 1,
     pageSize: 10,
@@ -19,7 +21,8 @@ const initialState = {
     hasPreviousPage: false,
     hasNextPage: false,
   },
-  loading: false,
+  listLoading: false,
+  detailLoading: false,
   error: null,
 }
 
@@ -39,16 +42,16 @@ const contestSlice = createSlice({
     const handleFetch = (builder, thunk) => {
       builder
         .addCase(thunk.pending, (state) => {
-          state.loading = true
+          state.listLoading = true
           state.error = null
         })
         .addCase(thunk.fulfilled, (state, action) => {
-          state.loading = false
+          state.listLoading = false
           state.contests = action.payload?.data || action.payload || []
           state.pagination = action.payload?.additionalData || state.pagination
         })
         .addCase(thunk.rejected, (state, action) => {
-          state.loading = false
+          state.listLoading = false
           state.error = action.payload
         })
     }
@@ -56,6 +59,21 @@ const contestSlice = createSlice({
     // --- Fetches ---
     handleFetch(builder, fetchAllContests)
     handleFetch(builder, fetchOrganizerContests)
+
+    // --- Fetch single contest detail ---
+    builder
+      .addCase(fetchContestById.pending, (state) => {
+        state.detailLoading  = true
+        state.error = null
+      })
+      .addCase(fetchContestById.fulfilled, (state, action) => {
+        state.detailLoading  = false
+        state.contest = action.payload
+      })
+      .addCase(fetchContestById.rejected, (state, action) => {
+        state.detailLoading  = false
+        state.error = action.payload
+      })
 
     // --- Add ---
     builder

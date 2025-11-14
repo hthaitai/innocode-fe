@@ -2,7 +2,6 @@ import React from "react"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
-import { useNavigate } from "react-router-dom"
 import StatusBadge from "../../../../shared/components/StatusBadge"
 
 const ContestInfo = ({ contest, onEdit }) => {

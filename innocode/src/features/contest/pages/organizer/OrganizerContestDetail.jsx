@@ -6,9 +6,8 @@ import ContestInfo from "../../components/organizer/ContestInfo"
 import PublishContestSection from "../../components/organizer/PublishContestSection"
 import ContestRelatedSettings from "../../components/organizer/ContestRelatedSettings"
 import RoundsList from "../../components/organizer/RoundList"
-import { AlertTriangle, Trash } from "lucide-react"
+import { Trash } from "lucide-react"
 import { useOrganizerContestDetail } from "../../hooks/useOrganizerContestDetail"
-import { useModal } from "@/shared/hooks/useModal"
 
 const OrganizerContestDetail = () => {
   const { contestId } = useParams()
@@ -18,15 +17,11 @@ const OrganizerContestDetail = () => {
     contest,
     loading,
     error,
-    fetchContestDetail,
     handleEdit,
     handleDelete,
-  } = useOrganizerContestDetail()
+  } = useOrganizerContestDetail(contestId)
 
   // Fetch contest detail on mount / param change
-  useEffect(() => {
-    fetchContestDetail(contestId)
-  }, [contestId, fetchContestDetail])
 
   const breadcrumbItems = useMemo(
     () =>
@@ -38,14 +33,6 @@ const OrganizerContestDetail = () => {
     () => BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId),
     [contestId]
   )
-
-  // Delete handler with redirect
-  const handleDeleteContest = useCallback(() => {
-    handleDelete({
-      ...contest,
-      onSuccess: () => navigate("/organizer/contests"),
-    })
-  }, [contest, handleDelete, navigate])
 
   if (!contest && !loading) {
     return (
@@ -70,7 +57,7 @@ const OrganizerContestDetail = () => {
       <div className="space-y-5">
         {/* Contest Info + Publish */}
         <div className="space-y-1">
-          <ContestInfo contest={contest} onEdit={() => handleEdit(contest)} />
+          <ContestInfo contest={contest} onEdit={handleEdit} />
           <PublishContestSection contest={contest} />
         </div>
 
@@ -100,7 +87,7 @@ const OrganizerContestDetail = () => {
               <Trash size={20} />
               <span className="text-sm leading-5">Delete contest</span>
             </div>
-            <button className="button-white" onClick={handleDeleteContest}>
+            <button className="button-white" onClick={handleDelete}>
               Delete Contest
             </button>
           </div>

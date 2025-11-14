@@ -15,6 +15,7 @@ import UploadCsvSection from "../components/organizer/UploadCsvSection"
 import BankSelector from "../components/organizer/BankSelector"
 import QuestionsPreviewSection from "../components/organizer/QuestionsPreviewSection"
 import { getPreviewColumns } from "../columns/getPreviewColumns"
+import DownloadCsvTemplate from "../components/organizer/DownloadCsvTemplate"
 
 const OrganizerMcqCreate = () => {
   const { contestId, roundId } = useParams()
@@ -26,8 +27,6 @@ const OrganizerMcqCreate = () => {
   const { banks, testId, loading, error } = useAppSelector((s) => s.mcq)
 
   const [selectedBankId, setSelectedBankId] = useState(null)
-  const [questionsPage, setQuestionsPage] = useState(1)
-  const [questionsPageSize] = useState(10)
 
   useEffect(() => {
     dispatch(fetchBanks({ pageNumber: 1, pageSize: 100 }))
@@ -55,28 +54,12 @@ const OrganizerMcqCreate = () => {
   }, [banks, selectedBankId])
 
   const questionsWithIndex = useMemo(() => {
-    const start = (questionsPage - 1) * questionsPageSize
-    return selectedBankQuestions
-      .slice(start, start + questionsPageSize)
-      .map((q, i) => ({
-        ...q,
-        displayId: start + i + 1,
-        optionsCount: q.options?.length || 0,
-      }))
-  }, [selectedBankQuestions, questionsPage, questionsPageSize])
-
-  const pagination = useMemo(() => {
-    const total = selectedBankQuestions.length
-    const totalPages = Math.ceil(total / questionsPageSize) || 1
-    return {
-      pageNumber: questionsPage,
-      pageSize: questionsPageSize,
-      totalPages,
-      totalCount: total,
-      hasPreviousPage: questionsPage > 1,
-      hasNextPage: questionsPage < totalPages,
-    }
-  }, [selectedBankQuestions.length, questionsPage, questionsPageSize])
+    return selectedBankQuestions.map((q, i) => ({
+      ...q,
+      displayId: i + 1,
+      optionsCount: q.options?.length || 0,
+    }))
+  }, [selectedBankQuestions])
 
   const columns = useMemo(() => getPreviewColumns(), [])
 
@@ -122,32 +105,34 @@ const OrganizerMcqCreate = () => {
 
   return (
     <PageContainer breadcrumb={items} breadcrumbPaths={paths}>
-      <div className="space-y-4">
+      <div className="space-y-5">
         <div className="space-y-1">
-          <UploadCsvSection />
-
-          <BankSelector
-            options={bankOptions}
-            value={selectedBankId}
-            onChange={setSelectedBankId}
-            loading={loading}
-          />
+          <DownloadCsvTemplate />
+          <UploadCsvSection testId={testId} />
         </div>
 
         <div>
           <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-            Preview bank questions
+            Questions bank
           </div>
-          <QuestionsPreviewSection
-            selectedBankId={selectedBankId}
-            questionsWithIndex={questionsWithIndex}
-            questionColumns={columns}
-            pagination={pagination}
-            loading={loading}
-            error={error}
-            onPageChange={setQuestionsPage}
-            onChooseBank={handleChooseBank}
-          />
+
+          <div className="space-y-1">
+            <BankSelector
+              options={bankOptions}
+              value={selectedBankId}
+              onChange={setSelectedBankId}
+              loading={loading}
+            />
+
+            <QuestionsPreviewSection
+              selectedBankId={selectedBankId}
+              questionsWithIndex={questionsWithIndex}
+              questionColumns={columns}
+              loading={loading}
+              error={error}
+              onChooseBank={handleChooseBank}
+            />
+          </div>
         </div>
       </div>
     </PageContainer>

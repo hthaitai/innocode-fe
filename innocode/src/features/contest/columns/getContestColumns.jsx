@@ -1,8 +1,7 @@
 import Actions from "@/shared/components/Actions"
-import { Trash2, Edit2 } from "lucide-react" // add edit icon
+import { Trash2, Edit2 } from "lucide-react"
 import StatusBadge from "@/shared/components/StatusBadge"
 import { formatDateTime } from "@/shared/utils/dateTime"
-import { useModal } from "@/shared/hooks/useModal" // optional if using hook inside columns file
 
 export const getContestColumns = (handleEdit, handleDelete) => [
   {
@@ -43,7 +42,7 @@ export const getContestColumns = (handleEdit, handleDelete) => [
             label: "Delete",
             icon: Trash2,
             className: "text-red-500",
-            onClick: () => handleDelete(row.original), // ✅ centralized delete
+            onClick: () => handleDelete(row.original),
           },
         ]}
       />

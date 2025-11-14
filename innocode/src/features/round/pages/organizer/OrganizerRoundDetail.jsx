@@ -1,16 +1,22 @@
-import React, { useMemo } from "react"
+import React, { useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { Trash } from "lucide-react"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import RoundInfo from "../../components/organizer/RoundInfo"
 import RoundRelatedSettings from "../../components/organizer/RoundRelatedSettings"
-import { useOrganizerRound } from "../../hooks/useOrganizerRound"
+import { useOrganizerRoundDetail } from "../../hooks/useOrganizerRoundDetail"
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
-  const { contest, round, loading, error, refetch, handleDelete } =
-    useOrganizerRound(contestId, roundId)
+  const {
+    contest,
+    round,
+    loading,
+    error,
+    handleEdit,
+    handleDelete,
+  } = useOrganizerRoundDetail(contestId, roundId)
 
   const breadcrumbItems = useMemo(
     () =>
@@ -48,7 +54,7 @@ const OrganizerRoundDetail = () => {
       error={error}
     >
       <div className="space-y-5">
-        <RoundInfo round={round} onUpdated={refetch} />
+        <RoundInfo round={round} onEdit={handleEdit} />
 
         <div>
           <div className="text-sm font-semibold pt-3 pb-2">

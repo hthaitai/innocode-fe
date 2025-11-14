@@ -77,7 +77,7 @@ export const BREADCRUMBS = {
     contestName,
     roundName,
     "Quizzes",
-    "New Quiz",
+    "New questions",
   ],
   ORGANIZER_MCQ_DETAIL: (contestName, roundName, displayId) => [
     "Contests",

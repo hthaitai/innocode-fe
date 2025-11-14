@@ -1,75 +1,71 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useAppDispatch } from "@/store/hooks"
-import {
-  deleteContest,
-} from "@/features/contest/store/contestThunks"
-import { useConfirmDelete } from "@/shared/hooks/useConfirmDelete"
+import { deleteContest } from "@/features/contest/store/contestThunks"
 import { contestService } from "@/features/contest/services/contestService"
 import { mapContestFromAPI } from "@/shared/utils/contestMapper"
 import { useModal } from "@/shared/hooks/useModal"
+import { useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
+import { fetchContestById } from "../store/contestThunks"
+import { useAppSelector } from "../../../store/hooks"
 
-export const useOrganizerContestDetail = () => {
-  const { confirmDeleteEntity } = useConfirmDelete()
+export const useOrganizerContestDetail = (contestId) => {
+  const dispatch = useAppDispatch()
   const { openModal } = useModal()
+  const navigate = useNavigate()
 
-  const [contest, setContest] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const {
+    contest,
+    detailLoading: loading,
+    error,
+  } = useAppSelector((state) => state.contests)
 
   // Fetch contest detail
-  const fetchContestDetail = useCallback(async (contestId) => {
-    if (!contestId) {
-      setError("Contest ID is required")
-      return
+  useEffect(() => {
+    if (!contestId) return
+    if (!contest || contest.contestId !== contestId) {
+      dispatch(fetchContestById(contestId))
     }
-    try {
-      setLoading(true)
-      setError(null)
-      const data = await contestService.getContestById(contestId)
-      setContest(data ? mapContestFromAPI(data) : null)
-    } catch (err) {
-      console.error("❌ Error fetching contest detail:", err)
-      setError(err.message || "Failed to load contest details")
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  // Safe refetch helper — consistent with list hook
-  const refetchContestDetail = useCallback(() => {
-    if (contest?.contestId) fetchContestDetail(contest.contestId)
-  }, [contest?.contestId, fetchContestDetail])
+  }, [dispatch, contestId, contest?.contestId])
 
   // Handle edit via modal
-  const handleEdit = useCallback(
-    (contest) => {
-      openModal("contest", {
-        initialData: contest,
-        onUpdated: refetchContestDetail,
-      })
-    },
-    [openModal, refetchContestDetail]
-  )
+  const handleEdit = useCallback(() => {
+    if (!contest) return
+    openModal("contest", {
+      initialData: contest,
+      onUpdated: () => {
+        // refetch on update if necessary
+        dispatch(fetchContestById(contest.contestId))
+      },
+    })
+  }, [contest, openModal, dispatch])
 
-  // Handle delete (confirm + thunk)
-  const handleDelete = useCallback(
-    (item) => {
-      confirmDeleteEntity({
-        entityName: "contest",
-        item,
-        deleteAction: deleteContest,
-        idKey: "contestId",
-        onSuccess: item?.onSuccess || refetchContestDetail,
-      })
-    },
-    [confirmDeleteEntity, refetchContestDetail]
-  )
+  // Handle delete (confirm modal + thunk + toast + navigate)
+  const handleDelete = useCallback(() => {
+    if (!contest) return
+    openModal("confirmDelete", {
+      message: `Are you sure you want to delete "${contest.name}"?`,
+      onConfirm: async (onClose) => {
+        try {
+          await dispatch(
+            deleteContest({ contestId: contest.contestId })
+          ).unwrap()
+          toast.success("Contest deleted successfully!")
+          navigate("/organizer/contests")
+        } catch (err) {
+          console.error("❌ Failed to delete contest:", err)
+          toast.error("Failed to delete contest.")
+        } finally {
+          onClose()
+        }
+      },
+    })
+  }, [contest, dispatch, openModal, navigate])
 
   return {
     contest,
     loading,
     error,
-    fetchContestDetail,
     handleEdit,
     handleDelete,
   }

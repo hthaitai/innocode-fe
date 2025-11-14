@@ -19,7 +19,7 @@ import { getMcqColumns } from "../columns/getMcqColumns"
 
 // Breadcrumbs
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-import { useOrganizerRound } from "../../round/hooks/useOrganizerRound"
+import { useOrganizerRoundDetail } from "../../round/hooks/useOrganizerRoundDetail"
 import McqTableExpanded from "../components/organizer/McqTableExpanded"
 
 const OrganizerMcq = () => {
@@ -30,7 +30,7 @@ const OrganizerMcq = () => {
   // Select contests and rounds from the Redux store
   const { contests } = useAppSelector((s) => s.contests)
   const { rounds } = useAppSelector((s) => s.rounds)
-  const { round } = useOrganizerRound(contestId, roundId)
+  const { round } = useOrganizerRoundDetail(contestId, roundId)
 
   // Custom hook to manage MCQs for a specific round
   const {

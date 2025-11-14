@@ -18,8 +18,24 @@ export const fetchOrganizerContests = createAsyncThunk(
   "contests/fetchOrganizer",
   async ({ pageNumber = 1, pageSize = 10 } = {}, { rejectWithValue }) => {
     try {
-      const res = await contestApi.getOrganizerContests({ pageNumber, pageSize })
+      const res = await contestApi.getOrganizerContests({
+        pageNumber,
+        pageSize,
+      })
       return res.data
+    } catch (err) {
+      return rejectWithValue(handleThunkError(err))
+    }
+  }
+)
+
+export const fetchContestById = createAsyncThunk(
+  "contests/fetchById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await contestApi.getById(id)
+      const contestData = res.data.data[0] ?? null
+      return contestData
     } catch (err) {
       return rejectWithValue(handleThunkError(err))
     }

@@ -97,3 +97,29 @@ export const fetchAttemptDetail = createAsyncThunk(
     }
   }
 )
+
+// Thunk to fetch MCQ template (for CSV import)
+export const fetchMcqTemplate = createAsyncThunk(
+  "mcq/fetchMcqTemplate",
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await mcqApi.getTemplate()
+      return data
+    } catch (error) {
+      return rejectWithValue(handleThunkError(error))
+    }
+  }
+)
+
+// Thunk to import MCQs from CSV into a test
+export const importMcqCsv = createAsyncThunk(
+  "mcq/importMcqCsv",
+  async ({ testId, formData }, { rejectWithValue }) => {
+    try {
+      const data = await mcqApi.importCsv(testId, formData)
+      return data
+    } catch (error) {
+      return rejectWithValue(handleThunkError(error))
+    }
+  }
+)

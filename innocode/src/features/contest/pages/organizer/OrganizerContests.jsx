@@ -1,14 +1,14 @@
-import React, { useMemo, useCallback } from "react"
+import React, { useMemo, useCallback, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
 // Shared components
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
+import AddSection from "../../../../shared/components/AddSection"
+import { Trophy } from "lucide-react"
 
 // Contest features
-import ContestTableAdd from "../../components/organizer/ContestTableAdd"
 import { useOrganizerContestList } from "../../hooks/useOrganizerContestList"
-import { useModal } from "@/shared/hooks/useModal"
 import { getContestColumns } from "../../columns/getContestColumns"
 
 // Breadcrumbs
@@ -16,27 +16,24 @@ import { BREADCRUMBS } from "@/config/breadcrumbs"
 
 const OrganizerContests = () => {
   const navigate = useNavigate()
-  const { openModal } = useModal()
 
-  // Unified hook
   const {
     contests,
+    pagination,
     loading,
     error,
-    pagination,
     page,
     setPage,
+    fetchContests,
+    handleAdd,
     handleEdit,
     handleDelete,
-    refetchContests,
   } = useOrganizerContestList()
 
-  // Add contest handler
-  const handleAddContest = useCallback(() => {
-    openModal("contest", {
-      onCreated: () => refetchContests(),
-    })
-  }, [openModal, refetchContests])
+  // Fetch contests when page changes
+  useEffect(() => {
+    fetchContests()
+  }, [fetchContests])
 
   // Handle row click - memoized
   const handleRowClick = useCallback(
@@ -56,7 +53,13 @@ const OrganizerContests = () => {
     <PageContainer breadcrumb={BREADCRUMBS.CONTESTS}>
       <div className="space-y-1">
         {/* Header section with Add button */}
-        <ContestTableAdd onAdd={handleAddContest} />
+        <AddSection
+          icon={Trophy}
+          title="Contest Management"
+          subtitle="Create and manage contests"
+          addLabel="Add contest"
+          onAdd={handleAdd}
+        />
 
         {/* Contest table with data, columns, pagination, row click navigation */}
         <TableFluent

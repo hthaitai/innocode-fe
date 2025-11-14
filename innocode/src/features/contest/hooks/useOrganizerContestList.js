@@ -1,25 +1,42 @@
 import { useState, useCallback, useEffect } from "react"
-import { deleteContest } from "@/features/contest/store/contestThunks"
-import { useConfirmDelete } from "@/shared/hooks/useConfirmDelete"
-import { useFetchContests } from "@/shared/hooks/useFetchContests"
+import { useAppDispatch, useAppSelector } from "@/store/hooks"
+import {
+  fetchOrganizerContests,
+  deleteContest,
+} from "@/features/contest/store/contestThunks"
 import { useModal } from "@/shared/hooks/useModal"
+import toast from "react-hot-toast"
 
 export const useOrganizerContestList = (pageSize = 10) => {
-  const { confirmDeleteEntity } = useConfirmDelete()
-  const { contests, pagination, loading, error, fetchOrganizer } =
-    useFetchContests()
+  const dispatch = useAppDispatch()
+  const {
+    contests,
+    pagination,
+    listLoading: loading,
+    error,
+  } = useAppSelector((state) => state.contests)
   const [page, setPage] = useState(1)
   const { openModal } = useModal()
 
-  useEffect(() => {
-    fetchOrganizer({ pageNumber: page, pageSize })
-  }, [fetchOrganizer, page, pageSize])
+  // --- Fetch contests ---
+  const fetchContests = useCallback(() => {
+    dispatch(fetchOrganizerContests({ pageNumber: page, pageSize }))
+  }, [dispatch, page, pageSize])
 
+  // --- Refetch helper (safe for pagination) ---
   const refetchContests = useCallback(() => {
     const safePage = Math.min(page, pagination?.totalPages || 1)
-    fetchOrganizer({ pageNumber: safePage, pageSize })
-  }, [fetchOrganizer, page, pageSize, pagination?.totalPages])
+    dispatch(fetchOrganizerContests({ pageNumber: safePage, pageSize }))
+  }, [dispatch, page, pageSize, pagination?.totalPages])
 
+  // --- Add contest handler ---
+  const handleAdd = useCallback(() => {
+    openModal("contest", {
+      onCreated: refetchContests,
+    })
+  }, [openModal, refetchContests])
+
+  // --- Edit handler ---
   const handleEdit = useCallback(
     (contest) => {
       openModal("contest", {
@@ -30,17 +47,27 @@ export const useOrganizerContestList = (pageSize = 10) => {
     [openModal, refetchContests]
   )
 
+  // --- Delete handler ---
   const handleDelete = useCallback(
-    (item) => {
-      confirmDeleteEntity({
-        entityName: "contest",
-        item,
-        deleteAction: deleteContest,
-        idKey: "contestId",
-        onSuccess: item?.onSuccess || refetchContests,
+    (contest) => {
+      openModal("confirmDelete", {
+        message: `Are you sure you want to delete "${contest.name}"?`,
+        onConfirm: async (onClose) => {
+          try {
+            await dispatch(
+              deleteContest({ contestId: contest.contestId })
+            ).unwrap()
+            toast.success("Contest deleted successfully!")
+            refetchContests()
+          } catch {
+            toast.error("Failed to delete contest.")
+          } finally {
+            onClose()
+          }
+        },
       })
     },
-    [confirmDeleteEntity, refetchContests]
+    [dispatch, openModal, refetchContests]
   )
 
   return {
@@ -50,8 +77,10 @@ export const useOrganizerContestList = (pageSize = 10) => {
     error,
     page,
     setPage,
+    fetchContests,
+    refetchContests,
+    handleAdd,
     handleEdit,
     handleDelete,
-    refetchContests,
   }
 }

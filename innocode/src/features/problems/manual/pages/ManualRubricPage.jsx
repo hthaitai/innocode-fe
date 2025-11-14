@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { useAppSelector, useAppDispatch } from "@/store/hooks"
-import { useOrganizerRound } from "@/features/round/hooks/useOrganizerRound"
+import { useOrganizerRoundDetail } from "@/features/round/hooks/useOrganizerRoundDetail"
 import {
   fetchRubric,
   saveRubric,
@@ -16,7 +16,7 @@ const ManualRubricPage = () => {
   const { contestId, roundId } = useParams()
 
   const { contests } = useAppSelector((s) => s.contests)
-  const { round } = useOrganizerRound(contestId, roundId)
+  const { round } = useOrganizerRoundDetail(contestId, roundId)
 
   const { rubric, criteria, loadingRubric, savingRubric } = useAppSelector(
     (s) => s.manualProblem

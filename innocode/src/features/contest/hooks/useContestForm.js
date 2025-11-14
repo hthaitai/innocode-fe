@@ -24,13 +24,7 @@ const EMPTY_CONTEST = {
   status: "draft",
 }
 
-export function useContestForm({
-  initialData,
-  onCreated,
-  onUpdated,
-  onClose,
-  onRefetch,
-}) {
+export function useContestForm({ initialData, onCreated, onUpdated, onClose }) {
   const dispatch = useAppDispatch()
   const [formData, setFormData] = useState(initialData || EMPTY_CONTEST)
   const [errors, setErrors] = useState({})
@@ -84,10 +78,6 @@ export function useContestForm({
         toast.success("Contest created successfully!")
         onCreated?.()
       }
-
-      // ✅ Call the shared hook's refetch method if provided
-      onRefetch?.()
-
       onClose?.()
     } catch (err) {
       console.error(err)
@@ -107,15 +97,7 @@ export function useContestForm({
     } finally {
       setIsSubmitting(false)
     }
-  }, [
-    dispatch,
-    formData,
-    initialData,
-    onCreated,
-    onUpdated,
-    onClose,
-    onRefetch,
-  ])
+  }, [dispatch, formData, initialData, onCreated, onUpdated, onClose])
 
   return {
     formData,
