@@ -1,26 +1,33 @@
-import { Outlet, useLocation } from "react-router-dom"
-import { useEffect } from "react"
-import Navbar from "../navbar/Navbar"
-import Sidebar from "../sidebar/Sidebar"
-import "./layout.css"
+import { Outlet, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import Navbar from '../navbar/Navbar';
+import Sidebar from '../sidebar/Sidebar';
+import { useAuth } from '@/context/AuthContext';
+import './layout.css';
 
 function ScrollToTop() {
-  const { pathname } = useLocation()
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    const content = document.querySelector(".page-content")
+    const content = document.querySelector('.page-content');
     if (content) {
-      content.scrollTo({ top: 0, behavior: "instant" })
+      content.scrollTo({ top: 0, behavior: 'instant' });
     }
-  }, [pathname])
+  }, [pathname]);
 
-  return null
+  return null;
 }
 
 export default function MainLayout() {
-  const location = useLocation()
-  const isLoggedIn = !!localStorage.getItem("token")
-  const hideSidebar = !isLoggedIn
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+
+  // Define public routes that should not show sidebar
+  const publicRoutes = ['/', '/about'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
+
+  // Hide sidebar if not authenticated OR on public routes
+  const hideSidebar = !isAuthenticated || isPublicRoute;
 
   return (
     <div>
@@ -42,5 +49,5 @@ export default function MainLayout() {
         </div>
       </div>
     </div>
-  )
+  );
 }

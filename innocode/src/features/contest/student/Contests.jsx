@@ -4,7 +4,6 @@ import PageContainer from '@/shared/components/PageContainer';
 import Search from '@/shared/components/search/Search';
 import Filter from '@/shared/components/search/Filter';
 import ContestCard from '@/shared/components/contest/ContestCard';
-import { contestsData } from '@/data/contestsData';
 import { BREADCRUMBS } from '@/config/breadcrumbs';
 import useContests from '../hooks/useContests';
 import { Icon } from '@iconify/react';

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import PageContainer from '@/shared/components/PageContainer';
-import { contestsData } from '@/data/contestsData';
-import { createBreadcrumbWithPaths, BREADCRUMBS } from '@/config/breadcrumbs';
-import { Icon } from '@iconify/react';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import PageContainer from "@/shared/components/PageContainer";
+import { contestsData } from "@/data/contestsData";
+import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs";
+import { Icon } from "@iconify/react";
 import {
   Calendar,
   Users,
@@ -12,65 +12,54 @@ import {
   Play,
   NotebookPen,
   BookCheck,
-} from 'lucide-react';
-import useContestDetail from '../hooks/useContestDetail';
-import CountdownTimer from '@/shared/components/countdowntimer/CountdownTimer';
-import useRounds from '../../round/hooks/useRounds';
+} from "lucide-react";
+import useContestDetail from "../hooks/useContestDetail";
+import CountdownTimer from "@/shared/components/countdowntimer/CountdownTimer";
 
 const ContestDetail = () => {
   const { contestId } = useParams();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Fetch contest data from API
   const { contest: apiContest, loading, error } = useContestDetail(contestId);
-  const {
-    rounds,
-    loading: roundsLoading,
-    error: roundsError,
-  } = useRounds(contestId);
 
   // Use API data if available
   const contest = apiContest;
 
+  // Get rounds from contest data
+  const rounds = contest?.rounds || [];
+
   const breadcrumbData = contest
-    ? createBreadcrumbWithPaths('CONTEST_DETAIL', contest.name || contest.title)
-    : { items: BREADCRUMBS.NOT_FOUND, paths: ['/'] };
+    ? createBreadcrumbWithPaths("CONTEST_DETAIL", contest.name || contest.title)
+    : { items: BREADCRUMBS.NOT_FOUND, paths: ["/"] };
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
-      case 'upcoming':
-        return 'text-[#fbbc05] bg-[#fef7e0]';
-      case 'ongoing':
-        return 'text-[#34a853] bg-[#e6f4ea]';
-      case 'completed':
-        return 'text-[#7A7574] bg-[#f3f3f3]';
+      case "upcoming":
+        return "text-[#fbbc05] bg-[#fef7e0]";
+      case "ongoing":
+        return "text-[#34a853] bg-[#e6f4ea]";
+      case "completed":
+        return "text-[#7A7574] bg-[#f3f3f3]";
       default:
-        return 'text-[#7A7574] bg-[#f3f3f3]';
+        return "text-[#7A7574] bg-[#f3f3f3]";
     }
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const handleRegister = () => {
     navigate(`/contest-processing/${contestId}`);
-  };
-  const calculateDuration = (start, end) => {
-    if (!start || !end) return null;
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffMs = endDate - startDate;
-    const diffMinutes = Math.floor(diffMs / (1000 * 60));
-    return diffMinutes;
   };
   // Determine countdown target and label based on contest status
   const getCountdownTarget = () => {
@@ -95,30 +84,30 @@ const ContestDetail = () => {
   };
 
   const getCountdownLabel = () => {
-    if (!contest) return 'Time Remaining';
+    if (!contest) return "Time Remaining";
 
     const now = new Date();
     const startDate = new Date(contest.start);
     const endDate = new Date(contest.end);
 
     if (now < startDate) {
-      return 'Time Until Start';
+      return "Time Until Start";
     }
 
     if (now >= startDate && now < endDate) {
-      return 'Time Until End';
+      return "Time Until End";
     }
 
-    return 'Contest Ended';
+    return "Contest Ended";
   };
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: 'mdi:information-outline' },
-    { id: 'rounds', label: 'Rounds', icon: 'mdi:trophy-outline' },
+    { id: "overview", label: "Overview", icon: "mdi:information-outline" },
+    { id: "rounds", label: "Rounds", icon: "mdi:trophy-outline" },
     {
-      id: 'rules',
-      label: 'Rules & Guidelines',
-      icon: 'mdi:file-document-outline',
+      id: "rules",
+      label: "Rules & Guidelines",
+      icon: "mdi:file-document-outline",
     },
   ];
 
@@ -153,7 +142,7 @@ const ContestDetail = () => {
             </h3>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
-              onClick={() => navigate('/contests')}
+              onClick={() => navigate("/contests")}
               className="button-orange"
             >
               <Icon icon="mdi:arrow-left" className="inline mr-2" />
@@ -201,7 +190,7 @@ const ContestDetail = () => {
                   {contest.name || contest.title}
                 </h1>
                 <p className="text-lg opacity-90">
-                  Organized by {contest.createdBy}
+                  Organized by {contest.createdByName}
                 </p>
               </div>
             </div>
@@ -215,10 +204,10 @@ const ContestDetail = () => {
                   contest.statusLabel || contest.status
                 )}`}
               >
-                {(contest.statusLabel || contest.status || '')
+                {(contest.statusLabel || contest.status || "")
                   .charAt(0)
                   .toUpperCase() +
-                  (contest.statusLabel || contest.status || '').slice(1)}
+                  (contest.statusLabel || contest.status || "").slice(1)}
               </span>
 
               <div className="flex items-center gap-2 text-[#7A7574] text-sm">
@@ -238,8 +227,8 @@ const ContestDetail = () => {
                   <div className="text-[#7A7574] text-xs">Start Date</div>
                   <div className="font-medium text-[#2d3748]">
                     {contest.start
-                      ? formatDate(contest.start).split(',')[0]
-                      : 'TBA'}
+                      ? formatDate(contest.start).split(",")[0]
+                      : "TBA"}
                   </div>
                 </div>
               </div>
@@ -248,7 +237,7 @@ const ContestDetail = () => {
                 <div>
                   <div className="text-[#7A7574] text-xs">Prize Pool</div>
                   <div className="font-medium text-[#2d3748]">
-                    {contest.prizePool || contest.rewardsText || 'TBA'}
+                    {contest.prizePool || contest.rewardsText || "TBA"}
                   </div>
                 </div>
               </div>
@@ -257,7 +246,12 @@ const ContestDetail = () => {
                 <div>
                   <div className="text-[#7A7574] text-xs">Rounds</div>
                   <div className="font-medium text-[#2d3748]">
-                    {contest.rounds || 'TBA'} Rounds
+                    {Array.isArray(contest.rounds) ? contest.rounds.length : 0}{" "}
+                    Round
+                    {Array.isArray(contest.rounds) &&
+                    contest.rounds.length !== 1
+                      ? "s"
+                      : ""}
                   </div>
                 </div>
               </div>
@@ -270,7 +264,7 @@ const ContestDetail = () => {
                 <div>
                   <div className="text-[#7A7574] text-xs">Problems</div>
                   <div className="font-medium text-[#2d3748]">
-                    {contest.totalProblems || 'TBA'} Total
+                    {contest.totalProblems || "TBA"} Total
                   </div>
                 </div>
               </div>
@@ -286,8 +280,8 @@ const ContestDetail = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-1 cursor-pointer px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 transition-colors ${
                     activeTab === tab.id
-                      ? 'bg-[#ff6b35] text-white'
-                      : 'text-[#7A7574] hover:bg-[#f9fafb]'
+                      ? "bg-[#ff6b35] text-white"
+                      : "text-[#7A7574] hover:bg-[#f9fafb]"
                   }`}
                 >
                   <Icon icon={tab.icon} width="18" />
@@ -298,7 +292,7 @@ const ContestDetail = () => {
 
             {/* Tab Content */}
             <div className="p-6">
-              {activeTab === 'overview' && (
+              {activeTab === "overview" && (
                 <div className="space-y-6">
                   {/* Description */}
                   <div>
@@ -359,18 +353,18 @@ const ContestDetail = () => {
                 </div>
               )}
 
-              {activeTab === 'rounds' && (
+              {activeTab === "rounds" && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold text-[#2d3748]">
                       Contest Rounds
                     </h3>
-                    {roundsLoading && (
+                    {loading && (
                       <span className="text-sm text-[#7A7574]">Loading...</span>
                     )}
                   </div>
 
-                  {roundsError ? (
+                  {error ? (
                     <div className="text-center py-8">
                       <Icon
                         icon="mdi:alert-circle"
@@ -378,76 +372,131 @@ const ContestDetail = () => {
                         className="mx-auto mb-2 text-red-500 opacity-50"
                       />
                       <p className="text-[#7A7574]">Failed to load rounds</p>
-                      <p className="text-sm text-[#7A7574] mt-1">
-                        {roundsError}
-                      </p>
+                      <p className="text-sm text-[#7A7574] mt-1">{error}</p>
                     </div>
                   ) : rounds && rounds.length > 0 ? (
-                    rounds.map((round, index) => (
-                      <div
-                        key={round.roundId || index}
-                        className="border border-[#E5E5E5] rounded-[5px] p-4 hover:bg-[#f9fafb] transition-colors"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#ff6b35] text-white flex items-center justify-center text-sm font-bold">
-                              {round.roundNumber || index + 1}
+                    rounds.map((round, index) => {
+                      // ✅ Determine route based on problemType
+                      const getRoundRoute = () => {
+                        switch (round.problemType) {
+                          case "McqTest":
+                            return `/mcq-test/${contestId}/${round.roundId}`;
+                          case "Manual":
+                            return `/manual-problem/${contestId}/${round.roundId}`;
+                          case "AutoEvaluation":
+                            return `/auto-evaluation/${contestId}/${round.roundId}`;
+                          default:
+                            return null;
+                        }
+                      };
+
+                      // ✅ Get button label based on problemType
+                      const getButtonLabel = () => {
+                        switch (round.problemType) {
+                          case "McqTest":
+                            return "Start Test";
+                          case "Manual":
+                            return "Start Problem";
+                          case "AutoEvaluation":
+                            return "Start Challenge";
+                          default:
+                            return "Start";
+                        }
+                      };
+
+                      const roundRoute = getRoundRoute();
+
+                      return (
+                        <div
+                          key={round.roundId || index}
+                          className="border border-[#E5E5E5] rounded-[5px] relative p-4 hover:bg-[#f9fafb] transition-colors"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full bg-[#ff6b35] text-white flex items-center justify-center text-sm font-bold">
+                                {index + 1}
+                              </div>
+                              <h4 className="font-semibold text-[#2d3748]">
+                                {round.roundName ||
+                                  round.name ||
+                                  `Round ${index + 1}`}
+                              </h4>
                             </div>
-                            <h4 className="font-semibold text-[#2d3748]">
-                              {round.name || `Round ${index + 1}`}
-                            </h4>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`text-xs px-2 text-center py-1 rounded ${
-                                round.status === 'Closed'
-                                  ? 'bg-[#fde8e8] text-[#d93025]'
-                                  : round.status === 'Opened'
-                                  ? 'bg-[#e6f4ea] text-[#34a853]'
-                                  : 'bg-[#fef7e0] text-[#fbbc05]'
-                              }`}
-                            >
-                              {round.status}
-                            </span>
-                            {round.status === 'Opened' && (
-                              <button
-                                onClick={() => navigate(`/mcq-test/${contestId}/${round.roundId}`)}
-                                className="button-orange text-xs px-3 py-1 flex items-center gap-1"
+                            <div className="flex flex-col items-end gap-2 ">
+                              <span
+                                className={`text-xs px-2 text-center py-1 rounded ${
+                                  round.status === "Closed"
+                                    ? "bg-[#fde8e8] text-[#d93025]"
+                                    : round.status === "Opened"
+                                    ? "bg-[#e6f4ea] text-[#34a853]"
+                                    : "bg-[#fef7e0] text-[#fbbc05]"
+                                }`}
                               >
-                                <Play size={12} />
-                                Start Test
-                              </button>
+                                {round.status}
+                              </span>
+                              {round.status === "Opened" && roundRoute && (
+                                <button
+                                  onClick={() => navigate(roundRoute)}
+                                  className="button-orange text-xs px-3 p py-1 flex absolute bottom-4 right-4 items-center gap-1"
+                                >
+                                  <Play size={12} />
+                                  {getButtonLabel()}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2 text-sm text-[#7A7574] ml-10">
+                            {/* ✅ Show MCQ Test info only for McqTest type */}
+                            {round.problemType === "McqTest" &&
+                              round.mcqTest && (
+                                <div className="flex items-center gap-2">
+                                  <BookCheck size={14} />
+                                  <span>
+                                    {round.mcqTest.name || "MCQ Test"}
+                                  </span>
+                                </div>
+                              )}
+
+                            {/* ✅ Show Problem Type with icon */}
+                            <div className="flex items-center gap-2">
+                              <NotebookPen size={14} />
+                              <span>
+                                {round.problemType === "McqTest"
+                                  ? "Multiple Choice Questions"
+                                  : round.problemType === "Manual"
+                                  ? "Manual Problem"
+                                  : round.problemType === "AutoEvaluation"
+                                  ? "Auto Evaluation"
+                                  : round.problemType}
+                              </span>
+                            </div>
+
+                            {/* Time Limit (if available) */}
+                            {round.timeLimitSeconds && (
+                              <div className="flex items-center gap-2">
+                                <Icon icon="mdi:timer-outline" width="14" />
+                                <span>
+                                  {Math.floor(round.timeLimitSeconds / 60)}{" "}
+                                  minutes
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Date Range */}
+                            {round.start && round.end && (
+                              <div className="flex items-center gap-2">
+                                <Calendar size={14} />
+                                <span>
+                                  {formatDate(round.start)} -{" "}
+                                  {formatDate(round.end)}
+                                </span>
+                              </div>
                             )}
                           </div>
                         </div>
-
-                        <div className="flex flex-col gap-4 text-sm text-[#7A7574] ml-10">
-                          <div className="flex items-center gap-2">
-                            <BookCheck size={14} />
-                            <span>{round.mcqTest.name}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <NotebookPen size={14} />
-                            <span>{round.problemType}</span>
-                          </div>
-                          {round.start && (
-                            <div className="flex items-center gap-2">
-                              <Clock size={14} />
-                              <span>
-                                {calculateDuration(round.start, round.end)}{' '}
-                                minutes
-                              </span>
-                            </div>
-                          )}
-                          {round.durationMinutes && (
-                            <div className="flex items-center gap-2">
-                              <Icon icon="mdi:timer-outline" width="14" />
-                              <span>{round.durationMinutes} minutes</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))
+                      );
+                    })
                   ) : (
                     <div className="text-center py-8 text-[#7A7574]">
                       <Icon
@@ -455,13 +504,13 @@ const ContestDetail = () => {
                         width="48"
                         className="mx-auto mb-2 opacity-50"
                       />
-                      <p>No rounds scheduled yet {}</p>
+                      <p>No rounds scheduled yet</p>
                     </div>
                   )}
                 </div>
               )}
 
-              {activeTab === 'rules' && (
+              {activeTab === "rules" && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-[#2d3748] mb-3">
                     Contest Rules & Guidelines
@@ -510,10 +559,10 @@ const ContestDetail = () => {
               Register Now
             </button>
             <p className="text-xs text-[#7A7574] text-center mt-2">
-              Registration closes on{' '}
+              Registration closes on{" "}
               {contest.registrationEnd
-                ? formatDate(contest.registrationEnd).split(',')[0]
-                : 'TBA'}
+                ? formatDate(contest.registrationEnd).split(",")[0]
+                : "TBA"}
             </p>
           </div>
 
@@ -564,17 +613,7 @@ const ContestDetail = () => {
                 <span className="text-[#7A7574]">Language:</span>
                 <span className="font-medium text-[#2d3748]">Python 3</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-[#7A7574]">Duration:</span>
-                <span className="font-medium text-[#2d3748]">
-                  {contest.start && contest.end
-                    ? `${Math.ceil(
-                        (new Date(contest.end) - new Date(contest.start)) /
-                          (1000 * 60 * 60 * 24)
-                      )} Days`
-                    : '3 Days'}
-                </span>
-              </div>
+            
             </div>
           </div>
 
