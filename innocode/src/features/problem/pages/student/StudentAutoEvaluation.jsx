@@ -1,15 +1,24 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import PageContainer from '@/shared/components/PageContainer';
-import { Icon } from '@iconify/react';
-import { ArrowLeft, Code, Play, CheckCircle } from 'lucide-react';
-import useContestDetail from '@/features/contest/hooks/useContestDetail';
-import useAutoEvaluation from '../../hooks/useAutoEvaluation';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import PageContainer from "@/shared/components/PageContainer";
+import { Icon } from "@iconify/react";
+import { ArrowLeft, Code, Play, CheckCircle } from "lucide-react";
+import useContestDetail from "@/features/contest/hooks/useContestDetail";
+import useAutoEvaluation from "../../hooks/useAutoEvaluation";
+import { toast } from "react-hot-toast";
 
 const StudentAutoEvaluation = () => {
   const { contestId, roundId } = useParams();
   const navigate = useNavigate();
-  const [code, setCode] = useState('');
+  
+  // Tạo key unique cho localStorage dựa trên roundId
+  const STORAGE_KEY = `code_${roundId}`;
+  
+  // Khởi tạo code từ localStorage
+  const [code, setCode] = useState(() => {
+    const savedCode = localStorage.getItem(STORAGE_KEY);
+    return savedCode || "";
+  });
   const { contest, loading, error } = useContestDetail(contestId);
   const {
     testCases,
@@ -32,31 +41,63 @@ const StudentAutoEvaluation = () => {
   const problem = round?.problem;
   const timeLimitMinutes = round?.timeLimitSeconds / 60;
 
+  // Thêm useEffect để theo dõi submissionId
+  useEffect(() => {
+  }, [submissionId]);
+
+  // Lưu code vào localStorage mỗi khi thay đổi
+  useEffect(() => {
+    if (code) {
+      localStorage.setItem(STORAGE_KEY, code);
+    }
+  }, [code, STORAGE_KEY]);
+
+  // Optional: Xóa code khỏi localStorage khi submit thành công
+  useEffect(() => {
+    if (finalSubmitResult) {
+      // Có thể xóa hoặc giữ lại tùy yêu cầu
+      // localStorage.removeItem(STORAGE_KEY);
+    }
+  }, [finalSubmitResult, STORAGE_KEY]);
+
+  // Clear code function
+  const handleClearCode = () => {
+    if (window.confirm("Are you sure you want to clear your code?")) {
+      setCode("");
+      localStorage.removeItem(STORAGE_KEY);
+      toast.dismiss();
+      toast.success("Code cleared");
+    }
+  };
+
   const handleRuncode = async () => {
+
     if (!code.trim()) {
-      alert('Please enter your code before running.');
+      toast.dismiss();
+      toast.error("Please enter your code before running.");
       return;
     }
 
     try {
       await submitCode(code);
     } catch (error) {
-      console.error('Failed to run code:', error);
+      console.error("❌ Failed to run code:", error);
     }
   };
 
   const handleFinalSubmit = async () => {
     if (!submissionId) {
-      alert('Please run your code first before submitting.');
+      toast.dismiss();
+      toast.error("Please run your code first before submitting.");
       return;
     }
 
     try {
       await submitFinalAutoTest();
-      // Hiển thị thông báo thành công
-      alert('Final submission successful!');
+      toast.dismiss();
+      toast.success("Final submission successful!");
     } catch (error) {
-      console.error('Failed to submit final test:', error);
+      console.error("❌ Failed to submit final test:", error);
     }
   };
   // Loading state
@@ -143,7 +184,7 @@ const StudentAutoEvaluation = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-[#2d3748]">
-                {round.roundName || 'Name unknown'}
+                {round.roundName || "Name unknown"}
               </h1>
             </div>
           </div>
@@ -194,11 +235,11 @@ const StudentAutoEvaluation = () => {
                     className="text-[#7A7574]"
                   />
                   <span className="text-[#7A7574]">
-                    You will lose{' '}
+                    You will lose{" "}
                     <span className="text-[#dd4b4b] font-medium">
-                      {' '}
+                      {" "}
                       {(problem.penaltyRate * 100).toFixed(0)}%
-                    </span>{' '}
+                    </span>{" "}
                     of your total test score for each submission from the second
                     attempt onward.
                   </span>
@@ -219,12 +260,19 @@ const StudentAutoEvaluation = () => {
 
           {/* Code Editor */}
           <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6">
-            <h2 className="text-lg font-semibold text-[#2d3748] mb-4 flex items-center gap-2">
-              <Code size={20} className="text-[#ff6b35]" />
-              Your Solution
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-[#2d3748] flex items-center gap-2">
+                <Code size={20} className="text-[#ff6b35]" />
+                Your Solution
+              </h2>
+              
+            
+            </div>
 
-            <div className="mb-4">{round.problem.language}</div>
+            <div className="mb-4 font-semibold">
+              <span className="">Type code: </span>
+              {round.problem.language}
+            </div>
 
             <textarea
               value={code}
@@ -232,6 +280,24 @@ const StudentAutoEvaluation = () => {
               placeholder="# Write your code here..."
               className="w-full h-[300px] p-4 border border-[#E5E5E5] rounded-[5px] font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#ff6b35]"
             />
+
+            {/* Hiển thị auto-save indicator */}
+            {code && (
+              <div className="flex items-center gap-1 mt-2 text-xs text-[#7A7574]">
+                <Icon icon="mdi:content-save" width={14} />
+                <span>Auto-saved</span>
+              </div>
+            )}
+              {/* Optional: Clear button */}
+              {code && (
+                <button
+                  onClick={handleClearCode}
+                  className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+                >
+                  <Icon icon="mdi:delete" width={14} />
+                  Clear
+                </button>
+              )}
 
             <div className="flex gap-3 mt-4">
               <button
@@ -259,7 +325,7 @@ const StudentAutoEvaluation = () => {
                 onClick={handleFinalSubmit}
                 disabled={finalSubmitting || !submissionId}
                 className={`flex-1 button-orange flex items-center justify-center gap-2 ${
-                  !submissionId ? 'opacity-50 cursor-not-allowed' : ''
+                  !submissionId ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
                 {finalSubmitting ? (
@@ -356,111 +422,148 @@ const StudentAutoEvaluation = () => {
               />
               <p className="text-[#7A7574]">Loading results...</p>
             </div>
-          ) : testResult?.data?.summary ? (
+          ) : testResult?.data ? (
             <div className="space-y-4">
               {/* Summary */}
               <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center">
-                    <p className="text-xs text-[#7A7574] mb-1">Total</p>
+                    <p className="text-xs text-[#7A7574] mb-1">
+                      Total Test Cases
+                    </p>
                     <p className="text-xl font-bold text-[#2d3748]">
-                      {testResult.data.summary.total}
+                      {testResult.data.details?.length || 0}
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-xs text-[#7A7574] mb-1">Passed</p>
                     <p className="text-xl font-bold text-green-600">
-                      {testResult.data.summary.passed}
+                      {testResult.data.details?.filter(
+                        (d) => d.note === "success"
+                      ).length || 0}
                     </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs text-[#7A7574] mb-1">Failed</p>
-                    <p className="text-xl font-bold text-red-600">
-                      {testResult.data.summary.failed}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs text-[#7A7574] mb-1">Raw Score</p>
+                    <p className="text-xs text-[#7A7574] mb-1">Score</p>
                     <p className="text-xl font-bold text-[#ff6b35]">
-                      {testResult.data.summary.rawScore}%
+                      {testResult.data.score || 0}
                     </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs text-[#7A7574] mb-1">Final Score</p>
+                    <p className="text-xs text-[#7A7574] mb-1">Attempt</p>
                     <p className="text-xl font-bold text-[#2d3748]">
-                      {testResult.data.summary.penaltyScore}%
+                      {testResult.data.submissionAttemptNumber}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Test Cases */}
-              {testResult.data.cases && testResult.data.cases.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="font-semibold text-[#2d3748] text-sm">
-                    Test Cases Detail
-                  </h3>
-                  {testResult.data.cases.map((testCase, index) => (
-                    <div
-                      key={testCase.id || index}
-                      className={`border rounded-[5px] p-4 ${
-                        testCase.status === 'success'
-                          ? 'bg-green-50 border-green-200'
-                          : 'bg-red-50 border-red-200'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">
-                            Test Case {index + 1}
-                          </span>
-                          <span
-                            className={`px-2 py-0.5 rounded text-xs font-medium ${
-                              testCase.status === 'success'
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-red-100 text-red-700'
-                            }`}
-                          >
-                            {testCase.judge0Status}
-                          </span>
-                        </div>
-                        <div className="text-xs text-[#7A7574]">
-                          Time: {testCase.time}s | Memory: {testCase.memoryKb}{' '}
-                          KB
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <p className="text-xs text-[#7A7574] mb-1">
-                            Expected:
-                          </p>
-                          <pre className="bg-white border border-[#E5E5E5] rounded p-2">
-                            {testCase.expected}
-                          </pre>
-                        </div>
-                        <div>
-                          <p className="text-xs text-[#7A7574] mb-1">Actual:</p>
-                          <pre
-                            className={`bg-white border rounded p-2 ${
-                              testCase.status === 'success'
-                                ? 'border-green-200'
-                                : 'border-red-200'
-                            }`}
-                          >
-                            {testCase.actual || 'N/A'}
-                          </pre>
-                        </div>
-                      </div>
-                      {testCase.stderr && (
-                        <div className="mt-2">
-                          <p className="text-xs text-red-600 mb-1">Error:</p>
-                          <pre className="bg-red-50 border border-red-200 rounded p-2 text-xs text-red-700">
-                            {testCase.stderr}
-                          </pre>
-                        </div>
-                      )}
+              {/* Status */}
+              {testResult.data.status && (
+                <div
+                  className={`border rounded-[5px] p-3 ${
+                    testResult.data.status === "Finished"
+                      ? "bg-green-50 border-green-200"
+                      : "bg-yellow-50 border-yellow-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Icon
+                      icon={
+                        testResult.data.status === "Finished"
+                          ? "mdi:check-circle"
+                          : "mdi:progress-clock"
+                      }
+                      width="20"
+                      className={
+                        testResult.data.status === "Finished"
+                          ? "text-green-600"
+                          : "text-yellow-600"
+                      }
+                    />
+                    <span className="font-medium text-sm">
+                      Status: {testResult.data.status}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Submitted Code */}
+              {testResult.data.artifacts &&
+                testResult.data.artifacts.length > 0 && (
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-[#2d3748] text-sm">
+                      Submitted Code
+                    </h3>
+                    <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
+                      <pre className="text-sm overflow-x-auto">
+                        {testResult.data.artifacts[0].url}
+                      </pre>
                     </div>
-                  ))}
+                  </div>
+                )}
+
+              {/* Test Cases Detail */}
+              {testResult.data.details &&
+                testResult.data.details.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-[#2d3748] text-sm">
+                      Test Cases Detail
+                    </h3>
+                    {testResult.data.details.map((detail, index) => (
+                      <div
+                        key={detail.detailsId}
+                        className={`border rounded-[5px] p-4 ${
+                          detail.note === "success"
+                            ? "bg-green-50 border-green-200"
+                            : "bg-red-50 border-red-200"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-sm">
+                              Test Case {index + 1}
+                            </span>
+                            <span
+                              className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                detail.note === "success"
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {detail.note}
+                            </span>
+                          </div>
+                          <div className="text-xs text-[#7A7574]">
+                            Time: {detail.runtimeMs}ms | Memory:{" "}
+                            {detail.memoryKb} KB | Weight: {detail.weight}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+              {/* Team Info */}
+              {testResult.data.teamName && (
+                <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
+                  <h3 className="font-semibold text-[#2d3748] text-sm mb-2">
+                    Submission Info
+                  </h3>
+                  <div className="space-y-1 text-sm">
+                    <p className="text-[#4a5568]">
+                      <span className="font-medium">Team:</span>{" "}
+                      {testResult.data.teamName}
+                    </p>
+                    <p className="text-[#4a5568]">
+                      <span className="font-medium">Submitted by:</span>{" "}
+                      {testResult.data.submittedByStudentName}
+                    </p>
+                    <p className="text-[#4a5568]">
+                      <span className="font-medium">Submitted at:</span>{" "}
+                      {new Date(testResult.data.createdAt).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
               )}
             </div>

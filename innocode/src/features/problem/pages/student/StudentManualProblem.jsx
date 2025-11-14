@@ -6,6 +6,7 @@ import { ArrowLeft, FileText, Upload, Clock, Calendar, X } from 'lucide-react';
 import useContestDetail from '@/features/contest/hooks/useContestDetail';
 import { useDropzone } from 'react-dropzone';
 import useManualSubmission from '../../hooks/useManualSubmission';
+import { toast } from 'react-hot-toast';
 
 const StudentManualProblem = () => {
   const { contestId, roundId } = useParams();
@@ -28,10 +29,11 @@ const StudentManualProblem = () => {
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (rejectedFiles.length > 0) {
       const rejection = rejectedFiles[0];
+      toast.dismiss();
       if (rejection.errors[0].code === 'file-too-large') {
-        alert('File size must be less than 10MB');
+        toast.error('File size must be less than 10MB');
       } else if (rejection.errors[0].code === 'file-invalid-type') {
-        alert('Only .zip and .rar files are allowed');
+        toast.error('Only .zip and .rar files are allowed');
       }
     }
 
@@ -62,7 +64,8 @@ const StudentManualProblem = () => {
   };
   const handleSubmit = async () => {
     if (!selectedFile) {
-      alert('Please select a file to submit');
+      toast.dismiss();
+      toast.error('Please select a file to submit');
       return;
     }
 
@@ -73,13 +76,15 @@ const StudentManualProblem = () => {
     ) {
       try {
         await submitSolution(roundId, selectedFile);
-        alert('Solution submitted successfully!');
+        toast.dismiss();
+        toast.success('Solution submitted successfully!');
         // Optional: Navigate back or reset form
         setSelectedFile(null);
         // navigate(`/contest-detail/${contestId}`);
       } catch (err) {
-        alert(
-          `Failed to submit: ${err.response.data.errorMessage || err.message}`
+        toast.dismiss();
+        toast.error(
+          `Failed to submit: ${err.response?.data?.errorMessage || err.message}`
         );
       }
     }
@@ -267,28 +272,8 @@ const StudentManualProblem = () => {
                     </span>
                   </div>
                 )}
-                <div className="flex items-center gap-2">
-                  <Icon
-                    icon="mdi:alert"
-                    width="16"
-                    className="text-[#7A7574]"
-                  />
-                  <span className="text-[#7A7574]">Penalty Rate:</span>
-                  <span className="text-[#dd4b4b] font-medium">
-                    {(problem.penaltyRate * 100).toFixed(0)}%
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Icon
-                    icon="mdi:identifier"
-                    width="16"
-                    className="text-[#7A7574]"
-                  />
-                  <span className="text-[#7A7574]">Problem ID:</span>
-                  <span className="text-[#2d3748] font-mono text-xs">
-                    {problem.problemId}
-                  </span>
-                </div>
+           
+             
               </div>
             </div>
 

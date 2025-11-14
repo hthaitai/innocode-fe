@@ -64,29 +64,34 @@ const useAutoEvaluation = (roundId) => {
     setSubmitResult(null);
 
     try {
-      const payload = { code: code }; // ✅ Sửa thành "Code" (viết hoa)
-      console.log('Submitting payload:', payload);
+      const response = await submissionApi.submitAutoTest(roundId, {
+        code: code,
+      });
 
-      const response = await submissionApi.submitAutoTest(roundId, payload);
+      console.log('📥 API Response:', response.data);
 
-      // ✅ Lưu kết quả test
       setSubmitResult(response.data);
-      setTestResult(response.data);
 
-      // ✅ Lưu submissionId để dùng cho final submit
-      setSubmissionId(response.data.submissionId);
+      // Kiểm tra và lưu submissionId
+      const newSubmissionId =
+        response.data?.data?.submissionId ||
+        response.data?.submissionId ||
+        response.data?.id;
+
+      console.log('🆔 New Submission ID:', newSubmissionId);
+
+      if (newSubmissionId) {
+        setSubmissionId(newSubmissionId);
+        // Fetch test results
+        await fetchTestResult(newSubmissionId);
+      } else {
+        console.error('❌ No submission ID in response:', response.data);
+      }
 
       return response.data;
     } catch (err) {
-      console.error('Submit error:', err.response?.data);
-
-      const errorMessage =
-        err.response?.data?.errorMessage ||
-        err.response?.data?.message ||
-        err.response?.data?.title ||
-        'Server error occurred. Please try again later or contact support.';
-
-      setSubmitError(errorMessage);
+      console.error('❌ Submit error:', err);
+      setSubmitError(err.response?.data?.message || 'Failed to submit code');
       throw err;
     } finally {
       setSubmitting(false);
@@ -108,7 +113,6 @@ const useAutoEvaluation = (roundId) => {
 
       console.log('Final submission response:', response.data);
 
-      // ✅ Lưu kết quả final submission
       setFinalSubmitResult(response.data);
 
       return response.data;

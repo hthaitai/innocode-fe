@@ -11,11 +11,12 @@ const submissionApi = {
   },
   //Submit final auto evaluation
   submitFinalAutoTest: (submissionId) => {
-    return axiosClient.post(`/submissions/${submissionId}/acceptance`);
+    return axiosClient.put(`/submissions/${submissionId}/acceptance`);
   },
   //Get auto test result
   getAutoTestResult: (roundId) =>
     axiosClient.get(`/rounds/${roundId}/auto-test/my-result`),
-};
+  
+}
 
 export default submissionApi;
