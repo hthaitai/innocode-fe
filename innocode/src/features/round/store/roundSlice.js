@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { fetchRounds, addRound, updateRound, deleteRound } from "./roundThunk"
-import { mapRoundList } from "../mappers/roundMapper"
 
 const initialState = {
   rounds: [],
@@ -22,7 +21,7 @@ const roundSlice = createSlice({
   reducers: {
     clearRounds(state) {
       state.rounds = []
-      state.pagination = initialState.pagination // optional but recommended
+      state.pagination = initialState.pagination
       state.error = null
     },
   },
@@ -35,8 +34,15 @@ const roundSlice = createSlice({
       })
       .addCase(fetchRounds.fulfilled, (state, action) => {
         state.loading = false
-        state.rounds = mapRoundList(action.payload.rounds)
-        state.pagination = initialState.pagination
+        state.rounds = action.payload
+        state.pagination = {
+          pageNumber: 1,
+          pageSize: action.payload.length,
+          totalPages: 1,
+          totalCount: action.payload.length,
+          hasPreviousPage: false,
+          hasNextPage: false,
+        }
       })
       .addCase(fetchRounds.rejected, (state, action) => {
         state.loading = false
@@ -49,8 +55,6 @@ const roundSlice = createSlice({
       })
       .addCase(addRound.fulfilled, (state) => {
         state.loading = false
-        // Do NOT push anything.
-        // Rounds list is reloaded via fetchRounds in UI.
       })
       .addCase(addRound.rejected, (state, action) => {
         state.loading = false

@@ -1,28 +1,32 @@
-import React, { useCallback, useEffect, useMemo } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import React, { useEffect, useMemo } from "react"
+import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import ContestInfo from "../../components/organizer/ContestInfo"
 import PublishContestSection from "../../components/organizer/PublishContestSection"
 import ContestRelatedSettings from "../../components/organizer/ContestRelatedSettings"
 import RoundsList from "../../components/organizer/RoundList"
-import { Trash } from "lucide-react"
-import { useOrganizerContestDetail } from "../../hooks/useOrganizerContestDetail"
+import DeleteContestSection from "../../components/organizer/DeleteContestSection"
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks"
+import { fetchContestById } from "../../store/contestThunks"
 
 const OrganizerContestDetail = () => {
   const { contestId } = useParams()
-  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
-  const {
-    contest,
-    loading,
-    error,
-    handleEdit,
-    handleDelete,
-  } = useOrganizerContestDetail(contestId)
+  const { contest, detailLoading, detailError } = useAppSelector(
+    (state) => state.contests
+  )
 
-  // Fetch contest detail on mount / param change
+  // Fetch contest on mount / id change
+  useEffect(() => {
+    if (!contestId) return
+    if (!contest || contest.contestId !== contestId) {
+      dispatch(fetchContestById(contestId))
+    }
+  }, [dispatch, contestId, contest?.contestId])
 
+  // Breadcrumbs
   const breadcrumbItems = useMemo(
     () =>
       BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(contest?.name ?? "Contest Detail"),
@@ -34,7 +38,8 @@ const OrganizerContestDetail = () => {
     [contestId]
   )
 
-  if (!contest && !loading) {
+  // If not found
+  if (!contest && !detailLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -51,13 +56,13 @@ const OrganizerContestDetail = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={loading}
-      error={error}
+      loading={detailLoading}
+      error={detailError}
     >
       <div className="space-y-5">
         {/* Contest Info + Publish */}
         <div className="space-y-1">
-          <ContestInfo contest={contest} onEdit={handleEdit} />
+          <ContestInfo contest={contest} />
           <PublishContestSection contest={contest} />
         </div>
 
@@ -78,20 +83,7 @@ const OrganizerContestDetail = () => {
         </div>
 
         {/* Delete */}
-        <div>
-          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-            Other settings
-          </div>
-          <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-            <div className="flex items-center gap-3">
-              <Trash size={20} />
-              <span className="text-sm leading-5">Delete contest</span>
-            </div>
-            <button className="button-white" onClick={handleDelete}>
-              Delete Contest
-            </button>
-          </div>
-        </div>
+        <DeleteContestSection contest={contest} />
       </div>
     </PageContainer>
   )

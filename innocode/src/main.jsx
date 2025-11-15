@@ -52,7 +52,6 @@ import ProtectedRoute from "./shared/components/auth/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
 import PublicRoute from "./shared/components/auth/PublicRoute";
 import OrganizerMcq from "./features/mcq/pages/OrganizerMcq";
-import OrganizerMcqDetail from "./features/mcq/pages/OrganizerMcqDetail";
 import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate";
 import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts";
 import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail";

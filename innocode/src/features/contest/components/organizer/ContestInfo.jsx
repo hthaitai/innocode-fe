@@ -1,15 +1,33 @@
-import React from "react"
+import React, { useCallback } from "react"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import StatusBadge from "../../../../shared/components/StatusBadge"
+import { useAppDispatch } from "@/store/hooks"
+import { useModal } from "@/shared/hooks/useModal"
+import { fetchContestById } from "../../store/contestThunks"
 
-const ContestInfo = ({ contest, onEdit }) => {
+const ContestInfo = ({ contest }) => {
+  const dispatch = useAppDispatch()
+  const { openModal } = useModal()
+
   const safe = (val) =>
-    val === null || val === undefined || val === "" ? "—" : val;
+    val === null || val === undefined || val === "" ? "—" : val
+
+  // Move edit logic here
+  const handleEdit = useCallback(() => {
+    if (!contest) return
+
+    openModal("contest", {
+      initialData: contest,
+      onUpdated: () => {
+        dispatch(fetchContestById(contest.contestId))
+      },
+    })
+  }, [contest, openModal, dispatch])
 
   return (
-    <InfoSection title="Contest Information" onEdit={onEdit}>
+    <InfoSection title="Contest Information" onEdit={handleEdit}>
       <DetailTable
         data={[
           { label: "Name", value: safe(contest.name) },
@@ -44,8 +62,7 @@ const ContestInfo = ({ contest, onEdit }) => {
         ]}
       />
     </InfoSection>
-  );
-};
-
+  )
+}
 
 export default ContestInfo

@@ -12,8 +12,8 @@ export const useOrganizerContestRounds = (contestId) => {
   const {
     contests,
     pagination,
-    loading,
-    error,
+    listLoading: loading,
+    listError: error,
   } = useAppSelector((state) => state.contests)
 
   // ✅ Find contest from store

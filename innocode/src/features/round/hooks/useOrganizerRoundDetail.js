@@ -12,9 +12,8 @@ export const useOrganizerRoundDetail = (contestId, roundId) => {
   const dispatch = useAppDispatch()
   const { openModal } = useModal()
 
-  const { contests, pagination, loading, error } = useAppSelector(
-    (state) => state.contests
-  )
+  const { contests, pagination, listLoading: loading, listError: error } =
+    useAppSelector((state) => state.contests)
 
   const [contest, setContest] = useState(null)
   const [round, setRound] = useState(null)

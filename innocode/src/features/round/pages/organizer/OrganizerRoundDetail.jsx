@@ -1,22 +1,52 @@
-import React, { useEffect, useMemo } from "react"
-import { useParams } from "react-router-dom"
+import React, { useEffect, useMemo, useCallback, useState } from "react"
+import { useParams, useNavigate } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { Trash } from "lucide-react"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import RoundInfo from "../../components/organizer/RoundInfo"
 import RoundRelatedSettings from "../../components/organizer/RoundRelatedSettings"
-import { useOrganizerRoundDetail } from "../../hooks/useOrganizerRoundDetail"
+import { useAppSelector, useAppDispatch } from "@/store/hooks"
+import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
+import { deleteRound } from "../../store/roundThunk"
+import { useModal } from "../../../../shared/hooks/useModal"
+import { toast } from "react-hot-toast"
+import DeleteRoundSection from "../../components/organizer/DeleteRoundSection"
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
-  const {
-    contest,
-    round,
-    loading,
-    error,
-    handleEdit,
-    handleDelete,
-  } = useOrganizerRoundDetail(contestId, roundId)
+  const dispatch = useAppDispatch()
+
+  const { contests, listLoading, listError } = useAppSelector(
+    (state) => state.contests
+  )
+
+  const [contest, setContest] = useState(null)
+  const [round, setRound] = useState(null)
+
+  /* Fetch round detail */
+  const fetchRoundDetail = useCallback(() => {
+    const foundContest = contests?.find(
+      (c) => String(c.contestId) === String(contestId)
+    )
+
+    if (!foundContest) {
+      if (!listLoading) {
+        dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
+      }
+      return
+    }
+
+    const foundRound = foundContest.rounds?.find(
+      (r) => String(r.roundId) === String(roundId)
+    )
+
+    setContest(foundContest || null)
+    setRound(foundRound || null)
+  }, [contests, contestId, roundId, dispatch, listLoading])
+
+  useEffect(() => {
+    fetchRoundDetail()
+  }, [fetchRoundDetail])
 
   const breadcrumbItems = useMemo(
     () =>
@@ -33,7 +63,7 @@ const OrganizerRoundDetail = () => {
     [contestId, roundId]
   )
 
-  if (!round && !loading) {
+  if (!round && !listLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -50,11 +80,11 @@ const OrganizerRoundDetail = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={loading}
-      error={error}
+      listLoading={listLoading}
+      listError={listError}
     >
       <div className="space-y-5">
-        <RoundInfo round={round} onEdit={handleEdit} />
+        <RoundInfo round={round} />
 
         <div>
           <div className="text-sm font-semibold pt-3 pb-2">
@@ -65,15 +95,7 @@ const OrganizerRoundDetail = () => {
 
         <div>
           <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
-          <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-            <div className="flex gap-5 items-center">
-              <Trash size={20} />
-              <span className="text-sm">Delete round</span>
-            </div>
-            <button className="button-white" onClick={handleDelete}>
-              Delete Round
-            </button>
-          </div>
+          <DeleteRoundSection round={round} contestId={contestId} />
         </div>
       </div>
     </PageContainer>

@@ -21,9 +21,16 @@ const initialState = {
     hasPreviousPage: false,
     hasNextPage: false,
   },
+
+  // Separate loading states
   listLoading: false,
   detailLoading: false,
-  error: null,
+  actionLoading: false,
+
+  // Mirrored error states
+  listError: null,
+  detailError: null,
+  actionError: null,
 }
 
 const contestSlice = createSlice({
@@ -33,17 +40,22 @@ const contestSlice = createSlice({
     clearContests: (state) => {
       state.contests = []
       state.pagination = initialState.pagination
-      state.loading = false
-      state.error = null
+      state.listLoading = false
+      state.detailLoading = false
+      state.actionLoading = false
+      state.listError = null
+      state.detailError = null
+      state.actionError = null
     },
   },
+
   extraReducers: (builder) => {
-    // --- Shared handler for both fetch types ---
-    const handleFetch = (builder, thunk) => {
+    // --- Shared handler for fetching lists ---
+    const handleListFetch = (builder, thunk) => {
       builder
         .addCase(thunk.pending, (state) => {
           state.listLoading = true
-          state.error = null
+          state.listError = null
         })
         .addCase(thunk.fulfilled, (state, action) => {
           state.listLoading = false
@@ -52,98 +64,62 @@ const contestSlice = createSlice({
         })
         .addCase(thunk.rejected, (state, action) => {
           state.listLoading = false
-          state.error = action.payload
+          state.listError = action.payload
         })
     }
 
-    // --- Fetches ---
-    handleFetch(builder, fetchAllContests)
-    handleFetch(builder, fetchOrganizerContests)
+    handleListFetch(builder, fetchAllContests)
+    handleListFetch(builder, fetchOrganizerContests)
 
     // --- Fetch single contest detail ---
     builder
       .addCase(fetchContestById.pending, (state) => {
-        state.detailLoading  = true
-        state.error = null
+        state.detailLoading = true
+        state.detailError = null
       })
       .addCase(fetchContestById.fulfilled, (state, action) => {
-        state.detailLoading  = false
+        state.detailLoading = false
         state.contest = action.payload
       })
       .addCase(fetchContestById.rejected, (state, action) => {
-        state.detailLoading  = false
-        state.error = action.payload
+        state.detailLoading = false
+        state.detailError = action.payload
       })
 
-    // --- Add ---
-    builder
-      .addCase(addContest.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(addContest.fulfilled, (state) => {
-        state.loading = false
-      })
-      .addCase(addContest.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.payload
-      })
+    // --- Shared handler for create/update/delete/publish/check ---
+    const handleAction = (thunk) => {
+      builder
+        .addCase(thunk.pending, (state) => {
+          state.actionLoading = true
+          state.actionError = null
+        })
+        .addCase(thunk.fulfilled, (state) => {
+          state.actionLoading = false
+        })
+        .addCase(thunk.rejected, (state, action) => {
+          state.actionLoading = false
+          state.actionError = action.payload
+        })
+    }
 
-    // --- Update ---
-    builder
-      .addCase(updateContest.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(updateContest.fulfilled, (state) => {
-        state.loading = false
-      })
-      .addCase(updateContest.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.payload
-      })
+    handleAction(addContest)
+    handleAction(updateContest)
+    handleAction(deleteContest)
+    handleAction(publishContest)
 
-    // --- Delete ---
-    builder
-      .addCase(deleteContest.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(deleteContest.fulfilled, (state) => {
-        state.loading = false
-      })
-      .addCase(deleteContest.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.payload
-      })
-
-    // --- Check Publish Readiness ---
+    // Special case: check publish readiness
     builder
       .addCase(checkPublishReady.pending, (state) => {
-        state.loading = true
-        state.error = null
+        state.actionLoading = true
+        state.actionError = null
       })
       .addCase(checkPublishReady.fulfilled, (state, action) => {
-        state.loading = false
+        state.actionLoading = false
         state.publishCheck = action.payload?.data || null
       })
       .addCase(checkPublishReady.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.payload
-      })
-
-    // --- Publish Contest ---
-    builder
-      .addCase(publishContest.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(publishContest.fulfilled, (state) => {
-        state.loading = false
-      })
-      .addCase(publishContest.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.payload
+        state.actionLoading = false
+        state.actionError = action.payload
       })
   },
 })

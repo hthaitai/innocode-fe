@@ -3,42 +3,38 @@ import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { useModal } from "@/shared/hooks/useModal"
-import { useAppDispatch, useAppSelector } from "@/store/hooks"
+import { useAppDispatch } from "@/store/hooks"
 import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
 
-const RoundInfo = ({ round, onUpdated }) => {
+const RoundInfo = ({ round }) => {
   const { openModal } = useModal()
   const dispatch = useAppDispatch()
-  const { pagination } = useAppSelector((state) => state.contests)
 
+  // Simplified refetch: just fetch contests page 1
   const refetchContests = useCallback(() => {
-    const currentPage = pagination?.pageNumber || 1
-    const safePage = Math.min(currentPage, pagination?.totalPages || 1)
-    dispatch(fetchOrganizerContests({ pageNumber: safePage, pageSize: 50 }))
-  }, [dispatch, pagination?.pageNumber, pagination?.totalPages])
+    dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
+  }, [dispatch])
 
   const handleEdit = useCallback(() => {
     if (!round) return
+
     openModal("round", {
       contestId: round.contestId,
       initialData: round,
-      onUpdated: onUpdated || refetchContests,
+      onUpdated: refetchContests,
     })
-  }, [round, openModal, onUpdated, refetchContests])
+  }, [round, openModal, refetchContests])
 
   if (!round) return null
 
   const safe = (val) =>
     val === null || val === undefined || val === "" ? "—" : val
-
-  const formatPenaltyRate = (rate) => {
-    if (rate == null || rate === "") return "—"
-    return `${(rate * 100).toFixed(0)}%`
-  }
+  const formatPenaltyRate = (rate) =>
+    rate == null || rate === "" ? "—" : `${(rate * 100).toFixed(0)}%`
 
   const details = []
 
-  // 🏆 Core Round Info
+  // Core Round Info
   details.push(
     { label: "Round Name", value: safe(round.roundName) },
     { label: "Contest Name", value: safe(round.contestName) },
@@ -56,18 +52,15 @@ const RoundInfo = ({ round, onUpdated }) => {
     { spacer: true }
   )
 
-  // ⏰ Timing
+  // Timing
   details.push(
     { label: "Start Time", value: safe(formatDateTime(round.start)) },
     { label: "End Time", value: safe(formatDateTime(round.end)) },
-    {
-      label: "Time Limit (seconds)",
-      value: safe(round.timeLimitSeconds),
-    },
+    { label: "Time Limit (seconds)", value: safe(round.timeLimitSeconds) },
     { spacer: true }
   )
 
-  // 🧠 MCQ Test info
+  // MCQ Test Info
   if (round.mcqTest) {
     details.push({ label: "MCQ Test Name", value: safe(round.mcqTest.name) })
 
@@ -94,11 +87,9 @@ const RoundInfo = ({ round, onUpdated }) => {
         value: safe(round.mcqTest.config),
       })
     }
-
-    // Spacer after MCQ config
   }
 
-  // 💻 Problem info (AutoEval / Manual)
+  // Problem Info (AutoEval / Manual)
   if (round.problem) {
     details.push(
       { label: "Problem Language", value: safe(round.problem.language) },
@@ -109,11 +100,9 @@ const RoundInfo = ({ round, onUpdated }) => {
       { label: "Problem Description", value: safe(round.problem.description) }
     )
   } else if (!round.mcqTest) {
-    // Add spacer separately from the row to ensure it renders
     details.push({ label: "Problem Configuration", value: "—" })
   }
 
-  // Filter undefined values
   const filteredDetails = details.filter(
     (d) => d.value !== undefined || d.spacer
   )
