@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { teams as fakeData } from "@/data/contests/teams/teams"
+import { teamApi } from "@/api/teamApi"
 
 export const useTeams = () => {
   const [teams, setTeams] = useState(fakeData)
@@ -29,12 +30,8 @@ export const useTeams = () => {
     setLoading(true)
     setError(null)
     try {
-      // const newTeam = await teamService.createTeam(data)
-      const newTeam = {
-        team_id: Date.now(),
-        created_at: new Date().toISOString(),
-        ...data,
-      }
+      const response = await teamApi.create(data)
+      const newTeam = response.data
       setTeams((prev) => [...prev, newTeam])
       return newTeam
     } catch (err) {

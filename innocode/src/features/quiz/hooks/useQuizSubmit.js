@@ -10,16 +10,15 @@ const useQuizSubmit = () => {
     setSubmitError(null);
     setSubmitSuccess(false);
     try {
-      const submissionData = {
+      const submissionDTO = {
         answers: Object.entries(answer).map(([questionId, optionId]) => ({
           questionId,
           selectedOptionId: optionId,
         })),
       };
-      const response = await quizApi.submitQuiz(roundId, submissionData);
-      console.log('✅ Submit Quiz Response:', response);
-      
-      // axiosClient returns response.data
+      const response = await quizApi.submitQuiz(roundId, { submissionDTO });
+      console.log('✅ Submit Quiz Response:', response.data);
+
       if (response.data && response.data.code === 'SUCCESS') {
         setSubmitSuccess(true);
         return { success: true, data: response.data.data };
@@ -29,25 +28,27 @@ const useQuizSubmit = () => {
       }
     } catch (error) {
       console.error('❌ Error submitting quiz:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to submit quiz';
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        'Failed to submit quiz';
       setSubmitError(errorMessage);
       return { success: false, error: errorMessage };
-    }
-    finally{
-        setIsSubmitting(false);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-    const resetSubmit = () => {
+  const resetSubmit = () => {
     setIsSubmitting(false);
     setSubmitError(null);
     setSubmitSuccess(false);
   };
-    return {
-      isSubmitting,
-      submitError,
-      submitSuccess,
-      submitQuiz,
-      resetSubmit,
-    };
-};  
+  return {
+    isSubmitting,
+    submitError,
+    submitSuccess,
+    submitQuiz,
+    resetSubmit,
+  };
+};
 export default useQuizSubmit;

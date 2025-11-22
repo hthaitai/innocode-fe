@@ -25,6 +25,7 @@ import Team from "./features/contest/student/Team";
 import Leaderboard from "./features/contest/student/Leaderboard";
 import Help from "./features/contest/student/Help";
 import MCQTest from "./features/quiz/student/MCQTest";
+import FinishQuiz from "./features/quiz/student/FinishQuiz";
 // Auth
 import Login from "./features/auth/components/Login";
 import Register from "./features/auth/components/Register";
@@ -54,6 +55,7 @@ import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts";
 import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail";
 import StudentAutoEvaluation from "./features/problem/pages/student/StudentAutoEvaluation";
 import StudentManualProblem from "./features/problem/pages/student/StudentManualProblem";
+import MentorTeam from "./features/team/pages/mentor/MentorTeam";
 // Organizer pages
 
 const router = createBrowserRouter([
@@ -169,8 +171,16 @@ const router = createBrowserRouter([
       {
         path: "contest-detail/:contestId",
         element: (
-          <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT,ROLES.MENTOR]}>
             <ContestDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mentor-team/:contestId",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.MENTOR]}>
+            <MentorTeam />
           </ProtectedRoute>
         ),
       },
@@ -185,7 +195,7 @@ const router = createBrowserRouter([
       {
         path: "manual-problem/:contestId/:roundId",
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
             <StudentManualProblem />
           </ProtectedRoute>
         ),
@@ -193,7 +203,7 @@ const router = createBrowserRouter([
       {
         path: "auto-evaluation/:contestId/:roundId",
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
             <StudentAutoEvaluation />
           </ProtectedRoute>
         ),
@@ -386,6 +396,10 @@ const router = createBrowserRouter([
             <OrganizerNotifications />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "/quiz/:roundId/finish",
+        element: <FinishQuiz />,
       },
     ],
   },

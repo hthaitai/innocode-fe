@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import PageContainer from "@/shared/components/PageContainer";
-import { contestsData } from "@/data/contestsData";
-import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs";
-import { Icon } from "@iconify/react";
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import PageContainer from '@/shared/components/PageContainer';
+import { contestsData } from '@/data/contestsData';
+import { createBreadcrumbWithPaths, BREADCRUMBS } from '@/config/breadcrumbs';
+import { Icon } from '@iconify/react';
 import {
   Calendar,
   Users,
@@ -12,14 +12,17 @@ import {
   Play,
   NotebookPen,
   BookCheck,
-} from "lucide-react";
-import useContestDetail from "../hooks/useContestDetail";
-import CountdownTimer from "@/shared/components/countdowntimer/CountdownTimer";
+} from 'lucide-react';
+import useContestDetail from '../hooks/useContestDetail';
+import CountdownTimer from '@/shared/components/countdowntimer/CountdownTimer';
+import { useAuth } from '@/context/AuthContext';
 
 const ContestDetail = () => {
   const { contestId } = useParams();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState('overview');
+  const { user } = useAuth();
+  const role = user?.role || 'student';
 
   // Fetch contest data from API
   const { contest: apiContest, loading, error } = useContestDetail(contestId);
@@ -31,36 +34,33 @@ const ContestDetail = () => {
   const rounds = contest?.rounds || [];
 
   const breadcrumbData = contest
-    ? createBreadcrumbWithPaths("CONTEST_DETAIL", contest.name || contest.title)
-    : { items: BREADCRUMBS.NOT_FOUND, paths: ["/"] };
+    ? createBreadcrumbWithPaths('CONTEST_DETAIL', contest.name || contest.title)
+    : { items: BREADCRUMBS.NOT_FOUND, paths: ['/'] };
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
-      case "upcoming":
-        return "text-[#fbbc05] bg-[#fef7e0]";
-      case "ongoing":
-        return "text-[#34a853] bg-[#e6f4ea]";
-      case "completed":
-        return "text-[#7A7574] bg-[#f3f3f3]";
+      case 'upcoming':
+        return 'text-[#fbbc05] bg-[#fef7e0]';
+      case 'ongoing':
+        return 'text-[#34a853] bg-[#e6f4ea]';
+      case 'completed':
+        return 'text-[#7A7574] bg-[#f3f3f3]';
       default:
-        return "text-[#7A7574] bg-[#f3f3f3]";
+        return 'text-[#7A7574] bg-[#f3f3f3]';
     }
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
-  const handleRegister = () => {
-    navigate(`/contest-processing/${contestId}`);
-  };
   // Determine countdown target and label based on contest status
   const getCountdownTarget = () => {
     if (!contest) return null;
@@ -84,30 +84,30 @@ const ContestDetail = () => {
   };
 
   const getCountdownLabel = () => {
-    if (!contest) return "Time Remaining";
+    if (!contest) return 'Time Remaining';
 
     const now = new Date();
     const startDate = new Date(contest.start);
     const endDate = new Date(contest.end);
 
     if (now < startDate) {
-      return "Time Until Start";
+      return 'Time Until Start';
     }
 
     if (now >= startDate && now < endDate) {
-      return "Time Until End";
+      return 'Time Until End';
     }
 
-    return "Contest Ended";
+    return 'Contest Ended';
   };
 
   const tabs = [
-    { id: "overview", label: "Overview", icon: "mdi:information-outline" },
-    { id: "rounds", label: "Rounds", icon: "mdi:trophy-outline" },
+    { id: 'overview', label: 'Overview', icon: 'mdi:information-outline' },
+    { id: 'rounds', label: 'Rounds', icon: 'mdi:trophy-outline' },
     {
-      id: "rules",
-      label: "Rules & Guidelines",
-      icon: "mdi:file-document-outline",
+      id: 'rules',
+      label: 'Rules & Guidelines',
+      icon: 'mdi:file-document-outline',
     },
   ];
 
@@ -142,7 +142,7 @@ const ContestDetail = () => {
             </h3>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
-              onClick={() => navigate("/contests")}
+              onClick={() => navigate('/contests')}
               className="button-orange"
             >
               <Icon icon="mdi:arrow-left" className="inline mr-2" />
@@ -204,10 +204,10 @@ const ContestDetail = () => {
                   contest.statusLabel || contest.status
                 )}`}
               >
-                {(contest.statusLabel || contest.status || "")
+                {(contest.statusLabel || contest.status || '')
                   .charAt(0)
                   .toUpperCase() +
-                  (contest.statusLabel || contest.status || "").slice(1)}
+                  (contest.statusLabel || contest.status || '').slice(1)}
               </span>
 
               <div className="flex items-center gap-2 text-[#7A7574] text-sm">
@@ -227,8 +227,8 @@ const ContestDetail = () => {
                   <div className="text-[#7A7574] text-xs">Start Date</div>
                   <div className="font-medium text-[#2d3748]">
                     {contest.start
-                      ? formatDate(contest.start).split(",")[0]
-                      : "TBA"}
+                      ? formatDate(contest.start).split(',')[0]
+                      : 'TBA'}
                   </div>
                 </div>
               </div>
@@ -237,7 +237,7 @@ const ContestDetail = () => {
                 <div>
                   <div className="text-[#7A7574] text-xs">Prize Pool</div>
                   <div className="font-medium text-[#2d3748]">
-                    {contest.prizePool || contest.rewardsText || "TBA"}
+                    {contest.prizePool || contest.rewardsText || 'TBA'}
                   </div>
                 </div>
               </div>
@@ -246,12 +246,12 @@ const ContestDetail = () => {
                 <div>
                   <div className="text-[#7A7574] text-xs">Rounds</div>
                   <div className="font-medium text-[#2d3748]">
-                    {Array.isArray(contest.rounds) ? contest.rounds.length : 0}{" "}
+                    {Array.isArray(contest.rounds) ? contest.rounds.length : 0}{' '}
                     Round
                     {Array.isArray(contest.rounds) &&
                     contest.rounds.length !== 1
-                      ? "s"
-                      : ""}
+                      ? 's'
+                      : ''}
                   </div>
                 </div>
               </div>
@@ -264,7 +264,7 @@ const ContestDetail = () => {
                 <div>
                   <div className="text-[#7A7574] text-xs">Problems</div>
                   <div className="font-medium text-[#2d3748]">
-                    {contest.totalProblems || "TBA"} Total
+                    {contest.totalProblems || 'TBA'} Total
                   </div>
                 </div>
               </div>
@@ -280,8 +280,8 @@ const ContestDetail = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-1 cursor-pointer px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 transition-colors ${
                     activeTab === tab.id
-                      ? "bg-[#ff6b35] text-white"
-                      : "text-[#7A7574] hover:bg-[#f9fafb]"
+                      ? 'bg-[#ff6b35] text-white'
+                      : 'text-[#7A7574] hover:bg-[#f9fafb]'
                   }`}
                 >
                   <Icon icon={tab.icon} width="18" />
@@ -292,7 +292,7 @@ const ContestDetail = () => {
 
             {/* Tab Content */}
             <div className="p-6">
-              {activeTab === "overview" && (
+              {activeTab === 'overview' && (
                 <div className="space-y-6">
                   {/* Description */}
                   <div>
@@ -353,7 +353,7 @@ const ContestDetail = () => {
                 </div>
               )}
 
-              {activeTab === "rounds" && (
+              {activeTab === 'rounds' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold text-[#2d3748]">
@@ -379,11 +379,11 @@ const ContestDetail = () => {
                       // ✅ Determine route based on problemType
                       const getRoundRoute = () => {
                         switch (round.problemType) {
-                          case "McqTest":
+                          case 'McqTest':
                             return `/mcq-test/${contestId}/${round.roundId}`;
-                          case "Manual":
+                          case 'Manual':
                             return `/manual-problem/${contestId}/${round.roundId}`;
-                          case "AutoEvaluation":
+                          case 'AutoEvaluation':
                             return `/auto-evaluation/${contestId}/${round.roundId}`;
                           default:
                             return null;
@@ -393,14 +393,14 @@ const ContestDetail = () => {
                       // ✅ Get button label based on problemType
                       const getButtonLabel = () => {
                         switch (round.problemType) {
-                          case "McqTest":
-                            return "Start Test";
-                          case "Manual":
-                            return "Start Problem";
-                          case "AutoEvaluation":
-                            return "Start Challenge";
+                          case 'McqTest':
+                            return 'Start Test';
+                          case 'Manual':
+                            return 'Start Problem';
+                          case 'AutoEvaluation':
+                            return 'Start Challenge';
                           default:
-                            return "Start";
+                            return 'Start';
                         }
                       };
 
@@ -425,35 +425,37 @@ const ContestDetail = () => {
                             <div className="flex flex-col items-end gap-2 ">
                               <span
                                 className={`text-xs px-2 text-center py-1 rounded ${
-                                  round.status === "Closed"
-                                    ? "bg-[#fde8e8] text-[#d93025]"
-                                    : round.status === "Opened"
-                                    ? "bg-[#e6f4ea] text-[#34a853]"
-                                    : "bg-[#fef7e0] text-[#fbbc05]"
+                                  round.status === 'Closed'
+                                    ? 'bg-[#fde8e8] text-[#d93025]'
+                                    : round.status === 'Opened'
+                                    ? 'bg-[#e6f4ea] text-[#34a853]'
+                                    : 'bg-[#fef7e0] text-[#fbbc05]'
                                 }`}
                               >
                                 {round.status}
                               </span>
-                              {round.status === "Opened" && roundRoute && (
-                                <button
-                                  onClick={() => navigate(roundRoute)}
-                                  className="button-orange text-xs px-3 p py-1 flex absolute bottom-4 right-4 items-center gap-1"
-                                >
-                                  <Play size={12} />
-                                  {getButtonLabel()}
-                                </button>
-                              )}
+                              {round.status === 'Opened' &&
+                                role === 'student' &&
+                                roundRoute && (
+                                  <button
+                                    onClick={() => navigate(roundRoute)}
+                                    className="button-orange text-xs px-3 p py-1 flex absolute bottom-4 right-4 items-center gap-1"
+                                  >
+                                    <Play size={12} />
+                                    {getButtonLabel()}
+                                  </button>
+                                )}
                             </div>
                           </div>
 
                           <div className="flex flex-col gap-2 text-sm text-[#7A7574] ml-10">
                             {/* ✅ Show MCQ Test info only for McqTest type */}
-                            {round.problemType === "McqTest" &&
+                            {round.problemType === 'McqTest' &&
                               round.mcqTest && (
                                 <div className="flex items-center gap-2">
                                   <BookCheck size={14} />
                                   <span>
-                                    {round.mcqTest.name || "MCQ Test"}
+                                    {round.mcqTest.name || 'MCQ Test'}
                                   </span>
                                 </div>
                               )}
@@ -462,12 +464,12 @@ const ContestDetail = () => {
                             <div className="flex items-center gap-2">
                               <NotebookPen size={14} />
                               <span>
-                                {round.problemType === "McqTest"
-                                  ? "Multiple Choice Questions"
-                                  : round.problemType === "Manual"
-                                  ? "Manual Problem"
-                                  : round.problemType === "AutoEvaluation"
-                                  ? "Auto Evaluation"
+                                {round.problemType === 'McqTest'
+                                  ? 'Multiple Choice Questions'
+                                  : round.problemType === 'Manual'
+                                  ? 'Manual Problem'
+                                  : round.problemType === 'AutoEvaluation'
+                                  ? 'Auto Evaluation'
                                   : round.problemType}
                               </span>
                             </div>
@@ -477,7 +479,7 @@ const ContestDetail = () => {
                               <div className="flex items-center gap-2">
                                 <Icon icon="mdi:timer-outline" width="14" />
                                 <span>
-                                  {Math.floor(round.timeLimitSeconds / 60)}{" "}
+                                  {Math.floor(round.timeLimitSeconds / 60)}{' '}
                                   minutes
                                 </span>
                               </div>
@@ -488,7 +490,7 @@ const ContestDetail = () => {
                               <div className="flex items-center gap-2">
                                 <Calendar size={14} />
                                 <span>
-                                  {formatDate(round.start)} -{" "}
+                                  {formatDate(round.start)} -{' '}
                                   {formatDate(round.end)}
                                 </span>
                               </div>
@@ -510,7 +512,7 @@ const ContestDetail = () => {
                 </div>
               )}
 
-              {activeTab === "rules" && (
+              {activeTab === 'rules' && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-[#2d3748] mb-3">
                     Contest Rules & Guidelines
@@ -550,21 +552,23 @@ const ContestDetail = () => {
         {/* RIGHT SIDEBAR */}
         <div className="w-[320px] flex flex-col gap-4">
           {/* Registration / Action Button */}
-          <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
-            <button
-              onClick={handleRegister}
-              className="button-orange w-full flex items-center justify-center gap-2 py-3"
-            >
-              <Icon icon="mdi:account-plus" width="18" />
-              Register Now
-            </button>
-            <p className="text-xs text-[#7A7574] text-center mt-2">
-              Registration closes on{" "}
-              {contest.registrationEnd
-                ? formatDate(contest.registrationEnd).split(",")[0]
-                : "TBA"}
-            </p>
-          </div>
+          {role === 'mentor' && (
+            <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
+              <button
+                onClick={() => navigate(`/mentor-team/${contestId}`)}
+                className="button-orange w-full flex items-center justify-center gap-2 py-3"
+              >
+                <Icon icon="mdi:account-plus" width="18" />
+                Register Now
+              </button>
+              <p className="text-xs text-[#7A7574] text-center mt-2">
+                Registration closes on{' '}
+                {contest.registrationEnd
+                  ? formatDate(contest.registrationEnd).split(',')[0]
+                  : 'TBA'}
+              </p>
+            </div>
+          )}
 
           {/* Countdown Timer */}
           <CountdownTimer
@@ -587,9 +591,14 @@ const ContestDetail = () => {
               <p className="text-sm text-[#7A7574] mb-3">
                 You haven't joined a team yet
               </p>
-              <button className="button-white w-full text-sm">
-                Create or Join Team
-              </button>
+              {role === 'mentor' && (
+                <button
+                  onClick={() => navigate(`/mentor-team/${contestId}`)}
+                  className="button-white w-full text-sm"
+                >
+                  Create or Join Team
+                </button>
+              )}
             </div>
           </div>
 
@@ -613,7 +622,6 @@ const ContestDetail = () => {
                 <span className="text-[#7A7574]">Language:</span>
                 <span className="font-medium text-[#2d3748]">Python 3</span>
               </div>
-            
             </div>
           </div>
 
