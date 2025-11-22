@@ -5,48 +5,15 @@ import { Trash } from "lucide-react"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import RoundInfo from "../../components/organizer/RoundInfo"
 import RoundRelatedSettings from "../../components/organizer/RoundRelatedSettings"
-import { useAppSelector, useAppDispatch } from "@/store/hooks"
-import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
-import { deleteRound } from "../../store/roundThunk"
-import { useModal } from "../../../../shared/hooks/useModal"
-import { toast } from "react-hot-toast"
+import { useOrganizerRoundDetail } from "@/features/round/hooks/useOrganizerRoundDetail"
 import DeleteRoundSection from "../../components/organizer/DeleteRoundSection"
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
-  const dispatch = useAppDispatch()
-
-  const { contests, listLoading, listError } = useAppSelector(
-    (state) => state.contests
+  const { contest, round, loading, error } = useOrganizerRoundDetail(
+    contestId,
+    roundId
   )
-
-  const [contest, setContest] = useState(null)
-  const [round, setRound] = useState(null)
-
-  /* Fetch round detail */
-  const fetchRoundDetail = useCallback(() => {
-    const foundContest = contests?.find(
-      (c) => String(c.contestId) === String(contestId)
-    )
-
-    if (!foundContest) {
-      if (!listLoading) {
-        dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
-      }
-      return
-    }
-
-    const foundRound = foundContest.rounds?.find(
-      (r) => String(r.roundId) === String(roundId)
-    )
-
-    setContest(foundContest || null)
-    setRound(foundRound || null)
-  }, [contests, contestId, roundId, dispatch, listLoading])
-
-  useEffect(() => {
-    fetchRoundDetail()
-  }, [fetchRoundDetail])
 
   const breadcrumbItems = useMemo(
     () =>
@@ -63,7 +30,7 @@ const OrganizerRoundDetail = () => {
     [contestId, roundId]
   )
 
-  if (!round && !listLoading) {
+  if (!round && !loading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -80,8 +47,8 @@ const OrganizerRoundDetail = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      listLoading={listLoading}
-      listError={listError}
+      loading={loading}
+      error={error}
     >
       <div className="space-y-5">
         <RoundInfo round={round} />

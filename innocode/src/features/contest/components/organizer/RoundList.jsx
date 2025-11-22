@@ -1,38 +1,24 @@
-import React, { useEffect, useCallback } from "react"
+import React, { useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { Calendar, ChevronRight, ListPlus } from "lucide-react"
-import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { fetchRounds } from "@/features/round/store/roundThunk"
-import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { Spinner } from "@/shared/components/SpinnerFluent"
-import { useModal } from "@/shared/hooks/useModal"
+// no modal here; navigation to dedicated pages
+import { useGetRoundsByContestIdQuery } from "@/services/roundApi"
 
 const RoundsList = ({ contestId }) => {
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const { openModal } = useModal()
 
-  const { rounds, loading, error } = useAppSelector((state) => state.rounds)
+  const { data: roundsData, isLoading, error } = useGetRoundsByContestIdQuery(
+    contestId
+  )
 
-  // Fetch rounds on mount
-  useEffect(() => {
-    dispatch(fetchRounds({ contestId }))
-  }, [dispatch, contestId])
-
-  // Refetch rounds and contests
-  const refetchRounds = useCallback(() => {
-    dispatch(fetchRounds({ contestId }))
-    // Also sync the contests slice so detail pages can find the round
-    dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
-  }, [dispatch, contestId])
+  const rounds = roundsData?.data || []
 
   const handleAddRound = useCallback(() => {
-    openModal("round", {
-      contestId,
-      onCreated: refetchRounds,
-    })
-  }, [openModal, contestId, refetchRounds])
+    // Navigate to dedicated add round page instead of opening modal
+    navigate(`/organizer/contests/${contestId}/rounds/new`)
+  }, [contestId, navigate])
 
   return (
     <div className="space-y-1">
@@ -54,7 +40,7 @@ const RoundsList = ({ contestId }) => {
 
       {/* Round List */}
       <div className="flex flex-col gap-1">
-        {loading ? (
+        {isLoading ? (
           <div className="flex justify-center items-center min-h-[70px]">
             <Spinner />
           </div>

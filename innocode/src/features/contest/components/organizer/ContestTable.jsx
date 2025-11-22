@@ -1,87 +1,64 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react"
+import React, { useState, useMemo, useCallback } from "react"
 import TableFluent from "@/shared/components/TableFluent"
-import { useModal } from "@/shared/hooks/useModal"
-import toast from "react-hot-toast"
-import {
-  fetchOrganizerContests,
-  deleteContest,
-} from "@/features/contest/store/contestThunks"
-import { getContestColumns } from "../../columns/getContestColumns"
 import { useNavigate } from "react-router-dom"
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks"
 import { Trophy } from "lucide-react"
+import { getContestColumns } from "../../columns/getContestColumns"
+import {
+  useGetOrganizerContestsQuery,
+  useDeleteContestMutation,
+} from "../../../../services/contestApi"
+import { useConfirmDelete } from "../../../../shared/hooks/useConfirmDelete"
 
 const ContestTable = () => {
-  const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { openModal } = useModal()
-
-  const { contests, pagination, listLoading, error } = useAppSelector(
-    (s) => s.contests
-  )
-
   const [page, setPage] = useState(1)
   const pageSize = 10
+  const { confirmDeleteEntity } = useConfirmDelete()
 
-  /** Fetch contests */
-  const fetchContests = useCallback(() => {
-    dispatch(fetchOrganizerContests({ pageNumber: page, pageSize }))
-  }, [dispatch, page, pageSize])
+  /** Fetch contests via RTK Query */
+  const {
+    data: contestsData,
+    isLoading,
+    isError,
+  } = useGetOrganizerContestsQuery({ pageNumber: page, pageSize })
 
-  useEffect(() => {
-    fetchContests()
-  }, [fetchContests])
+  const contests = contestsData?.data || []
+  const pagination = contestsData?.additionalData || {}
 
-  /** Safe refetch */
-  const refetchContests = useCallback(() => {
-    const safePage = Math.min(page, pagination?.totalPages || 1)
-    dispatch(fetchOrganizerContests({ pageNumber: safePage, pageSize }))
-  }, [dispatch, page, pageSize, pagination?.totalPages])
+  /** Delete contest */
+  const [deleteContest] = useDeleteContestMutation()
 
-  /** Add → open modal */
-  const handleAddContest = useCallback(() => {
-    openModal("contest", {
-      onCreated: () => {
-        setPage(1)
-        dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize }))
-      },
-    })
-  }, [openModal, dispatch, pageSize, setPage])
-
-  /** Edit */
-  const handleEditContest = useCallback(
-    (contest) => {
-      openModal("contest", { initialData: contest, onUpdated: refetchContests })
-    },
-    [openModal, refetchContests]
-  )
-
-  /** Delete */
   const handleDeleteContest = useCallback(
     (contest) => {
-      openModal("confirmDelete", {
-        message: `Are you sure you want to delete "${contest.name}"?`,
-        onConfirm: async (onClose) => {
-          try {
-            await dispatch(
-              deleteContest({ contestId: contest.contestId })
-            ).unwrap()
-            toast.success("Contest deleted successfully!")
-            refetchContests()
-          } catch {
-            toast.error("Failed to delete contest.")
-          } finally {
-            onClose()
-          }
+      confirmDeleteEntity({
+        entityName: "Contest",
+        item: { id: contest.contestId, name: contest.name },
+        deleteAction: deleteContest,
+        idKey: "id",
+        onNavigate: () => {
+          // Optional: if deleting last item on page, go back one page
+          if (contests.length === 1 && page > 1) setPage(page - 1)
         },
       })
     },
-    [dispatch, openModal, refetchContests]
+    [confirmDeleteEntity, deleteContest, contests.length, page]
   )
 
   /** Row click → navigate to contest details */
   const handleRowClick = useCallback(
     (contest) => navigate(`/organizer/contests/${contest?.contestId}`),
+    [navigate]
+  )
+
+  /** Edit click → navigate to edit page */
+  const handleEditContest = useCallback(
+    (contest) => navigate(`/organizer/contests/${contest.contestId}/edit`),
+    [navigate]
+  )
+
+  /** Add click → navigate to add page */
+  const handleAddContest = useCallback(
+    () => navigate("/organizer/contests/add"),
     [navigate]
   )
 
@@ -106,7 +83,7 @@ const ContestTable = () => {
         </div>
 
         <button className="button-orange" onClick={handleAddContest}>
-          Add Contest
+          Add contest
         </button>
       </div>
 
@@ -114,8 +91,8 @@ const ContestTable = () => {
       <TableFluent
         data={contests}
         columns={columns}
-        loading={listLoading}
-        error={error}
+        loading={isLoading}
+        error={isError}
         pagination={pagination}
         onPageChange={setPage}
         onRowClick={handleRowClick}

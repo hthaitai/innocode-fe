@@ -47,7 +47,7 @@ const TextFieldFluent = ({
             onBlur={handleBlur}
             rows={rows}
             disabled={disabled}
-            className="w-full text-sm leading-5 px-4 py-2 rounded-[5px] resize-none outline-none bg-transparent"
+            className="w-full text-sm leading-5 px-3 py-[5px] rounded-[5px] resize-none outline-none bg-transparent"
           />
         ) : (
           <input
@@ -59,7 +59,7 @@ const TextFieldFluent = ({
             onFocus={handleFocus}
             onBlur={handleBlur}
             disabled={disabled}
-            className="w-full text-sm leading-5 px-4 py-2 rounded-[5px] outline-none bg-transparent"
+            className="w-full text-sm leading-5 px-3 py-[5px] rounded-[5px] outline-none bg-transparent"
           />
         )}
       </div>

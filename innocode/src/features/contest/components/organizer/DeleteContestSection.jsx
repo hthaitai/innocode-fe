@@ -1,15 +1,14 @@
 import React, { useCallback } from "react"
 import { Trash } from "lucide-react"
-import { useAppDispatch } from "@/store/hooks"
 import { useModal } from "@/shared/hooks/useModal"
 import toast from "react-hot-toast"
-import { deleteContest } from "@/features/contest/store/contestThunks"
+import { useDeleteContestMutation } from "@/services/contestApi"
 import { useNavigate } from "react-router-dom"
 
 const DeleteContestSection = ({ contest }) => {
-  const dispatch = useAppDispatch()
   const { openModal } = useModal()
   const navigate = useNavigate()
+  const [deleteContest, { isLoading }] = useDeleteContestMutation()
 
   const handleDelete = useCallback(() => {
     if (!contest) return
@@ -18,7 +17,7 @@ const DeleteContestSection = ({ contest }) => {
       message: `Are you sure you want to delete "${contest.name}"?`,
       onConfirm: async (onClose) => {
         try {
-          await dispatch(deleteContest({ contestId: contest.contestId })).unwrap()
+          await deleteContest({ id: contest.contestId }).unwrap()
           toast.success("Contest deleted successfully!")
           navigate("/organizer/contests")
         } catch (err) {
@@ -28,7 +27,7 @@ const DeleteContestSection = ({ contest }) => {
         }
       },
     })
-  }, [contest, dispatch, openModal, navigate])
+  }, [contest, deleteContest, openModal, navigate])
 
   return (
     <div>
@@ -40,8 +39,8 @@ const DeleteContestSection = ({ contest }) => {
           <Trash size={20} />
           <span className="text-sm leading-5">Delete contest</span>
         </div>
-        <button className="button-white" onClick={handleDelete}>
-          Delete Contest
+        <button className="button-white" onClick={handleDelete} disabled={isLoading}>
+          {isLoading ? "Deleting..." : "Delete Contest"}
         </button>
       </div>
     </div>

@@ -1,72 +1,58 @@
 import { useEffect, useMemo, useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useAppSelector, useAppDispatch } from "@/store/hooks"
-import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
-import { mapRoundList } from "../mappers/roundMapper"
-import { deleteRound } from "../store/roundThunk"
 import { useModal } from "../../../shared/hooks/useModal"
 import { toast } from "react-hot-toast"
+import { useGetContestByIdQuery } from "@/services/contestApi"
+import { useGetRoundsByContestIdQuery, useDeleteRoundMutation } from "@/services/roundApi"
 
 export const useOrganizerRoundDetail = (contestId, roundId) => {
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
   const { openModal } = useModal()
 
-  const { contests, pagination, listLoading: loading, listError: error } =
-    useAppSelector((state) => state.contests)
+  // Fetch contest info and rounds via RTK Query
+  const {
+    data: contestData,
+    isLoading: contestLoading,
+    isError: contestError,
+    refetch: refetchContest,
+  } = useGetContestByIdQuery(contestId)
 
-  const [contest, setContest] = useState(null)
-  const [round, setRound] = useState(null)
+  const {
+    data: roundsData,
+    isLoading: roundsLoading,
+    isError: roundsError,
+    refetch: refetchRounds,
+  } = useGetRoundsByContestIdQuery(contestId)
 
-  /* Fetch round detail (Redux-based like before) */
-  const fetchRoundDetail = useCallback(() => {
-    const foundContest = contests?.find(
-      (c) => String(c.contestId) === String(contestId)
-    )
+  const [deleteRound, { isLoading: deleting }] = useDeleteRoundMutation()
 
-    if (!foundContest) {
-      if (!loading) {
-        dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
-      }
-      return
-    }
+  const contest = contestData?.data?.[0] ?? null
 
-    const mappedRound = mapRoundList(foundContest.rounds || []).find(
-      (r) => String(r.roundId) === String(roundId)
-    )
+  // roundsData expected shape: { data: [...] }
+  const roundsList = roundsData?.data || []
+  const round = roundsList.find((r) => String(r.roundId) === String(roundId)) ||
+    null
 
-    setContest(foundContest || null)
-    setRound(mappedRound || null)
-  }, [contests, contestId, roundId, dispatch, loading])
+  const loading = contestLoading || roundsLoading
+  const error = contestError || roundsError
 
-  useEffect(() => {
-    fetchRoundDetail()
-  }, [fetchRoundDetail])
-
-  /* Refetch helper */
   const refetchRoundDetail = useCallback(() => {
-    const current = pagination?.pageNumber || 1
-    const safe = Math.min(current, pagination?.totalPages || 1)
-    dispatch(fetchOrganizerContests({ pageNumber: safe, pageSize: 50 }))
-  }, [dispatch, pagination?.pageNumber, pagination?.totalPages])
+    refetchContest()
+    refetchRounds()
+  }, [refetchContest, refetchRounds])
 
-  /* Handle edit (modal-based like contest) */
   const handleEdit = useCallback(() => {
     if (!round) return
-    openModal("round", {
-      initialData: round,
-      onUpdated: refetchRoundDetail,
-    })
-  }, [round, openModal, refetchRoundDetail])
+    navigate(`/organizer/contests/${contestId}/rounds/${round.roundId}/edit`)
+  }, [round, navigate, contestId])
 
-  /* Handle delete */
   const handleDelete = useCallback(() => {
     if (!round) return
     openModal("confirmDelete", {
       message: `Are you sure you want to delete "${round.name}"?`,
       onConfirm: async (onClose) => {
         try {
-          await dispatch(deleteRound({ roundId: round.roundId })).unwrap()
+          await deleteRound(round.roundId).unwrap()
           toast.success("Round deleted successfully!")
           navigate(`/organizer/contests/${contestId}`)
         } catch (err) {
@@ -77,7 +63,7 @@ export const useOrganizerRoundDetail = (contestId, roundId) => {
         }
       },
     })
-  }, [dispatch, openModal, navigate, contestId, round])
+  }, [openModal, deleteRound, navigate, contestId, round])
 
   return {
     contest,
@@ -87,5 +73,6 @@ export const useOrganizerRoundDetail = (contestId, roundId) => {
     refetchRoundDetail,
     handleEdit,
     handleDelete,
+    deleting,
   }
 }

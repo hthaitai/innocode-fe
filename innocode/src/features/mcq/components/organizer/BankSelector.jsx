@@ -2,7 +2,7 @@ import { Plus } from "lucide-react"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 
 const BankSelector = ({ options, value, onChange, loading }) => (
-  <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5">
+  <div className="border-b border-[#E5E5E5] bg-white p-5">
     <div className="flex justify-between items-center">
       <div className="flex gap-5 items-center">
         <Plus size={20} />

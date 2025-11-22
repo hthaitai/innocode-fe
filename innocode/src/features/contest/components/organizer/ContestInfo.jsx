@@ -1,30 +1,21 @@
 import React, { useCallback } from "react"
+import { useNavigate } from "react-router-dom"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import StatusBadge from "../../../../shared/components/StatusBadge"
-import { useAppDispatch } from "@/store/hooks"
-import { useModal } from "@/shared/hooks/useModal"
-import { fetchContestById } from "../../store/contestThunks"
 
 const ContestInfo = ({ contest }) => {
-  const dispatch = useAppDispatch()
-  const { openModal } = useModal()
+  const navigate = useNavigate()
 
   const safe = (val) =>
     val === null || val === undefined || val === "" ? "—" : val
 
   // Move edit logic here
-  const handleEdit = useCallback(() => {
+  const handleEdit = () => {
     if (!contest) return
-
-    openModal("contest", {
-      initialData: contest,
-      onUpdated: () => {
-        dispatch(fetchContestById(contest.contestId))
-      },
-    })
-  }, [contest, openModal, dispatch])
+    navigate(`/organizer/contests/${contest.contestId}/edit`)
+  }
 
   return (
     <InfoSection title="Contest Information" onEdit={handleEdit}>

@@ -2,28 +2,16 @@ import React, { useCallback } from "react"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
-import { useModal } from "@/shared/hooks/useModal"
-import { useAppDispatch } from "@/store/hooks"
-import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
+import { useNavigate } from "react-router-dom"
 
 const RoundInfo = ({ round }) => {
-  const { openModal } = useModal()
-  const dispatch = useAppDispatch()
-
-  // Simplified refetch: just fetch contests page 1
-  const refetchContests = useCallback(() => {
-    dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
-  }, [dispatch])
+  const navigate = useNavigate()
 
   const handleEdit = useCallback(() => {
     if (!round) return
-
-    openModal("round", {
-      contestId: round.contestId,
-      initialData: round,
-      onUpdated: refetchContests,
-    })
-  }, [round, openModal, refetchContests])
+    // Navigate to dedicated edit page for this round
+    navigate(`/organizer/contests/${round.contestId}/rounds/${round.roundId}/edit`)
+  }, [round, navigate])
 
   if (!round) return null
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useMemo } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
@@ -7,24 +7,17 @@ import PublishContestSection from "../../components/organizer/PublishContestSect
 import ContestRelatedSettings from "../../components/organizer/ContestRelatedSettings"
 import RoundsList from "../../components/organizer/RoundList"
 import DeleteContestSection from "../../components/organizer/DeleteContestSection"
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks"
-import { fetchContestById } from "../../store/contestThunks"
+import { useGetContestByIdQuery } from "../../../../services/contestApi"
 
 const OrganizerContestDetail = () => {
   const { contestId } = useParams()
-  const dispatch = useAppDispatch()
 
-  const { contest, detailLoading, detailError } = useAppSelector(
-    (state) => state.contests
-  )
-
-  // Fetch contest on mount / id change
-  useEffect(() => {
-    if (!contestId) return
-    if (!contest || contest.contestId !== contestId) {
-      dispatch(fetchContestById(contestId))
-    }
-  }, [dispatch, contestId, contest?.contestId])
+  // RTK Query
+  const {
+    data: contest,
+    isLoading,
+    isError,
+  } = useGetContestByIdQuery(contestId)
 
   // Breadcrumbs
   const breadcrumbItems = useMemo(
@@ -39,7 +32,7 @@ const OrganizerContestDetail = () => {
   )
 
   // If not found
-  if (!contest && !detailLoading) {
+  if (!contest && !isLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -56,10 +49,21 @@ const OrganizerContestDetail = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={detailLoading}
-      error={detailError}
+      loading={isLoading}
+      error={isError}
     >
       <div className="space-y-5">
+        {/* Contest Image */}
+        {contest?.imgUrl && (
+          <div className="border border-[#E5E5E5] mb-4 w-[335px] h-[188px] rounded-[5px] overflow-hidden">
+            <img
+              src={contest.imgUrl}
+              alt={contest.name || "Contest Image"}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
         {/* Contest Info + Publish */}
         <div className="space-y-1">
           <ContestInfo contest={contest} />
