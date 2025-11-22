@@ -12,5 +12,9 @@ export const authApi = {
   // Logout
   logout: () => {
     return axiosClient.post("/auth/logout");
+  },
+  // Refresh token
+  refresh: (refreshToken) => {
+    return axiosClient.post("/auth/refresh", { refreshToken });
   }
 };

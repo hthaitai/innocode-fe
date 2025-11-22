@@ -1,4 +1,12 @@
 import { authApi } from '@/api/authApi';
+import { decodeJWT, isTokenExpired } from '@/shared/utils/jwtUtils';
+
+// Helper function to clear all auth data from localStorage
+const clearAuthData = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('user'); // Remove old user data if exists
+};
 
 export const authService = {
   // Login
@@ -10,20 +18,14 @@ export const authService = {
         localStorage.setItem('token', apiData.token);
       }
 
-      // Backend không có refreshToken, skip
-      // if (apiData.refreshToken) {
-      //   localStorage.setItem("refreshToken", apiData.refreshToken);
-      // }
+      // Store refreshToken if available
+      if (apiData.refreshToken) {
+        localStorage.setItem("refreshToken", apiData.refreshToken);
+      }
 
-      // Tạo user object từ các field riêng lẻ
-      const user = {
-        id: apiData.userId,
-        email: apiData.email,
-        name: apiData.fullName,
-        role: apiData.role.toLowerCase(), // "Student" -> "student"
-      };
-
-      localStorage.setItem('user', JSON.stringify(user));
+      // Decode user info from JWT token instead of storing in localStorage
+      const user = decodeJWT(apiData.token);
+      
       // Return format giống cũ để AuthContext hoạt động
       return {
         token: apiData.token,
@@ -50,14 +52,13 @@ export const authService = {
         localStorage.setItem('token', apiData.token);
       }
 
-      const user = {
-        id: apiData.userId,
-        email: apiData.email,
-        name: apiData.fullName,
-        role: apiData.role.toLowerCase(),
-      };
+      // Store refreshToken if available
+      if (apiData.refreshToken) {
+        localStorage.setItem("refreshToken", apiData.refreshToken);
+      }
 
-      localStorage.setItem('user', JSON.stringify(user));
+      // Decode user info from JWT token instead of storing in localStorage
+      const user = decodeJWT(apiData.token);
 
       return {
         token: apiData.token,
@@ -81,38 +82,80 @@ export const authService = {
       console.error('❌ Logout API error:', error);
       // Continue with local logout even if API fails
     } finally {
-      // Always clear local storage
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
-      
+      // Always clear all auth data from local storage
+      clearAuthData();
     }
   },
 
-  // Helper: Check if authenticated
+  // Helper: Check if authenticated (token exists and not expired)
+  // Returns true if token is valid, false otherwise
+  // Note: This doesn't automatically refresh token, use refreshToken() for that
   isAuthenticated() {
-    const token = localStorage.getItem('token');
-    return !!(token && token !== 'null');
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+    // Check if token is expired
+    if (isTokenExpired(token)) {
+      return false;
+    }
+    return true;
   },
 
-  // Helper: Get user from localStorage
+  // Helper: Get user by decoding JWT token
   getUser() {
-    try {
-      const userStr = localStorage.getItem('user');
-      if (!userStr || userStr === 'null') {
-        return null;
-      }
-      return JSON.parse(userStr);
-    } catch (error) {
-      console.error('❌ Parse user error:', error);
+    const token = this.getToken();
+    if (!token) {
       return null;
     }
+    return decodeJWT(token);
   },
 
   // Helper: Get token
   getToken() {
     const token = localStorage.getItem('token');
     return token === 'null' ? null : token;
+  },
+
+  // Helper: Get refresh token
+  getRefreshToken() {
+    const refreshToken = localStorage.getItem('refreshToken');
+    return refreshToken === 'null' ? null : refreshToken;
+  },
+
+  // Refresh access token using refresh token
+  async refreshToken() {
+    try {
+      const refreshToken = this.getRefreshToken();
+      if (!refreshToken) {
+        throw new Error('No refresh token available');
+      }
+
+      const response = await authApi.refresh(refreshToken);
+      const apiData = response.data.data;
+
+      if (apiData.token) {
+        localStorage.setItem('token', apiData.token);
+      }
+
+      // Update refreshToken if new one is provided
+      if (apiData.refreshToken) {
+        localStorage.setItem('refreshToken', apiData.refreshToken);
+      }
+
+      // Decode user info from new JWT token
+      const user = decodeJWT(apiData.token);
+
+      return {
+        token: apiData.token,
+        user: user,
+      };
+    } catch (error) {
+      console.error('❌ Refresh token error:', error);
+      // If refresh fails, clear all tokens and logout
+      this.logoutLocal();
+      throw error;
+    }
   },
 
   // Helper: Get user role
@@ -123,9 +166,7 @@ export const authService = {
 
   // Logout without API (fallback)
   logoutLocal() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
+    clearAuthData();
     window.location.href = '/login';
   },
 };

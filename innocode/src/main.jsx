@@ -56,8 +56,11 @@ import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptD
 import StudentAutoEvaluation from "./features/problem/pages/student/StudentAutoEvaluation";
 import StudentManualProblem from "./features/problem/pages/student/StudentManualProblem";
 import MentorTeam from "./features/team/pages/mentor/MentorTeam";
+import { initEmailJs } from "./shared/services/emailService";
+import TeamInviteResponse from "./features/team/pages/student/TeamInviteResponse";
 // Organizer pages
-
+// Initialize EmailJS when app starts
+initEmailJs();
 const router = createBrowserRouter([
   {
     element: <AuthLayout />, // Auth layout wrapper
@@ -176,11 +179,20 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      //Teams
       {
         path: "mentor-team/:contestId",
         element: (
           <ProtectedRoute allowedRoles={[ROLES.MENTOR]}>
             <MentorTeam />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "team-invite",
+        element: (
+          <ProtectedRoute >
+            <TeamInviteResponse />
           </ProtectedRoute>
         ),
       },

@@ -101,6 +101,27 @@ const ContestDetail = () => {
     return 'Contest Ended';
   };
 
+  // Check if registration is closed
+  const isRegistrationClosed = () => {
+    if (!contest) return false;
+    
+    // Check by status
+    if (contest.status === "RegistrationClosed") {
+      return true;
+    }
+    
+    // Check by registrationEnd date
+    if (contest.registrationEnd) {
+      const now = new Date();
+      const registrationEnd = new Date(contest.registrationEnd);
+      return now > registrationEnd;
+    }
+    
+    return false;
+  };
+
+  const registrationClosed = isRegistrationClosed();
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: 'mdi:information-outline' },
     { id: 'rounds', label: 'Rounds', icon: 'mdi:trophy-outline' },
@@ -552,7 +573,7 @@ const ContestDetail = () => {
         {/* RIGHT SIDEBAR */}
         <div className="w-[320px] flex flex-col gap-4">
           {/* Registration / Action Button */}
-          {role === 'mentor' && (
+          {role === 'mentor' && !registrationClosed && (
             <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
               <button
                 onClick={() => navigate(`/mentor-team/${contestId}`)}
@@ -566,6 +587,21 @@ const ContestDetail = () => {
                 {contest.registrationEnd
                   ? formatDate(contest.registrationEnd).split(',')[0]
                   : 'TBA'}
+              </p>
+            </div>
+          )}
+          
+          {/* Registration Closed Message */}
+          {role === 'mentor' && registrationClosed && (
+            <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Icon icon="mdi:lock" width="20" className="text-[#7A7574]" />
+                <p className="text-sm font-semibold text-[#2d3748]">
+                  Registration Closed
+                </p>
+              </div>
+              <p className="text-xs text-[#7A7574] text-center">
+                The registration window has closed. You can no longer create new teams for this contest.
               </p>
             </div>
           )}
