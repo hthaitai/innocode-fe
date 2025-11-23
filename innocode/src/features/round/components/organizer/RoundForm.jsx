@@ -25,19 +25,19 @@ export default function RoundForm({
       if (value === "McqTest") {
         setFormData((prev) => ({
           ...prev,
-          mcqTestConfig: { name: prev.mcqTestConfig?.name || "", config: "" },
+          mcqTestConfig: { name: "", config: "" },
           problemConfig: null,
         }))
-      } else if (value === "Problem") {
+      } else if (value === "Manual" || value === "AutoEvaluation") {
         setFormData((prev) => ({
           ...prev,
-          problemConfig: {
-            description: prev.problemConfig?.description || "",
-            language: prev.problemConfig?.language || "",
-            penaltyRate: prev.problemConfig?.penaltyRate ?? 0.1,
-            type: prev.problemConfig?.type || "",
-          },
           mcqTestConfig: null,
+          problemConfig: {
+            description: "",
+            language: "",
+            penaltyRate: 0.1,
+            type: value, 
+          },
         }))
       } else {
         setFormData((prev) => ({
@@ -126,7 +126,8 @@ export default function RoundForm({
               id="problemType"
               options={[
                 { value: "McqTest", label: "MCQ" },
-                { value: "Problem", label: "Problem" },
+                { value: "Manual", label: "Manual Problem" },
+                { value: "AutoEvaluation", label: "Auto Evaluation" },
               ]}
               value={formData.problemType || ""}
               onChange={(val) =>
@@ -163,7 +164,7 @@ export default function RoundForm({
         )}
 
         {/* Problem Config */}
-        {formData.problemType === "Problem" && (
+        {["Manual", "AutoEvaluation"].includes(formData.problemType) && (
           <>
             <Label htmlFor="description">Description</Label>
             <TextFieldFluent
@@ -200,31 +201,6 @@ export default function RoundForm({
                 )
               }
             />
-
-            <Label>Type</Label>
-            <div className="flex gap-10">
-              {["Manual", "AutoEvaluation"].map((opt) => (
-                <label
-                  key={opt}
-                  className="flex items-center gap-2 cursor-pointer py-1"
-                >
-                  <input
-                    type="radio"
-                    name="problemConfigType"
-                    value={opt}
-                    checked={formData.problemConfig?.type === opt}
-                    onChange={(e) =>
-                      handleNestedChange(
-                        "problemConfig",
-                        "type",
-                        e.target.value
-                      )
-                    }
-                  />
-                  <span className="text-sm leading-5 rounded-[5px]">{opt}</span>
-                </label>
-              ))}
-            </div>
           </>
         )}
 
@@ -237,15 +213,23 @@ export default function RoundForm({
                 type="button"
                 onClick={onSubmit}
                 disabled={disabled}
-                className={`${disabled ? "button-gray" : "button-orange"}`}
+                className={`flex items-center justify-center gap-2 ${
+                  disabled ? "button-gray" : "button-orange"
+                }`}
               >
+                {/* Spinner */}
+                {isSubmitting && (
+                  <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
+                )}
+
+                {/* Button text */}
                 {isSubmitting
                   ? mode === "edit"
                     ? "Saving..."
                     : "Creating..."
                   : mode === "edit"
                   ? "Save"
-                  : "Create Round"}
+                  : "Create round"}
               </button>
             </div>
           </>

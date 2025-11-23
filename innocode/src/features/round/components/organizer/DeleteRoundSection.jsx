@@ -1,15 +1,14 @@
 import React, { useCallback } from "react"
 import { Trash } from "lucide-react"
 import { useModal } from "@/shared/hooks/useModal"
-import { useAppDispatch } from "@/store/hooks"
-import { deleteRound } from "../../store/roundThunk"
 import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
+import { useDeleteRoundMutation } from "@/services/roundApi"
 
 const DeleteRoundSection = ({ round, contestId }) => {
-  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { openModal } = useModal()
+  const [deleteRound, { isLoading }] = useDeleteRoundMutation()
 
   const handleDelete = useCallback(() => {
     if (!round) return
@@ -18,7 +17,7 @@ const DeleteRoundSection = ({ round, contestId }) => {
       message: `Are you sure you want to delete "${round.name}"?`,
       onConfirm: async (onClose) => {
         try {
-          await dispatch(deleteRound({ roundId: round.roundId })).unwrap()
+          await deleteRound(round.roundId).unwrap()
           toast.success("Round deleted successfully!")
           navigate(`/organizer/contests/${contestId}`)
         } catch (err) {
@@ -29,7 +28,7 @@ const DeleteRoundSection = ({ round, contestId }) => {
         }
       },
     })
-  }, [dispatch, openModal, navigate, contestId, round])
+  }, [round, contestId, navigate, deleteRound, openModal])
 
   return (
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
@@ -37,8 +36,12 @@ const DeleteRoundSection = ({ round, contestId }) => {
         <Trash size={20} />
         <span className="text-sm">Delete round</span>
       </div>
-      <button className="button-white" onClick={handleDelete}>
-        Delete Round
+      <button
+        className="button-white"
+        onClick={handleDelete}
+        disabled={isLoading}
+      >
+        {isLoading ? "Deleting..." : "Delete Round"}
       </button>
     </div>
   )

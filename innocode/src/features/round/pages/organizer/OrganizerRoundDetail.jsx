@@ -1,28 +1,30 @@
-import React, { useEffect, useMemo, useCallback, useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import React, { useMemo } from "react"
+import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
-import { Trash } from "lucide-react"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import RoundInfo from "../../components/organizer/RoundInfo"
 import RoundRelatedSettings from "../../components/organizer/RoundRelatedSettings"
-import { useOrganizerRoundDetail } from "@/features/round/hooks/useOrganizerRoundDetail"
 import DeleteRoundSection from "../../components/organizer/DeleteRoundSection"
+import { useGetRoundByIdQuery } from "../../../../services/roundApi"
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
-  const { contest, round, loading, error } = useOrganizerRoundDetail(
-    contestId,
-    roundId
-  )
 
+  // RTK Query hook to fetch the round
+  const {
+    data: round,
+    isLoading: loading,
+    isError: error,
+  } = useGetRoundByIdQuery(roundId)
+
+  // Breadcrumbs
   const breadcrumbItems = useMemo(
     () =>
       BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
-        contestId,
-        contest?.name ?? "Contest",
+        round?.contestName ?? "Contest",
         round?.name ?? "Round"
       ),
-    [contestId, contest?.name, round?.name]
+    [round?.contestName, round?.name]
   )
 
   const breadcrumbPaths = useMemo(

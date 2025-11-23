@@ -50,22 +50,33 @@ export const BREADCRUMBS = {
 
   // Organizer pages
   ORGANIZER_CONTESTS: ["Contests"],
-  ORGANIZER_CONTEST_CREATE: ["Contests", "New Contest"],
+  ORGANIZER_CONTEST_CREATE: ["Contests", "New contest"],
   ORGANIZER_CONTEST_DETAIL: (contestName) => ["Contests", contestName],
   ORGANIZER_CONTEST_EDIT: (contestName) => [
     "Contests",
     contestName,
-    "Edit",
+    "Edit contest",
   ],
 
   // Organizer rounds
-  ORGANIZER_ROUND_DETAIL: (contestId, contestName, roundName) => [
+  ORGANIZER_ROUND_DETAIL: (contestName, roundName) => [
     "Contests",
     contestName,
     roundName,
   ],
+  ORGANIZER_ROUND_CREATE: (contestName) => [
+    "Contests",
+    contestName,
+    "New round",
+  ],
+  ORGANIZER_ROUND_EDIT: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Edit round",
+  ],
 
-  //Multiple choice questions breadcrumbs 
+  //Multiple choice questions breadcrumbs
   ORGANIZER_MCQ: (contestName, roundName) => [
     "Contests",
     contestName,
@@ -172,7 +183,10 @@ export const BREADCRUMB_PATHS = {
   CONTESTS: ["/contests"],
   CONTEST_DETAIL: (contestId) => ["/contests", `/contest-detail/${contestId}`],
   PRACTICE: ["/practice"],
-  PRACTICE_DETAIL: (practiceId) => ["/practice", `/practice-detail/${practiceId}`],
+  PRACTICE_DETAIL: (practiceId) => [
+    "/practice",
+    `/practice-detail/${practiceId}`,
+  ],
   TEAM: ["/team"],
   LEADERBOARD: ["/leaderboard"],
   ANNOUNCEMENTS: ["/announcements"],
@@ -217,6 +231,7 @@ export const BREADCRUMB_PATHS = {
   ADMIN_ANNOUNCEMENTS: ["/admin", "/admin/announcements"],
 
   // Organizer paths
+  // Organizer contests
   ORGANIZER_CONTESTS: ["/organizer", "/organizer/contests"],
   ORGANIZER_CONTEST_CREATE: ["/organizer/contests", "/organizer/contests/new"],
   ORGANIZER_CONTEST_DETAIL: (contestId) => [
@@ -229,10 +244,22 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/edit`,
   ],
 
+  // Organizer rounds
   ORGANIZER_ROUND_DETAIL: (contestId, roundId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
+  ],
+  ORGANIZER_ROUND_CREATE: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/new`,
+  ],
+  ORGANIZER_ROUND_EDIT: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/edit`,
   ],
 
   //Multiple choice questions paths

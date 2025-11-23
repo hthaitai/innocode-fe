@@ -2,13 +2,15 @@ import React, { useState, useEffect, useMemo } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   useUpdateRoundMutation,
-  useGetRoundsByContestIdQuery,
+  useGetRoundByIdQuery,
 } from "@/services/roundApi"
 import { useGetContestByIdQuery } from "@/services/contestApi"
 import { toast } from "react-hot-toast"
 import PageContainer from "@/shared/components/PageContainer"
 import RoundForm from "../../components/organizer/RoundForm"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
+import { validateRound } from "../../validators/roundValidator"
+import { BREADCRUMB_PATHS } from "../../../../config/breadcrumbs"
 
 const EditRound = () => {
   const { contestId, roundId } = useParams()
@@ -18,16 +20,8 @@ const EditRound = () => {
   const { data: contest, isLoading: contestLoading } =
     useGetContestByIdQuery(contestId)
 
-  // Fetch rounds of this contest
-  const { data: roundsData, isLoading: roundsLoading } =
-    useGetRoundsByContestIdQuery(contestId)
-
-  const [updateRound, { isLoading: isUpdating }] = useUpdateRoundMutation()
-
-  // Find the round we want to edit
-  const existing = roundsData?.data?.find(
-    (r) => String(r.roundId) === String(roundId)
-  )
+  // Fetch the round info
+  const { data: round, isLoading: roundLoading } = useGetRoundByIdQuery(roundId)
 
   // Form state
   const [form, setForm] = useState({
@@ -36,24 +30,26 @@ const EditRound = () => {
     end: "",
     problemType: "",
   })
-  const [errors, setErrors] = useState({})
   const [original, setOriginal] = useState(null)
+  const [errors, setErrors] = useState({})
 
-  // Initialize form when existing round is loaded
+  // Initialize form when round is loaded
   useEffect(() => {
-    if (existing) {
+    if (round) {
       const init = {
-        name: existing.name || existing.roundName || "",
-        start: existing.start || "",
-        end: existing.end || "",
-        problemType: existing.problemType || "",
+        name: round.name || round.roundName || "",
+        start: round.start || "",
+        end: round.end || "",
+        problemType: round.problemType || "",
       }
       setForm(init)
       setOriginal(init)
     }
-  }, [existing])
+  }, [round])
 
-  // Check if form has unsaved changes
+  const [updateRound, { isLoading: isUpdating }] = useUpdateRoundMutation()
+
+  // Check for unsaved changes
   const hasChanges = useMemo(() => {
     if (!original) return false
     return Object.keys(form).some((key) => form[key] !== original[key])
@@ -62,32 +58,25 @@ const EditRound = () => {
   // Breadcrumbs
   const breadcrumbItems = useMemo(
     () =>
-      BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
-        contestId,
-        contest?.name ?? "Contest",
-        existing?.name ?? "Edit Round"
+      BREADCRUMBS.ORGANIZER_ROUND_EDIT(
+        round?.contestName ?? "Contest",
+        round?.roundName ?? "Round"
       ),
-    [contestId, contest?.name, existing?.name]
+    [round?.contestName, round?.roundName]
   )
 
   const breadcrumbPaths = useMemo(
-    () => [
-      "/organizer/contests",
-      `/organizer/contests/${contestId}`,
-      `/organizer/contests/${contestId}/rounds/${roundId}/edit`,
-    ],
-    [contestId, roundId]
+    () =>
+      BREADCRUMB_PATHS.ORGANIZER_ROUND_EDIT(
+        round?.contestId ?? contestId,
+        round?.roundId ?? roundId
+      ),
+    [contestId, roundId, round?.contestId, round?.roundId]
   )
 
   // Submit handler
   const handleSubmit = async () => {
-    // ✅ validate before API
-    const validationErrors = validateRound(
-      form,
-      contest,
-      roundsData?.data || [],
-      { isEdit: true }
-    )
+    const validationErrors = validateRound(form, contest, [], { isEdit: true })
     setErrors(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
       toast.error(`Please fix ${Object.keys(validationErrors).length} field(s)`)
@@ -95,11 +84,8 @@ const EditRound = () => {
     }
 
     try {
-      await updateRound({
-        id: roundId,
-        data: form,
-      }).unwrap()
-      toast.success("Round updated")
+      await updateRound({ id: roundId, data: form }).unwrap()
+      toast.success("Round updated successfully")
       navigate(`/organizer/contests/${contestId}`)
     } catch (err) {
       console.error(err)
@@ -107,13 +93,13 @@ const EditRound = () => {
     }
   }
 
-  // Show loading until both contest and round data are ready
-  if (contestLoading || roundsLoading || !existing) {
+  // Show loading until contest or round is ready
+  if (contestLoading || roundLoading || !round) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
-        loading={true}
+        loading
       />
     )
   }
@@ -122,7 +108,6 @@ const EditRound = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={false}
     >
       <RoundForm
         formData={form}

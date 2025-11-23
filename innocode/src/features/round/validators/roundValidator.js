@@ -35,20 +35,23 @@ export const validateRound = (
 
   // ---- Problem Configuration ----
   const hasMcqConfig = data.mcqTestConfig && data.problemType === "McqTest"
-  const hasProblemConfig = data.problemConfig && data.problemType === "Problem"
+  const hasProblemConfig =
+    data.problemConfig &&
+    ["Manual", "AutoEvaluation"].includes(data.problemType)
 
   if (!hasMcqConfig && !hasProblemConfig) {
     errors.problemType = "Please configure the selected problem type"
   }
 
+  // optional: type check (not strictly needed now because problemType itself is Manual or AutoEvaluation)
   if (
-    data.problemType === "Problem" &&
+    ["Manual", "AutoEvaluation"].includes(data.problemType) &&
     data.problemConfig &&
     !data.problemConfig.type
   ) {
-    errors.problemType = "Please select Manual or AutoEvaluation type"
+    errors.problemType = "Please configure the selected problem type"
   }
-
+  
   // ---- Contest Time Bounds ----
   if (contest && data.start && data.end) {
     const contestStart = new Date(contest.start)

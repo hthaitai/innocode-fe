@@ -8,6 +8,7 @@ import RoundForm from "../../components/organizer/RoundForm"
 import RoundDateInfo from "@/features/round/components/organizer/RoundDateInfo"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import { validateRound } from "@/features/round/validators/roundValidator"
+import { BREADCRUMB_PATHS } from "../../../../config/breadcrumbs"
 
 const EMPTY = { name: "", start: "", end: "", problemType: "" }
 
@@ -22,22 +23,14 @@ const CreateRound = () => {
   const { data: contest, isLoading: contestLoading } =
     useGetContestByIdQuery(contestId)
 
+  // Breadcrumbs
   const breadcrumbItems = useMemo(
-    () =>
-      BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
-        contestId,
-        contest?.name ?? "Contest",
-        "New Round"
-      ),
-    [contestId, contest?.name]
+    () => BREADCRUMBS.ORGANIZER_ROUND_CREATE(contest?.name ?? "Contest"),
+    [contest?.name]
   )
 
   const breadcrumbPaths = useMemo(
-    () => [
-      "/organizer/contests",
-      `/organizer/contests/${contestId}`,
-      `/organizer/contests/${contestId}/rounds/new`,
-    ],
+    () => BREADCRUMB_PATHS.ORGANIZER_ROUND_CREATE(contestId),
     [contestId]
   )
 

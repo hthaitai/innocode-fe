@@ -31,6 +31,13 @@ export const roundApi = createApi({
             ]
           : [{ type: "Rounds", id: `LIST_${contestId}` }],
     }),
+    getRoundById: builder.query({
+      query: (roundId) => `rounds/${roundId}`,
+      transformResponse: (response) => response.data,
+      providesTags: (result, error, roundId) => [
+        { type: "Rounds", id: roundId },
+      ],
+    }),
     createRound: builder.mutation({
       query: ({ contestId, data }) => ({
         url: `rounds/${contestId}`,
@@ -47,24 +54,21 @@ export const roundApi = createApi({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Rounds", id },
-      ],
+      invalidatesTags: (result, error, { id }) => [{ type: "Rounds", id }],
     }),
     deleteRound: builder.mutation({
       query: (id) => ({
         url: `rounds/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: "Rounds", id },
-      ],
+      invalidatesTags: (result, error, id) => [{ type: "Rounds", id }],
     }),
   }),
 })
 
 export const {
   useGetRoundsByContestIdQuery,
+  useGetRoundByIdQuery,
   useCreateRoundMutation,
   useUpdateRoundMutation,
   useDeleteRoundMutation,

@@ -2,18 +2,23 @@ import React, { useCallback } from "react"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import { useGetRoundByIdQuery } from "@/services/roundApi"
 
-const RoundInfo = ({ round }) => {
+const RoundInfo = () => {
   const navigate = useNavigate()
+  const { roundId } = useParams() // assuming route has :roundId
+  const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId)
 
   const handleEdit = useCallback(() => {
     if (!round) return
-    // Navigate to dedicated edit page for this round
-    navigate(`/organizer/contests/${round.contestId}/rounds/${round.roundId}/edit`)
+    navigate(
+      `/organizer/contests/${round.contestId}/rounds/${round.roundId}/edit`
+    )
   }, [round, navigate])
 
-  if (!round) return null
+  if (isLoading) return <div>Loading...</div>
+  if (isError || !round) return <div>Failed to load round information.</div>
 
   const safe = (val) =>
     val === null || val === undefined || val === "" ? "—" : val
