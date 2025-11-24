@@ -5,15 +5,19 @@ import {
   createTest,
   fetchAttempts,
   fetchAttemptDetail,
+  fetchMcqTemplate,
+  importMcqCsv,
 } from "./mcqThunk"
 
 const initialState = {
-  roundId: null, // current round being viewed
-  testId: null, // current test ID from mcqTests
-  mcqs: [], // questions + options
+  roundId: null,
+  testId: null,
+  mcqs: [],
   attemptDetail: null,
-  banks: [], // question banks
-  attempts: [], // quiz attempts
+  banks: [],
+  attempts: [],
+  template: null,
+  importResult: null,
   pagination: {
     pageNumber: 1,
     pageSize: 10,
@@ -21,7 +25,7 @@ const initialState = {
     totalCount: 0,
     hasPreviousPage: false,
     hasNextPage: false,
-  }, // pageNumber, pageSize, totalPages, etc.
+  },
   attemptsPagination: {
     pageNumber: 1,
     pageSize: 10,
@@ -29,7 +33,7 @@ const initialState = {
     totalCount: 0,
     hasPreviousPage: false,
     hasNextPage: false,
-  }, // pagination for attempts
+  },
   loading: false,
   error: null,
 }
@@ -81,6 +85,16 @@ const mcqSlice = createSlice({
     },
     clearAttemptDetail: (state) => {
       state.attemptDetail = null
+      state.loading = false
+      state.error = null
+    },
+    clearTemplate: (state) => {
+      state.template = null
+      state.loading = false
+      state.error = null
+    },
+    clearImportResult: (state) => {
+      state.importResult = null
       state.loading = false
       state.error = null
     },
@@ -194,8 +208,46 @@ const mcqSlice = createSlice({
         state.error =
           action.payload?.Message || "Failed to load attempt details"
       })
+
+      // Fetch CSV Template
+      .addCase(fetchMcqTemplate.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchMcqTemplate.fulfilled, (state, action) => {
+        state.loading = false
+        state.error = null
+        state.template = action.payload?.data || action.payload || null
+      })
+      .addCase(fetchMcqTemplate.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload?.Message || "Failed to fetch MCQ template"
+      })
+
+      // Import CSV
+      .addCase(importMcqCsv.pending, (state) => {
+        state.loading = true
+        state.error = null
+        state.importResult = null
+      })
+      .addCase(importMcqCsv.fulfilled, (state, action) => {
+        state.loading = false
+        state.error = null
+        state.importResult = action.payload?.data || action.payload || null
+      })
+      .addCase(importMcqCsv.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload?.Message || "Failed to import CSV"
+      })
   },
 })
 
-export const { clearMcqs, clearBanks, clearAttempts, clearAttemptDetail } = mcqSlice.actions
+export const {
+  clearMcqs,
+  clearBanks,
+  clearAttempts,
+  clearAttemptDetail,
+  clearTemplate,
+  clearImportResult,
+} = mcqSlice.actions
 export default mcqSlice.reducer

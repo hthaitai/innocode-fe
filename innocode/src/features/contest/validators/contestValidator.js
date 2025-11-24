@@ -18,6 +18,8 @@ export const validateContest = (data, { isEdit = false } = {}) => {
     errors.name = "Contest name is required"
   }
 
+
+
   // ---- Image URL ----
   if (data.imgUrl && !/^https?:\/\/.+\..+/.test(data.imgUrl)) {
     errors.imgUrl = "Please enter a valid URL (must start with http or https)"

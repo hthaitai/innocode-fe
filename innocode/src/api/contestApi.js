@@ -1,12 +1,12 @@
 import axiosClient from "./axiosClient"
 
 const contestApi = {
-  // GET /api/contests
+  // GET /api/contests/my-contests
   getAll: ({ pageNumber = 1, pageSize = 10 } = {}) =>
     axiosClient.get("/contests", {
       params: { pageNumber, pageSize },
     }),
-  getOrganizerContest: ({ pageNumber = 1, pageSize = 10 } = {}) =>
+  getOrganizerContests: ({ pageNumber = 1, pageSize = 10 } = {}) =>
     axiosClient.get("/contests/my-contests", {
       params: { pageNumber, pageSize },
     }),  // GET /api/contests with idSearch parameter

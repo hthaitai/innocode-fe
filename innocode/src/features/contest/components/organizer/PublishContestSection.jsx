@@ -1,66 +1,35 @@
-import React, { useState, useEffect } from "react"
 import { Upload } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { useModal } from "@/shared/hooks/useModal"
-import { useAppDispatch } from "@/store/hooks"
 import {
-  publishContest,
-  checkPublishReady,
-} from "@/features/contest/store/contestThunks"
+  useCheckPublishReadyQuery,
+  usePublishContestMutation,
+} from "@/services/contestApi"
 
 const PublishContestSection = ({ contest }) => {
-  if (!contest) return null
-  const dispatch = useAppDispatch()
   const { openModal } = useModal()
 
-  const [loading, setLoading] = useState(false)
-  const [checking, setChecking] = useState(false)
-  const [readyInfo, setReadyInfo] = useState(null)
+  const { data: publishCheck } = useCheckPublishReadyQuery(contest?.contestId, {
+    skip: !contest?.contestId || contest?.status === "Published",
+  })
+
+  const [publishContest, { isLoading: actionLoading }] =
+    usePublishContestMutation()
+
+  if (!contest) return null
 
   const isPublished = contest?.status === "Published"
-  const isReady = readyInfo?.isReady
-  const missingItems = readyInfo?.missing || []
+  const isReady = publishCheck?.data?.isReady ?? false
+  const missingItems = publishCheck?.data?.missing ?? []
 
-  // --- Check if contest is ready ---
-  useEffect(() => {
-    if (!contest?.contestId) return
-    if (isPublished) return
-
-    let isMounted = true
-
-    const load = async () => {
-      setChecking(true)
-      const result = await dispatch(checkPublishReady(contest.contestId))
-
-      if (!isMounted) return
-
-      if (checkPublishReady.fulfilled.match(result)) {
-        setReadyInfo(result.payload.data)
-      } else {
-        // Treat 404 as "not ready" — not an error
-        setReadyInfo({ isReady: false, missing: result.payload?.missing || [] })
-      }
-      setChecking(false)
-    }
-
-    load()
-
-    return () => {
-      isMounted = false
-    }
-  }, [contest?.contestId, contest?.status, isPublished, dispatch])
-
-  const handlePublish = async () => {
-    if (!contest || isPublished) return
-
+  const handlePublish = () => {
     if (!isReady) {
-      openModal("alert", {
+      return openModal("alert", {
         title: "Cannot Publish Contest",
         description: `Contest is not ready. Missing: ${
           missingItems.join(", ") || "required items"
         }`,
       })
-      return
     }
 
     openModal("confirm", {
@@ -68,56 +37,36 @@ const PublishContestSection = ({ contest }) => {
       description: `Are you sure you want to publish "${contest.name}"?`,
       onConfirm: async (onClose) => {
         try {
-          setLoading(true)
-          const result = await dispatch(publishContest(contest.contestId))
-          if (publishContest.fulfilled.match(result)) {
-            toast.success("Contest published successfully!")
-            onClose()
-          } else {
-            const err = result.payload
-            if (err?.Code === "PUBLISH_BLOCKED") {
-              openModal("alert", {
-                title: "Cannot Publish Contest",
-                description: `Contest is not ready. Missing: ${err.AdditionalData?.missing?.join(
-                  ", "
-                )}`,
-              })
-              // Recheck after publish failure
-              const check = await dispatch(checkPublishReady(contest.contestId))
-              if (checkPublishReady.fulfilled.match(check))
-                setReadyInfo(check.payload.data)
-            } else {
-              toast.error(err?.Message || "Failed to publish contest")
-            }
-          }
-        } catch {
-          toast.error("Failed to publish contest")
-        } finally {
-          setLoading(false)
+          await publishContest(contest.contestId).unwrap()
+          toast.success("Contest published successfully!")
+          onClose()
+          // No need to manually refetch — RTK Query invalidates tags automatically
+        } catch (err) {
+          const missingFromError = err?.data?.AdditionalData?.missing ?? []
+          toast.error(
+            missingFromError.length
+              ? `Cannot publish: ${missingFromError.join(", ")}`
+              : err?.data?.Message || "Failed to publish contest"
+          )
         }
       },
     })
   }
 
-  const disabled = loading || checking || isPublished
+  const disabled = actionLoading || isPublished || !isReady
   const buttonText = isPublished
     ? "Already Published"
-    : loading
+    : actionLoading
     ? "Publishing..."
-    : checking
-    ? "Checking..."
-    : "Publish"
+    : isReady
+    ? "Publish"
+    : "Not Ready"
 
   const helperText = isPublished
     ? "This contest has already been published."
-    : checking
-    ? "Checking if contest is ready to publish..."
     : isReady
     ? "Make this contest visible and active for participants."
-    : `Cannot publish: ${
-        missingItems.join(", ") ||
-        "Contest is not ready, create rounds to publish contest"
-      }`
+    : `Cannot publish: ${missingItems.join(", ") || "Required items missing"}`
 
   return (
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
@@ -130,15 +79,12 @@ const PublishContestSection = ({ contest }) => {
           </p>
         </div>
       </div>
-
       <button
         onClick={handlePublish}
-        disabled={disabled || !isReady}
+        disabled={disabled}
         className={`${
-          disabled || !isReady
-            ? "button-gray cursor-not-allowed"
-            : "button-orange"
-        } ${loading ? "opacity-70" : ""}`}
+          disabled ? "button-gray" : "button-orange"
+        } ${actionLoading ? "opacity-70" : ""}`}
       >
         {buttonText}
       </button>

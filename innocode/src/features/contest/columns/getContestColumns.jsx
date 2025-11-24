@@ -1,10 +1,9 @@
 import Actions from "@/shared/components/Actions"
-import { Trash2, Edit2 } from "lucide-react" // add edit icon
+import { Trash2, Edit2 } from "lucide-react"
 import StatusBadge from "@/shared/components/StatusBadge"
 import { formatDateTime } from "@/shared/utils/dateTime"
-import { useModal } from "@/shared/hooks/useModal" // optional if using hook inside columns file
 
-export const getContestColumns = (handleDelete, openModal) => [
+export const getContestColumns = (handleEdit, handleDelete) => [
   {
     accessorKey: "name",
     header: "Name",
@@ -37,20 +36,13 @@ export const getContestColumns = (handleDelete, openModal) => [
           {
             label: "Edit",
             icon: Edit2,
-            onClick: () =>
-              openModal("contest", {
-                initialData: row.original,
-                onUpdated: () => {
-                  // optional callback after edit
-                  // e.g., refresh page or setPage(1)
-                },
-              }),
+            onClick: () => handleEdit(row.original),
           },
           {
             label: "Delete",
             icon: Trash2,
             className: "text-red-500",
-            onClick: () => handleDelete(row.original), // ✅ centralized delete
+            onClick: () => handleDelete(row.original),
           },
         ]}
       />

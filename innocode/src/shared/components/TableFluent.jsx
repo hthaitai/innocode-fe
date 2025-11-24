@@ -3,6 +3,7 @@ import {
   useReactTable,
   getCoreRowModel,
   flexRender,
+  getExpandedRowModel,
 } from "@tanstack/react-table"
 import { Spinner } from "./SpinnerFluent"
 import TablePagination from "./TablePagination"
@@ -15,11 +16,20 @@ const TableFluent = ({
   pagination,
   onPageChange,
   onRowClick,
+  renderSubComponent,
+  expandAt = null,
 }) => {
+  const [expanded, setExpanded] = React.useState({})
+
   const table = useReactTable({
     data: data || [], // ✅ Ensure data is always an array
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    state: { expanded },
+    onExpandedChange: setExpanded,
+    getRowCanExpand: () => true,
+    getRowId: (row) => row.questionId,
   })
 
   const isClickable = typeof onRowClick === "function"
@@ -101,33 +111,67 @@ const TableFluent = ({
                       : actionIndex - 1
 
                   return (
-                    <tr
-                      key={row.id}
-                      className={`hover:bg-[#F6F6F6] align-middle transition-colors ${
-                        isClickable ? "cursor-pointer" : "cursor-default"
-                      }`}
-                      onClick={() => isClickable && onRowClick(row.original)}
-                    >
-                      {visibleCells.map((cell, index) => {
-                        const isExpandingColumn = index === expandIndex
-                        return (
-                          <td
-                            key={cell.id}
-                            className={`text-[14px] leading-[20px] border-[#E5E5E5] whitespace-nowrap align-middle ${
-                              cell.column.id === "actions"
-                                ? "w-[60px] p-2 flex justify-center items-center"
-                                : "px-5 py-2 border-r"
-                            }`}
-                            style={isExpandingColumn ? { width: "100%" } : {}}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        )
-                      })}
-                    </tr>
+                    <React.Fragment key={row.id}>
+                      <tr
+                        className={`hover:bg-[#F6F6F6] align-middle transition-colors ${
+                          isClickable ? "cursor-pointer" : "cursor-default"
+                        }`}
+                        onClick={() => isClickable && onRowClick(row.original)}
+                      >
+                        {visibleCells.map((cell, index) => {
+                          const isExpandingColumn = index === expandIndex
+                          return (
+                            <td
+                              key={cell.id}
+                              className={`text-[14px] leading-[20px] border-[#E5E5E5] whitespace-nowrap align-middle ${
+                                cell.column.id === "actions"
+                                  ? "w-[60px] p-2 flex justify-center items-center"
+                                  : "px-5 py-2 border-r"
+                              }`}
+                              style={isExpandingColumn ? { width: "100%" } : {}}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </td>
+                          )
+                        })}
+                      </tr>
+
+                      {row.getIsExpanded() && renderSubComponent && (
+                        <tr>
+                          {visibleCells.map((cell, index) => {
+                            const isExpandingColumn = index === expandIndex
+                            const isCorrectExpandColumn = expandAt
+                              ? cell.column.id === expandAt
+                              : index === expandIndex // match parent logic
+
+                            const isLast = index === visibleCells.length - 1
+
+                            return (
+                              <td
+                                key={index}
+                                className={`px-5 align-top ${
+                                  !isLast ? "border-r border-[#E5E5E5]" : ""
+                                } ${
+                                  isCorrectExpandColumn
+                                    ? ""
+                                    : ""
+                                }`}
+                                style={
+                                  isExpandingColumn ? { width: "100%" } : {}
+                                } // <-- same logic added here
+                              >
+                                {isCorrectExpandColumn
+                                  ? renderSubComponent(row.original)
+                                  : null}
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      )}
+                    </React.Fragment>
                   )
                 })}
 

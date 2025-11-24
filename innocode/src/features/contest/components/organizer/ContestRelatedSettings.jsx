@@ -1,14 +1,5 @@
 import { Link } from "react-router-dom"
-import {
-  Users,
-  Trophy,
-  Award,
-  ListChecks,
-  Bell,
-  ChevronRight,
-  Scale,
-  Calendar,
-} from "lucide-react"
+import { Users, Trophy, Award, ChevronRight, Scale } from "lucide-react"
 
 const items = [
   {

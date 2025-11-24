@@ -54,6 +54,7 @@ const TablePagination = ({ pagination, onPageChange }) => {
       <div className="text-sm leading-5 text-[#7A7574] mb-2">
         Page {currentPage} of {totalPages} — {pagination.totalCount} items
       </div>
+      
       <div className="flex gap-1 items-center">
         <button
           disabled={currentPage === 1}

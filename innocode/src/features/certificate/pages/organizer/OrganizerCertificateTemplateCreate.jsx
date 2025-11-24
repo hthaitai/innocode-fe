@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast"
 import PageContainer from "@/shared/components/PageContainer"
 import CertificateTemplateForm from "../../components/organizer/CertificateTemplateForm"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { fetchContests } from "@/features/contest/store/contestThunks"
+import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 
 const EMPTY_TEMPLATE = {
@@ -29,7 +29,7 @@ export default function OrganizerCertificateTemplateCreate() {
   useEffect(() => {
     if (contestId) {
       if (!contests || contests.length === 0) {
-        dispatch(fetchContests({ pageNumber: 1, pageSize: 50 }))
+        dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
       } else {
         const contest = contests.find((c) => String(c.contestId) === String(contestId))
         if (contest) setContestName(contest.name)

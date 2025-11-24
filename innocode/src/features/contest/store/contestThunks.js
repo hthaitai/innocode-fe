@@ -2,27 +2,41 @@ import { createAsyncThunk } from "@reduxjs/toolkit"
 import contestApi from "@/api/contestApi"
 import { handleThunkError } from "../../../shared/utils/handleThunkError"
 
-export const fetchContests = createAsyncThunk(
+export const fetchAllContests = createAsyncThunk(
   "contests/fetchAll",
   async ({ pageNumber = 1, pageSize = 10 } = {}, { rejectWithValue }) => {
     try {
-      const res = await contestApi.getOrganizerContest({ pageNumber, pageSize })
+      const res = await contestApi.getAll({ pageNumber, pageSize })
       return res.data
     } catch (err) {
-      // If the backend returns 404 for "no contests", treat it as an empty page
-      if (err?.response?.status === 404) {
-        return {
-          data: [],
-          additionalData: {
-            pageNumber: 1,
-            pageSize,
-            totalPages: 1,
-            totalCount: 0,
-            hasPreviousPage: false,
-            hasNextPage: false,
-          },
-        }
-      }
+      return rejectWithValue(handleThunkError(err))
+    }
+  }
+)
+
+export const fetchOrganizerContests = createAsyncThunk(
+  "contests/fetchOrganizer",
+  async ({ pageNumber = 1, pageSize = 10 } = {}, { rejectWithValue }) => {
+    try {
+      const res = await contestApi.getOrganizerContests({
+        pageNumber,
+        pageSize,
+      })
+      return res.data
+    } catch (err) {
+      return rejectWithValue(handleThunkError(err))
+    }
+  }
+)
+
+export const fetchContestById = createAsyncThunk(
+  "contests/fetchById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await contestApi.getById(id)
+      const contestData = res.data.data[0] ?? null
+      return contestData
+    } catch (err) {
       return rejectWithValue(handleThunkError(err))
     }
   }
@@ -71,16 +85,6 @@ export const checkPublishReady = createAsyncThunk(
       const res = await contestApi.checkPublishReady(id)
       return res.data
     } catch (err) {
-      // Treat "not ready" as a valid state, not an error
-      if (err?.response?.status === 404) {
-        return {
-          data: {
-            isReady: false,
-            missing: [],
-            contestId: id,
-          },
-        }
-      }
       return rejectWithValue(handleThunkError(err))
     }
   }

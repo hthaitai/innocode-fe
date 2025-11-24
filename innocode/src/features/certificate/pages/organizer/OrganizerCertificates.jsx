@@ -5,7 +5,7 @@ import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import Actions from "@/shared/components/Actions"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { fetchContests } from "@/features/contest/store/contestThunks"
+import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 
 const OrganizerCertificates = ({ certificates = [], loading = false, error = null }) => {
@@ -20,7 +20,7 @@ const OrganizerCertificates = ({ certificates = [], loading = false, error = nul
   useEffect(() => {
     if (contestId) {
       if (!contests || contests.length === 0) {
-        dispatch(fetchContests({ pageNumber: 1, pageSize: 50 }))
+        dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
       } else {
         const contest = contests.find((c) => String(c.contestId) === String(contestId))
         if (contest) setContestName(contest.name)

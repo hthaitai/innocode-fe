@@ -20,7 +20,7 @@ const DetailTable = ({ data }) => (
         return (
           <tr key={row.label}>
             <th
-              className="py-1 pr-7 font-normal align-top text-left"
+              className="py-1 pr-7 font-normal whitespace-nowrap align-top text-left"
               scope="row"
             >
               {row.label}

@@ -1,36 +1,64 @@
-export const validateRound = (data, contest = null, existingRounds = []) => {
+export const validateRound = (
+  data,
+  contest = null,
+  existingRounds = [],
+  { isEdit = false } = {}
+) => {
   const errors = {}
-  if (!data.name?.trim()) errors.name = "Round name is required"
-  if (!data.start) errors.start = "Start time is required"
-  if (!data.end) errors.end = "End time is required"
-  if (data.start && data.end && new Date(data.start) > new Date(data.end))
+  const now = new Date()
+
+  // ---- Round Name ----
+  if (!data.name?.trim()) {
+    errors.name = "Round name is required"
+  }
+
+  // ---- Start Time ----
+  if (!data.start) {
+    errors.start = "Start time is required"
+  } else if (!isEdit && new Date(data.start) < now) {
+    errors.start = "Start time cannot be in the past"
+  }
+
+  // ---- End Time ----
+  if (!data.end) {
+    errors.end = "End time is required"
+  } else if (data.start && new Date(data.end) <= new Date(data.start)) {
     errors.end = "End time must be after start time"
-  
-  // Validate problemType is selected
+  } else if (!isEdit && new Date(data.end) < now) {
+    errors.end = "End time cannot be in the past"
+  }
+
+  // ---- Problem Type ----
   if (!data.problemType) {
     errors.problemType = "Problem type is required"
   }
-  
-  // Validate that only one config is provided
+
+  // ---- Problem Configuration ----
   const hasMcqConfig = data.mcqTestConfig && data.problemType === "McqTest"
-  const hasProblemConfig = data.problemConfig && data.problemType === "Problem"
-  
+  const hasProblemConfig =
+    data.problemConfig &&
+    ["Manual", "AutoEvaluation"].includes(data.problemType)
+
   if (!hasMcqConfig && !hasProblemConfig) {
     errors.problemType = "Please configure the selected problem type"
   }
-  
-  // If Problem is selected, validate that a type (Manual/AutoEvaluation) is chosen
-  if (data.problemType === "Problem" && data.problemConfig && !data.problemConfig.type) {
-    errors.problemType = "Please select Manual or AutoEvaluation type"
+
+  // optional: type check (not strictly needed now because problemType itself is Manual or AutoEvaluation)
+  if (
+    ["Manual", "AutoEvaluation"].includes(data.problemType) &&
+    data.problemConfig &&
+    !data.problemConfig.type
+  ) {
+    errors.problemType = "Please configure the selected problem type"
   }
   
-  // Validate contest time bounds
+  // ---- Contest Time Bounds ----
   if (contest && data.start && data.end) {
     const contestStart = new Date(contest.start)
     const contestEnd = new Date(contest.end)
     const roundStart = new Date(data.start)
     const roundEnd = new Date(data.end)
-    
+
     if (roundStart < contestStart) {
       errors.start = "Start time must be within contest period"
     }
@@ -38,22 +66,25 @@ export const validateRound = (data, contest = null, existingRounds = []) => {
       errors.end = "End time must be within contest period"
     }
   }
-  
-  // Validate overlap with existing rounds
+
+  // ---- Overlap with Existing Rounds ----
   if (data.start && data.end && existingRounds.length > 0) {
     const roundStart = new Date(data.start)
     const roundEnd = new Date(data.end)
-    
+
     const overlap = existingRounds.some((r) => {
+      // Skip overlap check if editing the same round
+      if (isEdit && r.id === data.id) return false
+
       const existingStart = new Date(r.start)
       const existingEnd = new Date(r.end)
       return roundStart < existingEnd && roundEnd > existingStart
     })
-    
+
     if (overlap) {
       errors.start = "Round time overlaps with an existing round"
     }
   }
-  
+
   return errors
 }

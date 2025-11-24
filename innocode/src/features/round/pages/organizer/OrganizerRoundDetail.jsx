@@ -1,25 +1,30 @@
 import React, { useMemo } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
-import { Trash } from "lucide-react"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import RoundInfo from "../../components/organizer/RoundInfo"
 import RoundRelatedSettings from "../../components/organizer/RoundRelatedSettings"
-import { useRoundDetail } from "../../hooks/useRoundDetail"
+import DeleteRoundSection from "../../components/organizer/DeleteRoundSection"
+import { useGetRoundByIdQuery } from "../../../../services/roundApi"
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
-  const { contest, round, loading, error, refetch, handleDelete } =
-    useRoundDetail(contestId, roundId)
 
+  // RTK Query hook to fetch the round
+  const {
+    data: round,
+    isLoading: loading,
+    isError: error,
+  } = useGetRoundByIdQuery(roundId)
+
+  // Breadcrumbs
   const breadcrumbItems = useMemo(
     () =>
       BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
-        contestId,
-        contest?.name ?? "Contest",
+        round?.contestName ?? "Contest",
         round?.name ?? "Round"
       ),
-    [contestId, contest?.name, round?.name]
+    [round?.contestName, round?.name]
   )
 
   const breadcrumbPaths = useMemo(
@@ -33,7 +38,7 @@ const OrganizerRoundDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="flex items-center justify-center h-[200px] text-gray-500">
+        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
           This round has been deleted or is no longer available.
         </div>
       </PageContainer>
@@ -48,7 +53,7 @@ const OrganizerRoundDetail = () => {
       error={error}
     >
       <div className="space-y-5">
-        <RoundInfo round={round} onUpdated={refetch} />
+        <RoundInfo round={round} />
 
         <div>
           <div className="text-sm font-semibold pt-3 pb-2">
@@ -59,15 +64,7 @@ const OrganizerRoundDetail = () => {
 
         <div>
           <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
-          <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-            <div className="flex gap-5 items-center">
-              <Trash size={20} />
-              <span className="text-sm">Delete round</span>
-            </div>
-            <button className="button-white" onClick={handleDelete}>
-              Delete Round
-            </button>
-          </div>
+          <DeleteRoundSection round={round} contestId={contestId} />
         </div>
       </div>
     </PageContainer>

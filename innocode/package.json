@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.1.0",
     "@emailjs/browser": "^4.4.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -22,6 +23,7 @@
     "@reduxjs/toolkit": "^2.9.2",
     "@tailwindcss/vite": "^4.1.13",
     "@tanstack/react-table": "^8.21.3",
+    "antd": "^5.29.1",
     "axios": "^1.12.2",
     "dayjs": "^1.11.18",
     "framer-motion": "^12.23.24",

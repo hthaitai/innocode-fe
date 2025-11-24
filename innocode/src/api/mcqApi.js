@@ -48,6 +48,26 @@ const mcqApi = {
     const response = await axiosClient.get(`/quizzes/attempts/${attemptId}`)
     return response.data
   },
+
+  // GET /api/mcq-tests/template
+  getTemplate: async () => {
+    const response = await axiosClient.get("/mcq-tests/template")
+    return response.data
+  },
+
+  // POST /api/mcq-tests/{testId}/import-csv
+  importCsv: async (testId, formData) => {
+    const response = await axiosClient.post(
+      `/mcq-tests/${testId}/import-csv`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    )
+    return response.data
+  },
 }
 
 export default mcqApi

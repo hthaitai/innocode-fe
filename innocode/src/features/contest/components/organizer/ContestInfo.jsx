@@ -1,16 +1,24 @@
-import React from "react"
+import React, { useCallback } from "react"
+import { useNavigate } from "react-router-dom"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
-import { useNavigate } from "react-router-dom"
 import StatusBadge from "../../../../shared/components/StatusBadge"
 
-const ContestInfo = ({ contest, onEdit }) => {
+const ContestInfo = ({ contest }) => {
+  const navigate = useNavigate()
+
   const safe = (val) =>
-    val === null || val === undefined || val === "" ? "—" : val;
+    val === null || val === undefined || val === "" ? "—" : val
+
+  // Move edit logic here
+  const handleEdit = () => {
+    if (!contest) return
+    navigate(`/organizer/contests/${contest.contestId}/edit`)
+  }
 
   return (
-    <InfoSection title="Contest Information" onEdit={onEdit}>
+    <InfoSection title="Contest Information" onEdit={handleEdit}>
       <DetailTable
         data={[
           { label: "Name", value: safe(contest.name) },
@@ -45,8 +53,7 @@ const ContestInfo = ({ contest, onEdit }) => {
         ]}
       />
     </InfoSection>
-  );
-};
-
+  )
+}
 
 export default ContestInfo

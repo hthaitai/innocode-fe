@@ -1,22 +1,24 @@
 import Modal from "@/shared/components/BaseModal"
-import { useAppDispatch } from "@/store/hooks"
-import toast from "react-hot-toast"
 
-const ConfirmDeleteModal = ({
-  isOpen,
-  item,
-  message,
-  type,
-  onConfirm,
-  onClose,
-}) => {
-  const handleConfirm = () => {
+const ConfirmDeleteModal = ({ isOpen, item, message, onConfirm, onClose }) => {
+  const handleConfirm = async () => {
     if (onConfirm) {
-      onConfirm(onClose)
+      await onConfirm(onClose)
     } else {
       onClose()
     }
   }
+
+  const resolvedMessage =
+    message ||
+    `Are you sure you want to delete "${
+      item?.name ||
+      item?.title ||
+      item?.username ||
+      item?.email ||
+      item?.id ||
+      "this item"
+    }"?`
 
   return (
     <Modal
@@ -35,17 +37,7 @@ const ConfirmDeleteModal = ({
         </>
       }
     >
-      <p>
-        {message ||
-          `Are you sure you want to delete ${
-            item?.name ||
-            item?.title ||
-            item?.username ||
-            item?.email ||
-            item?.id ||
-            "this item"
-          }?`}
-      </p>
+      <p>{resolvedMessage}</p>
     </Modal>
   )
 }
