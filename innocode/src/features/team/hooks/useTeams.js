@@ -26,7 +26,7 @@ export const useTeams = () => {
   // }, [])
 
   // Wrap getMyTeam trong useCallback
-  const getMyTeam = useCallback(async () => {
+  const getMyTeam = useCallback(async (contestId = null) => {
     try {
       setLoading(true);
       setError(null);
@@ -40,26 +40,44 @@ export const useTeams = () => {
 
       // API returns { data: [], message: "...", statusCode: 200, code: "SUCCESS" }
       // Extract actual team data from response.data.data or response.data
-      let myTeam = null;
+      let teamsArray = [];
 
       if (response.data) {
-        // If response.data is an array, get first element
+        // If response.data is an array, use it directly
         if (Array.isArray(response.data)) {
-          myTeam = response.data.length > 0 ? response.data[0] : null;
+          teamsArray = response.data;
         }
         // If response.data has nested data property
         else if (response.data.data) {
           if (Array.isArray(response.data.data)) {
-            myTeam =
-              response.data.data.length > 0 ? response.data.data[0] : null;
+            teamsArray = response.data.data;
           } else {
-            myTeam = response.data.data;
+            teamsArray = [response.data.data];
           }
         }
         // If response.data is the team object directly
         else if (typeof response.data === "object" && !response.data.message) {
-          myTeam = response.data;
+          teamsArray = [response.data];
         }
+      }
+
+      // Filter by contestId if provided
+      let myTeam = null;
+      if (contestId && teamsArray.length > 0) {
+        myTeam = teamsArray.find(
+          (team) => {
+            const teamContestId = team.contestId || team.contest_id;
+            return (
+              String(teamContestId) === String(contestId) ||
+              teamContestId === contestId ||
+              teamContestId === parseInt(contestId)
+            );
+          }
+        );
+        console.log("🔍 Filtered by contestId:", contestId, "Found team:", myTeam);
+      } else if (teamsArray.length > 0) {
+        // If no contestId provided, return first team
+        myTeam = teamsArray[0];
       }
 
       console.log("🔍 Extracted myTeam:", myTeam);

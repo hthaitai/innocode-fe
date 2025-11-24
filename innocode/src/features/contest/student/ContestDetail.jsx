@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import PageContainer from '@/shared/components/PageContainer';
-import { contestsData } from '@/data/contestsData';
-import { createBreadcrumbWithPaths, BREADCRUMBS } from '@/config/breadcrumbs';
-import { Icon } from '@iconify/react';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import PageContainer from "@/shared/components/PageContainer";
+import { contestsData } from "@/data/contestsData";
+import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs";
+import { Icon } from "@iconify/react";
 import {
   Calendar,
   Users,
@@ -12,20 +12,25 @@ import {
   Play,
   NotebookPen,
   BookCheck,
-} from 'lucide-react';
-import useContestDetail from '../hooks/useContestDetail';
-import CountdownTimer from '@/shared/components/countdowntimer/CountdownTimer';
-import { useAuth } from '@/context/AuthContext';
+} from "lucide-react";
+import useContestDetail from "../hooks/useContestDetail";
+import CountdownTimer from "@/shared/components/countdowntimer/CountdownTimer";
+import { useAuth } from "@/context/AuthContext";
+import useTeams from "@/features/team/hooks/useTeams";
 
 const ContestDetail = () => {
   const { contestId } = useParams();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
   const { user } = useAuth();
-  const role = user?.role || 'student';
+  const role = user?.role || "student";
 
   // Fetch contest data from API
   const { contest: apiContest, loading, error } = useContestDetail(contestId);
+
+  // Fetch team data for student
+  const { getMyTeam, loading: teamLoading } = useTeams();
+  const [myTeam, setMyTeam] = useState(null);
 
   // Use API data if available
   const contest = apiContest;
@@ -33,31 +38,48 @@ const ContestDetail = () => {
   // Get rounds from contest data
   const rounds = contest?.rounds || [];
 
+  // Fetch my team when contestId or user changes
+  useEffect(() => {
+    const fetchMyTeam = async () => {
+      if (contestId && user?.id && role === "student") {
+        try {
+          const teamData = await getMyTeam(contestId);
+          setMyTeam(teamData || null);
+        } catch (error) {
+          console.error("Error fetching my team:", error);
+          setMyTeam(null);
+        }
+      }
+    };
+
+    fetchMyTeam();
+  }, [contestId, user?.id, role, getMyTeam]);
+
   const breadcrumbData = contest
-    ? createBreadcrumbWithPaths('CONTEST_DETAIL', contest.name || contest.title)
-    : { items: BREADCRUMBS.NOT_FOUND, paths: ['/'] };
+    ? createBreadcrumbWithPaths("CONTEST_DETAIL", contest.name || contest.title)
+    : { items: BREADCRUMBS.NOT_FOUND, paths: ["/"] };
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
-      case 'upcoming':
-        return 'text-[#fbbc05] bg-[#fef7e0]';
-      case 'ongoing':
-        return 'text-[#34a853] bg-[#e6f4ea]';
-      case 'completed':
-        return 'text-[#7A7574] bg-[#f3f3f3]';
+      case "upcoming":
+        return "text-[#fbbc05] bg-[#fef7e0]";
+      case "ongoing":
+        return "text-[#34a853] bg-[#e6f4ea]";
+      case "completed":
+        return "text-[#7A7574] bg-[#f3f3f3]";
       default:
-        return 'text-[#7A7574] bg-[#f3f3f3]';
+        return "text-[#7A7574] bg-[#f3f3f3]";
     }
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -84,51 +106,51 @@ const ContestDetail = () => {
   };
 
   const getCountdownLabel = () => {
-    if (!contest) return 'Time Remaining';
+    if (!contest) return "Time Remaining";
 
     const now = new Date();
     const startDate = new Date(contest.start);
     const endDate = new Date(contest.end);
 
     if (now < startDate) {
-      return 'Time Until Start';
+      return "Time Until Start";
     }
 
     if (now >= startDate && now < endDate) {
-      return 'Time Until End';
+      return "Time Until End";
     }
 
-    return 'Contest Ended';
+    return "Contest Ended";
   };
 
   // Check if registration is closed
   const isRegistrationClosed = () => {
     if (!contest) return false;
-    
+
     // Check by status
     if (contest.status === "RegistrationClosed") {
       return true;
     }
-    
+
     // Check by registrationEnd date
     if (contest.registrationEnd) {
       const now = new Date();
       const registrationEnd = new Date(contest.registrationEnd);
       return now > registrationEnd;
     }
-    
+
     return false;
   };
 
   const registrationClosed = isRegistrationClosed();
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: 'mdi:information-outline' },
-    { id: 'rounds', label: 'Rounds', icon: 'mdi:trophy-outline' },
+    { id: "overview", label: "Overview", icon: "mdi:information-outline" },
+    { id: "rounds", label: "Rounds", icon: "mdi:trophy-outline" },
     {
-      id: 'rules',
-      label: 'Rules & Guidelines',
-      icon: 'mdi:file-document-outline',
+      id: "rules",
+      label: "Rules & Guidelines",
+      icon: "mdi:file-document-outline",
     },
   ];
 
@@ -163,7 +185,7 @@ const ContestDetail = () => {
             </h3>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
-              onClick={() => navigate('/contests')}
+              onClick={() => navigate("/contests")}
               className="button-orange"
             >
               <Icon icon="mdi:arrow-left" className="inline mr-2" />
@@ -225,10 +247,10 @@ const ContestDetail = () => {
                   contest.statusLabel || contest.status
                 )}`}
               >
-                {(contest.statusLabel || contest.status || '')
+                {(contest.statusLabel || contest.status || "")
                   .charAt(0)
                   .toUpperCase() +
-                  (contest.statusLabel || contest.status || '').slice(1)}
+                  (contest.statusLabel || contest.status || "").slice(1)}
               </span>
 
               <div className="flex items-center gap-2 text-[#7A7574] text-sm">
@@ -248,8 +270,8 @@ const ContestDetail = () => {
                   <div className="text-[#7A7574] text-xs">Start Date</div>
                   <div className="font-medium text-[#2d3748]">
                     {contest.start
-                      ? formatDate(contest.start).split(',')[0]
-                      : 'TBA'}
+                      ? formatDate(contest.start).split(",")[0]
+                      : "TBA"}
                   </div>
                 </div>
               </div>
@@ -258,7 +280,7 @@ const ContestDetail = () => {
                 <div>
                   <div className="text-[#7A7574] text-xs">Prize Pool</div>
                   <div className="font-medium text-[#2d3748]">
-                    {contest.prizePool || contest.rewardsText || 'TBA'}
+                    {contest.prizePool || contest.rewardsText || "TBA"}
                   </div>
                 </div>
               </div>
@@ -267,12 +289,12 @@ const ContestDetail = () => {
                 <div>
                   <div className="text-[#7A7574] text-xs">Rounds</div>
                   <div className="font-medium text-[#2d3748]">
-                    {Array.isArray(contest.rounds) ? contest.rounds.length : 0}{' '}
+                    {Array.isArray(contest.rounds) ? contest.rounds.length : 0}{" "}
                     Round
                     {Array.isArray(contest.rounds) &&
                     contest.rounds.length !== 1
-                      ? 's'
-                      : ''}
+                      ? "s"
+                      : ""}
                   </div>
                 </div>
               </div>
@@ -285,7 +307,7 @@ const ContestDetail = () => {
                 <div>
                   <div className="text-[#7A7574] text-xs">Problems</div>
                   <div className="font-medium text-[#2d3748]">
-                    {contest.totalProblems || 'TBA'} Total
+                    {contest.totalProblems || "TBA"} Total
                   </div>
                 </div>
               </div>
@@ -301,8 +323,8 @@ const ContestDetail = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-1 cursor-pointer px-4 py-3 text-sm font-medium flex items-center justify-center gap-2 transition-colors ${
                     activeTab === tab.id
-                      ? 'bg-[#ff6b35] text-white'
-                      : 'text-[#7A7574] hover:bg-[#f9fafb]'
+                      ? "bg-[#ff6b35] text-white"
+                      : "text-[#7A7574] hover:bg-[#f9fafb]"
                   }`}
                 >
                   <Icon icon={tab.icon} width="18" />
@@ -313,7 +335,7 @@ const ContestDetail = () => {
 
             {/* Tab Content */}
             <div className="p-6">
-              {activeTab === 'overview' && (
+              {activeTab === "overview" && (
                 <div className="space-y-6">
                   {/* Description */}
                   <div>
@@ -374,7 +396,7 @@ const ContestDetail = () => {
                 </div>
               )}
 
-              {activeTab === 'rounds' && (
+              {activeTab === "rounds" && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold text-[#2d3748]">
@@ -400,11 +422,11 @@ const ContestDetail = () => {
                       // ✅ Determine route based on problemType
                       const getRoundRoute = () => {
                         switch (round.problemType) {
-                          case 'McqTest':
+                          case "McqTest":
                             return `/mcq-test/${contestId}/${round.roundId}`;
-                          case 'Manual':
+                          case "Manual":
                             return `/manual-problem/${contestId}/${round.roundId}`;
-                          case 'AutoEvaluation':
+                          case "AutoEvaluation":
                             return `/auto-evaluation/${contestId}/${round.roundId}`;
                           default:
                             return null;
@@ -414,14 +436,14 @@ const ContestDetail = () => {
                       // ✅ Get button label based on problemType
                       const getButtonLabel = () => {
                         switch (round.problemType) {
-                          case 'McqTest':
-                            return 'Start Test';
-                          case 'Manual':
-                            return 'Start Problem';
-                          case 'AutoEvaluation':
-                            return 'Start Challenge';
+                          case "McqTest":
+                            return "Start Test";
+                          case "Manual":
+                            return "Start Problem";
+                          case "AutoEvaluation":
+                            return "Start Challenge";
                           default:
-                            return 'Start';
+                            return "Start";
                         }
                       };
 
@@ -446,17 +468,17 @@ const ContestDetail = () => {
                             <div className="flex flex-col items-end gap-2 ">
                               <span
                                 className={`text-xs px-2 text-center py-1 rounded ${
-                                  round.status === 'Closed'
-                                    ? 'bg-[#fde8e8] text-[#d93025]'
-                                    : round.status === 'Opened'
-                                    ? 'bg-[#e6f4ea] text-[#34a853]'
-                                    : 'bg-[#fef7e0] text-[#fbbc05]'
+                                  round.status === "Closed"
+                                    ? "bg-[#fde8e8] text-[#d93025]"
+                                    : round.status === "Opened"
+                                    ? "bg-[#e6f4ea] text-[#34a853]"
+                                    : "bg-[#fef7e0] text-[#fbbc05]"
                                 }`}
                               >
                                 {round.status}
                               </span>
-                              {round.status === 'Opened' &&
-                                role === 'student' &&
+                              {round.status === "Opened" &&
+                                role === "student" &&
                                 roundRoute && (
                                   <button
                                     onClick={() => navigate(roundRoute)}
@@ -471,12 +493,12 @@ const ContestDetail = () => {
 
                           <div className="flex flex-col gap-2 text-sm text-[#7A7574] ml-10">
                             {/* ✅ Show MCQ Test info only for McqTest type */}
-                            {round.problemType === 'McqTest' &&
+                            {round.problemType === "McqTest" &&
                               round.mcqTest && (
                                 <div className="flex items-center gap-2">
                                   <BookCheck size={14} />
                                   <span>
-                                    {round.mcqTest.name || 'MCQ Test'}
+                                    {round.mcqTest.name || "MCQ Test"}
                                   </span>
                                 </div>
                               )}
@@ -485,12 +507,12 @@ const ContestDetail = () => {
                             <div className="flex items-center gap-2">
                               <NotebookPen size={14} />
                               <span>
-                                {round.problemType === 'McqTest'
-                                  ? 'Multiple Choice Questions'
-                                  : round.problemType === 'Manual'
-                                  ? 'Manual Problem'
-                                  : round.problemType === 'AutoEvaluation'
-                                  ? 'Auto Evaluation'
+                                {round.problemType === "McqTest"
+                                  ? "Multiple Choice Questions"
+                                  : round.problemType === "Manual"
+                                  ? "Manual Problem"
+                                  : round.problemType === "AutoEvaluation"
+                                  ? "Auto Evaluation"
                                   : round.problemType}
                               </span>
                             </div>
@@ -500,7 +522,7 @@ const ContestDetail = () => {
                               <div className="flex items-center gap-2">
                                 <Icon icon="mdi:timer-outline" width="14" />
                                 <span>
-                                  {Math.floor(round.timeLimitSeconds / 60)}{' '}
+                                  {Math.floor(round.timeLimitSeconds / 60)}{" "}
                                   minutes
                                 </span>
                               </div>
@@ -511,7 +533,7 @@ const ContestDetail = () => {
                               <div className="flex items-center gap-2">
                                 <Calendar size={14} />
                                 <span>
-                                  {formatDate(round.start)} -{' '}
+                                  {formatDate(round.start)} -{" "}
                                   {formatDate(round.end)}
                                 </span>
                               </div>
@@ -533,7 +555,7 @@ const ContestDetail = () => {
                 </div>
               )}
 
-              {activeTab === 'rules' && (
+              {activeTab === "rules" && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-[#2d3748] mb-3">
                     Contest Rules & Guidelines
@@ -573,7 +595,7 @@ const ContestDetail = () => {
         {/* RIGHT SIDEBAR */}
         <div className="w-[320px] flex flex-col gap-4">
           {/* Registration / Action Button */}
-          {role === 'mentor' && !registrationClosed && (
+          {role === "mentor" && !registrationClosed && (
             <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
               <button
                 onClick={() => navigate(`/mentor-team/${contestId}`)}
@@ -583,16 +605,16 @@ const ContestDetail = () => {
                 Register Now
               </button>
               <p className="text-xs text-[#7A7574] text-center mt-2">
-                Registration closes on{' '}
+                Registration closes on{" "}
                 {contest.registrationEnd
-                  ? formatDate(contest.registrationEnd).split(',')[0]
-                  : 'TBA'}
+                  ? formatDate(contest.registrationEnd).split(",")[0]
+                  : "TBA"}
               </p>
             </div>
           )}
-          
+
           {/* Registration Closed Message */}
-          {role === 'mentor' && registrationClosed && (
+          {role === "mentor" && registrationClosed && (
             <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Icon icon="mdi:lock" width="20" className="text-[#7A7574]" />
@@ -601,7 +623,8 @@ const ContestDetail = () => {
                 </p>
               </div>
               <p className="text-xs text-[#7A7574] text-center">
-                The registration window has closed. You can no longer create new teams for this contest.
+                The registration window has closed. You can no longer create new
+                teams for this contest.
               </p>
             </div>
           )}
@@ -613,30 +636,103 @@ const ContestDetail = () => {
           />
 
           {/* Your Team Status */}
-          <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
-            <h3 className="text-sm font-semibold text-[#2d3748] mb-4 flex items-center gap-2">
-              <Users size={16} className="text-[#ff6b35]" />
-              Your Team
-            </h3>
-            <div className="text-center py-4">
-              <Icon
-                icon="mdi:account-group-outline"
-                width="48"
-                className="text-[#E5E5E5] mx-auto mb-2"
-              />
-              <p className="text-sm text-[#7A7574] mb-3">
-                You haven't joined a team yet
-              </p>
-              {role === 'mentor' && (
-                <button
-                  onClick={() => navigate(`/mentor-team/${contestId}`)}
-                  className="button-white w-full text-sm"
-                >
-                  Create or Join Team
-                </button>
+          {role === "student" && (
+            <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
+              <h3 className="text-sm font-semibold text-[#2d3748] mb-4 flex items-center gap-2">
+                <Users size={16} className="text-[#ff6b35]" />
+                Your Team
+              </h3>
+              {teamLoading ? (
+                <div className="text-center py-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#ff6b35] border-t-transparent mx-auto mb-2"></div>
+                  <p className="text-sm text-[#7A7574]">Loading team...</p>
+                </div>
+              ) : myTeam ? (
+                <div className="space-y-4">
+                  <div>
+                    {" "}
+                    {/* Team Name */}
+                    <div>
+                      <h4 className="font-semibold text-[#2d3748] mb-1">
+                        {myTeam.name}
+                      </h4>
+                    </div>
+                    {/* Team Stats */}
+                    <div className="">
+                      <div>
+                        <p className="text-xs text-[#7A7574] mb-1">Members</p>
+                        <p className="font-semibold text-[#2d3748] text-sm">
+                          {myTeam.members?.length || 0} /{" "}
+                          {contest?.teamMembersMax || "∞"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Team Members Preview */}
+                  {myTeam.members && myTeam.members.length > 0 && (
+                    <div className="pt-3 border-t border-[#E5E5E5]">
+                      <p className="text-xs text-[#7A7574] mb-2">
+                        Team Members
+                      </p>
+                      <div className="space-y-2">
+                        {myTeam.members.slice(0, 3).map((member, index) => {
+                          const memberName =
+                            member.studentFullname || "Unknown Member";
+                          const memberInitial =
+                            memberName?.charAt(0)?.toUpperCase() || "M";
+
+                          return (
+                            <div
+                              key={
+                                member.studentId || member.student_id || index
+                              }
+                              className="flex items-center gap-2 p-2 bg-[#f9fafb] rounded-[5px]"
+                            >
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#ff8c5a] text-white flex items-center justify-center font-semibold text-xs shadow-sm">
+                                {memberInitial}
+                              </div>
+                              <p className="text-sm font-medium text-[#2d3748] flex-1 truncate">
+                                {memberName}
+                              </p>
+                            </div>
+                          );
+                        })}
+                        {myTeam.members.length > 3 && (
+                          <p className="text-xs text-[#7A7574] text-center pt-1">
+                            +{myTeam.members.length - 3} more member
+                            {myTeam.members.length - 3 > 1 ? "s" : ""}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* View Team Button */}
+                  <button
+                    onClick={() => navigate(`/team`)}
+                    className="button-white w-full text-sm mt-3"
+                  >
+                    View Team Details
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <Icon
+                    icon="mdi:account-group-outline"
+                    width="48"
+                    className="text-[#E5E5E5] mx-auto mb-2"
+                  />
+                  <p className="text-sm text-[#7A7574] mb-3">
+                    You haven't joined a team yet
+                  </p>
+                  <p className="text-xs text-[#7A7574]">
+                    Wait for a mentor to invite you to their team
+                  </p>
+                </div>
               )}
             </div>
-          </div>
+          )}
 
           {/* Contest Info */}
           <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">

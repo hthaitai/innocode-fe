@@ -57,6 +57,10 @@ axiosClient.interceptors.response.use(
   (response) => {
     if (import.meta.env.VITE_ENV === "development") {
       console.log("📥 Response:", response.config.url, response.status)
+      // Log response data for debugging
+      if (response.status >= 200 && response.status < 300) {
+        console.log("✅ Success response for:", response.config.url, response.data)
+      }
     }
     return response
   },
@@ -67,7 +71,16 @@ axiosClient.interceptors.response.use(
       const { status, data } = error.response
 
       if (import.meta.env.VITE_ENV === "development") {
-        console.error("❌ Error:", status, error.config.url, data)
+        console.error("❌ Error:", status, error.config?.url || error.config?.method, data)
+        // Only log as error if status is actually an error
+        if (status >= 400) {
+          console.error("❌ HTTP Error Response:", {
+            url: error.config?.url,
+            method: error.config?.method,
+            status: status,
+            data: data
+          })
+        }
       }
 
       switch (status) {

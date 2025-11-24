@@ -11,6 +11,7 @@ import useMentors from "../../../../shared/hooks/useMentors";
 import { teamMemberApi } from "@/api/teamMemberApi";
 import { studentApi } from "@/api/studentApi";
 import { teamInviteApi } from "@/api/teamInviteApi";
+import { sendTeamInviteEmail } from "@/shared/services/emailService";
 
 const MentorTeam = () => {
   const { contestId } = useParams();
@@ -25,6 +26,7 @@ const MentorTeam = () => {
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [invitingStudentId, setInvitingStudentId] = useState(null);
   const [inviteError, setInviteError] = useState("");
+  const [invitedStudentIds, setInvitedStudentIds] = useState(new Set()); // Track invited students
   const { contest, loading: contestLoading } = useContestDetail(contestId);
   const { teams, loading: teamsLoading, addTeam, getMyTeam } = useTeams();
   const {
@@ -42,35 +44,26 @@ const MentorTeam = () => {
   // State để lưu myTeam từ API
   const [myTeam, setMyTeam] = useState(null);
 
+  // Reset invited students when contest changes
+  useEffect(() => {
+    setInvitedStudentIds(new Set());
+  }, [contestId]);
+
   // Gọi API getMyTeam khi component mount hoặc contestId thay đổi
   useEffect(() => {
     const fetchMyTeam = async () => {
       try {
-        const teamData = await getMyTeam();
-        console.log("🔍 getMyTeam result in MentorTeam:", teamData);
+        // Pass contestId to getMyTeam to filter correctly
+        const teamData = await getMyTeam(contestId);
 
-        // Kiểm tra nếu team thuộc contest hiện tại
         if (teamData) {
-          const teamContestId = teamData.contestId || teamData.contest_id;
-          console.log(
-            "🔍 teamContestId:",
-            teamContestId,
-            "contestId:",
-            contestId
-          );
-
-          if (
-            teamContestId === contestId ||
-            teamContestId === parseInt(contestId)
-          ) {
-            console.log("✅ Setting myTeam:", teamData);
-            setMyTeam(teamData);
-          } else {
-            console.log("❌ Team contestId does not match");
-            setMyTeam(null);
+          console.log("🔍 Team data received:", teamData);
+          console.log("🔍 Team members:", teamData.members);
+          if (teamData.members && teamData.members.length > 0) {
+            console.log("🔍 First member structure:", teamData.members[0]);
           }
+          setMyTeam(teamData);
         } else {
-          console.log("❌ No team data returned");
           setMyTeam(null);
         }
       } catch (error) {
@@ -98,7 +91,6 @@ const MentorTeam = () => {
 
   // Auto-set mentorId and schoolId from fetched mentor
   useEffect(() => {
-    console.log("🔍 Mentors data:", mentors);
     if (mentors && mentors.length > 0) {
       // API returns array with response object: [{data: [...], ...}]
       const response = mentors[0];
@@ -108,16 +100,10 @@ const MentorTeam = () => {
           ? response.data[0]
           : null;
 
-      console.log("🔍 Response object:", response);
-      console.log("🔍 Actual mentor:", mentorData);
-      console.log("🔍 My team:", myTeam);
       if (mentorData) {
         // Handle both camelCase and snake_case field names
         const mentorIdValue = mentorData?.mentorId || mentorData?.mentor_id;
         const schoolIdValue = mentorData?.schoolId || mentorData?.school_id;
-
-        console.log("🔍 mentorIdValue:", mentorIdValue);
-        console.log("🔍 schoolIdValue:", schoolIdValue);
 
         if (mentorIdValue) {
           setMentorId(mentorIdValue);
@@ -129,6 +115,21 @@ const MentorTeam = () => {
     }
   }, [mentors]);
 
+  // Update invitedStudentIds when myTeam changes (remove students who became members)
+  useEffect(() => {
+    if (myTeam && myTeam.members) {
+      const memberIds = new Set(
+        (myTeam.members || []).map((m) => m.studentId || m.student_id)
+      );
+      // Remove students from invited list if they became members
+      setInvitedStudentIds((prev) => {
+        const updated = new Set(prev);
+        memberIds.forEach((id) => updated.delete(id));
+        return updated;
+      });
+    }
+  }, [myTeam]);
+
   // Fetch students when in myTeam tab and schoolId is available
   useEffect(() => {
     const fetchStudents = async () => {
@@ -136,7 +137,6 @@ const MentorTeam = () => {
         setLoadingStudents(true);
         try {
           const response = await studentApi.getBySchoolId(schoolId);
-          console.log("✅ Students response:", response);
           
           // Handle different response structures
           let studentsData = [];
@@ -148,16 +148,17 @@ const MentorTeam = () => {
             }
           }
           
-          // Filter out students who are already members
+          // Filter out students who are already members or have been invited
           const existingMemberIds = (myTeam.members || []).map(
             (m) => m.studentId || m.student_id
           );
           const availableStudents = studentsData.filter(
-            (s) => !existingMemberIds.includes(s.studentId)
+            (s) => 
+              !existingMemberIds.includes(s.studentId) &&
+              !invitedStudentIds.has(s.studentId)
           );
           
           setStudents(availableStudents);
-          console.log("✅ Available students list:", availableStudents);
         } catch (error) {
           console.error("❌ Error fetching students:", error);
           setStudents([]);
@@ -168,7 +169,7 @@ const MentorTeam = () => {
     };
 
     fetchStudents();
-  }, [activeTab, schoolId, myTeam]);
+  }, [activeTab, schoolId, myTeam, invitedStudentIds]);
 
   const handleCreateTeam = async () => {
     setErrors({});
@@ -212,7 +213,6 @@ const MentorTeam = () => {
         contestId: String(contestId),
         schoolId: String(schoolIdValue),
       };
-      console.log("📤 POST /teams - Request body:", requestBody);
       const newTeam = await addTeam(requestBody);
       // Update myTeam state với team vừa tạo
       if (newTeam) {
@@ -244,7 +244,7 @@ const MentorTeam = () => {
     setInvitingStudentId(student.studentId);
 
     try {
-      const teamId = myTeam?.teamId || myTeam?.team_id;
+      const teamId = myTeam?.teamId;
       if (!teamId) {
         throw new Error("Team ID not found");
       }
@@ -258,25 +258,56 @@ const MentorTeam = () => {
 
       console.log("✅ Invite member response:", response);
 
-      // Extract token from response (if needed for email)
-      const token = response.data?.data?.token || response.data?.token;
-      if (token) {
+      // Extract data from response
+      const inviteData = response.data?.data || {};
+      const token = inviteData.token || response.data?.token;
+      const teamName = inviteData.teamName || myTeam?.name || "Team";
+      const contestName = inviteData.contestName || contest?.name || contest?.title || "Contest";
+      const mentorName = user?.name || "Mentor";
+      const studentEmail = student.userEmail;
+
+      if (token && studentEmail) {
         console.log("✅ Invitation token:", token);
-      }
+        
+        // Generate accept and decline URLs
+        // Format: /team-invite?token={token}&action=accept|decline
+        const baseUrl = window.location.origin;
+        const acceptUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(token)}&action=accept`;
+        const declineUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(token)}&action=decline`;
 
-      // Refresh myTeam to get updated members list
-      const teamData = await getMyTeam();
-      if (teamData) {
-        const teamContestId = teamData.contestId || teamData.contest_id;
-        if (
-          teamContestId === contestId ||
-          teamContestId === parseInt(contestId)
-        ) {
-          setMyTeam(teamData);
+        // Send invitation email
+        try {
+          const emailSent = await sendTeamInviteEmail({
+            toEmail: studentEmail,
+            teamName: teamName,
+            mentorName: mentorName,
+            contestName: contestName,
+            acceptUrl: acceptUrl,
+            declineUrl: declineUrl,
+          });
+          
+          if (emailSent) {
+            console.log("✅ Invitation email sent successfully to:", studentEmail);
+          } else {
+            console.warn("⚠️ Failed to send invitation email");
+          }
+        } catch (emailError) {
+          console.error("❌ Error sending invitation email:", emailError);
+          // Don't throw error - invitation was created successfully, just email failed
         }
+      } else {
+        console.warn("⚠️ Cannot send email: missing token or student email", { token, studentEmail });
+      }
+      // Add student to invited list
+      setInvitedStudentIds((prev) => new Set([...prev, student.studentId]));
+
+      // Refresh myTeam to get updated members list (with contestId filter)
+      const teamData = await getMyTeam(contestId);
+      if (teamData) {
+        setMyTeam(teamData);
       }
 
-      // Remove invited student from list
+      // Remove invited student from list immediately
       setStudents((prev) =>
         prev.filter((s) => s.studentId !== student.studentId)
       );
@@ -312,17 +343,11 @@ const MentorTeam = () => {
             prev.filter((s) => s.studentId !== student.studentId)
           );
           
-          // Refresh team data to get updated members
+          // Refresh team data to get updated members (with contestId filter)
           try {
-            const teamData = await getMyTeam();
+            const teamData = await getMyTeam(contestId);
             if (teamData) {
-              const teamContestId = teamData.contestId || teamData.contest_id;
-              if (
-                teamContestId === contestId ||
-                teamContestId === parseInt(contestId)
-              ) {
-                setMyTeam(teamData);
-              }
+              setMyTeam(teamData);
             }
           } catch (refreshError) {
             console.error("Error refreshing team data:", refreshError);
@@ -565,7 +590,7 @@ const MentorTeam = () => {
                               </p>
                               <p className="font-semibold text-[#2d3748]">
                                 {myTeam.members?.length || 0} /{" "}
-                                {contest?.maxTeamSize || "∞"}
+                                {contest?.teamMembersMax || "∞"}
                               </p>
                             </div>
                           </div>
@@ -583,39 +608,74 @@ const MentorTeam = () => {
 
                       {myTeam.members && myTeam.members.length > 0 ? (
                         <div className="space-y-3">
-                          {myTeam.members.map((member, index) => (
-                            <div
-                              key={
-                                member.studentId || member.student_id || index
-                              }
-                              className="flex items-center justify-between p-4 bg-[#f9fafb] rounded-[5px] hover:bg-[#f3f4f6] transition-colors"
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#ff8c5a] text-white flex items-center justify-center font-semibold shadow-sm">
-                                  {member.user?.name
-                                    ?.charAt(0)
-                                    ?.toUpperCase() || "M"}
-                                </div>
-                                <div>
-                                  <p className="font-semibold text-[#2d3748]">
-                                    {member.userFullname || "Unknown Member"}
-                                  </p>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <Mail
-                                      size={14}
-                                      className="text-[#7A7574]"
-                                    />
-                                    <p className="text-sm text-[#7A7574]">
-                                      {member.userEmail || ""}
+                          {myTeam.members.map((member, index) => {
+                            // Handle different field name formats (camelCase and snake_case)
+                            // API returns: studentFullname, studentEmail
+                            const memberName = 
+                              member.studentFullname ||
+                              member.student_fullname ||
+                              member.userFullname || 
+                              member.user_fullname ||
+                              member.user?.name ||
+                              member.user?.fullName ||
+                              member.name ||
+                              "Unknown Member";
+                            
+                            const memberEmail = 
+                              member.studentEmail ||
+                              member.student_email ||
+                              member.userEmail || 
+                              member.user_email ||
+                              member.user?.email ||
+                              member.email ||
+                              "";
+                            
+                            const memberInitial = 
+                              member.studentFullname?.charAt(0)?.toUpperCase() ||
+                              member.user?.name?.charAt(0)?.toUpperCase() ||
+                              member.user?.fullName?.charAt(0)?.toUpperCase() ||
+                              memberName?.charAt(0)?.toUpperCase() ||
+                              "M";
+                            
+                            // Log member data for debugging only if still missing
+                            if (memberName === "Unknown Member") {
+                              console.warn("⚠️ Member data missing:", member);
+                            }
+                            
+                            return (
+                              <div
+                                key={
+                                  member.studentId || member.student_id || index
+                                }
+                                className="flex items-center justify-between p-4 bg-[#f9fafb] rounded-[5px] hover:bg-[#f3f4f6] transition-colors"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#ff8c5a] text-white flex items-center justify-center font-semibold shadow-sm">
+                                    {memberInitial}
+                                  </div>
+                                  <div>
+                                    <p className="font-semibold text-[#2d3748]">
+                                      {memberName}
                                     </p>
+                                    {memberEmail && (
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <Mail
+                                          size={14}
+                                          className="text-[#7A7574]"
+                                        />
+                                        <p className="text-sm text-[#7A7574]">
+                                          {memberEmail}
+                                        </p>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
+                                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                  Active
+                                </span>
                               </div>
-                              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                                Active
-                              </span>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       ) : (
                         <div className="text-center py-8">
