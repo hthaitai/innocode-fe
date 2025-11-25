@@ -37,12 +37,12 @@ export const mcqApi = api.injectEndpoints({
       query: ({ testId, questionIds }) => ({
         url: `mcq-tests/${testId}`,
         method: "POST",
-        body: questionIds, // just the array of questionId strings
+        body: questionIds, 
         headers: {
           "Content-Type": "application/json",
         },
       }),
-      invalidatesTags: [
+      invalidatesTags: (result, error, { contestId }) => [
         { type: "Mcq", id: "LIST" },
         { type: "PublishCheck", id: contestId },
       ],

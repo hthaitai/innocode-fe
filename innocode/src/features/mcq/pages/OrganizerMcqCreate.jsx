@@ -86,7 +86,7 @@ const OrganizerMcqCreate = () => {
       // Extract question IDs only
       const questionIds = selectedQuestions.map((q) => q.questionId)
 
-      await createTest({ testId, questionIds }).unwrap()
+      await createTest({ testId, questionIds, contestId }).unwrap()
 
       toast.success("Selected questions added to the test successfully")
       navigate(`/organizer/contests/${contestId}/rounds/${roundId}/mcqs`)
