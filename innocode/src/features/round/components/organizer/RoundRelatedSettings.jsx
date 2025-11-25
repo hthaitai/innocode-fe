@@ -35,13 +35,13 @@ const RoundRelatedSettings = ({ contestId, round }) => {
   if (round.problemType === "McqTest") {
     items.push(
       {
-        title: "MCQ Test Details",
+        title: "MCQ tests",
         subtitle: "View or edit the MCQ test for this round",
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/mcqs`,
         icon: ListChecks,
       },
       {
-        title: "MCQ Attempts",
+        title: "MCQ attempts",
         subtitle: "See all participant attempts for this MCQ test",
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/attempts`,
         icon: ClipboardList,

@@ -113,7 +113,7 @@ const TableFluent = ({
                   return (
                     <React.Fragment key={row.id}>
                       <tr
-                        className={`hover:bg-[#F6F6F6] align-middle transition-colors ${
+                        className={`group hover:bg-[#F6F6F6] align-middle transition-colors ${
                           isClickable ? "cursor-pointer" : "cursor-default"
                         }`}
                         onClick={() => isClickable && onRowClick(row.original)}

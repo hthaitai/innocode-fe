@@ -9,6 +9,7 @@ import RoundDateInfo from "@/features/round/components/organizer/RoundDateInfo"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import { validateRound } from "@/features/round/validators/roundValidator"
 import { BREADCRUMB_PATHS } from "../../../../config/breadcrumbs"
+import { fromDatetimeLocal } from "../../../../shared/utils/dateTime"
 
 const EMPTY = { name: "", start: "", end: "", problemType: "" }
 
@@ -35,7 +36,6 @@ const CreateRound = () => {
   )
 
   const handleSubmit = async () => {
-    // ✅ validate before API
     const validationErrors = validateRound(form, contest)
     setErrors(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
@@ -44,7 +44,13 @@ const CreateRound = () => {
     }
 
     try {
-      await createRound({ contestId, data: form }).unwrap()
+      const payload = {
+        ...form,
+        start: fromDatetimeLocal(form.start),
+        end: fromDatetimeLocal(form.end),
+      }
+      
+      await createRound({ contestId, data: payload }).unwrap()
       toast.success("Round created")
       navigate(`/organizer/contests/${contestId}`)
     } catch (err) {

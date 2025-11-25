@@ -8,6 +8,7 @@ import {
   useDeleteContestMutation,
 } from "../../../../services/contestApi"
 import { useConfirmDelete } from "../../../../shared/hooks/useConfirmDelete"
+import { Spinner } from "../../../../shared/components/SpinnerFluent"
 
 const ContestTable = () => {
   const navigate = useNavigate()
@@ -87,16 +88,22 @@ const ContestTable = () => {
         </button>
       </div>
 
-      {/* Table */}
-      <TableFluent
-        data={contests}
-        columns={columns}
-        loading={isLoading}
-        error={isError}
-        pagination={pagination}
-        onPageChange={setPage}
-        onRowClick={handleRowClick}
-      />
+      {/* Table or loading */}
+      {isLoading && !contestsData ? (
+        <div className="min-h-[70px] flex items-center justify-center">
+          <Spinner />
+        </div>
+      ) : (
+        <TableFluent
+          data={contests}
+          columns={columns}
+          loading={isLoading} // overlay spinner for pagination
+          error={isError}
+          pagination={pagination}
+          onPageChange={setPage}
+          onRowClick={handleRowClick}
+        />
+      )}
     </div>
   )
 }

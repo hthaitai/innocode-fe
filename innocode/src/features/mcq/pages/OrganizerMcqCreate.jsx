@@ -1,88 +1,144 @@
-import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import React, { useState, useMemo, useCallback } from "react"
 import PageContainer from "@/shared/components/PageContainer"
-import { useAppSelector, useAppDispatch } from "@/store/hooks"
-import { fetchBanks, fetchRoundMcqs } from "@/features/mcq/store/mcqThunk"
-import { clearBanks, clearMcqs } from "@/features/mcq/store/mcqSlice"
+import CsvImportSection from "../components/organizer/CsvImportSection"
+import BankTable from "../components/organizer/BankTable"
+import QuestionsPreviewSection from "../components/organizer/QuestionsPreviewSection"
+
+import {
+  useGetRoundMcqsQuery,
+  useGetBanksQuery,
+  useCreateTestMutation,
+} from "@/services/mcqApi"
+
+import { useGetRoundByIdQuery } from "@/services/roundApi"
+import { useParams, useNavigate } from "react-router-dom"
+import { toast } from "react-hot-toast"
+import { getPreviewColumns } from "../columns/getPreviewColumns"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-import UploadCsvTab from "../components/organizer/UploadCsvTab"
-import BankImportTab from "../components/organizer/BankImportTab"
-import { Database, FileText } from "lucide-react"
 
 const OrganizerMcqCreate = () => {
-  const { contestId, roundId } = useParams()
-  const dispatch = useAppDispatch()
-  const { contests } = useAppSelector((s) => s.contests)
-  const { rounds } = useAppSelector((s) => s.rounds)
-  const { banks, loading, error, testId } = useAppSelector((s) => s.mcq)
+  const { roundId, contestId } = useParams()
+  const navigate = useNavigate()
 
-  const [activeTab, setActiveTab] = useState("upload")
+  // ===== RTK QUERY HOOKS =====
+  const {
+    data: round,
+    isLoading: roundLoading,
+    isError: roundError,
+  } = useGetRoundByIdQuery(roundId)
 
-  useEffect(() => {
-    dispatch(fetchBanks({ pageNumber: 1, pageSize: 100 }))
-    if (roundId) {
-      dispatch(fetchRoundMcqs({ roundId, pageNumber: 1, pageSize: 10 }))
-    }
-    return () => {
-      dispatch(clearBanks())
-      dispatch(clearMcqs())
-    }
-  }, [dispatch, roundId])
+  const {
+    data: mcqData,
+    isLoading: mcqLoading,
+    isError: mcqError,
+  } = useGetRoundMcqsQuery({ roundId, pageNumber: 1, pageSize: 10 })
 
+  const {
+    data: banks,
+    isLoading: banksLoading,
+    isError: banksError,
+  } = useGetBanksQuery({})
 
-  const contest = contests.find(
-    (c) => String(c.contestId) === String(contestId)
+  const [createTest, { isLoading: createLoading }] = useCreateTestMutation()
+
+  const testId = mcqData?.data?.mcqTest?.testId
+
+  // ===== LOCAL STATE =====
+  const [uploadedQuestions, setUploadedQuestions] = useState([])
+  const [selectedBanks, setSelectedBanks] = useState([]) // ✅ array of bank objects
+  const [selectedQuestions, setSelectedQuestions] = useState([])
+
+  const columns = useMemo(() => getPreviewColumns(), [])
+
+  // ===== QUESTIONS FROM UPLOAD =====
+  const questionsFromUpload = useMemo(
+    () =>
+      uploadedQuestions.map((q, i) => ({
+        ...q,
+        displayId: i + 1,
+        optionsCount: q.options?.length || 0,
+      })),
+    [uploadedQuestions]
   )
-  const round = rounds.find((r) => String(r.roundId) === String(roundId))
 
-  const items = BREADCRUMBS.ORGANIZER_MCQ_NEW(
-    contest?.name ?? "Contest",
-    round?.name ?? "Round"
+  // ===== QUESTIONS FROM BANK =====
+  const questionsFromBanks = useMemo(() => {
+    return selectedBanks.flatMap((bank) =>
+      (bank.questions || []).map((q, i) => ({
+        ...q,
+        displayId: i + 1,
+        optionsCount: q.options?.length || 0,
+      }))
+    )
+  }, [selectedBanks])
+
+  // ===== COMBINED =====
+  const allQuestions = useMemo(() => {
+    return [...questionsFromUpload, ...questionsFromBanks]
+  }, [questionsFromUpload, questionsFromBanks])
+
+  // ===== HANDLE CHOOSE QUESTIONS =====
+  const handleChoose = useCallback(async () => {
+    if (!testId) return toast.error("Test not initialized.")
+    if (!selectedQuestions.length) return toast.error("No questions selected.")
+
+    try {
+      // Extract question IDs only
+      const questionIds = selectedQuestions.map((q) => q.questionId)
+
+      await createTest({ testId, questionIds }).unwrap()
+
+      toast.success("Selected questions added to the test successfully")
+      navigate(`/organizer/contests/${contestId}/rounds/${roundId}/mcqs`)
+    } catch (err) {
+      console.error("Failed to add questions:", err)
+      toast.error(err?.Message || "Failed to add questions")
+    }
+  }, [selectedQuestions, testId, createTest, roundId, contestId, navigate])
+
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_NEW(
+    round?.contestName ?? "Contest",
+    round?.roundName ?? "Round"
   )
-  const paths = BREADCRUMB_PATHS.ORGANIZER_MCQ_NEW(contestId, roundId)
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ_NEW(
+    round?.contestId,
+    roundId
+  )
 
   return (
-    <PageContainer breadcrumb={items} breadcrumbPaths={paths}>
-      <div>
-        {/* ------------------ Tabs Header ------------------ */}
-        <div className="flex text-xs leading-4">
-          <button
-            className={`min-w-[240px] min-h-[34px] px-2 transition-all duration-200 ease-in-out ${
-              activeTab === "upload"
-                ? "border border-[#E5E5E5] border-b-white rounded-t-[5px] bg-white"
-                : "hover:bg-[#DADADA] border border-[#f3f3f3] rounded-t-[5px]"
-            }`}
-            onClick={() => setActiveTab("upload")}
-          >
-            <div className="flex gap-2 items-center">
-              <FileText size={16} />
-              Upload CSV
-            </div>
-          </button>
+    <PageContainer
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
+      loading={roundLoading}
+      error={roundError}
+    >
+      <div className="space-y-5">
+        {/* CSV Upload Section */}
+        <div>
+          <div className="text-sm font-semibold pt-3 pb-2">
+            Import questions
+          </div>
 
-          <button
-            className={`min-w-[240px] min-h-[34px] px-2 transition-all duration-200 ease-in-out ${
-              activeTab === "bank"
-                ? "border border-[#E5E5E5] border-b-white rounded-t-[5px] bg-white"
-                : "hover:bg-[#DADADA] border border-[#f3f3f3] rounded-t-[5px]"
-            }`}
-            onClick={() => setActiveTab("bank")}
-          >
-            <div className="flex gap-2 items-center">
-              <Database size={16} />
-              Import from Bank
-            </div>
-          </button>
+          <div className="space-y-5">
+            <CsvImportSection testId={testId} onUpload={setUploadedQuestions} />
+
+            {/* Bank Selector */}
+            <BankTable
+              selectedBanks={selectedBanks}
+              setSelectedBanks={setSelectedBanks}
+            />
+          </div>
         </div>
 
-        {/* ------------------ Tab Content ------------------ */}
-        {activeTab === "upload" && (
-          <UploadCsvTab testId={testId} loading={loading} error={error} />
-        )}
-
-        {activeTab === "bank" && (
-          <BankImportTab banks={banks} loading={loading} error={error} />
-        )}
+        {/* Questions Preview Section */}
+        <QuestionsPreviewSection
+          questions={allQuestions}
+          columns={columns}
+          selectedQuestions={selectedQuestions}
+          setSelectedQuestions={setSelectedQuestions}
+          loading={mcqLoading || banksLoading || createLoading}
+          onChoose={handleChoose}
+        />
       </div>
     </PageContainer>
   )

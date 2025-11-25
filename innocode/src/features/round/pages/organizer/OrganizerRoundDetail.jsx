@@ -22,9 +22,9 @@ const OrganizerRoundDetail = () => {
     () =>
       BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
         round?.contestName ?? "Contest",
-        round?.name ?? "Round"
+        round?.roundName ?? "Round"
       ),
-    [round?.contestName, round?.name]
+    [round?.contestName, round?.roundName]
   )
 
   const breadcrumbPaths = useMemo(
