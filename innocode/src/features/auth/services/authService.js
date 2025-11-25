@@ -72,7 +72,25 @@ export const authService = {
       throw error;
     }
   },
-
+  async generateVerificationToken() {
+    try {
+      const response = await authApi.generateVerificationToken();
+      const apiData = response.data.data;
+      return apiData.token;
+    } catch (error) {
+      console.error('❌ Generate verification token error:', error);
+      throw error;
+    }
+  },
+  async verifyEmail(token){
+    try {
+      const response = await authApi.verifyEmail(token);
+      const apiData = response.data;
+    } catch (error) {
+      console.error('❌ Verify email error:', error);
+      throw error;
+    }
+  },
   // Logout
   async logout() {
     try {

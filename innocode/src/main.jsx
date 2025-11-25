@@ -65,6 +65,10 @@ import EditContestPage from "./features/contest/pages/organizer/EditContestPage"
 import MentorTeam from "./features/team/pages/mentor/MentorTeam";
 import { initEmailJs } from "./shared/services/emailService";
 import TeamInviteResponse from "./features/team/pages/student/TeamInviteResponse";
+import VerifyEmail from './features/auth/components/VerifyEmail';
+import ForgotPassword from './features/auth/components/ForgotPassword';
+import ResetPassword from './features/auth/components/ResetPassword';
+
 // Organizer pages
 // Initialize EmailJS when app starts
 initEmailJs();
@@ -88,9 +92,33 @@ const router = createBrowserRouter([
           </PublicRoute>
         ),
       },
+      {
+        path: "forgot-password",
+        element: (
+          <PublicRoute>
+            <ForgotPassword />
+          </PublicRoute>
+        ),
+      },
     ],
   },
   { path: "unauthorized", element: <Unauthorized /> },
+  {
+    path: "verify-email",
+    element: (
+      <PublicRoute>
+        <VerifyEmail />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: "reset-password",
+    element: (
+      <PublicRoute>
+        <ResetPassword />
+      </PublicRoute>
+    ),
+  },
   {
     element: <MainLayout />, // layout wrapper
     children: [

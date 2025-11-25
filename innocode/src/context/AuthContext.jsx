@@ -42,10 +42,14 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const register = async (userData) => {
+  const register = async (userData, autoLogin = false) => {
     const data = await authService.register(userData);
-    setToken(data.token);
-    setUser(data.user);
+    // Chỉ tự động login nếu autoLogin = true (mặc định là false)
+    // Điều này cho phép register mà không tự động đăng nhập
+    if (autoLogin) {
+      setToken(data.token);
+      setUser(data.user);
+    }
     return data;
   };
 
@@ -55,6 +59,15 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     // Thay đổi từ navigate('/login') thành:
     window.location.href = "/login";
+  };
+
+  // Clear auth state without redirect (useful for registration flow)
+  const clearAuth = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    setToken(null);
+    setUser(null);
   };
 
   // Computed value: check if user is authenticated
@@ -67,7 +80,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isAuthenticated, login, register, logout, loading }}
+      value={{ user, token, isAuthenticated, login, register, logout, clearAuth, loading }}
     >
       {children}
     </AuthContext.Provider>

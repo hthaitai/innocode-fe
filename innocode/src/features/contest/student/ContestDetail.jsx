@@ -38,10 +38,10 @@ const ContestDetail = () => {
   // Get rounds from contest data
   const rounds = contest?.rounds || [];
 
-  // Fetch my team when contestId or user changes
+  // Fetch my team when contestId or user changes (for both student and mentor)
   useEffect(() => {
     const fetchMyTeam = async () => {
-      if (contestId && user?.id && role === "student") {
+      if (contestId && user?.id && (role === "student" || role === "mentor")) {
         try {
           const teamData = await getMyTeam(contestId);
           setMyTeam(teamData || null);
@@ -594,8 +594,8 @@ const ContestDetail = () => {
 
         {/* RIGHT SIDEBAR */}
         <div className="w-[320px] flex flex-col gap-4">
-          {/* Registration / Action Button */}
-          {role === "mentor" && !registrationClosed && (
+          {/* Registration / Action Button - Only show if mentor doesn't have a team */}
+          {role === "mentor" && !registrationClosed && !myTeam && (
             <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
               <button
                 onClick={() => navigate(`/mentor-team/${contestId}`)}
@@ -613,8 +613,8 @@ const ContestDetail = () => {
             </div>
           )}
 
-          {/* Registration Closed Message */}
-          {role === "mentor" && registrationClosed && (
+          {/* Registration Closed Message - Only show if mentor doesn't have a team */}
+          {role === "mentor" && registrationClosed && !myTeam && (
             <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Icon icon="mdi:lock" width="20" className="text-[#7A7574]" />
@@ -635,8 +635,8 @@ const ContestDetail = () => {
             label={getCountdownLabel()}
           />
 
-          {/* Your Team Status */}
-          {role === "student" && (
+          {/* Your Team Status - For both student and mentor */}
+          {(role === "student" || role === "mentor") && (
             <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
               <h3 className="text-sm font-semibold text-[#2d3748] mb-4 flex items-center gap-2">
                 <Users size={16} className="text-[#ff6b35]" />
@@ -710,7 +710,13 @@ const ContestDetail = () => {
 
                   {/* View Team Button */}
                   <button
-                    onClick={() => navigate(`/team`)}
+                    onClick={() => {
+                      if (role === "mentor") {
+                        navigate(`/mentor-team/${contestId}`);
+                      } else {
+                        navigate(`/team`);
+                      }
+                    }}
                     className="button-white w-full text-sm mt-3"
                   >
                     View Team Details
@@ -724,10 +730,14 @@ const ContestDetail = () => {
                     className="text-[#E5E5E5] mx-auto mb-2"
                   />
                   <p className="text-sm text-[#7A7574] mb-3">
-                    You haven't joined a team yet
+                    {role === "student"
+                      ? "You haven't joined a team yet"
+                      : "You haven't created a team yet"}
                   </p>
                   <p className="text-xs text-[#7A7574]">
-                    Wait for a mentor to invite you to their team
+                    {role === "student"
+                      ? "Wait for a mentor to invite you to their team"
+                      : "Create a team to get started"}
                   </p>
                 </div>
               )}

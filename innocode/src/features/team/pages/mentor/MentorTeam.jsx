@@ -570,9 +570,7 @@ const MentorTeam = () => {
                               <h4 className="text-2xl font-bold text-[#2d3748] mb-1">
                                 {myTeam.name}
                               </h4>
-                              <p className="text-sm text-[#7A7574]">
-                                Team ID: {myTeam.teamId || myTeam.team_id}
-                              </p>
+                           
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-4 mt-4">

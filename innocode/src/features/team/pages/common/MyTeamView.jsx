@@ -33,18 +33,23 @@ const MyTeamView = () => {
               }
               return null;
             } catch (error) {
-              console.error(`Error fetching team for contest ${contest.contestId}:`, error);
+              console.error(
+                `Error fetching team for contest ${contest.contestId}:`,
+                error
+              );
               return null;
             }
           });
-          
+
           const teams = await Promise.all(teamsPromises);
           const validTeams = teams.filter((team) => team !== null);
           setMyTeams(validTeams);
-          
+
           // Auto-select first contest if available
           if (validTeams.length > 0 && !selectedContestId) {
-            setSelectedContestId(validTeams[0].contestId || validTeams[0].contest_id);
+            setSelectedContestId(
+              validTeams[0].contestId || validTeams[0].contest_id
+            );
           }
         }
       } catch (error) {
@@ -93,7 +98,17 @@ const MyTeamView = () => {
                 </h2>
                 <p className="text-sm text-[#7A7574]">
                   {myTeams.length > 0
-                    ? `You have ${myTeams.length} team${myTeams.length > 1 ? "s" : ""} across ${new Set(myTeams.map(t => t.contestId || t.contest_id)).size} contest${new Set(myTeams.map(t => t.contestId || t.contest_id)).size > 1 ? "s" : ""}`
+                    ? `You have ${myTeams.length} team${
+                        myTeams.length > 1 ? "s" : ""
+                      } across ${
+                        new Set(myTeams.map((t) => t.contestId || t.contest_id))
+                          .size
+                      } contest${
+                        new Set(myTeams.map((t) => t.contestId || t.contest_id))
+                          .size > 1
+                          ? "s"
+                          : ""
+                      }`
                     : "View and manage your teams across different contests"}
                 </p>
               </div>
@@ -110,27 +125,33 @@ const MyTeamView = () => {
                   onChange={(e) => setSelectedContestId(e.target.value || null)}
                   className="w-full px-4 py-2 border border-[#E5E5E5] rounded-[5px] focus:outline-none focus:ring-2 focus:ring-[#ff6b35]"
                 >
-                  <option value="">All Contests ({myTeams.length} team{myTeams.length > 1 ? "s" : ""})</option>
+                  <option value="">
+                    All Contests ({myTeams.length} team
+                    {myTeams.length > 1 ? "s" : ""})
+                  </option>
                   {contests
                     .filter((contest) =>
                       myTeams.some(
                         (team) =>
-                          (team.contestId === (contest.contestId || contest.id)) ||
-                          (team.contest_id === (contest.contestId || contest.id))
+                          team.contestId ===
+                            (contest.contestId || contest.id) ||
+                          team.contest_id === (contest.contestId || contest.id)
                       )
                     )
                     .map((contest) => {
                       const teamCount = myTeams.filter(
                         (team) =>
-                          (team.contestId === (contest.contestId || contest.id)) ||
-                          (team.contest_id === (contest.contestId || contest.id))
+                          team.contestId ===
+                            (contest.contestId || contest.id) ||
+                          team.contest_id === (contest.contestId || contest.id)
                       ).length;
                       return (
                         <option
                           key={contest.contestId || contest.id}
                           value={contest.contestId || contest.id}
                         >
-                          {contest.name || contest.title} ({teamCount} team{teamCount > 1 ? "s" : ""})
+                          {contest.name || contest.title} ({teamCount} team
+                          {teamCount > 1 ? "s" : ""})
                         </option>
                       );
                     })}
@@ -168,14 +189,14 @@ const MyTeamView = () => {
                               <h4 className="text-2xl font-bold text-[#2d3748] mb-1">
                                 {team.name}
                               </h4>
-                              <p className="text-sm text-[#7A7574]">
-                                Team ID: {team.teamId || team.team_id}
-                              </p>
+                           
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-4 mt-4">
                             <div className="p-3 bg-[#f9fafb] rounded-[5px]">
-                              <p className="text-xs text-[#7A7574] mb-1">Contest</p>
+                              <p className="text-xs text-[#7A7574] mb-1">
+                                Contest
+                              </p>
                               <p className="font-semibold text-[#2d3748]">
                                 {team.contest?.name ||
                                   team.contest?.title ||
@@ -184,7 +205,9 @@ const MyTeamView = () => {
                               </p>
                             </div>
                             <div className="p-3 bg-[#f9fafb] rounded-[5px]">
-                              <p className="text-xs text-[#7A7574] mb-1">Members</p>
+                              <p className="text-xs text-[#7A7574] mb-1">
+                                Members
+                              </p>
                               <p className="font-semibold text-[#2d3748]">
                                 {team.members?.length || 0} /{" "}
                                 {team.contest?.teamMembersMax || "∞"}
@@ -362,9 +385,6 @@ const MyTeamView = () => {
                           <h4 className="text-2xl font-bold text-[#2d3748] mb-1">
                             {team.name}
                           </h4>
-                          <p className="text-sm text-[#7A7574]">
-                            Team ID: {team.teamId || team.team_id}
-                          </p>
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-4 mt-4">
@@ -374,11 +394,16 @@ const MyTeamView = () => {
                             <p className="text-xs text-[#7A7574]">Contest</p>
                           </div>
                           <p className="font-semibold text-[#2d3748]">
-                            {team.contest?.name ||
-                              team.contest?.title ||
-                              team.contestName ||
-                              "N/A"}
+                            {team.contestName || "N/A"}
                           </p>
+                          <button
+                            className="px-2 py-1 cursor-pointer bg-[#ff6b35] text-white rounded-[5px] hover:bg-[#ff5722] transition-colors text-sm font-medium"
+                            onClick={() =>
+                              navigate(`/contest-detail/${team.contestId}`)
+                            }
+                          >
+                            View Contest
+                          </button>
                         </div>
                         <div className="p-3 bg-[#f9fafb] rounded-[5px]">
                           <div className="flex items-center gap-2 mb-1">
@@ -418,31 +443,16 @@ const MyTeamView = () => {
                       <div className="space-y-3">
                         {team.members.map((member, index) => {
                           const memberName =
-                            member.studentFullname ||
-                            member.student_fullname ||
-                            member.userFullname ||
-                            member.user_fullname ||
-                            member.user?.name ||
-                            "Unknown Member";
+                            member.studentFullname || "Unknown Member";
 
-                          const memberEmail =
-                            member.studentEmail ||
-                            member.student_email ||
-                            member.userEmail ||
-                            member.user_email ||
-                            member.user?.email ||
-                            "";
+                          const memberEmail = member.studentEmail || "";
 
                           const memberInitial =
                             memberName?.charAt(0)?.toUpperCase() || "M";
 
                           return (
                             <div
-                              key={
-                                member.studentId ||
-                                member.student_id ||
-                                index
-                              }
+                              key={member.studentId || index}
                               className="flex items-center justify-between p-4 bg-[#f9fafb] rounded-[5px] hover:bg-[#f3f4f6] transition-colors"
                             >
                               <div className="flex items-center gap-3">
@@ -489,8 +499,8 @@ const MyTeamView = () => {
                 You are not a member of any team yet.
               </p>
               <p className="text-xs text-[#7A7574]">
-                Join a team through contest invitations or create one if you're a
-                mentor.
+                Join a team through contest invitations or create one if you're
+                a mentor.
               </p>
             </div>
           )}
@@ -501,4 +511,3 @@ const MyTeamView = () => {
 };
 
 export default MyTeamView;
-
