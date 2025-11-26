@@ -5,7 +5,7 @@ export const mcqApi = api.injectEndpoints({
     // Fetch MCQs of a round
     getRoundMcqs: builder.query({
       query: ({ roundId, pageNumber = 1, pageSize = 10 }) => ({
-        url: `quizzes/rounds/${roundId}/quiz`,
+        url: `rounds/${roundId}/mcq-test`,
         params: { pageNumber, pageSize },
       }),
       providesTags: (result) => {
@@ -20,7 +20,7 @@ export const mcqApi = api.injectEndpoints({
     // Fetch banks
     getBanks: builder.query({
       query: ({ bankId, nameSearch, pageNumber = 1, pageSize = 10 } = {}) => ({
-        url: "quizzes/banks",
+        url: "banks",
         params: { bankId, nameSearch, pageNumber, pageSize },
       }),
       providesTags: (result) =>
@@ -37,7 +37,7 @@ export const mcqApi = api.injectEndpoints({
       query: ({ testId, questionIds }) => ({
         url: `mcq-tests/${testId}`,
         method: "POST",
-        body: questionIds, 
+        body: questionIds,
         headers: {
           "Content-Type": "application/json",
         },
@@ -61,7 +61,7 @@ export const mcqApi = api.injectEndpoints({
     // Fetch attempts
     getAttempts: builder.query({
       query: ({ roundId, pageNumber = 1, pageSize = 10 }) => ({
-        url: `quizzes/${roundId}/attempts`,
+        url: `rounds/${roundId}/attempts`,
         params: { pageNumber, pageSize },
       }),
       providesTags: (result) =>
@@ -75,8 +75,15 @@ export const mcqApi = api.injectEndpoints({
 
     // Fetch attempt details
     getAttemptDetail: builder.query({
-      query: (attemptId) => `quizzes/attempts/${attemptId}`,
+      query: (attemptId) => `rounds/mcq-test/attempts/${attemptId}`,
       providesTags: (result, error, id) => [{ type: "Attempt", id }],
+    }),
+
+    // Fetch my attempt
+    getMyAttempt: builder.query({
+      query: (roundId) => `rounds/${roundId}/attempts/my-attempt`,
+      providesTags: (result) =>
+        result ? [{ type: "Attempt", id: result.attemptId }] : [],
     }),
 
     // Fetch MCQ template (CSV)
@@ -103,6 +110,7 @@ export const {
   useUpdateQuestionWeightMutation,
   useGetAttemptsQuery,
   useGetAttemptDetailQuery,
+  useGetMyAttemptQuery,
   useGetMcqTemplateQuery,
   useImportMcqCsvMutation,
 } = mcqApi

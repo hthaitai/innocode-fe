@@ -154,11 +154,7 @@ const TableFluent = ({
                                 key={index}
                                 className={`px-5 align-top ${
                                   !isLast ? "border-r border-[#E5E5E5]" : ""
-                                } ${
-                                  isCorrectExpandColumn
-                                    ? ""
-                                    : ""
-                                }`}
+                                } ${isCorrectExpandColumn ? "" : ""}`}
                                 style={
                                   isExpandingColumn ? { width: "100%" } : {}
                                 } // <-- same logic added here
