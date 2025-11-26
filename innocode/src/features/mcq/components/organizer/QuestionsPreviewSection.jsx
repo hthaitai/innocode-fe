@@ -1,4 +1,4 @@
-import TableFluent from "@/shared/components/TableFluent"
+import TableFluentScrollable from "@/shared/components/table/TableFluentScrollable"
 import PreviewQuestionExpanded from "./PreviewQuestionExpanded"
 import { Trash2 } from "lucide-react"
 
@@ -80,43 +80,39 @@ const QuestionsPreviewSection = ({
   ]
 
   return (
-    <div className="flex gap-4">
-      {/* Left Table: All Questions */}
+    <div className="flex gap-3">
       <div className="w-1/2">
-        <div className="text-sm font-semibold mb-2">All Questions</div>
-        <TableFluent
+        <div className="text-sm font-semibold mb-2">All questions</div>
+        <TableFluentScrollable
           data={questions}
           columns={tableColumns}
           loading={loading}
           renderSubComponent={(q) => <PreviewQuestionExpanded question={q} />}
           expandAt="text"
+          maxHeight={400}
         />
       </div>
 
-      {/* Right Table: Selected Questions */}
       <div className="w-1/2 flex flex-col">
         <div className="text-sm font-semibold mb-2">
-          Selected Questions ({selectedQuestions.length})
+          Selected questions ({selectedQuestions.length})
         </div>
-        <div className="flex-1 overflow-auto">
-          <TableFluent
-            data={selectedQuestions}
-            columns={selectedColumns}
-            loading={loading}
-            renderSubComponent={(q) => <PreviewQuestionExpanded question={q} />}
-            expandAt="text"
-            rowClassName="group" // Enable hover effect on row
-          />
-        </div>
+        <TableFluentScrollable
+          data={selectedQuestions}
+          columns={selectedColumns}
+          loading={loading}
+          renderSubComponent={(q) => <PreviewQuestionExpanded question={q} />}
+          expandAt="text"
+          maxHeight={400}
+        />
 
-        {/* Choose Button */}
         <div className="flex justify-end mt-4">
           <button
             className="button-orange px-3"
             disabled={loading || !selectedQuestions.length}
             onClick={onChoose}
           >
-            Choose Selected Questions
+            Choose selected questions
           </button>
         </div>
       </div>

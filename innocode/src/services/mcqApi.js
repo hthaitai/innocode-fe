@@ -50,10 +50,10 @@ export const mcqApi = api.injectEndpoints({
 
     // Update question weights
     updateQuestionWeight: builder.mutation({
-      query: ({ testId, weights }) => ({
+      query: ({ testId, questions }) => ({
         url: `mcq-tests/${testId}/questions/weights`,
         method: "PUT",
-        body: { weights },
+        body: { questions },
       }),
       invalidatesTags: [{ type: "Mcq", id: "LIST" }],
     }),

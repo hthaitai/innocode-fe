@@ -78,7 +78,7 @@ const McqTable = () => {
           try {
             await updateQuestionWeight({
               testId,
-              weights: [{ questionId, weight }],
+              questions: [{ questionId, weight }],
             }).unwrap()
 
             toast.success("Question weight updated successfully!")
