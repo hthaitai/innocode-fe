@@ -68,6 +68,7 @@ import TeamInviteResponse from "./features/team/pages/student/TeamInviteResponse
 import VerifyEmail from './features/auth/components/VerifyEmail';
 import ForgotPassword from './features/auth/components/ForgotPassword';
 import ResetPassword from './features/auth/components/ResetPassword';
+import MyContest from "./features/contest/student/MyContest"
 
 // Organizer pages
 // Initialize EmailJS when app starts
@@ -136,7 +137,23 @@ const router = createBrowserRouter([
         path: "leaderboard",
         element: (
           <ProtectedRoute>
-            <Leaderboard />
+            <Leaderboard/>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "leaderboard/:contestId",
+        element: (
+          <ProtectedRoute>
+            <Leaderboard/>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mycontest",
+        element: (
+          <ProtectedRoute>
+            <MyContest />
           </ProtectedRoute>
         ),
       },

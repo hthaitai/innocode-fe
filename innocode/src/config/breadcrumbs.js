@@ -3,6 +3,7 @@ export const BREADCRUMBS = {
   // Main pages
   HOME: ["Home"],
   CONTESTS: ["Contests"],
+  MY_CONTESTS: ["Your Contests"],
   CONTEST_DETAIL: (contestTitle) => ["Contests", contestTitle],
   PROVINCES: ["Provinces"],
   SCHOOLS: ["Schools"],
@@ -182,6 +183,7 @@ export const BREADCRUMB_PATHS = {
   HOME: ["/"],
   CONTESTS: ["/contests"],
   CONTEST_DETAIL: (contestId) => ["/contests", `/contest-detail/${contestId}`],
+  MY_CONTESTS: ["/mycontest"],
   PRACTICE: ["/practice"],
   PRACTICE_DETAIL: (practiceId) => [
     "/practice",

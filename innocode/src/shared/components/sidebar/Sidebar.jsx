@@ -30,7 +30,11 @@ const allMenus = {
     label: 'Certificate',
     icon: 'lucide:award',
   },
-
+  mycontest: {
+    path:'/mycontest',
+    label: 'My Contest',
+    icon: 'lucide:notebook-pen',
+  },
   // Organizer menus
   organizerContests: {
     path: '/organizer/contests',
@@ -66,6 +70,7 @@ const menuByRole = {
   student: [
     'profile',
     'contests',
+    'mycontest',
     'practice',
     'team',
     'leaderboard',

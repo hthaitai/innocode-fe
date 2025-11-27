@@ -635,6 +635,20 @@ const ContestDetail = () => {
             label={getCountdownLabel()}
           />
 
+          {/* View Leaderboard Button */}
+          <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
+            <button
+              onClick={() => navigate(`/leaderboard/${contestId}`)}
+              className="button-orange w-full flex items-center justify-center gap-2 py-3"
+            >
+              <Trophy size={18} />
+              View Leaderboard
+            </button>
+            <p className="text-xs text-[#7A7574] text-center mt-2">
+              Check current rankings and team standings
+            </p>
+          </div>
+
           {/* Your Team Status - For both student and mentor */}
           {(role === "student" || role === "mentor") && (
             <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">

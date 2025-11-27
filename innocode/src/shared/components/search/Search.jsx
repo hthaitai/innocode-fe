@@ -11,11 +11,17 @@ const Search = ({
   filterType = "all",
   ...props
 }) => {
-  const [searchValue, setSearchValue] = useState(value || "");
+  // Use controlled value if provided, otherwise use internal state
+  const [internalValue, setInternalValue] = useState("");
+  const searchValue = value !== undefined ? value : internalValue;
 
   const handleInputChange = (e) => {
     const newValue = e.target.value;
-    setSearchValue(newValue);
+    if (value === undefined) {
+      // Uncontrolled mode - use internal state
+      setInternalValue(newValue);
+    }
+    // Always call onChange if provided (for controlled mode)
     if (onChange) {
       onChange(e);
     }
@@ -46,6 +52,7 @@ const Search = ({
           placeholder={placeholder}
           value={searchValue}
           onChange={handleInputChange}
+          onKeyPress={handleKeyPress}
           className="search-input"
           {...props}
         />
