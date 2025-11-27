@@ -63,6 +63,7 @@ const Actions = ({ row, items = [] }) => {
           e.stopPropagation()
           setOpen((prev) => !prev)
         }}
+        className="flex items-center justify-end h-full w-full"
       >
         <MoreHorizontal className="w-5 h-5 cursor-pointer text-[#7A7574] hover:text-black transition-colors" />
       </button>
@@ -102,7 +103,9 @@ const Actions = ({ row, items = [] }) => {
                     key={index}
                     onClick={(e) => handleItemClick(e, item)}
                     className={`cursor-pointer flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm rounded-[5px] transition-colors
-                      hover:bg-[#F0F0F0] active:bg-[#F3F3F3] ${item.className || ""}`}
+                      hover:bg-[#F0F0F0] active:bg-[#F3F3F3] ${
+                        item.className || ""
+                      }`}
                   >
                     {Icon && <Icon className="w-4 h-4" />}
                     {item.label}

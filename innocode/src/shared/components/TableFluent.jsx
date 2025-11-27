@@ -38,37 +38,22 @@ const TableFluent = ({
   return (
     <div>
       <div className="relative border border-[#E5E5E5] bg-white rounded-[5px] overflow-x-auto">
-        <table className="table-auto w-full border-collapse">
+        <table className="table-fixed w-full border-collapse">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => {
-              const actionIndex = headerGroup.headers.findIndex(
-                (h) => h.column.id === "actions"
-              )
-              const expandIndex =
-                actionIndex === -1
-                  ? headerGroup.headers.length - 1
-                  : actionIndex - 1
-
               return (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header, index) => {
-                    const isExpandingColumn = index === expandIndex
                     return (
                       <th
                         key={header.id}
-                        className={`px-5 py-2 text-[12px] leading-[16px] font-normal text-[#7A7574] border-b border-[#E5E5E5] whitespace-nowrap ${
-                          header.column.id === "actions"
-                            ? "w-[60px] text-right"
-                            : "text-left border-r w-auto align-middle"
-                        }`}
-                        style={isExpandingColumn ? { width: "100%" } : {}}
+                        className="p-2 px-5 text-[12px] leading-[16px] font-normal text-[#7A7574] border-b border-[#E5E5E5] text-left"
+                        style={{ width: header.column.getSize() }}
                       >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                       </th>
                     )
                   })}
@@ -102,13 +87,6 @@ const TableFluent = ({
               <>
                 {table.getRowModel().rows.map((row) => {
                   const visibleCells = row.getVisibleCells()
-                  const actionIndex = visibleCells.findIndex(
-                    (c) => c.column.id === "actions"
-                  )
-                  const expandIndex =
-                    actionIndex === -1
-                      ? visibleCells.length - 1
-                      : actionIndex - 1
 
                   return (
                     <React.Fragment key={row.id}>
@@ -119,16 +97,13 @@ const TableFluent = ({
                         onClick={() => isClickable && onRowClick(row.original)}
                       >
                         {visibleCells.map((cell, index) => {
-                          const isExpandingColumn = index === expandIndex
                           return (
                             <td
                               key={cell.id}
-                              className={`text-[14px] leading-[20px] border-[#E5E5E5] whitespace-nowrap align-middle ${
-                                cell.column.id === "actions"
-                                  ? "w-[60px] p-2 flex justify-center items-center"
-                                  : "px-5 py-2 border-r"
+                              className={`text-[14px] leading-[20px] border-[#E5E5E5] align-middle p-2 px-5 ${
+                                cell.column.columnDef.meta?.className || ""
                               }`}
-                              style={isExpandingColumn ? { width: "100%" } : {}}
+                              style={{ width: cell.column.getSize() }}
                             >
                               {flexRender(
                                 cell.column.columnDef.cell,
@@ -141,30 +116,9 @@ const TableFluent = ({
 
                       {row.getIsExpanded() && renderSubComponent && (
                         <tr>
-                          {visibleCells.map((cell, index) => {
-                            const isExpandingColumn = index === expandIndex
-                            const isCorrectExpandColumn = expandAt
-                              ? cell.column.id === expandAt
-                              : index === expandIndex // match parent logic
-
-                            const isLast = index === visibleCells.length - 1
-
-                            return (
-                              <td
-                                key={index}
-                                className={`px-5 align-top ${
-                                  !isLast ? "border-r border-[#E5E5E5]" : ""
-                                } ${isCorrectExpandColumn ? "" : ""}`}
-                                style={
-                                  isExpandingColumn ? { width: "100%" } : {}
-                                } // <-- same logic added here
-                              >
-                                {isCorrectExpandColumn
-                                  ? renderSubComponent(row.original)
-                                  : null}
-                              </td>
-                            )
-                          })}
+                          <td colSpan={visibleCells.length}>
+                            {renderSubComponent(row.original)}
+                          </td>
                         </tr>
                       )}
                     </React.Fragment>
@@ -175,17 +129,19 @@ const TableFluent = ({
                 {Array.from({
                   length: pageSize - table.getRowModel().rows.length,
                 }).map((_, rowIndex) => (
-                  <tr key={`empty-${rowIndex}`}>
+                  <tr
+                    key={`empty-${rowIndex}`}
+                    style={{ height: "33px" }} // match your data rows
+                  >
                     {columns.map((col, colIndex) => (
                       <td
-                        key={`empty-${rowIndex}-${colIndex}`} // unique key per row & column
-                        className={`text-[14px] leading-[20px] border-[#E5E5E5] whitespace-nowrap align-middle ${
-                          col.id === "actions"
-                            ? "w-[60px] p-2"
-                            : "text-left px-5 py-2 border-r"
+                        key={`empty-${rowIndex}-${colIndex}`}
+                        className={`text-[14px] leading-[20px] border-[#E5E5E5] align-middle p-2 px-5 ${
+                          col.columnDef?.meta?.className || ""
                         }`}
+                        style={{ width: col.getSize?.() }}
                       >
-                        &nbsp;
+                        &#8203;
                       </td>
                     ))}
                   </tr>

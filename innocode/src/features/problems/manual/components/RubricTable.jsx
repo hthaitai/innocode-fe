@@ -1,0 +1,70 @@
+import React, { useMemo } from "react"
+import TableFluentScrollable from "@/shared/components/table/TableFluentScrollable"
+import { getRubricColumns } from "../columns/getRubricColumns"
+import {
+  useDeleteCriterionMutation,
+  useFetchRubricTemplateQuery,
+} from "../../../../services/manualProblemApi"
+import { useModal } from "@/shared/hooks/useModal"
+import toast from "react-hot-toast"
+import RubricActions from "./RubricActions"
+
+const RubricTable = ({ roundId, criteria = [], loadingRubric }) => {
+  const [deleteCriterion] = useDeleteCriterionMutation()
+  const { openModal } = useModal()
+  const { data: templateUrl } = useFetchRubricTemplateQuery() // Optional if modal fetches itself
+
+  const savingRubric = false // Only needed if you want to disable "Add Criterion" button during some action
+
+  const handleDelete = async (rubricId) => {
+    try {
+      if (rubricId) {
+        await deleteCriterion({ roundId, rubricId }).unwrap()
+        toast.success("Criterion deleted")
+      }
+    } catch (err) {
+      console.error("Failed to delete criterion", err)
+      toast.error("Failed to delete criterion")
+    }
+  }
+
+  const tableData = useMemo(
+    () =>
+      criteria.map((c, idx) => ({
+        ...c,
+        questionId: c.rubricId ?? `new-${idx}`,
+      })),
+    [criteria]
+  )
+
+  const columns = useMemo(
+    () => getRubricColumns(null, handleDelete, criteria, roundId, openModal),
+    [handleDelete, criteria, roundId, openModal]
+  )
+
+  const totalMaxScore = criteria.reduce((a, c) => a + c.maxScore, 0)
+
+  return (
+    <div>
+      <TableFluentScrollable
+        data={tableData}
+        columns={columns}
+        loading={loadingRubric}
+        error={null}
+        expandAt="description"
+        maxHeight={400}
+        renderActions={() => (
+          <RubricActions
+            openModal={openModal}
+            roundId={roundId}
+            criteria={criteria}
+            savingRubric={savingRubric}
+            totalMaxScore={totalMaxScore}
+          />
+        )}
+      />
+    </div>
+  )
+}
+
+export default RubricTable

@@ -2,7 +2,14 @@ import { useCallback } from "react"
 import { useDropzone } from "react-dropzone"
 import { Upload } from "lucide-react"
 
-export function FileDropzone({ onFileSelected, error, helperText }) {
+export function FileDropzone({
+  onFileSelected,
+  error,
+  helperText,
+  accept = { "image/*": [] },
+  label,
+  selectedFile, // new prop
+}) {
   const onDrop = useCallback(
     (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
@@ -13,7 +20,7 @@ export function FileDropzone({ onFileSelected, error, helperText }) {
   )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { "image/*": [] },
+    accept,
     multiple: false,
     onDrop,
   })
@@ -23,7 +30,7 @@ export function FileDropzone({ onFileSelected, error, helperText }) {
       <div
         {...getRootProps()}
         className={`w-full h-[188px] flex flex-col items-center justify-center 
-          border-1 border-dashed rounded-[5px] cursor-pointer transition
+          border border-dashed rounded-[5px] cursor-pointer transition
           ${error ? "border-red-500" : "border-[#909090]"}
           ${
             isDragActive
@@ -36,9 +43,15 @@ export function FileDropzone({ onFileSelected, error, helperText }) {
 
         <Upload className="text-[#7A7574]" size={20} />
 
-        <p className="mt-2 text-[12px] leading-[16px] text-[#7A7574]">
-          Drag & drop your image here or click to select
-        </p>
+        {selectedFile ? (
+          <p className="mt-2 text-[12px] leading-[16px] text-[#7A7574] text-center">
+            {selectedFile.name}
+          </p>
+        ) : (
+          <p className="mt-2 text-[12px] leading-[16px] text-[#7A7574] text-center">
+            {label || "Drag & drop your file here or click to select"}
+          </p>
+        )}
       </div>
 
       {helperText && (

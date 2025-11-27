@@ -111,6 +111,21 @@ export const BREADCRUMBS = {
     `${studentName}`,
   ],
 
+  //Manual problem
+  ORGANIZER_RUBRIC_EDITOR: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Rubric editor",
+  ],
+  // Manual Results
+  ORGANIZER_MANUAL_RESULTS: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Manual results",
+  ],
+
   ORGANIZER_PROBLEM_DETAIL: (
     contestId,
     contestName,
@@ -295,6 +310,20 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/rounds/${roundId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}/attempts`,
     `/organizer/contests/${contestId}/rounds/${roundId}/attempts/${attemptId}`,
+  ],
+
+  //manual problem
+  ORGANIZER_RUBRIC_EDITOR: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/rubric`,
+  ],
+  ORGANIZER_MANUAL_RESULTS: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/manual-results`,
   ],
 
   ORGANIZER_PROBLEM_DETAIL: (contestId, roundId, problemId) => [

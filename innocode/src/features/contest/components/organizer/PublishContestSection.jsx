@@ -75,7 +75,7 @@ const PublishContestSection = ({ contest }) => {
   return (
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white overflow-hidden">
       {/* Header: Icon + Title + Button */}
-      <div className="border-b border-[#E5E5E5] px-5 flex justify-between items-center min-h-[70px]">
+      <div className="border-[#E5E5E5] px-5 flex justify-between items-center min-h-[70px]">
         <div className="flex gap-5 items-center">
           <Upload size={20} />
           <div>
@@ -103,8 +103,8 @@ const PublishContestSection = ({ contest }) => {
 
       {/* Detailed Missing Items */}
       {!isReady && missingItems.length > 0 && (
-        <div className="text-sm leading-5 bg-white rounded-[5px] border-b border-[#E5E5E5]">
-          <div className="pl-[60px] px-5 py-4 min-h-[70px]">
+        <div className="text-sm leading-5 bg-white rounded-b-[5px] border-t border-[#E5E5E5]">
+          <div className="pl-[60px] p-5">
             <DetailTable
               data={missingItems.map((item, idx) => ({
                 label: `Requirement ${idx + 1}`,
