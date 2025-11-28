@@ -1,70 +1,49 @@
-import React, { useCallback, useEffect, useMemo } from "react"
+import React, { useMemo } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
-import { useAppSelector, useAppDispatch } from "@/store/hooks"
-import { useOrganizerRoundDetail } from "@/features/round/hooks/useOrganizerRoundDetail"
-import {
-  fetchRubric,
-  saveRubric,
-  deleteCriterion,
-} from "../store/manualProblemThunks"
-import { setCriteria } from "../store/manualProblemSlice"
-import RubricEditor from "../components/RubricEditor"
+import RubricTable from "../components/RubricTable"
+import { useFetchRubricQuery } from "../../../../services/manualProblemApi"
+import { useGetRoundByIdQuery } from "../../../../services/roundApi"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 
 const ManualRubricPage = () => {
-  const dispatch = useAppDispatch()
-  const { contestId, roundId } = useParams()
+  const { roundId } = useParams()
 
-  const { contests } = useAppSelector((s) => s.contests)
-  const { round } = useOrganizerRoundDetail(contestId, roundId)
-
-  const { rubric, criteria, loadingRubric, savingRubric } = useAppSelector(
-    (s) => s.manualProblem
-  )
-
-  const contest = contests.find(
-    (c) => String(c.contestId) === String(contestId)
-  )
+  const { data: round, isLoading: loadingRound } = useGetRoundByIdQuery(roundId)
+  const { data: criteria = [], isLoading: loadingRubric } =
+    useFetchRubricQuery(roundId)
 
   const breadcrumbItems = useMemo(
-    () => [
-      "Contests",
-      contest?.name ?? "Contest",
-      round?.name ?? "Round",
-      "Rubric Editor",
-    ],
-    [contest?.name, round?.name]
+    () =>
+      round
+        ? BREADCRUMBS.ORGANIZER_RUBRIC_EDITOR(round.contestName, round.name)
+        : ["Contests", "Contest", "Round", "Rubric Editor"],
+    [round]
   )
 
-  const fetchRubricData = useCallback(() => {
-    dispatch(fetchRubric(roundId))
-  }, [dispatch, roundId])
-
-  const saveRubricData = useCallback(() => {
-    dispatch(saveRubric({ roundId, criteria }))
-      .unwrap()
-      .then(() => dispatch(fetchRubric(roundId)))
-  }, [dispatch, roundId, criteria])
-
-  useEffect(() => {
-    fetchRubricData()
-  }, [fetchRubricData])
+  const breadcrumbPaths = useMemo(
+    () =>
+      round
+        ? BREADCRUMB_PATHS.ORGANIZER_RUBRIC_EDITOR(round.contestId, roundId)
+        : [
+            "/contests",
+            "/contests",
+            `/rounds/${roundId}`,
+            `/rounds/${roundId}/rubric`,
+          ],
+    [round, roundId]
+  )
 
   return (
-    <PageContainer breadcrumb={breadcrumbItems}>
-      <RubricEditor
-        rubric={rubric}
-        criteria={criteria}
-        setCriteria={(next) => dispatch(setCriteria(next))}
-        loadingRubric={loadingRubric}
-        savingRubric={savingRubric}
-        saveRubric={saveRubricData}
+    <PageContainer
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
+      loading={loadingRubric || loadingRound}
+    >
+      <RubricTable
         roundId={roundId}
-        onDeleteCriterion={(rubricId) =>
-          dispatch(deleteCriterion({ roundId, rubricId })).then(() =>
-            fetchRubricData()
-          )
-        }
+        criteria={criteria}
+        loadingRubric={loadingRubric || loadingRound}
       />
     </PageContainer>
   )

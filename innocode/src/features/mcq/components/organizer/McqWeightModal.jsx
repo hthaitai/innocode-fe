@@ -2,16 +2,14 @@ import React, { useState, useEffect } from "react"
 import BaseModal from "@/shared/components/BaseModal"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { validateWeight } from "../../validators/weightValidator"
+import { useUpdateQuestionWeightMutation } from "@/services/mcqApi"
 
-export default function McqWeightModal({
-  isOpen,
-  question,
-  testId,
-  onSubmit,
-  onClose,
-}) {
+export default function McqWeightModal({ isOpen, question, testId, onClose }) {
   const [weight, setWeight] = useState("")
   const [error, setError] = useState("")
+
+  const [updateQuestionWeight, { isLoading }] =
+    useUpdateQuestionWeightMutation()
 
   // Reset form when modal opens or question changes
   useEffect(() => {
@@ -21,18 +19,15 @@ export default function McqWeightModal({
     }
   }, [isOpen, question])
 
-  // Handle weight change
   const handleWeightChange = (e) => {
     const value = e.target.value
     setWeight(value)
-    // Clear error when user starts typing
     if (error) {
       const validationError = validateWeight(value)
       setError(validationError)
     }
   }
 
-  // Handle submit
   const handleSubmit = async () => {
     const validationError = validateWeight(weight)
     if (validationError) {
@@ -40,22 +35,22 @@ export default function McqWeightModal({
       return
     }
 
-    setError("") // Clear previous errors
+    setError("")
+
+    const numericWeight = Number(weight)
+
     try {
-      await onSubmit({
+      await updateQuestionWeight({
         testId,
-        questionId: question.questionId,
-        weight: Number(weight),
-      })
-      // onClose is called in handleUpdateWeight on success
-      // But we also call it here as a fallback
+        questions: [{ questionId: question.questionId, weight: numericWeight }],
+      }).unwrap()
+
       onClose()
     } catch (err) {
-      // Handle both error formats: { Message: "..." } or { message: "..." } or Error object
       const errorMessage =
-        err?.Message ||
-        err?.message ||
-        err?.toString() ||
+        err?.data?.message ||
+        err?.data?.Message ||
+        err?.error ||
         "Failed to update weight"
       setError(errorMessage)
     }
@@ -68,8 +63,13 @@ export default function McqWeightModal({
       <button type="button" className="button-white" onClick={onClose}>
         Cancel
       </button>
-      <button type="button" className="button-orange" onClick={handleSubmit}>
-        Update Weight
+      <button
+        type="button"
+        className="button-orange"
+        onClick={handleSubmit}
+        disabled={isLoading}
+      >
+        {isLoading ? "Updating..." : "Update Weight"}
       </button>
     </div>
   )

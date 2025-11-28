@@ -1,19 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import { api } from "./api"
 
-export const roundApi = createApi({
-  reducerPath: "roundApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "https://innocode-challenge-api.onrender.com/api",
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token")
-      if (token && token !== "null") {
-        headers.set("Authorization", `Bearer ${token}`)
-      }
-      headers.set("Content-Type", "application/json")
-      return headers
-    },
-  }),
-  tagTypes: ["Rounds"],
+export const roundApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getRoundsByContestId: builder.query({
       query: (contestId) => ({
@@ -46,6 +33,8 @@ export const roundApi = createApi({
       }),
       invalidatesTags: (result, error, { contestId }) => [
         { type: "Rounds", id: `LIST_${contestId}` },
+        { type: "Contests", id: contestId },
+        { type: "PublishCheck", id: contestId },
       ],
     }),
     updateRound: builder.mutation({
@@ -54,14 +43,22 @@ export const roundApi = createApi({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Rounds", id }],
+      invalidatesTags: (result, error, { id, contestId }) => [
+        { type: "Rounds", id },
+        { type: "Contests", id: contestId },
+        { type: "PublishCheck", id: contestId },
+      ],
     }),
     deleteRound: builder.mutation({
       query: (id) => ({
         url: `rounds/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Rounds", id }],
+      invalidatesTags: (result, error, { id, contestId }) => [
+        { type: "Rounds", id },
+        { type: "Contests", id: contestId },
+        { type: "PublishCheck", id: contestId },
+      ],
     }),
   }),
 })

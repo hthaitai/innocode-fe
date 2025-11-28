@@ -1,57 +1,62 @@
-// Optimized color map for organizer-friendly visibility
+// Optimized color map
 export const statusColorMap = {
-  // 🩶 Neutral / Inactive
-  draft: "bg-gray-400",        // draft / not started
-  archived: "bg-gray-500",     // old/archived contests
-  resubmitted: "bg-gray-600",  // resubmitted contests
-  inactive: "bg-gray-400",     
-  blocked: "bg-gray-700",      // blocked / problematic
+  draft: "bg-gray-400",
+  archived: "bg-gray-500",
+  resubmitted: "bg-gray-600",
+  inactive: "bg-gray-400",
+  blocked: "bg-gray-700",
 
-  // 💙 Active / Open / Running
-  published: "bg-blue-400",    // ready to start
-  open: "bg-blue-500",         // open for registration
-  running: "bg-blue-600",      // currently running
-  ongoing: "bg-blue-700",      // same as running but darker
-  active: "bg-blue-600",       // general active
+  published: "bg-blue-400",
+  open: "bg-blue-500",
+  registrationopen: "bg-blue-500",
+  running: "bg-blue-600",
+  ongoing: "bg-blue-700",
+  active: "bg-blue-600",
 
-  // 💛 Pending / Review
-  pending: "bg-amber-400",         // waiting
-  pending_review: "bg-amber-500",  // under review
-  under_review: "bg-amber-500",    
-  in_review: "bg-amber-600",       // slightly darker
-  upcoming: "bg-amber-300",        // lighter / soon
+  pending: "bg-amber-400",
+  pending_review: "bg-amber-500",
+  under_review: "bg-amber-500",
+  in_review: "bg-amber-600",
+  upcoming: "bg-amber-300",
 
-  // 💚 Success / Complete
-  finalized: "bg-green-700",   // fully completed
-  completed: "bg-green-500",   // completed
-  approved: "bg-green-600",    // approved
-  resolved: "bg-green-500",    // resolved / closed
+  finalized: "bg-green-700",
+  completed: "bg-green-500",
+  approved: "bg-green-600",
+  resolved: "bg-green-500",
 
-  // ❤️ Error / Negative
-  rejected: "bg-red-600",       // rejected
-  disqualified: "bg-red-700",   // strong red for disqualified
-  error: "bg-red-500",          // generic error
+  rejected: "bg-red-600",
+  disqualified: "bg-red-700",
+  error: "bg-red-500",
+  registrationclosed: "bg-red-600",
 
-  // 🟣 Special / Escalated / Edge cases
-  escalated: "bg-purple-500",   // special attention
+  escalated: "bg-purple-500",
 }
 
-// Status badge component
+// StatusBadge component
 const StatusBadge = ({ status }) => {
-  const safeStatus =
-    typeof status === "string" && status.trim()
-      ? status.trim().toLowerCase()
-      : "draft"
+  if (!status) status = "draft"
 
+  // Normalize status: lowercase, remove spaces & special chars
+  const safeStatus = status
+    .toString()
+    .normalize("NFKC") // normalize unicode
+    .replace(/\s+/g, "") // remove all spaces
+    .replace(/-/g, "") // remove dashes
+    .toLowerCase()
+
+  // Get color, default gray if unknown
   const colorClass = statusColorMap[safeStatus] || "bg-gray-500"
+
+  // Format display: split camelCase or snake_case into words
+  const displayStatus = status
+    .replace(/([a-z])([A-Z])/g, "$1 $2") // split camelCase
+    .replace(/_/g, " ") // replace underscores
+    .trim()
 
   return (
     <span className="flex items-center gap-2 text-sm">
       <span className={`w-2 h-2 rounded-full ${colorClass}`} />
-      {safeStatus
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")}
+      {displayStatus}
     </span>
   )
 }

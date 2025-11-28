@@ -1,58 +1,69 @@
-import React, { useCallback, useEffect, useMemo } from "react"
+import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
-import { useAppSelector, useAppDispatch } from "@/store/hooks"
-import { useOrganizerRoundDetail } from "@/features/round/hooks/useOrganizerRoundDetail"
-
-import { fetchManualResults } from "../store/manualProblemThunks"
-import { setSearch } from "../store/manualProblemSlice"
 import ResultsTable from "../components/ResultsTable"
+import { useGetRoundByIdQuery } from "@/services/roundApi"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useFetchManualResultsQuery } from "../../../../services/manualProblemApi"
 
 const ManualResultsPage = () => {
-  const dispatch = useAppDispatch()
   const { contestId, roundId } = useParams()
+  const [pageNumber, setPageNumber] = useState(1)
+  const [search, setSearch] = useState({})
 
-  const { contests } = useAppSelector((s) => s.contests)
-  const { round } = useOrganizerRoundDetail(contestId, roundId)
+  // Fetch round details
+  const { data: round, isLoading: loadingRound } = useGetRoundByIdQuery(roundId)
 
-  const { results, resultsLoading, resultsPagination, search } = useAppSelector(
-    (s) => s.manualProblem
-  )
+  // Fetch manual results using RTK Query
+  const {
+    data: resultsData,
+    isLoading: resultsLoading,
+    refetch,
+  } = useFetchManualResultsQuery({
+    roundId,
+    search,
+    pageNumber,
+    pageSize: 10,
+  })
 
-  const contest = contests.find((c) => String(c.contestId) === String(contestId))
-
-  const breadcrumbItems = useMemo(
-    () => ["Contests", contest?.name ?? "Contest", round?.name ?? "Round", "Manual Results"],
-    [contest?.name, round?.name]
-  )
-
-  const fetchResultsData = useCallback(
-    (pageNumber = 1) => {
-      dispatch(
-        fetchManualResults({
-          roundId,
-          search,
-          pageNumber,
-          pageSize: resultsPagination.pageSize,
-        })
-      )
-    },
-    [dispatch, roundId, search, resultsPagination.pageSize]
-  )
-
+  // Refetch when search changes
   useEffect(() => {
-    fetchResultsData(1)
-  }, [fetchResultsData])
+    setPageNumber(1)
+    refetch()
+  }, [search, refetch])
+
+  // Breadcrumbs (safe defaults)
+  const breadcrumbItems = round
+    ? BREADCRUMBS.ORGANIZER_MANUAL_RESULTS?.(round.contestName, round.name) || [
+        "Contests",
+        "Round",
+        "Manual Results",
+      ]
+    : ["Contests", "Round", "Manual Results"]
+
+  const breadcrumbPaths = round
+    ? BREADCRUMB_PATHS.ORGANIZER_MANUAL_RESULTS?.(round.contestId, roundId) || [
+        "/contests",
+        `/rounds/${roundId}`,
+        `/rounds/${roundId}/manual-results`,
+      ]
+    : ["/contests", `/rounds/${roundId}`, `/rounds/${roundId}/manual-results`]
 
   return (
-    <PageContainer breadcrumb={breadcrumbItems}>
+    <PageContainer
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
+      loading={loadingRound || resultsLoading}
+    >
       <ResultsTable
-        results={results}
-        loading={resultsLoading}
-        pagination={resultsPagination}
-        onPageChange={fetchResultsData}
+        results={resultsData?.results || []}
+        loading={loadingRound || resultsLoading}
+        pagination={
+          resultsData?.pagination || { pageNumber: 1, pageSize: 10, total: 0 }
+        }
+        onPageChange={(page) => setPageNumber(page)}
         search={search}
-        setSearch={(patch) => dispatch(setSearch(patch))}
+        setSearch={setSearch}
       />
     </PageContainer>
   )

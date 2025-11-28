@@ -1,47 +1,39 @@
 import React, { useState, useRef } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { Download, Upload, FileText } from "lucide-react"
-import { fetchMcqTemplate, importMcqCsv, fetchRoundMcqs } from "../../store/mcqThunk"
-import { toast } from "react-hot-toast"
 import { useNavigate, useParams } from "react-router-dom"
+import { Download, Upload } from "lucide-react"
+import { toast } from "react-hot-toast"
+import {
+  useImportMcqCsvMutation,
+  useGetMcqTemplateQuery,
+} from "@/services/mcqApi"
 
-const CsvImportSection = ({ testId, onUploadSuccess }) => {
-  const dispatch = useDispatch()
-  const { loading } = useSelector((state) => state.mcq)
+const CsvImportSection = ({ testId, onUpload }) => {
   const [file, setFile] = useState(null)
   const [importing, setImporting] = useState(false)
   const fileInputRef = useRef(null)
   const navigate = useNavigate()
   const { contestId, roundId } = useParams()
 
-  // -----------------------------
+  const { data: templateData, isFetching: fetchingTemplate } =
+    useGetMcqTemplateQuery()
+  const [importMcqCsv, { isLoading: importingCsv }] = useImportMcqCsvMutation()
+
   // Download CSV Template
-  // -----------------------------
-  const handleDownloadTemplate = async () => {
-    try {
-      const res = await dispatch(fetchMcqTemplate()).unwrap()
-      const url =
-        typeof res?.data === "string"
-          ? res.data
-          : res?.data?.url || res?.url || null
+  const handleDownloadTemplate = () => {
+    const url = templateData?.data
+    if (!url) return toast.error("Could not fetch template URL.")
 
-      if (!url) return toast.error("Could not fetch template URL.")
+    const link = document.createElement("a")
+    link.href = url
+    link.download = "mcq_import_template.csv"
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
 
-      const link = document.createElement("a")
-      link.href = url
-      link.download = "mcq_import_template.csv"
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      toast.success("Template downloaded!")
-    } catch (err) {
-      toast.error(err?.message || "Failed to download template.")
-    }
+    toast.success("Template downloaded!")
   }
 
-  // -----------------------------
-  // File Selection
-  // -----------------------------
+  // File selection
   const handleFileChange = (e) => {
     const selected = e.target.files[0]
     if (!selected) return
@@ -65,42 +57,28 @@ const CsvImportSection = ({ testId, onUploadSuccess }) => {
 
   const handleDragOver = (e) => e.preventDefault()
 
-  // -----------------------------
   // Import CSV
-  // -----------------------------
   const handleImportCsv = async () => {
     if (!file) return toast.error("Please select a CSV file first.")
+
     const formData = new FormData()
     formData.append("csvFile", file)
     formData.append("bankStatus", "Public")
 
     try {
       setImporting(true)
-      const result = await dispatch(importMcqCsv({ testId, formData })).unwrap()
+      const result = await importMcqCsv({ testId, formData }).unwrap()
       toast.success("CSV imported successfully!")
       setFile(null)
       if (fileInputRef.current) fileInputRef.current.value = ""
-      if (onUploadSuccess && result?.data) {
-        onUploadSuccess(result.data)
-      }
-
-      // Refetch mcqs for this round and navigate back to list
-      if (roundId) {
-        await dispatch(fetchRoundMcqs({ roundId, pageNumber: 1, pageSize: 10 })).unwrap()
-      }
-      if (contestId && roundId) {
-        navigate(`/organizer/contests/${contestId}/rounds/${roundId}/mcqs`)
-      }
+      if (onUpload && result?.data) onUpload(result.data.questions)
     } catch (err) {
-      toast.error(err?.message || err?.error || "Import failed.")
+      toast.error(err?.data?.message || err?.error || "Import failed.")
     } finally {
       setImporting(false)
     }
   }
 
-  // -----------------------------
-  // UI
-  // -----------------------------
   return (
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white rounded-tl-none">
       {/* Download Template */}
@@ -116,10 +94,10 @@ const CsvImportSection = ({ testId, onUploadSuccess }) => {
         </div>
         <button
           onClick={handleDownloadTemplate}
-          disabled={loading}
           className="button-orange"
+          disabled={fetchingTemplate}
         >
-          Download
+          {fetchingTemplate ? "Fetching..." : "Download"}
         </button>
       </div>
 
@@ -128,7 +106,7 @@ const CsvImportSection = ({ testId, onUploadSuccess }) => {
         <div
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-          className="w-full h-[210px] flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-[5px] cursor-pointer hover:border-orange-400 transition"
+          className="w-full h-[188px] flex flex-col items-center justify-center border-1 border-dashed border-[#909090] rounded-[5px] cursor-pointer hover:border-orange-400 transition"
           onClick={() => fileInputRef.current.click()}
         >
           <Upload className="text-[#7A7574]" size={20} />
@@ -150,12 +128,14 @@ const CsvImportSection = ({ testId, onUploadSuccess }) => {
           <div className="flex justify-end">
             <button
               onClick={handleImportCsv}
-              disabled={loading || importing}
-              className={`${
-                importing ? "button-gray cursor-not-allowed" : "button-orange"
-              }`}
+              disabled={importingCsv || importing}
+              className={
+                importing || importingCsv
+                  ? "button-gray cursor-not-allowed"
+                  : "button-orange"
+              }
             >
-              {importing ? "Importing..." : "Import CSV"}
+              {importing || importingCsv ? "Importing..." : "Import CSV"}
             </button>
           </div>
         )}

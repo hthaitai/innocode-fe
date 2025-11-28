@@ -1,19 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import { api } from "./api"
 
-export const contestApi = createApi({
-  reducerPath: "contestApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "https://innocode-challenge-api.onrender.com/api",
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token")
-      if (token && token !== "null") {
-        headers.set("Authorization", `Bearer ${token}`)
-      }
-      headers.set("Content-Type", "application/json")
-      return headers
-    },
-  }),
-  tagTypes: ["Contests"],
+export const contestApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getOrganizerContests: builder.query({
       query: ({ pageNumber = 1, pageSize = 10 }) => ({
@@ -53,6 +40,7 @@ export const contestApi = createApi({
       invalidatesTags: (result, error, { id }) => [
         { type: "Contests", id },
         { type: "Contests", id: "LIST" },
+        { type: "PublishCheck", id },
       ],
     }),
     deleteContest: builder.mutation({
@@ -61,7 +49,7 @@ export const contestApi = createApi({
     }),
     checkPublishReady: builder.query({
       query: (id) => `contests/${id}/check`,
-      providesTags: (result, error, id) => [{ type: "Contests", id }],
+      providesTags: (result, error, id) => [{ type: "PublishCheck", id }],
     }),
     publishContest: builder.mutation({
       query: (id) => ({ url: `contests/${id}/publish`, method: "PUT" }),

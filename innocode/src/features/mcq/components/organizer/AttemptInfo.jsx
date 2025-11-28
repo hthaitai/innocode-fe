@@ -2,6 +2,7 @@ import React from "react"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
+import { formatScore } from "../../../../shared/utils/formatNumber"
 
 const AttemptInfo = ({ attemptDetail }) => {
   const safe = (val) =>
@@ -11,12 +12,21 @@ const AttemptInfo = ({ attemptDetail }) => {
     <InfoSection title="Attempt Information">
       <DetailTable
         data={[
-          { label: "Test Name", value: safe(attemptDetail.testName) },
-          { label: "Student", value: safe(attemptDetail.studentName) },
-          { label: "Submitted At", value: safe(formatDateTime(attemptDetail.submittedAt)) },
-          { label: "Total Questions", value: safe(attemptDetail.totalQuestions) },
-          { label: "Correct Answers", value: safe(attemptDetail.correctAnswers) },
-          { label: "Score", value: safe(`${attemptDetail.score}%`) },
+          { label: "Test name", value: safe(attemptDetail.testName) },
+          { label: "Student name", value: safe(attemptDetail.studentName) },
+          {
+            label: "Submitted at",
+            value: safe(formatDateTime(attemptDetail.submittedAt)),
+          },
+          {
+            label: "Total questions",
+            value: safe(attemptDetail.totalQuestions),
+          },
+          {
+            label: "Correct answers",
+            value: safe(attemptDetail.correctAnswers),
+          },
+          { label: "Score", value: safe(formatScore(attemptDetail.score)) },
         ]}
       />
     </InfoSection>
