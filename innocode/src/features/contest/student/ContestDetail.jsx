@@ -23,6 +23,7 @@ import { useAuth } from "@/context/AuthContext";
 import useTeams from "@/features/team/hooks/useTeams";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchLeaderboardByContest } from "@/features/leaderboard/store/leaderboardThunk";
+import useCompletedQuizzes from "@/features/quiz/hooks/useCompletedQuizzes";
 
 const ContestDetail = () => {
   const { contestId } = useParams();
@@ -99,6 +100,10 @@ const ContestDetail = () => {
 
     fetchMyTeam();
   }, [contestId, user?.id, role, getMyTeam]);
+
+  // Check for completed quizzes (only for students)
+  const { completedRounds, loading: completedQuizzesLoading } =
+    useCompletedQuizzes(role === "student" ? rounds : []);
 
   const breadcrumbData = contest
     ? createBreadcrumbWithPaths("CONTEST_DETAIL", contest.name || contest.title)
@@ -666,6 +671,27 @@ const ContestDetail = () => {
               Check current rankings and team standings
             </p>
           </div>
+          {/* See My Result Button - Show if student has completed at least one quiz */}
+          {role === "student" &&
+            !completedQuizzesLoading &&
+            completedRounds.length > 0 && (
+              <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
+                <button
+                  onClick={() =>
+                    navigate(`/quiz/${completedRounds[0].roundId}/finish`, {
+                      state: { contestId },
+                    })
+                  }
+                  className="button-orange w-full flex items-center justify-center gap-2 py-3"
+                >
+                  <Icon icon="mdi:clipboard-check-outline" width="18" />
+                  See Your Result
+                </button>
+                <p className="text-xs text-[#7A7574] text-center mt-2">
+                  View your quiz results and scores
+                </p>
+              </div>
+            )}
           {/* Your Team Status - For both student and mentor */}
           {/* Hide if registration closed and no team */}
           {(role === "student" || role === "mentor") &&

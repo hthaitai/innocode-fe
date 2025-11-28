@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import PageContainer from '@/shared/components/PageContainer';
-import { Icon } from '@iconify/react';
-import quizApi from '@/api/quizApi';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import PageContainer from "@/shared/components/PageContainer";
+import { Icon } from "@iconify/react";
+import quizApi from "@/api/quizApi";
 
 const FinishQuiz = () => {
-  const { roundId, contestId } = useParams();
+  const { roundId } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+  // Get contestId from location state or params
+  const contestId = location.state?.contestId;
   const [myQuiz, setMyQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,7 +26,7 @@ const FinishQuiz = () => {
         setError(
           err?.response?.data?.message ||
             err.message ||
-            'Failed to fetch result'
+            "Failed to fetch result"
         );
       } finally {
         setLoading(false);
@@ -59,11 +62,15 @@ const FinishQuiz = () => {
             </h3>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
-              onClick={() => navigate(`/contest`)}
+              onClick={() =>
+                contestId
+                  ? navigate(`/contest-detail/${contestId}`)
+                  : navigate(`/contests`)
+              }
               className="button-orange"
             >
               <Icon icon="mdi:arrow-left" className="inline mr-2" />
-              Back to Contest
+              {contestId ? "Back to Contest Detail" : "Back to Contests"}
             </button>
           </div>
         </div>
@@ -73,20 +80,20 @@ const FinishQuiz = () => {
 
   // Format date and time
   const formatDateTime = (dateString) => {
-    if (!dateString) return '--';
+    if (!dateString) return "--";
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   // Calculate duration
   const calculateDuration = () => {
-    if (!myQuiz?.startTime || !myQuiz?.endTime) return '--';
+    if (!myQuiz?.startTime || !myQuiz?.endTime) return "--";
     const start = new Date(myQuiz.startTime);
     const end = new Date(myQuiz.endTime);
     const diffMs = end - start;
@@ -126,7 +133,7 @@ const FinishQuiz = () => {
                   {myQuiz.testName}
                 </h3>
                 <p className="text-gray-600">
-                  Submitted by {myQuiz.studentName || 'Student'}
+                  Submitted by {myQuiz.studentName || "Student"}
                 </p>
               </div>
             )}
@@ -138,7 +145,7 @@ const FinishQuiz = () => {
                   Your Score
                 </p>
                 <div className="text-6xl font-bold text-orange-500 mb-2">
-                  {myQuiz?.score ?? '--'}
+                  {myQuiz?.score ?? "--"}
                 </div>
                 <p className="text-gray-500">points</p>
               </div>
@@ -207,11 +214,17 @@ const FinishQuiz = () => {
             {/* Action Buttons */}
             <div className="flex gap-3 justify-center">
               <button
-                onClick={() => navigate(`/contests`)}
+                onClick={() =>
+                  contestId
+                    ? navigate(`/contest-detail/${contestId}`)
+                    : navigate(`/contests`)
+                }
                 className="button-orange flex items-center gap2"
               >
                 <Icon icon="mdi:arrow-left" className="m-2 w-5 h-5" />
-                <div className='mr-2'>back to contests</div>
+                <div className="mr-2">
+                  {contestId ? "Back to Contest Detail" : "Back to Contests"}
+                </div>
               </button>
             </div>
           </div>

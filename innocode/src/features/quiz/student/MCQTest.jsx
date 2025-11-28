@@ -88,7 +88,9 @@ const MCQTest = () => {
 
     if (result.success) {
       alert('Quiz submitted successfully!');
-      navigate(`/quiz/${roundId}/finish`);
+      navigate(`/quiz/${roundId}/finish`, {
+        state: { contestId },
+      });
     } else {
       alert(`Failed to submit quiz: ${result.error}`);
     }

@@ -18,6 +18,7 @@ const TableFluent = ({
   onRowClick,
   renderSubComponent,
   expandAt = null,
+  getRowId,
 }) => {
   const [expanded, setExpanded] = React.useState({})
 
@@ -29,7 +30,7 @@ const TableFluent = ({
     state: { expanded },
     onExpandedChange: setExpanded,
     getRowCanExpand: () => true,
-    getRowId: (row) => row.questionId,
+    getRowId: getRowId || ((row, index) => row.teamId || row.questionId || row.id || `row-${index}`),
   })
 
   const isClickable = typeof onRowClick === "function"

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import quizApi from '@/api/quizApi';
+import { useState, useEffect } from "react";
+import quizApi from "@/api/quizApi";
 
 const useQuiz = (roundId) => {
   const [quiz, setQuiz] = useState(null);
@@ -16,17 +16,21 @@ const useQuiz = (roundId) => {
         setLoading(true);
         setError(null);
         const response = await quizApi.getQuiz(roundId);
-        console.log('✅ Quiz API Response:', response);
-        
+        console.log("✅ Quiz API Response:", response);
+
         // axiosClient returns response.data directly
-        if (response.data && response.data.code === 'SUCCESS') {
+        if (response.data && response.data.code === "SUCCESS") {
           setQuiz(response.data.data);
         } else {
-          setError(response.data?.message || 'Failed to load quiz');
+          setError(response.data?.message || "Failed to load quiz");
         }
       } catch (error) {
-        console.error('❌ Error fetching quiz:', error);
-        setError(error.response?.data?.message || error.message || 'Failed to load quiz');
+        console.error("❌ Error fetching quiz:", error);
+        setError(
+          error.response?.data?.errorMessage ||
+            error.errorMessage ||
+            "Failed to load quiz"
+        );
       } finally {
         setLoading(false);
       }
