@@ -243,9 +243,7 @@ const router = createBrowserRouter([
       {
         path: "team-invite",
         element: (
-          <ProtectedRoute >
             <TeamInviteResponse />
-          </ProtectedRoute>
         ),
       },
       {

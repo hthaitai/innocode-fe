@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { teamInviteApi } from "../../../../api/teamInviteApi";
 import PageContainer from "@/shared/components/PageContainer";
@@ -12,11 +12,14 @@ const TeamInviteResponse = () => {
   const [message, setMessage] = useState("");
   const token = searchParams.get("token");
   const action = searchParams.get("action");
+  const hasProcessed = useRef(false); // Prevent duplicate processing
 
   const handleAcceptInvite = async () => {
-    if (!token) return;
+    if (!token || hasProcessed.current) return; // Prevent duplicate calls
+    hasProcessed.current = true;
     setLoading(true);
     setStatus("processing");
+    let isSuccess = false; // Track success state locally
     try {
       const response = await teamInviteApi.accept(token);
       console.log("✅ Accept invite response:", response);
@@ -31,6 +34,7 @@ const TeamInviteResponse = () => {
           response.data?.message ||
           "Invitation accepted successfully. You are now a member of the team.";
         
+        isSuccess = true;
         setStatus("success");
         setMessage(successMessage);
         
@@ -38,29 +42,40 @@ const TeamInviteResponse = () => {
         setTimeout(() => {
           navigate("/dashboard");
         }, 2000);
+        return; // Exit early on success to prevent error handling
       } else {
         throw new Error("Unexpected response status");
       }
     } catch (error) {
+      // Only handle error if request was not successful
+      if (isSuccess) {
+        console.warn("⚠️ Error occurred after successful invite - ignoring");
+        return;
+      }
+      
       console.error("❌ Accept invite error:", error);
+      console.error("❌ Error details:", {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
       
       // Only show error if it's a real error (not just a logged error from interceptor)
       if (error.response && error.response.status >= 400) {
         setStatus("error");
-        setMessage(
-          error.response?.data?.message || 
-          error.response?.data?.errorMessage ||
-          error.response?.data?.data?.message ||
-          `Failed to accept invitation. (${error.response.status})`
-        );
+        const errorData = error.response?.data;
+        const errorMessage = 
+          errorData?.errorMessage ||
+          errorData?.message || 
+          errorData?.data?.message ||
+          (error.response.status === 500 
+            ? "Server error occurred. Please try again later or contact support." 
+            : `Failed to accept invitation. (${error.response.status})`);
+        setMessage(errorMessage);
       } else if (error.message) {
         // Network error or other non-HTTP errors
         setStatus("error");
         setMessage(error.message || "Failed to accept invitation. Please try again.");
-      } else {
-        // If we got here but response was 200, it might be a false error
-        // Check if we actually have a successful response
-        console.warn("⚠️ Error caught but might be false positive");
       }
     } finally {
       setLoading(false);
@@ -68,15 +83,18 @@ const TeamInviteResponse = () => {
   };
 
   const handleDeclineInvite = async () => {
-    if (!token) return;
+    if (!token || hasProcessed.current) return; // Prevent duplicate calls
+    hasProcessed.current = true;
     setLoading(true);
     setStatus("processing");
+    let isSuccess = false; // Track success state locally
     try {
       const response = await teamInviteApi.decline(token);
       console.log("✅ Decline invite response:", response);
+      console.log("✅ Decline invite response data:", response.data);
       
-      // Check if response is successful
-      if (response.status === 200 || response.status === 201) {
+      // Check if response is successful (accept 200, 201, 204)
+      if (response.status === 200 || response.status === 201 || response.status === 204) {
         const responseData = response.data?.data || response.data;
         const successMessage = 
           responseData?.additionalData || 
@@ -85,6 +103,7 @@ const TeamInviteResponse = () => {
           response.data?.message ||
           "Invitation declined successfully.";
         
+        isSuccess = true;
         setStatus("success");
         setMessage(successMessage);
         
@@ -92,24 +111,56 @@ const TeamInviteResponse = () => {
         setTimeout(() => {
           navigate("/dashboard");
         }, 2000);
+        return; // Exit early on success to prevent error handling
       } else {
-        throw new Error("Unexpected response status");
+        throw new Error(`Unexpected response status: ${response.status}`);
       }
     } catch (error) {
+      // Only handle error if request was not successful
+      if (isSuccess) {
+        console.warn("⚠️ Error occurred after successful decline - ignoring");
+        return;
+      }
+      
       console.error("❌ Decline invite error:", error);
+      console.error("❌ Error details:", {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+        error: error
+      });
       
       // Only show error if it's a real error
       if (error.response && error.response.status >= 400) {
         setStatus("error");
-        setMessage(
-          error.response?.data?.message || 
-          error.response?.data?.errorMessage ||
-          error.response?.data?.data?.message ||
-          `Failed to decline invitation. (${error.response.status})`
-        );
+        const errorData = error.response?.data;
+        const errorCode = errorData?.errorCode;
+        const errorMessage = 
+          errorData?.errorMessage ||
+          errorData?.message || 
+          errorData?.data?.message ||
+          (error.response.status === 500 
+            ? "Server error occurred. The invitation may have already been processed. Please check your team status or contact support if the issue persists." 
+            : error.response.status === 400
+            ? "Invalid request. The invitation may have expired or already been processed."
+            : `Failed to decline invitation. (${error.response.status})`);
+        
+        // Show user-friendly message based on error code
+        let userMessage = errorMessage;
+        if (errorCode === "INTERNAL_SERVER_ERROR") {
+          userMessage = "Server error occurred. The invitation may have already been processed. Please check your team status.";
+        } else if (errorCode === "VALIDATION_ERROR" || error.response.status === 400) {
+          userMessage = "Invalid request. The invitation may have expired or already been processed.";
+        }
+        
+        setMessage(userMessage);
       } else if (error.message) {
         setStatus("error");
         setMessage(error.message || "Failed to decline invitation. Please try again.");
+      } else {
+        // Fallback for any other error case
+        setStatus("error");
+        setMessage("An unexpected error occurred. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -117,6 +168,9 @@ const TeamInviteResponse = () => {
   };
 
   useEffect(() => {
+    // Only process once
+    if (hasProcessed.current) return;
+    
     if (token && action) {
       if (action === "accept") {
         handleAcceptInvite();

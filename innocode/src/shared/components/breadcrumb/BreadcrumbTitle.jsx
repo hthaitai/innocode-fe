@@ -31,23 +31,26 @@ const BreadcrumbTitle = ({ items = [], paths = [], maxVisible = 3 }) => {
   }
 
   return (
-    <div className="flex items-center gap-2 text-[28px] leading-[36px] font-semibold flex-wrap">
+    <div className="flex items-center gap-2 text-[28px] leading-[36px] font-semibold flex-wrap min-w-0 max-w-full">
       {/* First visible items */}
       {firstItems.map((item, index) => (
         <React.Fragment key={`first-${index}`}>
           {index !== 0 && (
             <Icon
               icon="mdi:chevron-right"
-              className="h-6 w-6 text-[#7A7574]"
+              className="h-6 w-6 text-[#7A7574] flex-shrink-0"
             />
           )}
           <span
             className={
-              index === items.length - 1
-                ? "text-black cursor-default"
-                : "text-[#7A7574] cursor-pointer hover:text-orange-500 transition-colors duration-200"
+              `${
+                index === items.length - 1
+                  ? "text-black cursor-default"
+                  : "text-[#7A7574] cursor-pointer hover:text-orange-500 transition-colors duration-200"
+              } truncate max-w-[400px]`
             }
             onClick={() => handleBreadcrumbClick(index)}
+            title={item}
           >
             {item}
           </span>
@@ -91,16 +94,19 @@ const BreadcrumbTitle = ({ items = [], paths = [], maxVisible = 3 }) => {
             {firstItems.length > 0 || index !== 0 ? (
               <Icon
                 icon="mdi:chevron-right"
-                className="h-6 w-6 text-[#7A7574]"
+                className="h-6 w-6 text-[#7A7574] flex-shrink-0"
               />
             ) : null}
             <span
               className={
-                realIndex === items.length - 1
-                  ? "text-black cursor-default"
-                  : "text-[#7A7574] cursor-pointer hover:text-orange-500 transition-colors duration-200"
+                `${
+                  realIndex === items.length - 1
+                    ? "text-black cursor-default"
+                    : "text-[#7A7574] cursor-pointer hover:text-orange-500 transition-colors duration-200"
+                } truncate max-w-[400px]`
               }
               onClick={() => handleBreadcrumbClick(realIndex)}
+              title={item}
             >
               {item}
             </span>

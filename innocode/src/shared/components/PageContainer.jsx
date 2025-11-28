@@ -29,12 +29,12 @@ export default function PageContainer({
   const hasState = loading || error
 
   return (
-    <div className={`min-h-screen ${className}`}>
+    <div className={`min-h-screen max-w-full overflow-x-hidden ${className}`}>
       {/* Breadcrumb header */}
       {breadcrumb && (
-        <div className="bg-[#f3f3f3] sticky top-0 z-10 flex items-center justify-between pt-4 pb-6">
-          <div className="flex-1">
-            <div className="flex items-center space-x-2 w-max">
+        <div className="bg-[#f3f3f3] sticky top-0 z-10 flex items-center justify-between pt-4 pb-6 px-4 overflow-hidden">
+          <div className="flex-1 min-w-0 overflow-hidden">
+            <div className="flex items-center space-x-2 min-w-0">
               <BreadcrumbTitle items={breadcrumb} paths={breadcrumbPaths} />
             </div>
           </div>
@@ -61,6 +61,7 @@ export default function PageContainer({
           variants={slideVariants}
           initial="hidden"
           animate="enter"
+          className="max-w-full overflow-x-hidden"
         >
           {children}
         </motion.div>

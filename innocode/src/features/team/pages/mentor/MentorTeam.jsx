@@ -27,6 +27,8 @@ const MentorTeam = () => {
   const [invitingStudentId, setInvitingStudentId] = useState(null);
   const [inviteError, setInviteError] = useState("");
   const [invitedStudentIds, setInvitedStudentIds] = useState(new Set()); // Track invited students
+  const [pendingInvites, setPendingInvites] = useState([]); // Track pending invitations
+  const [loadingInvites, setLoadingInvites] = useState(false);
   const { contest, loading: contestLoading } = useContestDetail(contestId);
   const { teams, loading: teamsLoading, addTeam, getMyTeam } = useTeams();
   const {
@@ -115,6 +117,56 @@ const MentorTeam = () => {
     }
   }, [mentors]);
 
+  // Fetch pending invites when myTeam is available
+  useEffect(() => {
+    const fetchPendingInvites = async () => {
+      if (myTeam && activeTab === "myTeam") {
+        const teamId = myTeam?.teamId || myTeam?.team_id || myTeam?.id;
+        if (!teamId) return;
+
+        setLoadingInvites(true);
+        try {
+          const response = await teamInviteApi.getByTeam(teamId);
+          console.log("🔍 Pending invites response:", response);
+          
+          // Extract invites from response
+          let invitesData = [];
+          if (response.data) {
+            if (Array.isArray(response.data)) {
+              invitesData = response.data;
+            } else if (response.data.data && Array.isArray(response.data.data)) {
+              invitesData = response.data.data;
+            }
+          }
+          
+          // Filter only pending invites
+          const pending = invitesData.filter(
+            (invite) => invite.status === "pending"
+          );
+          
+          setPendingInvites(pending);
+          
+          // Update invitedStudentIds with pending invite student IDs
+          const pendingStudentIds = new Set(
+            pending.map((invite) => invite.studentId)
+          );
+          setInvitedStudentIds((prev) => {
+            const updated = new Set(prev);
+            pendingStudentIds.forEach((id) => updated.add(id));
+            return updated;
+          });
+        } catch (error) {
+          console.error("❌ Error fetching pending invites:", error);
+          setPendingInvites([]);
+        } finally {
+          setLoadingInvites(false);
+        }
+      }
+    };
+
+    fetchPendingInvites();
+  }, [myTeam, activeTab]);
+
   // Update invitedStudentIds when myTeam changes (remove students who became members)
   useEffect(() => {
     if (myTeam && myTeam.members) {
@@ -148,14 +200,18 @@ const MentorTeam = () => {
             }
           }
           
-          // Filter out students who are already members or have been invited
+          // Filter out students who are already members, have been invited, or have pending invites
           const existingMemberIds = (myTeam.members || []).map(
             (m) => m.studentId || m.student_id
+          );
+          const pendingInviteStudentIds = new Set(
+            pendingInvites.map((invite) => invite.studentId)
           );
           const availableStudents = studentsData.filter(
             (s) => 
               !existingMemberIds.includes(s.studentId) &&
-              !invitedStudentIds.has(s.studentId)
+              !invitedStudentIds.has(s.studentId) &&
+              !pendingInviteStudentIds.has(s.studentId)
           );
           
           setStudents(availableStudents);
@@ -169,7 +225,7 @@ const MentorTeam = () => {
     };
 
     fetchStudents();
-  }, [activeTab, schoolId, myTeam, invitedStudentIds]);
+  }, [activeTab, schoolId, myTeam, invitedStudentIds, pendingInvites]);
 
   const handleCreateTeam = async () => {
     setErrors({});
@@ -244,8 +300,10 @@ const MentorTeam = () => {
     setInvitingStudentId(student.studentId);
 
     try {
-      const teamId = myTeam?.teamId;
+      // Handle different field name formats (camelCase and snake_case)
+      const teamId = myTeam?.teamId || myTeam?.team_id || myTeam?.id;
       if (!teamId) {
+        console.error("❌ Team ID not found. myTeam object:", myTeam);
         throw new Error("Team ID not found");
       }
 
@@ -305,6 +363,27 @@ const MentorTeam = () => {
       const teamData = await getMyTeam(contestId);
       if (teamData) {
         setMyTeam(teamData);
+      }
+
+      // Refresh pending invites to show the new invite
+      if (teamId) {
+        try {
+          const invitesResponse = await teamInviteApi.getByTeam(teamId);
+          let invitesData = [];
+          if (invitesResponse.data) {
+            if (Array.isArray(invitesResponse.data)) {
+              invitesData = invitesResponse.data;
+            } else if (invitesResponse.data.data && Array.isArray(invitesResponse.data.data)) {
+              invitesData = invitesResponse.data.data;
+            }
+          }
+          const pending = invitesData.filter(
+            (invite) => invite.status === "pending"
+          );
+          setPendingInvites(pending);
+        } catch (error) {
+          console.error("❌ Error refreshing pending invites:", error);
+        }
       }
 
       // Remove invited student from list immediately
@@ -688,6 +767,81 @@ const MentorTeam = () => {
                         </div>
                       )}
                     </div>
+
+                    {/* Pending Student Invitations Section */}
+                    {pendingInvites.length > 0 && (
+                      <div className="border border-[#E5E5E5] rounded-[8px] p-6 bg-white">
+                        <div className="flex items-center justify-between mb-4">
+                          <h5 className="text-lg font-semibold text-[#2d3748]">
+                            Pending Student Invitations
+                          </h5>
+                          {loadingInvites && (
+                            <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#ff6b35] border-t-transparent"></div>
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          {pendingInvites.map((invite) => {
+                            // Try to get student info from pending invite or find in students list
+                            const studentInfo = students.find(
+                              (s) => s.studentId === invite.studentId
+                            ) || {
+                              userFullname: invite.studentId || "Unknown Student",
+                              userEmail: invite.inviteeEmail || "No email",
+                            };
+
+                            const studentName = 
+                              studentInfo.userFullname || 
+                              invite.studentId || 
+                              "Unknown Student";
+                            const studentEmail = 
+                              studentInfo.userEmail || 
+                              invite.inviteeEmail || 
+                              "No email";
+                            const studentInitial = 
+                              studentName.charAt(0).toUpperCase() || "S";
+
+                            // Format expiration date
+                            const expiresAt = invite.expiresAt 
+                              ? new Date(invite.expiresAt).toLocaleDateString()
+                              : "N/A";
+
+                            return (
+                              <div
+                                key={invite.inviteId}
+                                className="flex items-center justify-between p-4 bg-yellow-50 border border-yellow-200 rounded-[5px]"
+                              >
+                                <div className="flex items-center gap-3 flex-1">
+                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 text-white flex items-center justify-center font-semibold shadow-sm">
+                                    {studentInitial}
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="font-semibold text-[#2d3748]">
+                                      {studentName}
+                                    </p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <Mail
+                                        size={14}
+                                        className="text-[#7A7574]"
+                                      />
+                                      <p className="text-sm text-[#7A7574]">
+                                        {studentEmail}
+                                      </p>
+                                    </div>
+                                    <p className="text-xs text-[#7A7574] mt-1">
+                                      Expires: {expiresAt}
+                                    </p>
+                                  </div>
+                                </div>
+                                <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+                                  Pending
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Available Students to Invite Section */}
                     <div className="border border-[#E5E5E5] rounded-[8px] p-6 bg-white">
