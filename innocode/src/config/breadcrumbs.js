@@ -111,14 +111,14 @@ export const BREADCRUMBS = {
     `${studentName}`,
   ],
 
-  //Manual problem
+  // mannual evaludation
   ORGANIZER_RUBRIC_EDITOR: (contestName, roundName) => [
     "Contests",
     contestName,
     roundName,
     "Rubric editor",
   ],
-  // Manual Results
+
   ORGANIZER_MANUAL_RESULTS: (contestName, roundName) => [
     "Contests",
     contestName,
@@ -126,6 +126,36 @@ export const BREADCRUMBS = {
     "Manual results",
   ],
 
+  // auto evaluation
+  ORGANIZER_TEST_CASES: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Test cases",
+  ],
+  ORGANIZER_TEST_CASE_CREATE: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Test cases",
+    "New test case",
+  ],
+  ORGANIZER_TEST_CASE_EDIT: (contestName, roundName, testCaseId) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Test cases",
+    `Edit test case #${testCaseId}`,
+  ],
+
+  ORGANIZER_AUTO_RESULTS: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Auto results",
+  ],
+
+  //idk old prolem detail
   ORGANIZER_PROBLEM_DETAIL: (
     contestId,
     contestName,
@@ -312,13 +342,14 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/rounds/${roundId}/attempts/${attemptId}`,
   ],
 
-  //manual problem
+  // manual evaludaiton
   ORGANIZER_RUBRIC_EDITOR: (contestId, roundId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}/rubric`,
   ],
+
   ORGANIZER_MANUAL_RESULTS: (contestId, roundId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
@@ -326,6 +357,36 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/rounds/${roundId}/manual-results`,
   ],
 
+  // auto evaluation
+  ORGANIZER_TEST_CASES: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation`,
+  ],
+  ORGANIZER_TEST_CASE_CREATE: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/new`,
+  ],
+  ORGANIZER_TEST_CASE_EDIT: (contestId, roundId, testCaseId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/${testCaseId}/edit`,
+  ],
+
+  ORGANIZER_AUTO_RESULTS: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/results`,
+  ],
+
+  //old stuff
   ORGANIZER_PROBLEM_DETAIL: (contestId, roundId, problemId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,

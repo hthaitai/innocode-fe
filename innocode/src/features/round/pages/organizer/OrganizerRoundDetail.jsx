@@ -64,7 +64,7 @@ const OrganizerRoundDetail = () => {
 
         <div>
           <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
-          <DeleteRoundSection round={round} contestId={contestId} />
+          {round && <DeleteRoundSection round={round} contestId={contestId} />}
         </div>
       </div>
     </PageContainer>

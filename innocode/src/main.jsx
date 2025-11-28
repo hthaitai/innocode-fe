@@ -62,6 +62,8 @@ import StudentManualProblem from "./features/problem/pages/student/StudentManual
 import AddContestPage from "./features/contest/pages/organizer/AddContestPage"
 import EditContestPage from "./features/contest/pages/organizer/EditContestPage"
 // Organizer pages
+import AddTestCasePage from "./features/problems/auto-evaluation/pages/AddTestCasePage"
+import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage"
 
 const router = createBrowserRouter([
   {
@@ -327,22 +329,6 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
-          {
-            path: ":contestId/rounds/:roundId/auto-evaluation",
-            element: (
-              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <AutoEvaluationPage />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: ":contestId/rounds/:roundId/auto-evaluation/results",
-            element: (
-              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <AutoTestResultsPage />
-              </ProtectedRoute>
-            ),
-          },
 
           {
             path: ":contestId/rounds/:roundId/problems/:problemId",
@@ -362,7 +348,32 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
+          {
+            path: ":contestId/rounds/:roundId/auto-evaluation/new",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <AddTestCasePage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/auto-evaluation/:testCaseId/edit",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <EditTestCasePage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/auto-evaluation/results",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <AutoTestResultsPage />
+              </ProtectedRoute>
+            ),
+          },
 
+          //Teams
           {
             path: ":contestId/teams",
             element: (
