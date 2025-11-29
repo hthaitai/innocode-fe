@@ -19,14 +19,7 @@ const Navbar = () => {
     // Close dropdown first
     setShowDropdown(false);
     
-    // Clear authentication state from context
     logout();
-    
-    // Clear any stored tokens or user data from localStorage
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    
   };
 
   // Close dropdown when clicking outside

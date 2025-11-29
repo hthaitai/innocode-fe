@@ -2,9 +2,9 @@ import axiosClient from "./axiosClient"
 
 const contestApi = {
   // GET /api/contests/my-contests
-  getAll: ({ pageNumber = 1, pageSize = 10 } = {}) =>
+  getAll: ({ pageNumber = 1, pageSize = 10, nameSearch } = {}) =>
     axiosClient.get("/contests", {
-      params: { pageNumber, pageSize },
+      params: { pageNumber, pageSize, ...(nameSearch && { nameSearch }) },
     }),
   getOrganizerContests: ({ pageNumber = 1, pageSize = 10 } = {}) =>
     axiosClient.get("/contests/my-contests", {
@@ -14,7 +14,11 @@ const contestApi = {
     axiosClient.get("/contests", {
       params: { idSearch: id, pageNumber: 1, pageSize: 1 },
     }),
-
+  // GET my-contests
+  getMyContests: ({ nameSearch } = {}) =>
+    axiosClient.get("/contests/participation", {
+      params: { ...(nameSearch && { nameSearch }) },
+    }),
   // POST /api/contests
   create: (data) => axiosClient.post("/contests/advanced", data),
 

@@ -1,8 +1,8 @@
 import contestApi from "../../../api/contestApi"
 
 export const contestService = {
-  async getAllContests({ pageNumber = 1, pageSize = 10 } = {}) {
-    const res = await contestApi.getAll({ pageNumber, pageSize })
+  async getAllContests({ pageNumber = 1, pageSize = 10, nameSearch } = {}) {
+    const res = await contestApi.getAll({ pageNumber, pageSize, nameSearch })
     // ✅ Return full response with data and additionalData for organizer
     // Student will handle in their hook
     return res.data // Return { data: [...], additionalData: {...} }
@@ -28,7 +28,10 @@ export const contestService = {
     const res = await contestApi.update(id, data)
     return res.data
   },
-
+  async getMyContests({ nameSearch } = {}) {
+    const res = await contestApi.getMyContests({ nameSearch })
+    return res.data || res.data.data
+  },
   async deleteContest(id) {
     await contestApi.delete(id)
     return id

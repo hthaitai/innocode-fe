@@ -10,14 +10,13 @@ const MCQTest = () => {
   const navigate = useNavigate();
   const { quiz, loading, error } = useQuiz(roundId);
   const { submitQuiz, isSubmitting, submitError } = useQuizSubmit();
-  
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState([]);
   const [timeRemaining, setTimeRemaining] = useState(null);
-
   useEffect(() => {
     if (quiz?.mcqTest) {
       setTimeRemaining(3600); // 1 hour default
+      console.log(roundId);
     }
   }, [quiz]);
 
@@ -62,24 +61,36 @@ const MCQTest = () => {
   };
 
   const handleSubmit = async () => {
-    const unansweredCount = quiz.mcqTest.totalQuestions - Object.keys(answers).length;
-    
+    const unansweredCount =
+      quiz.mcqTest.totalQuestions - Object.keys(answers).length;
+
     if (unansweredCount > 0) {
       const confirmMessage = `You have ${unansweredCount} unanswered question(s). Are you sure you want to submit?`;
-      if (!window.confirm(confirmMessage)) return;
+      if (!window.confirm(confirmMessage)) ;
     } else {
-      if (!window.confirm('Are you sure you want to submit your answers?')) return;
+      if (!window.confirm('Are you sure you want to submit your answers?'))
+        return;
     }
-    
+
     await handleSubmitQuiz();
   };
 
   const handleSubmitQuiz = async () => {
-    const result = await submitQuiz(roundId, answers);
-    
+    const answersArray = Object.entries(answers).map(
+      ([questionId, selectedOptionId]) => ({
+        questionId,
+        selectedOptionId,
+      })
+    );
+    console.log('📝 Body answers gửi lên:', answersArray); // Log để kiểm tra
+
+    const result = await submitQuiz(roundId, answersArray);
+
     if (result.success) {
       alert('Quiz submitted successfully!');
-      navigate(`/contest-detail/${contestId}`);
+      navigate(`/quiz/${roundId}/finish`, {
+        state: { contestId },
+      });
     } else {
       alert(`Failed to submit quiz: ${result.error}`);
     }
@@ -112,10 +123,18 @@ const MCQTest = () => {
       <PageContainer bg={false}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center max-w-md">
-            <Icon icon="mdi:alert-circle-outline" className="w-20 h-20 text-red-500 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Failed to Load Quiz</h3>
+            <Icon
+              icon="mdi:alert-circle-outline"
+              className="w-20 h-20 text-red-500 mx-auto mb-4"
+            />
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              Failed to Load Quiz
+            </h3>
             <p className="text-gray-600 mb-4">{error}</p>
-            <button onClick={() => navigate(`/contest-detail/${contestId}`)} className="button-orange">
+            <button
+              onClick={() => navigate(`/contest-detail/${contestId}`)}
+              className="button-orange"
+            >
               <Icon icon="mdi:arrow-left" className="inline mr-2" />
               Back to Contest
             </button>
@@ -129,7 +148,10 @@ const MCQTest = () => {
     return (
       <PageContainer bg={false}>
         <div className="text-center py-10">
-          <Icon icon="mdi:file-question-outline" className="w-20 h-20 text-gray-400 mx-auto mb-4" />
+          <Icon
+            icon="mdi:file-question-outline"
+            className="w-20 h-20 text-gray-400 mx-auto mb-4"
+          />
           <p className="text-xl text-gray-600">No questions available</p>
         </div>
       </PageContainer>
@@ -151,13 +173,18 @@ const MCQTest = () => {
                 <div>
                   <h1 className="text-2xl font-bold">{quiz.roundName}</h1>
                   <p className="text-sm text-gray-600">
-                    Question {currentQuestion + 1} of {quiz.mcqTest.totalQuestions}
+                    Question {currentQuestion + 1} of{' '}
+                    {quiz.mcqTest.totalQuestions}
                   </p>
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="text-right">
                     <p className="text-sm text-gray-600">Time Remaining</p>
-                    <p className={`text-xl font-bold ${timeRemaining < 300 ? 'text-red-600' : 'text-red-600'}`}>
+                    <p
+                      className={`text-xl font-bold ${
+                        timeRemaining < 300 ? 'text-red-600' : 'text-red-600'
+                      }`}
+                    >
                       {formatTime(timeRemaining)}
                     </p>
                   </div>
@@ -213,8 +240,15 @@ const MCQTest = () => {
                             type="radio"
                             name={`question-${question.questionId}`}
                             value={option.optionId}
-                            checked={answers[question.questionId] === option.optionId}
-                            onChange={() => handleAnswerSelect(question.questionId, option.optionId)}
+                            checked={
+                              answers[question.questionId] === option.optionId
+                            }
+                            onChange={() =>
+                              handleAnswerSelect(
+                                question.questionId,
+                                option.optionId
+                              )
+                            }
                             className="w-5 h-5 text-orange-600 cursor-pointer"
                           />
                           <span className="flex items-center gap-2">
@@ -241,7 +275,9 @@ const MCQTest = () => {
 
                     <button
                       onClick={handleNext}
-                      disabled={currentQuestion === quiz.mcqTest.questions.length - 1}
+                      disabled={
+                        currentQuestion === quiz.mcqTest.questions.length - 1
+                      }
                       className="flex items-center cursor-pointer gap-2 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
@@ -257,7 +293,9 @@ const MCQTest = () => {
                   {/* Progress */}
                   <div className="mb-6">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700">Progress</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        Progress
+                      </span>
                       <span className="text-sm font-semibold text-green-600">
                         {answeredCount}/{quiz.mcqTest.totalQuestions}
                       </span>
@@ -272,7 +310,9 @@ const MCQTest = () => {
 
                   {/* Question Navigator */}
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Questions</h3>
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">
+                      Questions
+                    </h3>
                     <div className="grid grid-cols-5 gap-2">
                       {quiz.mcqTest.questions.map((q, index) => (
                         <button

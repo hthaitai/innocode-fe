@@ -3,6 +3,12 @@ import { fetchLeaderboardByContest } from "./leaderboardThunk"
 
 const initialState = {
   entries: [],
+  contestInfo: {
+    contestName: null,
+    contestId: null,
+    totalTeamCount: 0,
+    snapshotAt: null,
+  },
   pagination: {
     pageNumber: 1,
     pageSize: 10,
@@ -40,20 +46,37 @@ const leaderboardSlice = createSlice({
       .addCase(fetchLeaderboardByContest.fulfilled, (state, action) => {
         state.loading = false
         const payload = action.payload || {}
-        const raw = Array.isArray(payload.data) ? payload.data : []
-        state.entries = raw.flatMap((entry) => {
-          const teams = Array.isArray(entry.teamIdList) ? entry.teamIdList : []
-          return teams.map((t) => ({
-            entryId: entry.entryId,
-            contestId: entry.contestId,
-            contestName: entry.contestName,
-            teamId: t.teamId,
-            teamName: t.teamName,
-            rank: t.rank,
-            score: t.score,
-            snapshotAt: entry.snapshotAt,
-          }))
-        })
+        const data = payload.data || payload
+        
+        // Update contest info
+        if (data) {
+          state.contestInfo = {
+            contestName: data.contestName || null,
+            contestId: data.contestId || null,
+            totalTeamCount: data.totalTeamCount || 0,
+            snapshotAt: data.snapshotAt || null,
+          }
+        }
+        
+        // Map teams with members and round scores
+        const teams = Array.isArray(data?.teamIdList) ? data.teamIdList : []
+        state.entries = teams.map((t) => ({
+          entryId: data?.entryId || null,
+          contestId: data?.contestId || null,
+          contestName: data?.contestName || null,
+          teamId: t.teamId,
+          teamName: t.teamName,
+          rank: t.rank,
+          score: t.score,
+          members: Array.isArray(t.members) ? t.members.map((m) => ({
+            memberId: m.memberId,
+            memberName: m.memberName,
+            memberRole: m.memberRole,
+            totalScore: m.totalScore || 0,
+            roundScores: Array.isArray(m.roundScores) ? m.roundScores : [],
+          })) : [],
+          snapshotAt: data?.snapshotAt || null,
+        }))
         state.pagination = payload.additionalData || state.pagination
       })
       .addCase(fetchLeaderboardByContest.rejected, (state, action) => {

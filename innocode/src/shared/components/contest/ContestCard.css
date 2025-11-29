@@ -8,6 +8,7 @@
   transition: background-color 0.2s ease;
   padding-left: 16px;
   padding-right: 16px;
+  overflow: hidden; /* Prevent content from overflowing */
 }
 
 .contest-card:hover {
@@ -37,6 +38,8 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0; /* Allow flex item to shrink */
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .contest-card__title {
@@ -44,12 +47,28 @@
   font-weight: bold;
   color: #333;
   margin: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  line-height: 1.4;
+  max-height: calc(1.4em * 2); /* 2 lines max */
 }
 
 .contest-card__description {
   font-size: 14px;
   color: #666;
   margin: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  line-height: 1.4;
+  max-height: calc(1.4em * 2); /* 2 lines max */
 }
 
 .contest-card__meta {

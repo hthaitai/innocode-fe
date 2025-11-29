@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageContainer from '@/shared/components/PageContainer';
 import Search from '@/shared/components/search/Search';
@@ -8,11 +8,34 @@ import { BREADCRUMBS } from '@/config/breadcrumbs';
 import useContests from '../hooks/useContests';
 import { Icon } from '@iconify/react';
 
-const Contests = () => {
+const MyContest = () => {
   const [hasFilter, setHasFilter] = useState(true);
   const navigate = useNavigate();
-  const { contests, loading, error, searchTerm, searchContests } = useContests();
+  const { getMyContests } = useContests();
+  const [contests, setContests] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(''); // Actual search term sent to API
   const [inputValue, setInputValue] = useState(''); // Input value (can change while typing)
+
+  // Fetch my contests
+  useEffect(() => {
+    const fetchMyContests = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const myContests = await getMyContests(searchTerm || undefined);
+        setContests(Array.isArray(myContests) ? myContests : []);
+      } catch (err) {
+        setError(err.message || 'Failed to load my contests');
+        setContests([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMyContests();
+  }, [getMyContests, searchTerm]);
   
   // Filter only by status since search is now handled by backend
   const filteredContests = useMemo(() => {
@@ -36,7 +59,7 @@ const Contests = () => {
 
   const handleSearch = (term) => {
     // Only trigger search when user clicks search button or presses Enter
-    searchContests(term);
+    setSearchTerm(term);
   };
   
   const handleInputChange = (e) => {
@@ -47,7 +70,7 @@ const Contests = () => {
   const handleFilterRemove = () => {
     setHasFilter(false);
     setInputValue('');
-    searchContests(''); // Clear search
+    setSearchTerm(''); // Clear search
   };
 
   const handleContestClick = (contest) => {
@@ -55,7 +78,7 @@ const Contests = () => {
   };
   if (loading) {
     return (
-      <PageContainer breadcrumb={BREADCRUMBS.CONTESTS} bg={false}>
+      <PageContainer breadcrumb={BREADCRUMBS.MY_CONTESTS} bg={false}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
@@ -67,7 +90,7 @@ const Contests = () => {
   }
   if (error) {
     return (
-      <PageContainer breadcrumb={BREADCRUMBS.CONTESTS} bg={false}>
+      <PageContainer breadcrumb={BREADCRUMBS.MY_CONTESTS} bg={false}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center max-w-md">
             <Icon
@@ -75,7 +98,7 @@ const Contests = () => {
               className="w-20 h-20 text-red-500 mx-auto mb-4"
             />
             <h3 className="text-xl font-bold text-gray-800 mb-2">
-              Failed to Load Contests
+              Failed to Load My Contests
             </h3>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
@@ -94,23 +117,23 @@ const Contests = () => {
   // Empty state (no contests or all filtered out)
   if (filteredContests.length === 0) {
     return (
-      <PageContainer breadcrumb={BREADCRUMBS.CONTESTS} bg={false}>
-      <div className="w-full flex flex-col gap-[14px]">
-        <div>
-          <Search 
-            placeholder="Search Contests" 
-            onSearch={handleSearch}
-            value={inputValue}
-            onChange={handleInputChange}
-          />
-          {hasFilter && (
-            <Filter
-              selectedFilter={hasFilter}
-              onFilterRemove={handleFilterRemove}
-              label="All Contests"
+      <PageContainer breadcrumb={BREADCRUMBS.MY_CONTESTS} bg={false}>
+        <div className="w-full flex flex-col gap-[14px]">
+          <div>
+            <Search 
+              placeholder="Search Contests" 
+              onSearch={handleSearch}
+              value={inputValue}
+              onChange={handleInputChange}
             />
-          )}
-        </div>
+            {hasFilter && (
+              <Filter
+                selectedFilter={hasFilter}
+                onFilterRemove={handleFilterRemove}
+                label="All Contests"
+              />
+            )}
+          </div>
 
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
@@ -124,7 +147,7 @@ const Contests = () => {
               <p className="text-gray-500">
                 {searchTerm
                   ? 'Try adjusting your search terms'
-                  : 'Check back later for upcoming contests!'}
+                  : 'You are not participating in any contests yet.'}
               </p>
             </div>
           </div>
@@ -133,7 +156,7 @@ const Contests = () => {
     );
   }
   return (
-    <PageContainer breadcrumb={BREADCRUMBS.CONTESTS} bg={false}>
+    <PageContainer breadcrumb={BREADCRUMBS.MY_CONTESTS} bg={false}>
       <div className="w-full flex flex-col gap-[14px]">
         <div>
           <Search 
@@ -222,4 +245,4 @@ const Contests = () => {
   );
 };
 
-export default Contests;
+export default MyContest;

@@ -1,15 +1,8 @@
 import React from 'react';
-import PageContainer from "@/shared/components/PageContainer";
-import { BREADCRUMBS } from '@/config/breadcrumbs';
+import MyTeamView from '@/features/team/pages/common/MyTeamView';
 
 const Team = () => {
-  return (
-    <PageContainer breadcrumb={BREADCRUMBS.TEAM}>
-      <p className="text-gray-600">
-        Manage your team members and collaborate on coding challenges. This page will contain team management features.
-      </p>
-    </PageContainer>
-  );
+  return <MyTeamView />;
 };
 
 export default Team;

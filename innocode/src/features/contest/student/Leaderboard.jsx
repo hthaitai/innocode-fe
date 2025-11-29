@@ -2,20 +2,22 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import PageContainer from "@/shared/components/PageContainer";
 import TableFluent from "@/shared/components/TableFluent";
-import { Trophy, Medal, Award } from "lucide-react";
+import { ExpandColumn } from "@/shared/components/ExpandColumn";
+import { Trophy, Medal, Award, Users, ChevronDown } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { fetchLeaderboardByContest } from "@/features/leaderboard/store/leaderboardThunk";
 import { BREADCRUMBS } from '@/config/breadcrumbs';
 import useLeaderboardSignalR from "@/features/leaderboard/hooks/useLeaderboardSignalR";
 import useContests from '../hooks/useContests';
+import { Icon } from '@iconify/react';
 
 const Leaderboard = () => {
   const { contestId: urlContestId } = useParams();
   const dispatch = useAppDispatch();
   
   const { contests, loading: contestsLoading } = useContests();
-  const { entries, loading, error, pagination } = useAppSelector(
+  const { entries, loading, error, pagination, contestInfo } = useAppSelector(
     (state) => state.leaderboard
   );
 
@@ -75,7 +77,22 @@ const Leaderboard = () => {
     }
   };
 
+  // Format round type for display
+  const formatRoundType = (roundType) => {
+    switch (roundType) {
+      case 'McqTest':
+        return 'MCQ Test';
+      case 'Manual':
+        return 'Manual Problem';
+      case 'AutoEvaluation':
+        return 'Auto Evaluation';
+      default:
+        return roundType || '—';
+    }
+  };
+
   const leaderboardColumns = [
+    ExpandColumn,
     {
       accessorKey: "rank",
       header: "Rank",
@@ -98,14 +115,17 @@ const Leaderboard = () => {
       accessorKey: "teamName",
       header: "Team Name",
       cell: ({ row }) => (
-        <span className="font-medium text-gray-900">
-          {row.original.teamName ?? "—"}
-        </span>
+        <div className="flex items-center gap-2">
+          <Users size={16} className="text-gray-400" />
+          <span className="font-medium text-gray-900">
+            {row.original.teamName ?? "—"}
+          </span>
+        </div>
       ),
     },
     {
       accessorKey: "score",
-      header: "Score",
+      header: "Team Score",
       size: 120,
       cell: ({ row }) => (
         <span className="text-lg font-bold text-blue-600">
@@ -114,16 +134,121 @@ const Leaderboard = () => {
       ),
     },
     {
-      accessorKey: "snapshotAt",
-      header: "Last Updated",
-      size: 180,
+      accessorKey: "members",
+      header: "Members",
+      size: 100,
       cell: ({ row }) => (
         <span className="text-sm text-gray-600">
-          {formatDateTime(row.original.snapshotAt)}
+          {row.original.members?.length || 0} member{(row.original.members?.length || 0) !== 1 ? 's' : ''}
         </span>
       ),
     },
   ];
+
+  // Render expanded row content (members and round scores)
+  const renderSubComponent = (row) => {
+    const members = row.original.members || [];
+    
+    if (members.length === 0) {
+      return (
+        <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
+          <p className="text-sm text-gray-500">No members data available</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="px-4 py-4 bg-gray-50 border-t border-gray-200">
+        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+          <Users size={16} />
+          Team Members
+        </h4>
+        <div className="space-y-4">
+          {members.map((member, idx) => (
+            <div
+              key={member.memberId || idx}
+              className="bg-white rounded-lg border border-gray-200 p-4"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-semibold text-sm">
+                    {member.memberName?.charAt(0)?.toUpperCase() || 'M'}
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">
+                      {member.memberName || 'Unknown Member'}
+                    </p>
+                    <p className="text-xs text-gray-500 capitalize">
+                      {member.memberRole || 'member'}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">Total Score</p>
+                  <p className="text-lg font-bold text-blue-600">
+                    {(member.totalScore || 0).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Round Scores */}
+              {member.roundScores && member.roundScores.length > 0 ? (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <p className="text-xs font-medium text-gray-600 mb-2">
+                    Round Scores:
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {member.roundScores.map((round, roundIdx) => (
+                      <div
+                        key={round.roundId || roundIdx}
+                        className="bg-gray-50 rounded px-3 py-2 border border-gray-200"
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-xs font-medium text-gray-700 truncate">
+                            {round.roundName || 'Round'}
+                          </p>
+                          <span className="text-xs font-bold text-blue-600 ml-2">
+                            {round.score?.toFixed(2) || '0.00'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 mt-1">
+                          <Icon
+                            icon={
+                              round.roundType === 'McqTest'
+                                ? 'mdi:checkbox-multiple-marked-circle'
+                                : round.roundType === 'Manual'
+                                ? 'mdi:file-document-edit'
+                                : 'mdi:code-tags'
+                            }
+                            className="text-gray-400"
+                            width={12}
+                          />
+                          <p className="text-xs text-gray-500">
+                            {formatRoundType(round.roundType)}
+                          </p>
+                          {round.completedAt && (
+                            <span className="text-xs text-gray-400 ml-1">
+                              • {formatDateTime(round.completedAt)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <p className="text-xs text-gray-500">
+                    No round scores available
+                  </p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   // Get selected contest details
   const selectedContest = availableContests.find(c => c.contestId === selectedContestId);
@@ -164,10 +289,13 @@ const Leaderboard = () => {
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Contest Leaderboard
+                  {contestInfo.contestName || 'Contest Leaderboard'}
                 </h2>
                 <p className="text-sm text-gray-600">
                   View current standings and team rankings
+                  {contestInfo.snapshotAt && (
+                    <span> • Last updated: {formatDateTime(contestInfo.snapshotAt)}</span>
+                  )}
                 </p>
               </div>
             </div>
@@ -190,18 +318,6 @@ const Leaderboard = () => {
               </div>
             )}
           </div>
-          
-          {/* Contest Info */}
-          {selectedContest && (
-            <div className="mt-3 pt-3 border-t border-gray-200">
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">{selectedContest.name}</span>
-                {selectedContest.description && (
-                  <span> • {selectedContest.description}</span>
-                )}
-              </p>
-            </div>
-          )}
         </div>
 
         {/* Stats Overview */}
@@ -214,7 +330,7 @@ const Leaderboard = () => {
               <div>
                 <p className="text-sm text-gray-600">Total Teams</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {pagination.totalCount || entries.length}
+                  {contestInfo.totalTeamCount || pagination.totalCount || entries.length}
                 </p>
               </div>
             </div>
@@ -264,6 +380,8 @@ const Leaderboard = () => {
           }}
           totalPages={pagination.totalPages}
           onPageChange={(newPage) => setPageNumber(newPage + 1)}
+          renderSubComponent={renderSubComponent}
+          getRowId={(row) => row.teamId || `team-${row.rank}`}
         />
       </div>
     </PageContainer>

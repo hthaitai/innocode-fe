@@ -1,10 +1,14 @@
-import axiosClient from './axiosClient';
+import axiosClient from "./axiosClient";
 
 const quizApi = {
   //Get quiz for round
-  getQuiz: (roundId) => axiosClient.get(`/quizzes/rounds/${roundId}/quiz`),
+  getQuiz: (roundId) => axiosClient.get(`/rounds/${roundId}/mcq-test`),
   //Submit quiz answers
   submitQuiz: (roundId, data) =>
-    axiosClient.post(`/quizzes/${roundId}/submit`, data),
+    axiosClient.post(`/rounds/${roundId}/mcq-test/submit`, data),
+  //Get my quizzes
+  getMyQuiz: (roundId) =>
+    axiosClient.get(`/rounds/${roundId}/attempts/my-attempt`),
 };
+
 export default quizApi;

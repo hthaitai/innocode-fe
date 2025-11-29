@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import InnoCodeLogo from '@/assets/InnoCode_Logo.jpg';
 import { useAuth } from '@/context/AuthContext';
+import { Icon } from '@iconify/react';
 const Login = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
@@ -84,7 +85,6 @@ const Login = () => {
     }
   };
 
-
   return (
     <div className="login-container relative">
       <div className="login-form-container">
@@ -123,8 +123,12 @@ const Login = () => {
                   type="button"
                   className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
+                  style={{ cursor: 'pointer' }}
                 >
-                  {showPassword ? 'Hide' : 'Show'}
+                  <Icon 
+                    icon={showPassword ? 'mdi:eye-off' : 'mdi:eye'} 
+                    width="20" 
+                  />
                 </button>
               </div>
               <input
@@ -136,25 +140,34 @@ const Login = () => {
                 autoComplete="current-password"
                 required
               />
-              <a href="#reset" className="reset-password-link">
-                Reset password
-              </a>
+              <Link to="/forgot-password" className="reset-password-link">
+                Forgot password?
+              </Link>
             </div>
 
             {error && (
               <div style={{ color: 'red', marginBottom: 8 }}>{error}</div>
             )}
 
-            <button type="submit" className="signin-button">
-              Sign in
+            <button 
+              type="submit" 
+              className="signin-button"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Signing in...</span>
+                </div>
+              ) : (
+                'Sign in'
+              )}
             </button>
           </form>
 
           <div className="divider">
             <span className="divider-text">OR</span>
           </div>
-
-       
 
           <div className="signup-link">
             Don't have an account yet?{' '}

@@ -69,9 +69,9 @@ const ContestCard = ({ contest, onClick }) => {
 
         {/* Rewards */}
         {contest.rewardsText && (
-          <div className="mt-2 text-sm text-orange-600 font-medium">
+          <div className="mt-2 text-sm text-orange-600 font-medium truncate">
             <Icon icon="mdi:gift" className="inline mr-1" />
-            {contest.rewardsText}
+            <span className="truncate">{contest.rewardsText}</span>
           </div>
         )}
 
