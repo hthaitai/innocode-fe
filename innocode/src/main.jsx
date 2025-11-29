@@ -71,6 +71,8 @@ import ResetPassword from './features/auth/components/ResetPassword';
 import MyContest from "./features/contest/student/MyContest"
 
 // Organizer pages
+import AddTestCasePage from "./features/problems/auto-evaluation/pages/AddTestCasePage"
+import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage"
 // Initialize EmailJS when app starts
 initEmailJs();
 const router = createBrowserRouter([
@@ -392,22 +394,6 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
-          {
-            path: ":contestId/rounds/:roundId/auto-evaluation",
-            element: (
-              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <AutoEvaluationPage />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: ":contestId/rounds/:roundId/auto-evaluation/results",
-            element: (
-              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <AutoTestResultsPage />
-              </ProtectedRoute>
-            ),
-          },
 
           {
             path: ":contestId/rounds/:roundId/problems/:problemId",
@@ -427,7 +413,32 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
+          {
+            path: ":contestId/rounds/:roundId/auto-evaluation/new",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <AddTestCasePage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/auto-evaluation/:testCaseId/edit",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <EditTestCasePage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/auto-evaluation/results",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <AutoTestResultsPage />
+              </ProtectedRoute>
+            ),
+          },
 
+          //Teams
           {
             path: ":contestId/teams",
             element: (

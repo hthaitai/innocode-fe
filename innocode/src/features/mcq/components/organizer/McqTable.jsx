@@ -14,6 +14,7 @@ import {
 
 import { toast } from "react-hot-toast"
 import { Calendar } from "lucide-react"
+import McqTableActions from "./McqTableActions"
 
 const McqTable = () => {
   const navigate = useNavigate()
@@ -34,24 +35,16 @@ const McqTable = () => {
   )
 
   const mcqs = mcqData?.data?.mcqTest?.questions || []
-  const pagination = useMemo(() => {
-    const test = mcqData?.data?.mcqTest
-    if (!test) return null
-
-    const currentPage = test.currentPage ?? 1
-    const totalPages = test.totalPages ?? 1
-    const pageSize = test.pageSize ?? test.questions?.length ?? 10
-    const totalCount = test.totalQuestions ?? test.questions?.length ?? 0
-
-    return {
-      pageNumber: currentPage, // Current page
-      pageSize, // Items per page
-      totalCount, // Total items
-      totalPages, // Total pages
-      hasPreviousPage: currentPage > 1, // Enable prev button
-      hasNextPage: currentPage < totalPages, // Enable next button
-    }
-  }, [mcqData])
+  const pagination = {
+    currentPage: mcqData?.data?.mcqTest?.currentPage || 1,
+    pageSize: mcqData?.data?.mcqTest?.pageSize || 10,
+    totalPages: mcqData?.data?.mcqTest?.totalPages || 0,
+    totalQuestions: mcqData?.data?.mcqTest?.totalQuestions || 0,
+    hasPreviousPage: (mcqData?.data?.mcqTest?.currentPage || 1) > 1,
+    hasNextPage:
+      (mcqData?.data?.mcqTest?.currentPage || 1) <
+      (mcqData?.data?.mcqTest?.totalPages || 0),
+  }
   const testId = mcqData?.data?.mcqTest?.testId
 
   /** Edit MCQ weight mutation */
@@ -102,30 +95,6 @@ const McqTable = () => {
 
   return (
     <div className="space-y-1">
-      {/* Add Button / Header */}
-      <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-        <div className="flex gap-5 items-center">
-          <Calendar size={20} />
-          <div>
-            <p className="text-[14px] leading-[20px]">MCQ Management</p>
-            <p className="text-[12px] leading-[16px] text-[#7A7574]">
-              Create and manage MCQs for this contest
-            </p>
-          </div>
-        </div>
-        <button
-          className="button-orange"
-          onClick={() =>
-            navigate(
-              `/organizer/contests/${contestId}/rounds/${roundId}/mcqs/new`
-            )
-          }
-        >
-          Add questions
-        </button>
-      </div>
-
-      {/* Table */}
       <TableFluent
         data={mcqsWithIndex}
         columns={columns}
@@ -133,8 +102,9 @@ const McqTable = () => {
         error={isError}
         pagination={pagination}
         onPageChange={setPage}
+        renderActions={() => <McqTableActions />}
         renderSubComponent={(mcq) => <McqTableExpanded mcq={mcq} />}
-        expandAt="text"
+        expandAt="Question"
       />
     </div>
   )

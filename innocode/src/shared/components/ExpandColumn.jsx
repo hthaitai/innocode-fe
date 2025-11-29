@@ -3,7 +3,8 @@ import { ChevronRight } from "lucide-react"
 export const ExpandColumn = {
   id: "expand",
   header: "",
-  size: 40,
+  size: 60,
+  meta: { className: "text-center w-[60px]" },
   cell: ({ row }) => {
     const isExpanded = row.getIsExpanded()
 
@@ -17,7 +18,7 @@ export const ExpandColumn = {
           isExpanded ? "rotate-90" : "rotate-0"
         }`}
         aria-label={isExpanded ? "Collapse" : "Expand"}
-        style={{ transition: "none" }} // ensures no animation
+        style={{ transition: "none" }}
       >
         <ChevronRight size={16} className="leading-none" />
       </button>
