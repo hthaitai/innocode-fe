@@ -3,7 +3,6 @@ import ConfirmDeleteModal from "../shared/components/ConfirmDeleteModal"
 import ConfirmModal from "../shared/components/ConfirmModal"
 import AlertModal from "../shared/components/AlertModal"
 import ProblemModal from "../features/problem/components/organizer/ProblemModal"
-import TestCaseModal from "../features/problem/components/organizer/TestCaseModal"
 import ProvinceModal from "../features/province/components/organizer/ProvinceModal"
 import SchoolModal from "../features/school/components/organizer/SchoolModal"
 import TeamModal from "../features/team/components/organizer/TeamModal"
@@ -12,9 +11,9 @@ import AppealDecisionModal from "../features/appeal/components/organizer/AppealD
 import IssueCertificateModal from "../features/certificate/components/organizer/IssueCertificateModal"
 import NotificationModal from "../features/notification/components/organizer/NotificationModal"
 import McqWeightModal from "../features/mcq/components/organizer/McqWeightModal"
-import AutoTestCaseModal from "../features/problems/auto-evaluation/components/AutoTestCaseModal"
 import RubricModal from "../features/problems/manual/components/RubricModal"
 import RubricCsvModal from "../features/problems/manual/components/RubricCsvModal"
+import TestCaseCsvModal from "../features/problems/auto-evaluation/components/TestCaseCsvModal"
 
 const ModalContext = createContext(null)
 
@@ -41,9 +40,7 @@ export function ModalProvider({ children }) {
     confirmDelete: ConfirmDeleteModal,
     confirm: ConfirmModal,
     alert: AlertModal,
-    problem: ProblemModal, 
-    testCase: TestCaseModal,
-    autoTestCase: AutoTestCaseModal,
+    problem: ProblemModal,
     province: ProvinceModal,
     school: SchoolModal,
     team: TeamModal,
@@ -54,6 +51,7 @@ export function ModalProvider({ children }) {
     mcqWeight: McqWeightModal,
     rubric: RubricModal,
     rubricCsv: RubricCsvModal,
+    testCaseCsv: TestCaseCsvModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

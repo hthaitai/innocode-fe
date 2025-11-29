@@ -9,6 +9,7 @@ import {
 } from "../../../../services/contestApi"
 import { useConfirmDelete } from "../../../../shared/hooks/useConfirmDelete"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import ContestTableActions from "./ContestTableActions"
 
 const ContestTable = () => {
   const navigate = useNavigate()
@@ -71,24 +72,6 @@ const ContestTable = () => {
 
   return (
     <div className="space-y-1">
-      {/* Header w/ Add Button */}
-      <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-        <div className="flex gap-5 items-center">
-          <Trophy size={20} />
-          <div>
-            <p className="text-[14px] leading-[20px]">Contests</p>
-            <p className="text-[12px] leading-[16px] text-[#7A7574]">
-              Manage all contests you created
-            </p>
-          </div>
-        </div>
-
-        <button className="button-orange" onClick={handleAddContest}>
-          Add contest
-        </button>
-      </div>
-
-      {/* Table or loading */}
       {isLoading && !contestsData ? (
         <div className="min-h-[70px] flex items-center justify-center">
           <Spinner />
@@ -97,11 +80,12 @@ const ContestTable = () => {
         <TableFluent
           data={contests}
           columns={columns}
-          loading={isLoading} // overlay spinner for pagination
+          loading={isLoading}
           error={isError}
           pagination={pagination}
           onPageChange={setPage}
           onRowClick={handleRowClick}
+          renderActions={() => <ContestTableActions />}
         />
       )}
     </div>

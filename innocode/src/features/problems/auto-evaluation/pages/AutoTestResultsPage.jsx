@@ -1,55 +1,37 @@
-import React, { useCallback, useEffect, useMemo } from "react"
+import React from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
-import { useAppSelector, useAppDispatch } from "@/store/hooks"
-import { useOrganizerRoundDetail } from "@/features/round/hooks/useOrganizerRoundDetail"
-import { fetchAutoTestResults } from "../store/autoEvaluationThunks"
-
 import AutoResultsTable from "../components/AutoResultsTable"
+import { useGetRoundByIdQuery } from "../../../../services/roundApi"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 
 const AutoTestResultsPage = () => {
-  const dispatch = useAppDispatch()
-  const { contestId, roundId } = useParams()
+  const { roundId } = useParams()
 
-  const { contests } = useAppSelector((s) => s.contests)
-  const { round } = useOrganizerRoundDetail(contestId, roundId)
-
-  const { results, resultsPagination, loading } = useAppSelector(
-    (s) => s.autoEvaluation
+  // Fetch round info
+  const { data: round, isLoading: roundLoading } = useGetRoundByIdQuery(
+    roundId,
+    { skip: !roundId }
   )
 
-  const contest = contests.find((c) => String(c.contestId) === String(contestId))
-
-  const breadcrumbItems = useMemo(
-    () => ["Contests", contest?.name ?? "Contest", round?.name ?? "Round", "Auto Results"],
-    [contest?.name, round?.name]
+  // Breadcrumbs
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_AUTO_RESULTS(
+    round?.contestName ?? "Contest",
+    round?.name ?? "Round"
   )
 
-  const fetchResultsData = useCallback(
-    (pageNumber = 1) => {
-      dispatch(
-        fetchAutoTestResults({
-          roundId,
-          pageNumber,
-          pageSize: resultsPagination.pageSize,
-        })
-      )
-    },
-    [dispatch, roundId, resultsPagination.pageSize]
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_AUTO_RESULTS(
+    round?.contestId,
+    roundId
   )
-
-  useEffect(() => {
-    fetchResultsData(1)
-  }, [fetchResultsData])
 
   return (
-    <PageContainer breadcrumb={breadcrumbItems}>
-      <AutoResultsTable
-        results={results}
-        loading={loading}
-        pagination={resultsPagination}
-        onPageChange={fetchResultsData}
-      />
+    <PageContainer
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
+      loading={roundLoading}
+    >
+      <AutoResultsTable />
     </PageContainer>
   )
 }

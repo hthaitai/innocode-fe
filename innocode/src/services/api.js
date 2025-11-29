@@ -12,6 +12,13 @@ export const api = createApi({
       return headers
     },
   }),
-  tagTypes: ["Contests", "Rounds", "Mcq", "PublishCheck"],
+  tagTypes: [
+    "Contests",
+    "Rounds",
+    "Mcq",
+    "PublishCheck",
+    "TestCases",
+    "TestResults",
+  ],
   endpoints: () => ({}),
 })

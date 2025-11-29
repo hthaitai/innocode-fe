@@ -8,16 +8,23 @@ export const getMcqColumns = (handleEditWeight) => [
   {
     header: "Question",
     accessorKey: "text",
+    size: 400,
     cell: (info) => info.getValue() || "Untitled Question",
+    meta: { className: "truncate max-w-[400px]" },
   },
   {
     header: "Weight",
     accessorKey: "weight",
+    size: 80,
     cell: (info) => info.getValue() ?? "-",
+    meta: { className: "truncate max-w-[80px]" },
   },
   {
     id: "actions",
     header: "",
+    size: 60,
+    enableSorting: false,
+    enableHiding: false,
     cell: ({ row }) => (
       <Actions
         row={row.original}
@@ -26,7 +33,6 @@ export const getMcqColumns = (handleEditWeight) => [
             label: "Edit Weight",
             icon: Edit,
             onClick: (itemRow) => {
-              // itemRow === row.original
               handleEditWeight(itemRow)
             },
           },
@@ -34,5 +40,6 @@ export const getMcqColumns = (handleEditWeight) => [
         onClick={(e) => e.stopPropagation()} // prevent expand when clicking menu
       />
     ),
+    meta: { className: "text-right w-[60px]" }, // no truncate needed
   },
 ]
