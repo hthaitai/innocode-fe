@@ -2,6 +2,23 @@ import { api } from "./api"
 
 export const contestApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    getAllContests: builder.query({
+      query: ({ pageNumber = 1, pageSize = 10 } = {}) => ({
+        url: "contests",
+        params: { pageNumber, pageSize },
+      }),
+      providesTags: (result) =>
+        result?.items
+          ? [
+              ...result.items.map((contest) => ({
+                type: "Contests",
+                id: contest.contestId,
+              })),
+              { type: "Contests", id: "LIST" },
+            ]
+          : [{ type: "Contests", id: "LIST" }],
+    }),
+
     getOrganizerContests: builder.query({
       query: ({ pageNumber = 1, pageSize = 10 }) => ({
         url: "contests/my-contests",
@@ -62,6 +79,7 @@ export const contestApi = api.injectEndpoints({
 })
 
 export const {
+  useGetAllContestsQuery,
   useGetOrganizerContestsQuery,
   useGetContestByIdQuery,
   useAddContestMutation,

@@ -26,7 +26,7 @@ const ContestTable = () => {
 
   const contests = contestsData?.data || []
   const pagination = contestsData?.additionalData || {}
-
+  
   /** Delete contest */
   const [deleteContest] = useDeleteContestMutation()
 

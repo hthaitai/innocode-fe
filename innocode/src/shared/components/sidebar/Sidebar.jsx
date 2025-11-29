@@ -1,8 +1,8 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Icon } from "@iconify/react";
-import "./sidebar.css";
-import { useAuth } from "@/context/AuthContext";
+import React from "react"
+import { Link, useLocation } from "react-router-dom"
+import { Icon } from "@iconify/react"
+import "./sidebar.css"
+import { useAuth } from "@/context/AuthContext"
 
 const allMenus = {
   profile: { path: "/profile", label: "Profile", icon: "lucide:user" },
@@ -48,10 +48,22 @@ const allMenus = {
     icon: "lucide:school",
   },
   organizerNotifications: {
-  path: "/organizer/notifications",
-  label: "Notifications",
-  icon: "lucide:bell",
-},
+    path: "/organizer/notifications",
+    label: "Notifications",
+    icon: "lucide:bell",
+  },
+
+  //judge
+  manualSubmissions: {
+    path: "/judge/manual-submissions",
+    label: "Submissions",
+    icon: "lucide:file-text",
+  },
+  evaluationHistory: {
+    path: "/judge/evaluations",
+    label: "Evaluations",
+    icon: "lucide:clipboard-check",
+  },
 
   // Common menus
   announcements: {
@@ -60,7 +72,7 @@ const allMenus = {
     icon: "lucide:bell",
   },
   help: { path: "/help", label: "Help", icon: "lucide:circle-question-mark" },
-};
+}
 
 const menuByRole = {
   student: [
@@ -81,24 +93,24 @@ const menuByRole = {
     "organizerNotifications",
     "help",
   ],
-  judge: ["profile", "dashboard", "contests", "announcements", "help"],
+  judge: ["profile", "dashboard", "manualSubmissions", "announcements", "help"],
   admin: ["profile", "dashboard", "leaderboard", "announcements", "help"],
-};
+}
 
 const Sidebar = () => {
-  const location = useLocation();
-  const { user } = useAuth();
-  const role = user?.role || "student"; // Get role from AuthContext instead of localStorage
+  const location = useLocation()
+  const { user } = useAuth()
+  const role = user?.role || "student" // Get role from AuthContext instead of localStorage
 
-  const menuKeys = menuByRole[role] || menuByRole.student;
-  const menuItems = menuKeys.map((key) => allMenus[key]).filter(Boolean);
+  const menuKeys = menuByRole[role] || menuByRole.student
+  const menuItems = menuKeys.map((key) => allMenus[key]).filter(Boolean)
 
   const isActive = (path) => {
     if (path === "/") {
-      return location.pathname === "/";
+      return location.pathname === "/"
     }
-    return location.pathname.startsWith(path);
-  };
+    return location.pathname.startsWith(path)
+  }
 
   return (
     <div className="sidebar">
@@ -130,7 +142,7 @@ const Sidebar = () => {
         ))}
       </nav>
     </div>
-  );
-};
+  )
+}
 
-export default Sidebar;
+export default Sidebar

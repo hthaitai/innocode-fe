@@ -115,6 +115,30 @@ export const manualProblemApi = api.injectEndpoints({
         { type: "Results", id: roundId },
       ],
     }),
+
+    fetchManualSubmissions: builder.query({
+      query: ({ statusFilter = "Pending", pageNumber = 1, pageSize = 10 }) => ({
+        url: `/submissions`,
+        params: { statusFilter, pageNumber, pageSize },
+      }),
+
+      transformResponse: (response) => ({
+        submissions: response.data,
+        pagination: response.additionalData,
+        message: response.message,
+      }),
+
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.submissions.map((item) => ({
+                type: "ManualSubmissions",
+                id: item.submissionId,
+              })),
+              { type: "ManualSubmissions", id: "LIST" },
+            ]
+          : [{ type: "ManualSubmissions", id: "LIST" }],
+    }),
   }),
 })
 
@@ -126,4 +150,5 @@ export const {
   useCreateRubricMutation,
   useDeleteCriterionMutation,
   useFetchManualResultsQuery,
+  useFetchManualSubmissionsQuery,
 } = manualProblemApi

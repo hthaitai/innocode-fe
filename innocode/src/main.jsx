@@ -65,6 +65,12 @@ import EditContestPage from "./features/contest/pages/organizer/EditContestPage"
 import AddTestCasePage from "./features/problems/auto-evaluation/pages/AddTestCasePage"
 import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage"
 
+// Judge pages
+import JudgeManualRubricPage from "./features/problems/manual/pages/judge/JudgeManualRubricPage"
+import JudgeManualResultsPage from "./features/problems/manual/pages/judge/JudgeManualResultsPage"
+import JudgeManualSubmissionsPage from "./features/problems/manual/pages/judge/JudgeManualSubmissionsPage" // new page for pending submissions list
+import JudgeManualEvaluationsPage from "./features/problems/manual/pages/judge/JudgeManualEvaluationsPage"
+
 const router = createBrowserRouter([
   {
     element: <AuthLayout />, // Auth layout wrapper
@@ -216,6 +222,7 @@ const router = createBrowserRouter([
         ),
       },
 
+      //organizer routes
       {
         path: "organizer/contests",
         children: [
@@ -470,6 +477,41 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
             <OrganizerNotifications />
+          </ProtectedRoute>
+        ),
+      },
+
+      //judge routes
+      {
+        path: "judge/manual-submissions",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+            <JudgeManualSubmissionsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "judge/submissions/:submissionId/rubric",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+            <JudgeManualRubricPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "judge/submissions/:submissionId/results",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+            <JudgeManualResultsPage />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: "judge/evaluations",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+            <JudgeManualEvaluationsPage />
           </ProtectedRoute>
         ),
       },

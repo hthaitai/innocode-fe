@@ -216,6 +216,9 @@ export const BREADCRUMBS = {
   ORGANIZER_PROVINCES: ["Provinces"],
   ORGANIZER_SCHOOLS: ["Schools"],
 
+  //Judge
+  JUDGE_SUBMISSIONS: ["Submissions"],
+
   // Error pages
   NOT_FOUND: ["Not Found"],
   UNAUTHORIZED: ["Unauthorized"],
@@ -450,6 +453,9 @@ export const BREADCRUMB_PATHS = {
 
   ORGANIZER_PROVINCES: ["/organizer", "/organizer/provinces"],
   ORGANIZER_SCHOOLS: ["/organizer", "/organizer/schools"],
+
+  //Judge
+  JUDGE_SUBMISSIONS: ["/judge/contests"],
 
   // Error pages
   NOT_FOUND: ["/"],

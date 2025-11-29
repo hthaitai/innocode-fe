@@ -36,10 +36,10 @@ const McqTable = () => {
 
   const mcqs = mcqData?.data?.mcqTest?.questions || []
   const pagination = {
-    currentPage: mcqData?.data?.mcqTest?.currentPage || 1,
+    pageNumber: mcqData?.data?.mcqTest?.currentPage || 1,
     pageSize: mcqData?.data?.mcqTest?.pageSize || 10,
     totalPages: mcqData?.data?.mcqTest?.totalPages || 0,
-    totalQuestions: mcqData?.data?.mcqTest?.totalQuestions || 0,
+    totalCount: mcqData?.data?.mcqTest?.totalQuestions || 0,
     hasPreviousPage: (mcqData?.data?.mcqTest?.currentPage || 1) > 1,
     hasNextPage:
       (mcqData?.data?.mcqTest?.currentPage || 1) <
@@ -104,7 +104,7 @@ const McqTable = () => {
         onPageChange={setPage}
         renderActions={() => <McqTableActions />}
         renderSubComponent={(mcq) => <McqTableExpanded mcq={mcq} />}
-        expandAt="Question"
+        expandAt="text"
       />
     </div>
   )

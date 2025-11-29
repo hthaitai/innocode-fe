@@ -1,16 +1,31 @@
 import Actions from "@/shared/components/Actions"
 import { ChevronRight, Edit } from "lucide-react"
-import { motion } from "framer-motion"
-import { ExpandColumn } from "../../../shared/components/ExpandColumn"
 
 export const getMcqColumns = (handleEditWeight) => [
-  ExpandColumn,
   {
     header: "Question",
     accessorKey: "text",
-    size: 400,
-    cell: (info) => info.getValue() || "Untitled Question",
-    meta: { className: "truncate max-w-[400px]" },
+    cell: ({ row, getValue }) => {
+      const isExpanded = row.getIsExpanded()
+      return (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              row.toggleExpanded()
+            }}
+            className={`p-0 flex items-center justify-center rounded select-none text-[#7A7574] hover:text-black ${
+              isExpanded ? "rotate-90" : "rotate-0"
+            }`}
+            aria-label={isExpanded ? "Collapse" : "Expand"}
+            style={{ transition: "none" }}
+          >
+            <ChevronRight size={16} />
+          </button>
+          <span>{getValue() || "Untitled Question"}</span>
+        </div>
+      )
+    },
   },
   {
     header: "Weight",

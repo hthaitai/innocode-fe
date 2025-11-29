@@ -13,7 +13,7 @@ const McqTableExpanded = ({ mcq = {} }) => {
         return (
           <div
             key={opt.optionId || opt.id || i}
-            className="flex flex-nowrap items-center gap-3 py-[6px] text-sm leading-5 whitespace-nowrap"
+            className="flex flex-nowrap items-center gap-3 px-5 pl-11 py-[6px] text-sm leading-5 whitespace-nowrap"
           >
             <span className="font-medium">{label}.</span>
             <span className="whitespace-nowrap">{text}</span>
@@ -22,7 +22,7 @@ const McqTableExpanded = ({ mcq = {} }) => {
                 Correct
               </span>
             ) : (
-              <span className="text-gray-400 whitespace-nowrap">Incorrect</span>
+              <span className="text-[#7A7574] whitespace-nowrap">Incorrect</span>
             )}
           </div>
         )
