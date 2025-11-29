@@ -9,6 +9,18 @@ const quizApi = {
   //Get my quizzes
   getMyQuiz: (roundId) =>
     axiosClient.get(`/rounds/${roundId}/attempts/my-attempt`),
+  //Get start quiz
+  getStartDetail: (roundId) =>
+    axiosClient.get(`/rounds/${roundId}/mcq-test/start-detail`),
+  //Save quiz answers
+  saveAnswers: (roundId, key, answer) =>
+    axiosClient.post(
+      `/rounds/${roundId}/mcq-test/save-answer?key=${key}`,
+      answer
+    ),
+  //Get current answer
+  getCurrentAnswer: (roundId, key) =>
+    axiosClient.get(`/rounds/${roundId}/mcq-test/current-answer?key=${key}`),
 };
 
 export default quizApi;

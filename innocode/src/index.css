@@ -416,7 +416,16 @@ body {
   hover:bg-[#E2631F] 
   active:bg-[#E47336];
 }
-
+.button-green {
+  @apply bg-[#12972f] border border-[#008000] border-b-[#008000] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] cursor-pointer
+  hover:bg-[#008000] 
+  active:bg-[#479640];
+}
+.button-blue {
+  @apply bg-[#007bff] border border-[#007bff] border-b-[#007bff] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] cursor-pointer
+  hover:bg-[#007bff] 
+  active:bg-[#007bff];
+}
 .button-gray {
   @apply bg-[#BFBFBF] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px];
 }

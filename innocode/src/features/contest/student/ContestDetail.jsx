@@ -676,20 +676,60 @@ const ContestDetail = () => {
             !completedQuizzesLoading &&
             completedRounds.length > 0 && (
               <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
-                <button
-                  onClick={() =>
-                    navigate(`/quiz/${completedRounds[0].roundId}/finish`, {
-                      state: { contestId },
-                    })
-                  }
-                  className="button-orange w-full flex items-center justify-center gap-2 py-3"
-                >
-                  <Icon icon="mdi:clipboard-check-outline" width="18" />
-                  See Your Result
-                </button>
-                <p className="text-xs text-[#7A7574] text-center mt-2">
-                  View your quiz results and scores
-                </p>
+                {completedRounds.length === 1 ? (
+                  // Single quiz - direct button
+                  <>
+                    <button
+                      onClick={() =>
+                        navigate(`/quiz/${completedRounds[0].roundId}/finish`, {
+                          state: { contestId },
+                        })
+                      }
+                      className="button-green w-full flex items-center justify-center gap-2 py-3"
+                    >
+                      <Icon icon="mdi:clipboard-check-outline" width="18" />
+                      See Your Result
+                    </button>
+                    <p className="text-xs text-[#7A7574] text-center mt-2">
+                      View your quiz results and scores
+                    </p>
+                  </>
+                ) : (
+                  // Multiple quizzes - show list for user to choose
+                  <>
+                    <h3 className="text-sm font-semibold text-gray-800 mb-3">
+                      Your Quiz Results ({completedRounds.length})
+                    </h3>
+                    <div className="space-y-2">
+                      {completedRounds.map((round, index) => {
+                        // Find round name from rounds array
+                        const roundInfo = rounds.find(r => r.roundId === round.roundId);
+                        const roundName = roundInfo?.roundName || round.roundName || `Quiz ${index + 1}`;
+                        
+                        return (
+                          <button
+                            key={round.roundId || index}
+                            onClick={() =>
+                              navigate(`/quiz/${round.roundId}/finish`, {
+                                state: { contestId },
+                              })
+                            }
+                            className="button-orange w-full flex items-center justify-between gap-2 py-2 px-3 text-sm"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Icon icon="mdi:clipboard-check-outline" width="16" />
+                              <span>{roundName}</span>
+                            </div>
+                            <Icon icon="mdi:chevron-right" width="16" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="text-xs text-[#7A7574] text-center mt-3">
+                      Click on a quiz to view detailed results
+                    </p>
+                  </>
+                )}
               </div>
             )}
           {/* Your Team Status - For both student and mentor */}
