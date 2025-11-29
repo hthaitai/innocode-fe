@@ -269,11 +269,20 @@ const MentorTeam = () => {
         contestId: String(contestId),
         schoolId: String(schoolIdValue),
       };
-      const newTeam = await addTeam(requestBody);
-      // Update myTeam state với team vừa tạo
-      if (newTeam) {
-        setMyTeam(newTeam);
+      await addTeam(requestBody);
+      
+      // Fetch the newly created team from API to ensure we have complete data including teamId
+      // Wait a bit for the backend to process the creation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const teamData = await getMyTeam(contestId);
+      if (teamData) {
+        console.log("✅ Team created and fetched:", teamData);
+        setMyTeam(teamData);
+      } else {
+        console.warn("⚠️ Team created but could not be fetched");
       }
+      
       // Switch to My Team tab after successful creation
       setActiveTab("myTeam");
       setTeamName("");
