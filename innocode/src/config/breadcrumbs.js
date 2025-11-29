@@ -82,34 +82,49 @@ export const BREADCRUMBS = {
     "Contests",
     contestName,
     roundName,
-    "Quizzes",
+    "Questions",
   ],
   ORGANIZER_MCQ_NEW: (contestName, roundName) => [
     "Contests",
     contestName,
     roundName,
-    "Quizzes",
+    "Questions",
     "New questions",
   ],
   ORGANIZER_MCQ_DETAIL: (contestName, roundName, displayId) => [
     "Contests",
     contestName,
     roundName,
-    "Quizzes",
+    "Questions",
     displayId,
   ],
   ORGANIZER_MCQ_ATTEMPTS: (contestName, roundName) => [
     "Contests",
     contestName,
     roundName,
-    "Quiz Attempts",
+    "Quiz attempts",
   ],
   ORGANIZER_MCQ_ATTEMPT_DETAIL: (contestName, roundName, studentName) => [
     "Contests",
     contestName,
     roundName,
-    "Quiz Attempts",
-    `${studentName} - Attempt detail`,
+    "Quiz attempts",
+    `${studentName}`,
+  ],
+
+  //Manual problem
+  ORGANIZER_RUBRIC_EDITOR: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Rubric editor",
+  ],
+  // Manual Results
+  ORGANIZER_MANUAL_RESULTS: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Manual results",
   ],
 
   ORGANIZER_PROBLEM_DETAIL: (
@@ -297,6 +312,20 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/rounds/${roundId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}/attempts`,
     `/organizer/contests/${contestId}/rounds/${roundId}/attempts/${attemptId}`,
+  ],
+
+  //manual problem
+  ORGANIZER_RUBRIC_EDITOR: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/rubric`,
+  ],
+  ORGANIZER_MANUAL_RESULTS: (contestId, roundId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/manual-results`,
   ],
 
   ORGANIZER_PROBLEM_DETAIL: (contestId, roundId, problemId) => [

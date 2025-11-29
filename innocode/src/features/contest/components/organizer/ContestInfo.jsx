@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import InfoSection from "@/shared/components/InfoSection"
-import DetailTable from "@/shared/components/DetailTable"
+import DetailTable from "../../../../shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import StatusBadge from "../../../../shared/components/StatusBadge"
 
@@ -25,29 +25,29 @@ const ContestInfo = ({ contest }) => {
           { label: "Status", value: <StatusBadge status={contest.status} /> },
           { label: "Year", value: safe(contest.year) },
           { spacer: true },
-          { label: "Start Date", value: safe(formatDateTime(contest.start)) },
-          { label: "End Date", value: safe(formatDateTime(contest.end)) },
+          { label: "Contest start date", value: safe(formatDateTime(contest.start)) },
+          { label: "Contest end date", value: safe(formatDateTime(contest.end)) },
           {
-            label: "Registration Start",
+            label: "Registration start date",
             value: contest.registrationStart
               ? safe(formatDateTime(contest.registrationStart))
               : "Not set",
           },
           {
-            label: "Registration End",
+            label: "Registration end date",
             value: contest.registrationEnd
               ? safe(formatDateTime(contest.registrationEnd))
               : "Not set",
           },
           { spacer: true },
-          { label: "Max Team Members", value: safe(contest.teamMembersMax) },
-          { label: "Max Teams", value: safe(contest.teamLimitMax) },
+          { label: "Max team members", value: safe(contest.teamMembersMax) },
+          { label: "Max teams", value: safe(contest.teamLimitMax) },
           { label: "Rewards", value: safe(contest.rewardsText) },
           { spacer: true },
           { label: "Description", value: safe(contest.description) },
           { label: "Image URL", value: safe(contest.imgUrl) },
           {
-            label: "Created At",
+            label: "Created at",
             value: safe(formatDateTime(contest.createdAt)),
           },
         ]}

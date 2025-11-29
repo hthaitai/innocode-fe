@@ -84,10 +84,9 @@ export const toDatetimeLocal = (isoString) => {
  */
 export const fromDatetimeLocal = (localString) => {
   if (!localString) return ""
-  // new Date(localString) interprets the string as local time
-  // getTime() already returns the UTC timestamp, so we can use toISOString() directly
   const date = new Date(localString)
   if (isNaN(date.getTime())) return ""
 
-  return date.toISOString()
+  // ✅ Strip milliseconds for backend
+  return date.toISOString().replace(/\.\d{3}Z$/, "Z")
 }

@@ -1,7 +1,7 @@
 import Actions from "@/shared/components/Actions"
 import { Edit2, Trash2 } from "lucide-react"
+import { ExpandColumn } from "../../../../shared/components/ExpandColumn"
 
-// ✅ pure utility function — no hooks
 export const getRubricColumns = (
   handleField,
   handleDelete,

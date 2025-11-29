@@ -1,54 +1,70 @@
-import React, { useMemo } from "react"
+import React, { useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
-import { useAppSelector } from "@/store/hooks"
-import { useMcqAttempts } from "../hooks/useMcqAttempts" // Custom hook for attempts
-import { getMcqAttemptsColumns } from "../columns/getMcqAttemptsColumns" // Columns definition
+import { useGetAttemptsQuery } from "@/services/mcqApi"
+import { useGetRoundByIdQuery } from "@/services/roundApi"
+import { getMcqAttemptsColumns } from "../columns/getMcqAttemptsColumns"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { Users } from "lucide-react"
 
 const OrganizerMcqAttempts = () => {
   const navigate = useNavigate()
   const { contestId, roundId } = useParams()
 
-  // Get contests and rounds from Redux
-  const { contests } = useAppSelector((s) => s.contests)
-  const { rounds } = useAppSelector((s) => s.rounds)
+  const [page, setPage] = useState(1)
+  const pageSize = 10
 
-  // Custom hook to manage MCQ attempts for a specific round
+  // Fetch attempts for the round
   const {
-    attempts,
-    loading,
-    error,
-    pagination,
-    page,
-    setPage,
-  } = useMcqAttempts(roundId)
+    data: attemptsData,
+    isLoading,
+    isError,
+  } = useGetAttemptsQuery({
+    roundId,
+    pageNumber: page,
+    pageSize,
+  })
 
-  // Columns for attempts table
+  const attempts = attemptsData?.data || []
+  const pagination = attemptsData?.additionalData || {}
+
+  // Fetch round info (includes contestName and roundName)
+  const { data: round, isLoading: loadingRound } = useGetRoundByIdQuery(roundId)
+
+  // Columns for the table
   const columns = useMemo(() => getMcqAttemptsColumns(), [])
-
-  // Find the selected contest and round
-  const contest = contests.find(
-    (c) => String(c.contestId) === String(contestId)
-  )
-  const round = rounds.find((r) => String(r.roundId) === String(roundId))
 
   // Breadcrumbs
   const items = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPTS(
-    contest?.name ?? "Contest",
-    round?.name ?? "Round"
+    round?.contestName || "Contest",
+    round?.roundName || "Round"
   )
   const paths = BREADCRUMB_PATHS.ORGANIZER_MCQ_ATTEMPTS(contestId, roundId)
 
   return (
     <PageContainer breadcrumb={items} breadcrumbPaths={paths}>
       <div className="space-y-1">
+        <div className="px-5 py-4 flex justify-between items-center border border-[#E5E5E5] rounded-[5px] bg-white">
+          <div className="flex items-center gap-5">
+            <Users size={20} />
+            <div>
+              <p className="text-[14px] leading-[20px]">
+                Student attempts
+              </p>
+              <p className="text-[12px] leading-[16px] text-[#7A7574]">
+                Review all student attempts for this round including total
+                questions, score, and completion status.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <TableFluent
           data={attempts}
           columns={columns}
-          loading={loading}
-          error={error}
+          loading={isLoading || loadingRound}
+          error={isError ? "Failed to load attempts" : undefined}
           pagination={pagination}
           onPageChange={setPage}
           onRowClick={(attempt) =>

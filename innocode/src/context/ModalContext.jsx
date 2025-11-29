@@ -13,7 +13,8 @@ import IssueCertificateModal from "../features/certificate/components/organizer/
 import NotificationModal from "../features/notification/components/organizer/NotificationModal"
 import McqWeightModal from "../features/mcq/components/organizer/McqWeightModal"
 import AutoTestCaseModal from "../features/problems/auto-evaluation/components/AutoTestCaseModal"
-import RubricModal from "../features/problems/manual/components/RubricModal.jsx"
+import RubricModal from "../features/problems/manual/components/RubricModal"
+import RubricCsvModal from "../features/problems/manual/components/RubricCsvModal"
 
 const ModalContext = createContext(null)
 
@@ -52,6 +53,7 @@ export function ModalProvider({ children }) {
     notification: NotificationModal,
     mcqWeight: McqWeightModal,
     rubric: RubricModal,
+    rubricCsv: RubricCsvModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

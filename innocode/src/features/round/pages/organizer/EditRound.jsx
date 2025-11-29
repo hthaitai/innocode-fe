@@ -8,52 +8,53 @@ import { useGetContestByIdQuery } from "@/services/contestApi"
 import { toast } from "react-hot-toast"
 import PageContainer from "@/shared/components/PageContainer"
 import RoundForm from "../../components/organizer/RoundForm"
-import { BREADCRUMBS } from "@/config/breadcrumbs"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { validateRound } from "../../validators/roundValidator"
-import { BREADCRUMB_PATHS } from "../../../../config/breadcrumbs"
+import {
+  fromDatetimeLocal,
+  toDatetimeLocal,
+} from "../../../../shared/utils/dateTime"
 
 const EditRound = () => {
   const { contestId, roundId } = useParams()
   const navigate = useNavigate()
 
-  // Fetch contest info
+  // Fetch contest and round data
   const { data: contest, isLoading: contestLoading } =
     useGetContestByIdQuery(contestId)
-
-  // Fetch the round info
   const { data: round, isLoading: roundLoading } = useGetRoundByIdQuery(roundId)
 
-  // Form state
-  const [form, setForm] = useState({
-    name: "",
-    start: "",
-    end: "",
-    problemType: "",
-  })
-  const [original, setOriginal] = useState(null)
+  const [formData, setFormData] = useState(null)
+  const [originalData, setOriginalData] = useState(null)
   const [errors, setErrors] = useState({})
-
-  // Initialize form when round is loaded
-  useEffect(() => {
-    if (round) {
-      const init = {
-        name: round.name || round.roundName || "",
-        start: round.start || "",
-        end: round.end || "",
-        problemType: round.problemType || "",
-      }
-      setForm(init)
-      setOriginal(init)
-    }
-  }, [round])
 
   const [updateRound, { isLoading: isUpdating }] = useUpdateRoundMutation()
 
-  // Check for unsaved changes
+  // Initialize form data once round is loaded
+  useEffect(() => {
+    if (!round) return
+
+    const formatted = {
+      name: round.roundName || "",
+      start: toDatetimeLocal(round.start),
+      end: toDatetimeLocal(round.end),
+      problemType: round.problemType || "",
+      mcqTestConfig: round.mcqTest || null,
+      problemConfig: round.problem || null,
+      timeLimitSeconds: round.timeLimitSeconds || 0,
+    }
+
+    setFormData(formatted)
+    setOriginalData(formatted)
+  }, [round])
+
+  // Detect changes for submit button
   const hasChanges = useMemo(() => {
-    if (!original) return false
-    return Object.keys(form).some((key) => form[key] !== original[key])
-  }, [form, original])
+    if (!formData || !originalData) return false
+    return Object.keys(formData).some(
+      (key) => formData[key] !== originalData[key]
+    )
+  }, [formData, originalData])
 
   // Breadcrumbs
   const breadcrumbItems = useMemo(
@@ -71,30 +72,59 @@ const EditRound = () => {
         round?.contestId ?? contestId,
         round?.roundId ?? roundId
       ),
-    [contestId, roundId, round?.contestId, round?.roundId]
+    [round?.contestId, round?.roundId, contestId, roundId]
   )
 
   // Submit handler
   const handleSubmit = async () => {
-    const validationErrors = validateRound(form, contest, [], { isEdit: true })
+    if (!formData) return
+
+    const validationErrors = validateRound(formData, contest, [], {
+      isEdit: true,
+    })
     setErrors(validationErrors)
+
     if (Object.keys(validationErrors).length > 0) {
       toast.error(`Please fix ${Object.keys(validationErrors).length} field(s)`)
       return
     }
 
+    const payload = {
+      ...formData,
+      start: fromDatetimeLocal(formData.start),
+      end: fromDatetimeLocal(formData.end),
+    }
+
     try {
-      await updateRound({ id: roundId, data: form }).unwrap()
-      toast.success("Round updated successfully")
-      navigate(`/organizer/contests/${contestId}`)
+      await updateRound({ id: roundId, data: payload }).unwrap()
+      toast.success("Round updated successfully!")
+      navigate(`/organizer/contests/${contestId}/rounds/${roundId}`)
     } catch (err) {
       console.error(err)
-      toast.error("Failed to update round")
+
+      const fieldErrors = {}
+
+      // Example: map BADREQUEST for timeLimitSeconds
+      if (err?.data?.errorCode === "BADREQUEST" && err?.data?.errorMessage) {
+        if (err.data.errorMessage.includes("Time limit")) {
+          fieldErrors.timeLimitSeconds = err.data.errorMessage
+        } else {
+          // Optionally handle other field errors here
+        }
+      }
+
+      // Set errors to form
+      setErrors((prev) => ({ ...prev, ...fieldErrors }))
+
+      // Fallback toast for global errors
+      if (!Object.keys(fieldErrors).length) {
+        toast.error(err?.data?.errorMessage || "Failed to update round")
+      }
     }
   }
 
-  // Show loading until contest or round is ready
-  if (contestLoading || roundLoading || !round) {
+  // Show loading until data is ready
+  if (contestLoading || roundLoading || !formData) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -110,8 +140,8 @@ const EditRound = () => {
       breadcrumbPaths={breadcrumbPaths}
     >
       <RoundForm
-        formData={form}
-        setFormData={setForm}
+        formData={formData}
+        setFormData={setFormData}
         errors={errors}
         setErrors={setErrors}
         onSubmit={handleSubmit}

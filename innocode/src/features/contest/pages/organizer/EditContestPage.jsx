@@ -90,7 +90,7 @@ export default function EditContestPage() {
     try {
       await updateContest({ id: contestId, data: payload }).unwrap();
       toast.success("Contest updated successfully!");
-      navigate("/organizer/contests");
+      navigate(`/organizer/contests/${contestId}`);
     } catch (err) {
       const fieldErrors = {};
       if (err?.data?.errors) {

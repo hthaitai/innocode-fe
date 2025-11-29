@@ -1,8 +1,9 @@
 // src/features/mcq/components/columns/getPreviewColumns.js
-import { ExpandColumn } from "../../../shared/components/ExpandColumn";
+import { ExpandColumn } from "../../../shared/components/ExpandColumn"
 
 export const getPreviewColumns = () => [
-  ExpandColumn, // ← don't call it (no parentheses)
+  // ← don't call it (no parentheses)
+  ExpandColumn,
   {
     header: "Question Text",
     accessorKey: "text",
@@ -18,9 +19,7 @@ export const getPreviewColumns = () => [
     header: "Created At",
     accessorKey: "createdAt",
     cell: (info) =>
-      info.getValue()
-        ? new Date(info.getValue()).toLocaleDateString()
-        : "-",
+      info.getValue() ? new Date(info.getValue()).toLocaleDateString() : "-",
     size: 120,
   },
 ]

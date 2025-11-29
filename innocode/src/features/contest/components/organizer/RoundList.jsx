@@ -5,13 +5,16 @@ import { formatDateTime } from "@/shared/utils/dateTime"
 import { Spinner } from "@/shared/components/SpinnerFluent"
 // no modal here; navigation to dedicated pages
 import { useGetRoundsByContestIdQuery } from "@/services/roundApi"
+import { toDatetimeLocal } from "../../../../shared/utils/dateTime"
 
 const RoundsList = ({ contestId }) => {
   const navigate = useNavigate()
 
-  const { data: roundsData, isLoading, error } = useGetRoundsByContestIdQuery(
-    contestId
-  )
+  const {
+    data: roundsData,
+    isLoading,
+    error,
+  } = useGetRoundsByContestIdQuery(contestId)
 
   const rounds = roundsData?.data || []
 
@@ -68,8 +71,9 @@ const RoundsList = ({ contestId }) => {
                     {round.name ?? "Untitled Round"}
                   </p>
                   <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                    {formatDateTime(round.start)} - {formatDateTime(round.end)}{" "}
-                    | {round.problemType || "—"}
+                    {formatDateTime(toDatetimeLocal(round.start))} -{" "}
+                    {formatDateTime(toDatetimeLocal(round.end))} |{" "}
+                    {round.problemType || "—"}
                   </p>
                 </div>
               </div>

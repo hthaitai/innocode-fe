@@ -54,20 +54,21 @@ const OrganizerContestDetail = () => {
     >
       <div className="space-y-5">
         {/* Contest Image */}
-        {contest?.imgUrl && (
-          <div className="border border-[#E5E5E5] mb-4 w-[335px] h-[188px] rounded-[5px] overflow-hidden">
+        <div className="border border-[#E5E5E5] mb-4 w-[335px] h-[188px] rounded-[5px] overflow-hidden bg-white flex items-center justify-center">
+          {contest?.imgUrl ? (
             <img
               src={contest.imgUrl}
               alt={contest.name || "Contest Image"}
               className="w-full h-full object-cover"
             />
-          </div>
-        )}
+          ) : (
+            <span className="text-[#7A7574] text-sm">No image</span>
+          )}
+        </div>
 
         {/* Contest Info + Publish */}
         <div className="space-y-1">
           <ContestInfo contest={contest} />
-          <PublishContestSection contest={contest} />
         </div>
 
         {/* Rounds */}
@@ -86,8 +87,21 @@ const OrganizerContestDetail = () => {
           <ContestRelatedSettings contestId={contestId} />
         </div>
 
+        {/* Publish */}
+        <div>
+          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+            Publish contest
+          </div>
+          <PublishContestSection contest={contest} />
+        </div>
+
         {/* Delete */}
-        <DeleteContestSection contest={contest} />
+        <div>
+          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+            Other settings
+          </div>
+          <DeleteContestSection contest={contest} />
+        </div>
       </div>
     </PageContainer>
   )

@@ -31,15 +31,16 @@ const DeleteContestSection = ({ contest }) => {
 
   return (
     <div>
-      <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-        Other settings
-      </div>
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
         <div className="flex items-center gap-3">
           <Trash size={20} />
           <span className="text-sm leading-5">Delete contest</span>
         </div>
-        <button className="button-white" onClick={handleDelete} disabled={isLoading}>
+        <button
+          className="button-white"
+          onClick={handleDelete}
+          disabled={isLoading}
+        >
           {isLoading ? "Deleting..." : "Delete Contest"}
         </button>
       </div>
