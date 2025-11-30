@@ -11,7 +11,6 @@ import { Users } from "lucide-react"
 const OrganizerMcqAttempts = () => {
   const navigate = useNavigate()
   const { contestId, roundId } = useParams()
-
   const [page, setPage] = useState(1)
   const pageSize = 10
 
@@ -32,48 +31,46 @@ const OrganizerMcqAttempts = () => {
   // Fetch round info (includes contestName and roundName)
   const { data: round, isLoading: loadingRound } = useGetRoundByIdQuery(roundId)
 
-  // Columns for the table
-  const columns = useMemo(() => getMcqAttemptsColumns(), [])
-
   // Breadcrumbs
-  const items = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPTS(
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPTS(
     round?.contestName || "Contest",
     round?.roundName || "Round"
   )
-  const paths = BREADCRUMB_PATHS.ORGANIZER_MCQ_ATTEMPTS(contestId, roundId)
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ_ATTEMPTS(
+    contestId,
+    roundId
+  )
+
+  // Columns for the table
+  const columns = useMemo(() => getMcqAttemptsColumns(), [])
 
   return (
-    <PageContainer breadcrumb={items} breadcrumbPaths={paths}>
-      <div className="space-y-1">
-        <div className="px-5 py-4 flex justify-between items-center border border-[#E5E5E5] rounded-[5px] bg-white">
-          <div className="flex items-center gap-5">
-            <Users size={20} />
-            <div>
-              <p className="text-[14px] leading-[20px]">
-                Student attempts
-              </p>
-              <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                Review all student attempts for this round including total
-                questions, score, and completion status.
-              </p>
-            </div>
+    <PageContainer
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
+      loading={isLoading}
+      error={isError}
+    >
+      <TableFluent
+        data={attempts}
+        columns={columns}
+        loading={isLoading || loadingRound}
+        error={isError ? "Failed to load attempts" : undefined}
+        pagination={pagination}
+        onPageChange={setPage}
+        onRowClick={(attempt) =>
+          navigate(
+            `/organizer/contests/${contestId}/rounds/${roundId}/attempts/${attempt.attemptId}`
+          )
+        }
+        renderActions={() => (
+          <div className="min-h-[70px] px-5 flex items-center">
+            <p className="text-[14px] leading-[20px] font-medium">
+              Student attempts
+            </p>
           </div>
-        </div>
-
-        <TableFluent
-          data={attempts}
-          columns={columns}
-          loading={isLoading || loadingRound}
-          error={isError ? "Failed to load attempts" : undefined}
-          pagination={pagination}
-          onPageChange={setPage}
-          onRowClick={(attempt) =>
-            navigate(
-              `/organizer/contests/${contestId}/rounds/${roundId}/attempts/${attempt.attemptId}`
-            )
-          }
-        />
-      </div>
+        )}
+      />
     </PageContainer>
   )
 }

@@ -21,34 +21,6 @@ export default function RoundForm({
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
     if (errors?.[name]) setErrors?.((prev) => ({ ...prev, [name]: "" }))
-
-    // handle problemType selection
-    if (name === "problemType") {
-      if (value === "McqTest") {
-        setFormData((prev) => ({
-          ...prev,
-          mcqTestConfig: { name: "", config: "" },
-          problemConfig: null,
-        }))
-      } else if (value === "Manual" || value === "AutoEvaluation") {
-        setFormData((prev) => ({
-          ...prev,
-          mcqTestConfig: null,
-          problemConfig: {
-            description: "",
-            language: "",
-            penaltyRate: 0.1,
-            type: value,
-          },
-        }))
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          mcqTestConfig: null,
-          problemConfig: null,
-        }))
-      }
-    }
   }
 
   const handleNestedChange = (section, field, value) => {
@@ -61,46 +33,27 @@ export default function RoundForm({
   const handleFileChange = (file) => {
     if (!file) return
     setFormData((prev) => ({ ...prev, TemplateFile: file }))
-
-    // read content to auto-fill code editor
-    const reader = new FileReader()
-    reader.onload = () => {
-      const content = reader.result
-      setFormData((prev) => ({
-        ...prev,
-        problemConfig: { ...prev.problemConfig, codeTemplate: content },
-      }))
-    }
-    reader.readAsText(file)
   }
 
-  // Add this handler above your return statement
   const handleProblemTypeChange = (val) => {
-    setFormData((prev) => {
-      const updated = { ...prev, problemType: val }
+    const updated = { ...formData, problemType: val }
 
-      if (val === "McqTest") {
-        updated.mcqTestConfig = { name: "", config: "" }
-        updated.problemConfig = null
-      } else if (val === "Manual" || val === "AutoEvaluation") {
-        updated.mcqTestConfig = null
-        updated.problemConfig = {
-          description: "",
-          language: "",
-          penaltyRate: 0.1,
-          type: val,
-        }
-      } else {
-        updated.mcqTestConfig = null
-        updated.problemConfig = null
+    if (val === "McqTest") updated.mcqTestConfig = { name: "", config: "" }
+    else if (val === "Manual" || val === "AutoEvaluation") {
+      updated.problemConfig = {
+        description: "",
+        language: "",
+        penaltyRate: 0.1,
+        type: val,
       }
-
-      return updated
-    })
-
-    if (errors?.problemType) {
-      setErrors?.((prev) => ({ ...prev, problemType: "" }))
+      updated.mcqTestConfig = null
+    } else {
+      updated.mcqTestConfig = null
+      updated.problemConfig = null
     }
+
+    setFormData(updated)
+    if (errors?.problemType) setErrors((prev) => ({ ...prev, problemType: "" }))
   }
 
   const disabled = !!isSubmitting || (mode === "edit" && !hasChanges)
@@ -211,7 +164,9 @@ export default function RoundForm({
         {/* Problem Config */}
         {["Manual", "AutoEvaluation"].includes(formData.problemType) && (
           <>
-            <Label htmlFor="description" required>Description</Label>
+            <Label htmlFor="description" required>
+              Description
+            </Label>
             <TextFieldFluent
               id="description"
               value={formData.problemConfig?.description || ""}
@@ -226,7 +181,9 @@ export default function RoundForm({
               helperText={errors.problemConfigDescription}
             />
 
-            <Label htmlFor="language" required>Language</Label>
+            <Label htmlFor="language" required>
+              Language
+            </Label>
             <TextFieldFluent
               id="language"
               value={formData.problemConfig?.language || ""}
@@ -319,7 +276,7 @@ export default function RoundForm({
                     : "Creating..."
                   : mode === "edit"
                   ? "Save"
-                  : "Create round"}
+                  : "Create"}
               </button>
             </div>
           </>

@@ -10,22 +10,16 @@ import { useGetRoundByIdQuery } from "../../../services/roundApi"
 
 const OrganizerMcq = () => {
   const { roundId } = useParams()
-
   const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId)
 
-  // Breadcrumbs use contestName + roundName directly from round API
-  const breadcrumbItems = useMemo(
-    () =>
-      BREADCRUMBS.ORGANIZER_MCQ(
-        round?.contestName ?? "Contest",
-        round?.roundName ?? "Round"
-      ),
-    [round?.contestName, round?.roundName]
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ(
+    round?.contestName ?? "Contest",
+    round?.roundName ?? "Round"
   )
 
-  const breadcrumbPaths = useMemo(
-    () => BREADCRUMB_PATHS.ORGANIZER_MCQ(round?.contestId, roundId),
-    [round?.contestId, roundId]
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ(
+    round?.contestId,
+    roundId
   )
 
   if (!round && !isLoading) {

@@ -60,8 +60,8 @@ import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts"
 import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail"
 import StudentAutoEvaluation from "./features/problem/pages/student/StudentAutoEvaluation"
 import StudentManualProblem from "./features/problem/pages/student/StudentManualProblem"
-import AddContestPage from "./features/contest/pages/organizer/AddContestPage"
-import EditContestPage from "./features/contest/pages/organizer/EditContestPage"
+import CreateContest from "./features/contest/pages/organizer/CreateContest"
+import EditContest from "./features/contest/pages/organizer/EditContest"
 import MentorTeam from "./features/team/pages/mentor/MentorTeam"
 import { initEmailJs } from "./shared/services/emailService"
 import TeamInviteResponse from "./features/team/pages/student/TeamInviteResponse"
@@ -310,7 +310,7 @@ const router = createBrowserRouter([
             path: "add",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <AddContestPage />
+                <CreateContest />
               </ProtectedRoute>
             ),
           },
@@ -318,7 +318,7 @@ const router = createBrowserRouter([
             path: ":contestId/edit",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <EditContestPage />
+                <EditContest />
               </ProtectedRoute>
             ),
           },

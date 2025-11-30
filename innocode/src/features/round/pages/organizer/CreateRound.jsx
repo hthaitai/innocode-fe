@@ -11,7 +11,26 @@ import { validateRound } from "@/features/round/validators/roundValidator"
 import { BREADCRUMB_PATHS } from "../../../../config/breadcrumbs"
 import { fromDatetimeLocal } from "../../../../shared/utils/dateTime"
 
-const EMPTY = { name: "", start: "", end: "", problemType: "" }
+const EMPTY = {
+  name: "",
+  start: "",
+  end: "",
+  timeLimitSeconds: 0,
+  problemType: "",
+  mcqTestConfig: {
+    name: "",
+    config: "",
+  },
+  problemConfig: {
+    type: "",
+    description: "",
+    language: "",
+    penaltyRate: 0.1,
+    codeTemplate: "",
+    templateUrl: "",
+  },
+  TemplateFile: null,
+}
 
 const CreateRound = () => {
   const { contestId } = useParams()
@@ -25,15 +44,10 @@ const CreateRound = () => {
     useGetContestByIdQuery(contestId)
 
   // Breadcrumbs
-  const breadcrumbItems = useMemo(
-    () => BREADCRUMBS.ORGANIZER_ROUND_CREATE(contest?.name ?? "Contest"),
-    [contest?.name]
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_CREATE(
+    contest?.name ?? "Contest"
   )
-
-  const breadcrumbPaths = useMemo(
-    () => BREADCRUMB_PATHS.ORGANIZER_ROUND_CREATE(contestId),
-    [contestId]
-  )
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_CREATE(contestId)
 
   const handleSubmit = async () => {
     const validationErrors = validateRound(form, contest)
@@ -44,36 +58,35 @@ const CreateRound = () => {
     }
 
     try {
-      const formData = new FormData()
+      const formPayload = new FormData()
 
       // append all fields
-      formData.append("Name", form.name)
-      formData.append("Start", fromDatetimeLocal(form.start))
-      formData.append("End", fromDatetimeLocal(form.end))
-      formData.append("ProblemType", form.problemType)
-      formData.append("TimeLimitSeconds", String(form.timeLimitSeconds || 0))
+      formPayload.append("Name", form.name)
+      formPayload.append("Start", fromDatetimeLocal(form.start))
+      formPayload.append("End", fromDatetimeLocal(form.end))
+      formPayload.append("ProblemType", form.problemType)
+      formPayload.append("TimeLimitSeconds", form.timeLimitSeconds)
 
       if (form.problemConfig) {
-        formData.append("ProblemConfig.Type", form.problemConfig.type)
-        formData.append(
+        formPayload.append("ProblemConfig.Type", form.problemConfig.type)
+        formPayload.append(
           "ProblemConfig.Description",
-          form.problemConfig.description || ""
+          form.problemConfig.description
         )
-        formData.append(
+        formPayload.append(
           "ProblemConfig.Language",
-          form.problemConfig.language || ""
+          form.problemConfig.language
         )
-        formData.append(
+        formPayload.append(
           "ProblemConfig.PenaltyRate",
-          String(form.problemConfig.penaltyRate || 0.1)
+          form.problemConfig.penaltyRate
         )
         if (form.TemplateFile) {
-          formData.append("ProblemConfig.TemplateFile", form.TemplateFile)
+          formPayload.append("ProblemConfig.TemplateFile", form.TemplateFile)
         }
       }
 
-      await createRound({ contestId, data: formData }).unwrap()
-
+      await createRound({ contestId, data: formPayload }).unwrap()
       toast.success("Round created")
       navigate(`/organizer/contests/${contestId}`)
     } catch (err) {

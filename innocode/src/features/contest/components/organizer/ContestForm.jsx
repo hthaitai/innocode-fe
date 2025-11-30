@@ -4,13 +4,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import DateTimeFieldFluent from "../../../../shared/components/datetimefieldfluent/DateTimeFieldFluent"
 import { toast } from "react-hot-toast"
 import { FileDropzone } from "../../../../shared/components/dropzone/FileDropzone"
-
-// Reusable label component
-const Label = ({ htmlFor, children, required }) => (
-  <label className="pt-1" htmlFor={htmlFor}>
-    {children} {required && <span className="text-red-500">*</span>}
-  </label>
-)
+import Label from "../../../../shared/components/form/Label"
 
 const ContestForm = ({
   formData,
@@ -41,7 +35,6 @@ const ContestForm = ({
   }
 
   const disabled = !!isSubmitting || (mode === "edit" && !hasChanges)
-  const showSpinner = !!isSubmitting
 
   return (
     <>
@@ -265,16 +258,17 @@ const ContestForm = ({
                   disabled ? "button-gray" : "button-orange"
                 }`}
               >
-                {showSpinner && (
+                {isSubmitting && (
                   <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
                 )}
+
                 {isSubmitting
                   ? mode === "edit"
-                    ? "Updating..."
+                    ? "Saving..."
                     : "Creating..."
                   : mode === "edit"
-                  ? "Update Contest"
-                  : "Create Contest"}
+                  ? "Save"
+                  : "Create"}
               </button>
             </div>
           </>

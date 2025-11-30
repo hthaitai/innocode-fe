@@ -30,26 +30,36 @@ const EditRound = () => {
 
   const [updateRound, { isLoading: isUpdating }] = useUpdateRoundMutation()
 
+  // Breadcrumbs
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_EDIT(
+    round?.contestName ?? "Contest",
+    round?.roundName ?? "Round"
+  )
+
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_EDIT(
+    round?.contestId ?? contestId,
+    round?.roundId ?? roundId
+  )
+
   // Initialize form data once round is loaded
   useEffect(() => {
     if (!round) return
 
     const formatted = {
-      name: round.roundName || "",
+      name: round.roundName,
       start: toDatetimeLocal(round.start),
       end: toDatetimeLocal(round.end),
-      problemType: round.problemType || "",
-      mcqTestConfig:
-        round.problemType === "McqTest" ? round.mcqTest || {} : null,
+      problemType: round.problemType,
+      mcqTestConfig: round.problemType === "McqTest" ? round.mcqTest : null,
       problemConfig: ["Manual", "AutoEvaluation"].includes(round.problemType)
         ? {
             ...round.problem,
-            type: round.problem?.type || round.problemType || "Manual",
-            templateUrl: round.problem?.templateUrl || "",
+            type: round.problem?.type || round.problemType,
+            templateUrl: round.problem?.templateUrl,
           }
         : null,
       TemplateFile: null,
-      timeLimitSeconds: round.timeLimitSeconds || 0,
+      timeLimitSeconds: round.timeLimitSeconds,
     }
 
     setFormData(formatted)
@@ -63,25 +73,6 @@ const EditRound = () => {
       (key) => formData[key] !== originalData[key]
     )
   }, [formData, originalData])
-
-  // Breadcrumbs
-  const breadcrumbItems = useMemo(
-    () =>
-      BREADCRUMBS.ORGANIZER_ROUND_EDIT(
-        round?.contestName ?? "Contest",
-        round?.roundName ?? "Round"
-      ),
-    [round?.contestName, round?.roundName]
-  )
-
-  const breadcrumbPaths = useMemo(
-    () =>
-      BREADCRUMB_PATHS.ORGANIZER_ROUND_EDIT(
-        round?.contestId ?? contestId,
-        round?.roundId ?? roundId
-      ),
-    [round?.contestId, round?.roundId, contestId, roundId]
-  )
 
   // Submit handler
   const handleSubmit = async () => {
@@ -104,27 +95,24 @@ const EditRound = () => {
       formPayload.append("Start", fromDatetimeLocal(formData.start))
       formPayload.append("End", fromDatetimeLocal(formData.end))
       formPayload.append("ProblemType", formData.problemType)
-      formPayload.append(
-        "TimeLimitSeconds",
-        String(formData.timeLimitSeconds || 0)
-      )
+      formPayload.append("TimeLimitSeconds", formData.timeLimitSeconds)
 
       if (formData.problemConfig) {
         formPayload.append(
           "ProblemConfig.Type",
-          formData.problemConfig.type || formData.problemType || "Manual"
+          formData.problemConfig.type || formData.problemType
         )
         formPayload.append(
           "ProblemConfig.Description",
-          formData.problemConfig.description || ""
+          formData.problemConfig.description
         )
         formPayload.append(
           "ProblemConfig.Language",
-          formData.problemConfig.language || ""
+          formData.problemConfig.language
         )
         formPayload.append(
           "ProblemConfig.PenaltyRate",
-          String(formData.problemConfig.penaltyRate ?? 0.1)
+          formData.problemConfig.penaltyRate
         )
 
         // Only append TemplateFile if it's actually a File
@@ -142,19 +130,7 @@ const EditRound = () => {
       navigate(`/organizer/contests/${contestId}/rounds/${roundId}`)
     } catch (err) {
       console.error(err)
-      const fieldErrors = {}
-
-      if (err?.data?.errorCode === "BADREQUEST" && err?.data?.errorMessage) {
-        if (err.data.errorMessage.includes("Time limit")) {
-          fieldErrors.timeLimitSeconds = err.data.errorMessage
-        }
-      }
-
-      setErrors((prev) => ({ ...prev, ...fieldErrors }))
-
-      if (!Object.keys(fieldErrors).length) {
-        toast.error(err?.data?.errorMessage || "Failed to update round")
-      }
+      toast.error(err?.data?.errorMessage || "Failed to update round")
     }
   }
 

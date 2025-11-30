@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 
 import TableFluent from "@/shared/components/TableFluent"
 import McqTableExpanded from "./McqTableExpanded"
@@ -13,12 +13,10 @@ import {
 } from "../../../../services/mcqApi"
 
 import { toast } from "react-hot-toast"
-import { Calendar } from "lucide-react"
 import McqTableActions from "./McqTableActions"
 
 const McqTable = () => {
-  const navigate = useNavigate()
-  const { contestId, roundId } = useParams()
+  const { roundId } = useParams()
   const { openModal } = useModalContext()
 
   const [page, setPage] = useState(1)
@@ -34,7 +32,7 @@ const McqTable = () => {
     { skip: !roundId }
   )
 
-  const mcqs = mcqData?.data?.mcqTest?.questions || []
+  const mcqs = mcqData?.data?.mcqTest?.questions
   const pagination = {
     pageNumber: mcqData?.data?.mcqTest?.currentPage || 1,
     pageSize: mcqData?.data?.mcqTest?.pageSize || 10,

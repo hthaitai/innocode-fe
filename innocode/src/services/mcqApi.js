@@ -76,6 +76,7 @@ export const mcqApi = api.injectEndpoints({
     // Fetch attempt details
     getAttemptDetail: builder.query({
       query: (attemptId) => `rounds/mcq-test/attempts/${attemptId}`,
+      transformResponse: (response) => response.data,
       providesTags: (result, error, id) => [{ type: "Attempt", id }],
     }),
 

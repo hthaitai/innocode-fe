@@ -10,6 +10,7 @@ import { getMcqAttemptDetailColumns } from "../columns/getMcqAttemptDetailColumn
 import { Spinner } from "../../../shared/components/SpinnerFluent"
 import { useGetAttemptDetailQuery } from "@/services/mcqApi"
 import { useGetRoundByIdQuery } from "@/services/roundApi"
+import TableFluentScrollable from "../../../shared/components/table/TableFluentScrollable"
 
 const OrganizerMcqAttemptDetail = () => {
   const { contestId, roundId, attemptId } = useParams()
@@ -19,58 +20,44 @@ const OrganizerMcqAttemptDetail = () => {
 
   // Fetch attempt detail
   const {
-    data: attemptResponse,
+    data: attemptDetail,
     isLoading,
     isError,
-    error,
   } = useGetAttemptDetailQuery(attemptId)
 
-  // Unwrap the actual attempt data
-  const attemptDetail = attemptResponse?.data
+  const pageLoading = isLoading || loadingRound
 
   // Breadcrumb setup
-  const items = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
     round?.contestName || "Contest",
     round?.roundName || "Round",
     attemptDetail?.studentName || "Student name"
   )
-  const paths = BREADCRUMB_PATHS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
     contestId,
     roundId,
     attemptId
   )
 
-  // Loading state
-  if (isLoading || loadingRound) {
+  if (pageLoading) {
     return (
-      <PageContainer breadcrumb={items} breadcrumbPaths={paths}>
-        <Spinner />
-      </PageContainer>
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+        loading={pageLoading}
+        error={isError}
+      ></PageContainer>
     )
   }
 
-  // Error state
-  if (isError) {
-    return (
-      <PageContainer breadcrumb={items} breadcrumbPaths={paths}>
-        <div className="text-sm border border-red-300 rounded-[5px] bg-red-50 px-5 min-h-[70px] flex items-center gap-3 text-red-600">
-          <AlertTriangle size={20} />
-          <p>
-            Failed to load attempt details:{" "}
-            {error?.data?.message || error?.error || "Unknown error"}
-          </p>
-        </div>
-      </PageContainer>
-    )
-  }
-
-  // No data
   if (!attemptDetail) {
     return (
-      <PageContainer breadcrumb={items} breadcrumbPaths={paths}>
-        <div className="text-sm border border-[#E5E5E5] rounded-[5px] bg-white px-5 min-h-[70px] flex items-center gap-3 text-[#7A7574]">
-          <AlertTriangle size={20} />
-          <p>No attempt data available.</p>
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
+          This attempt detail page has been deleted or is no longer available.
         </div>
       </PageContainer>
     )
@@ -79,7 +66,10 @@ const OrganizerMcqAttemptDetail = () => {
   const { totalQuestions, correctAnswers, score, answerResults } = attemptDetail
 
   return (
-    <PageContainer breadcrumb={items} breadcrumbPaths={paths} bg={false}>
+    <PageContainer
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
+    >
       <div className="space-y-5">
         <AttemptStatsRow
           totalQuestions={totalQuestions}
@@ -87,35 +77,27 @@ const OrganizerMcqAttemptDetail = () => {
           score={score}
         />
 
-        <AttemptInfo attemptDetail={attemptDetail} />
+        <div>
+          <div className="text-sm font-semibold pt-3 pb-2">Information</div>
+          <AttemptInfo attemptDetail={attemptDetail} />
+        </div>
 
         <div>
           <div className="text-sm font-semibold pt-3 pb-2">Attempt review</div>
-          <div className="space-y-1">
-            <div className="px-5 py-4 flex justify-between items-center border border-[#E5E5E5] rounded-[5px] bg-white">
-              <div className="flex items-center gap-5">
-                <Clipboard size={20} />
-                <div>
-                  <p className="text-[14px] leading-[20px]">
-                    Student's submitted answers
-                  </p>
-                  <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                    Review each question the student attempted along with their
-                    selected answers and correctness.
-                  </p>
-                </div>
+          <TableFluentScrollable
+            data={answerResults?.map((q, idx) => ({ ...q, index: idx })) || []}
+            columns={getMcqAttemptDetailColumns()}
+            loading={isLoading}
+            error={isError}
+            maxHeight={400}
+            renderActions={() => (
+              <div className="min-h-[70px] px-5 flex items-center">
+                <p className="text-[14px] leading-[20px] font-medium">
+                  Student's submitted answers
+                </p>
               </div>
-            </div>
-            
-            <TableFluent
-              data={
-                answerResults?.map((q, idx) => ({ ...q, index: idx })) || []
-              }
-              columns={getMcqAttemptDetailColumns()}
-              loading={false}
-              error={null}
-            />
-          </div>
+            )}
+          />
         </div>
       </div>
     </PageContainer>
