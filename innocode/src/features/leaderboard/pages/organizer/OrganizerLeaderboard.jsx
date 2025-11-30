@@ -6,8 +6,7 @@ import { Trophy } from "lucide-react"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import ToggleSwitchFluent from "@/shared/components/ToggleSwitchFluent"
-import useLeaderboardSignalR from "@/features/leaderboard/hooks/useLeaderboardSignalR"
-import { fetchLeaderboardByContest } from "@/features/leaderboard/store/leaderboardThunk"
+import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi"
 import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 
@@ -16,9 +15,6 @@ const OrganizerLeaderboard = () => {
   const dispatch = useAppDispatch()
 
   const { contests } = useAppSelector((s) => s.contests)
-  const { entries, loading, error } = useAppSelector(
-    (state) => state.leaderboard
-  )
 
   const [isFrozen, setIsFrozen] = useState(false)
 
@@ -32,12 +28,23 @@ const OrganizerLeaderboard = () => {
     }
   }, [contest, contestId, dispatch])
 
-  useEffect(() => {
-    if (!contestId) return
-    dispatch(fetchLeaderboardByContest({ contestId }))
-  }, [contestId, dispatch])
+  // Fetch leaderboard using RTK Query
+  const {
+    data: leaderboardData,
+    isLoading: loading,
+    error,
+  } = useGetTeamsByContestIdQuery(contestId, {
+    skip: !contestId,
+  })
 
-  useLeaderboardSignalR(contestId, isFrozen)
+  // Handle data structure - API returns teams array directly or wrapped
+  // transformResponse now always returns object with teams array
+  const entries = Array.isArray(leaderboardData)
+    ? leaderboardData // Fallback for old format
+    : leaderboardData?.teams || 
+      leaderboardData?.teamIdList || 
+      leaderboardData?.entries || 
+      []
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD(
     contest?.name ?? "Contest"

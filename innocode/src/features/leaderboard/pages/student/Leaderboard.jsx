@@ -1,7 +1,6 @@
-import React, { useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
-import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs";
 import {
   Trophy,
   Medal,
@@ -11,30 +10,19 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { formatDateTime } from "@/shared/utils/dateTime";
+import { BREADCRUMBS } from "@/config/breadcrumbs";
 import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
-import useContestDetail from "../hooks/useContestDetail";
+import useContests from "../../../contest/hooks/useContests";
 import { Icon } from "@iconify/react";
+import DropdownFluent from "../../../../shared/components/DropdownFluent";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Leaderboard = () => {
-  const { contestId } = useParams();
-  const navigate = useNavigate();
+  const { contestId: urlContestId } = useParams();
+
+  const { contests, loading: contestsLoading } = useContests();
+
   const [expandedTeamId, setExpandedTeamId] = useState(null);
-
-  // Fetch contest details
-  const {
-    contest,
-    loading: contestLoading,
-    error: contestError,
-  } = useContestDetail(contestId);
-
-  // Fetch leaderboard data using RTK Query
-  const {
-    data: leaderboardData,
-    isLoading: loading,
-    error,
-  } = useGetTeamsByContestIdQuery(contestId, {
-    skip: !contestId,
-  });
 
   // Format score with commas
   const formatScore = (score) => {
@@ -46,21 +34,123 @@ const Leaderboard = () => {
     setExpandedTeamId(expandedTeamId === teamId ? null : teamId);
   };
 
+  // Get available contests (ongoing or completed)
+  const availableContests = useMemo(() => {
+    if (!contests || !Array.isArray(contests)) return [];
+    return contests.filter(
+      (c) => c.isStatusVisible && (c.isOngoing || c.isCompleted)
+    );
+  }, [contests]);
+
+  // Use contestId from URL or first available contest
+  const [selectedContestId, setSelectedContestId] = useState(
+    urlContestId || null
+  );
+
+  useEffect(() => {
+    if (!selectedContestId && availableContests.length > 0) {
+      setSelectedContestId(availableContests[0].contestId);
+    }
+  }, [availableContests, selectedContestId]);
+
+  // Get selected contest details
+  const selectedContest = availableContests.find(
+    (c) => c.contestId === selectedContestId
+  );
+
+  // Fetch leaderboard data using RTK Query
+  const {
+    data: leaderboardData,
+    isLoading: loading,
+    error,
+  } = useGetTeamsByContestIdQuery(selectedContestId, {
+    skip: !selectedContestId,
+  });
+
+  // Debug: Log leaderboard data
+  useEffect(() => {
+    if (import.meta.env.VITE_ENV === "development") {
+      console.log(
+        "🔍 [Leaderboard Component] selectedContestId:",
+        selectedContestId
+      );
+      console.log(
+        "🔍 [Leaderboard Component] leaderboardData:",
+        leaderboardData
+      );
+      console.log(
+        "🔍 [Leaderboard Component] leaderboardData type:",
+        typeof leaderboardData
+      );
+      console.log(
+        "🔍 [Leaderboard Component] leaderboardData isArray:",
+        Array.isArray(leaderboardData)
+      );
+      console.log("🔍 [Leaderboard Component] loading:", loading);
+      console.log("🔍 [Leaderboard Component] error:", error);
+    }
+  }, [leaderboardData, selectedContestId, loading, error]);
+
   // Handle data structure - API returns teams array directly or wrapped
   // transformResponse now always returns object with teams array
   const entries = Array.isArray(leaderboardData)
     ? leaderboardData // Fallback for old format
-    : leaderboardData?.teams || 
-      leaderboardData?.teamIdList || 
-      leaderboardData?.entries || 
+    : leaderboardData?.teams ||
+      leaderboardData?.teamIdList ||
+      leaderboardData?.entries ||
       [];
 
-  // Get contest info
+  // Debug: Log entries
+  useEffect(() => {
+    if (import.meta.env.VITE_ENV === "development") {
+      console.log("🔍 [Leaderboard Component] entries:", entries);
+      console.log("🔍 [Leaderboard Component] entries length:", entries.length);
+      if (entries.length > 0) {
+        console.log("🔍 [Leaderboard Component] first entry:", entries[0]);
+        console.log(
+          "🔍 [Leaderboard Component] first entry keys:",
+          Object.keys(entries[0] || {})
+        );
+      }
+    }
+  }, [entries]);
+
+  // Get contest info from selected contest or from data
   const contestInfo = {
-    contestName: contest?.name || leaderboardData?.contestName || null,
-    contestId: contestId,
-    totalTeamCount: Array.isArray(entries) ? entries.length : (leaderboardData?.totalTeamCount || 0),
+    contestName: selectedContest?.name || leaderboardData?.contestName || null,
+    contestId: selectedContestId,
+    totalTeamCount: Array.isArray(entries)
+      ? entries.length
+      : leaderboardData?.totalTeamCount || 0,
     snapshotAt: leaderboardData?.snapshotAt || null,
+  };
+
+  // Get rank icon based on position
+  const getRankIcon = (rank) => {
+    switch (rank) {
+      case 1:
+        return <Trophy className="text-yellow-500" size={20} />;
+      case 2:
+        return <Medal className="text-gray-400" size={20} />;
+      case 3:
+        return <Award className="text-amber-600" size={20} />;
+      default:
+        return null;
+    }
+  };
+
+  // Get rank badge color
+  const getRankBadgeClass = (rank) => {
+    switch (rank) {
+      case 1:
+        return "bg-yellow-100 text-yellow-800 border-yellow-300";
+      case 2:
+        return "bg-gray-100 text-gray-800 border-gray-300";
+      case 3:
+        return "bg-amber-100 text-amber-800 border-amber-300";
+      default:
+        return "bg-blue-50 text-blue-800 border-blue-200";
+    }
   };
 
   // Format round type for display
@@ -84,7 +174,9 @@ const Leaderboard = () => {
     if (members.length === 0) {
       return (
         <div className="px-4 py-3">
-          <p className="text-sm text-gray-500">No members data available</p>
+          <p className="text-sm text-gray-500">
+            Only member of this team can see detail information
+          </p>
         </div>
       );
     }
@@ -182,50 +274,26 @@ const Leaderboard = () => {
     );
   };
 
-  // Breadcrumb setup
-  const breadcrumbData = contest
-    ? createBreadcrumbWithPaths(
-        "CONTEST_LEADERBOARD",
-        contest.name || contest.title
-      )
-    : { items: BREADCRUMBS.LEADERBOARD, paths: ["/leaderboard"] };
-
-  if (contestLoading) {
+  if (contestsLoading) {
     return (
-      <PageContainer
-        breadcrumb={breadcrumbData.items}
-        breadcrumbPaths={breadcrumbData.paths}
-        loading={true}
-      >
-        <div>Loading contest...</div>
+      <PageContainer breadcrumb={BREADCRUMBS.LEADERBOARD} loading={true}>
+        <div>Loading contests...</div>
       </PageContainer>
     );
   }
 
-  if (contestError || !contest) {
+  if (!availableContests || availableContests.length === 0) {
     return (
-      <PageContainer
-        breadcrumb={breadcrumbData.items}
-        breadcrumbPaths={breadcrumbData.paths}
-      >
+      <PageContainer breadcrumb={BREADCRUMBS.LEADERBOARD}>
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 py-8 text-center">
-          <Icon
-            icon="mdi:alert-circle-outline"
-            width="48"
-            className="mx-auto mb-2 text-red-500 opacity-50"
-          />
+          <Trophy className="mx-auto text-gray-400 mb-4" size={48} />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Contest Not Found
+            No Contests Available
           </h3>
-          <p className="text-gray-600 mb-4">
-            {contestError || "The contest you're looking for doesn't exist."}
+          <p className="text-gray-600">
+            There are no active or completed contests to display leaderboards
+            for.
           </p>
-          <button
-            onClick={() => navigate("/contests")}
-            className="button-orange"
-          >
-            Back to Contests
-          </button>
         </div>
       </PageContainer>
     );
@@ -233,18 +301,21 @@ const Leaderboard = () => {
 
   return (
     <PageContainer
-      breadcrumb={breadcrumbData.items}
-      breadcrumbPaths={breadcrumbData.paths}
+      breadcrumb={BREADCRUMBS.LEADERBOARD}
       loading={loading}
       error={null}
     >
       <div className="space-y-4">
-        {/* Header */}
+        {/* Header with Contest Selector */}
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 py-4">
           <div className="flex gap-4 items-center justify-between">
             <div className="flex gap-4 items-center">
               <div className="p-3 bg-blue-50 rounded-lg">
-                <Trophy className="text-blue-600" size={24} />
+                <Icon
+                  className="text-orange-500"
+                  icon="mdi:podium"
+                  width={28}
+                />
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -261,12 +332,22 @@ const Leaderboard = () => {
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => navigate(`/contest-detail/${contestId}`)}
-              className="button-white text-sm px-4 py-2"
-            >
-              Back to Contest
-            </button>
+            {/* Contest Selector */}
+            {availableContests.length > 1 && (
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Contest:
+                </label>
+                <DropdownFluent
+                  options={availableContests.map((contest) => ({
+                    value: contest.contestId,
+                    label: contest.name,
+                  }))}
+                  value={selectedContestId}
+                  onChange={(value) => setSelectedContestId(value)}
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -297,7 +378,8 @@ const Leaderboard = () => {
                 This contest has no leaderboard yet
               </p>
               <p className="text-sm">
-                The leaderboard will appear once teams start participating in this contest
+                The leaderboard will appear once teams start participating in
+                this contest
               </p>
             </div>
           ) : (
@@ -409,22 +491,34 @@ const Leaderboard = () => {
                 </div>
 
                 {/* Expanded Members for Top 3 */}
-                {expandedTeamId &&
-                  [
-                    entries[0]?.teamId,
-                    entries[1]?.teamId,
-                    entries[2]?.teamId,
-                  ].includes(expandedTeamId) && (
-                    <div className="mt-4">
-                      {entries.find((e) => e.teamId === expandedTeamId) && (
-                        <div className="bg-white rounded-lg border border-[#E5E5E5] p-4">
-                          {renderTeamMembers(
-                            entries.find((e) => e.teamId === expandedTeamId)
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                <AnimatePresence>
+                  {expandedTeamId &&
+                    [
+                      entries[0]?.teamId,
+                      entries[1]?.teamId,
+                      entries[2]?.teamId,
+                    ].includes(expandedTeamId) && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0, y: -10 }}
+                        animate={{ height: "auto", opacity: 1, y: 0 }}
+                        exit={{ height: 0, opacity: 0, y: -10 }}
+                        transition={{
+                          duration: 0.3,
+                          ease: [0.4, 0, 0.2, 1],
+                        }}
+                        style={{ overflow: "hidden" }}
+                        className="mt-4"
+                      >
+                        {entries.find((e) => e.teamId === expandedTeamId) && (
+                          <div className="bg-white rounded-lg border border-[#E5E5E5] p-4">
+                            {renderTeamMembers(
+                              entries.find((e) => e.teamId === expandedTeamId)
+                            )}
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                </AnimatePresence>
               </div>
             )}
 
@@ -460,10 +554,12 @@ const Leaderboard = () => {
                             <p className="font-semibold text-[#2d3748] truncate">
                               {entry.teamName || "—"}
                             </p>
-                            <p className="text-xs text-[#7A7574]">
-                              {entry.members?.length || 0} member
-                              {(entry.members?.length || 0) !== 1 ? "s" : ""}
-                            </p>
+                            {(entry.members?.length || 0) > 0 && (
+                              <p className="text-xs text-[#7A7574]">
+                                {entry.members?.length || 0} member
+                                {(entry.members?.length || 0) !== 1 ? "s" : ""}
+                              </p>
+                            )}
                           </div>
 
                           {/* Score */}
@@ -478,20 +574,42 @@ const Leaderboard = () => {
 
                           {/* Expand Icon */}
                           <div className="flex-shrink-0">
-                            {isExpanded ? (
-                              <ChevronUp className="text-[#7A7574]" size={20} />
-                            ) : (
+                            <motion.div
+                              animate={{
+                                rotate: isExpanded ? 180 : 0,
+                                scale: isExpanded ? 1.1 : 1,
+                              }}
+                              transition={{
+                                duration: 0.3,
+                                ease: [0.4, 0, 0.2, 1],
+                              }}
+                            >
                               <ChevronDown
-                                className="text-[#7A7574]"
+                                className="text-[#7A7574] transition-colors duration-200 hover:text-[#ff6b35] cursor-pointer"
                                 size={20}
                               />
-                            )}
+                            </motion.div>
                           </div>
                         </div>
                       </div>
 
                       {/* Expanded Members Section */}
-                      {isExpanded && renderTeamMembers(entry)}
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{
+                              duration: 0.3,
+                              ease: [0.4, 0, 0.2, 1],
+                            }}
+                            style={{ overflow: "hidden" }}
+                          >
+                            {renderTeamMembers(entry)}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   );
                 })}
@@ -535,10 +653,12 @@ const Leaderboard = () => {
                             <p className="font-semibold text-[#2d3748] truncate">
                               {entry.teamName || "—"}
                             </p>
-                            <p className="text-xs text-[#7A7574]">
-                              {entry.members?.length || 0} member
-                              {(entry.members?.length || 0) !== 1 ? "s" : ""}
-                            </p>
+                            {(entry.members?.length || 0) > 0 && (
+                              <p className="text-xs text-[#7A7574]">
+                                {entry.members?.length || 0} member
+                                {(entry.members?.length || 0) !== 1 ? "s" : ""}
+                              </p>
+                            )}
                           </div>
                           <div className="text-right flex-shrink-0">
                             <p className="text-xl font-bold text-[#13d45d]">
@@ -549,20 +669,42 @@ const Leaderboard = () => {
                             </p>
                           </div>
                           <div className="flex-shrink-0">
-                            {isExpanded ? (
-                              <ChevronUp className="text-[#7A7574]" size={20} />
-                            ) : (
+                            <motion.div
+                              animate={{
+                                rotate: isExpanded ? 180 : 0,
+                                scale: isExpanded ? 1.1 : 1,
+                              }}
+                              transition={{
+                                duration: 0.3,
+                                ease: [0.4, 0, 0.2, 1],
+                              }}
+                            >
                               <ChevronDown
-                                className="text-[#7A7574]"
+                                className="text-[#7A7574] transition-colors duration-200 hover:text-[#ff6b35] cursor-pointer"
                                 size={20}
                               />
-                            )}
+                            </motion.div>
                           </div>
                         </div>
                       </div>
 
                       {/* Expanded Members Section */}
-                      {isExpanded && renderTeamMembers(entry)}
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{
+                              duration: 0.3,
+                              ease: [0.4, 0, 0.2, 1],
+                            }}
+                            style={{ overflow: "hidden" }}
+                          >
+                            {renderTeamMembers(entry)}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   );
                 })}

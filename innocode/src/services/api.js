@@ -19,6 +19,7 @@ export const api = createApi({
     "PublishCheck",
     "TestCases",
     "TestResults",
+    "Leaderboard",
   ],
   endpoints: () => ({}),
 })
