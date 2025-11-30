@@ -103,7 +103,7 @@ const menuByRole = {
   ],
   mentor: ['profile', 'dashboard', 'contests', 'team', 'announcements', 'help'],
 
-  judge: ['profile', 'dashboard', 'contests', 'announcements', 'help'],
+  judge: ['profile', 'dashboard', 'manualSubmissions', 'announcements', 'help'],
   admin: ['profile', 'dashboard', 'leaderboard', 'announcements', 'help'],
 };
 
