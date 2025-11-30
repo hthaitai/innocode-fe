@@ -51,7 +51,20 @@ export const validateRound = (
   ) {
     errors.problemType = "Please configure the selected problem type"
   }
-  
+
+  // ---- Validate problemConfig only for Manual/AutoEvaluation ----
+  if (
+    ["Manual", "AutoEvaluation"].includes(data.problemType) &&
+    data.problemConfig
+  ) {
+    if (!data.problemConfig.description?.trim()) {
+      errors.problemConfigDescription = "Description is required"
+    }
+    if (!data.problemConfig.language?.trim()) {
+      errors.problemConfigLanguage = "Language is required"
+    }
+  }
+
   // ---- Contest Time Bounds ----
   if (contest && data.start && data.end) {
     const contestStart = new Date(contest.start)

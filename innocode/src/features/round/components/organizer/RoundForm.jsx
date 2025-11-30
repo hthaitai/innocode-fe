@@ -1,7 +1,7 @@
 import React from "react"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import DateTimeFieldFluent from "@/shared/components/datetimefieldfluent/DateTimeFieldFluent"
-import DropdownFluent from "@/shared/components/DropdownFluent"
+import DropdownFluent from "../../../../shared/components/DropdownFluent"
 import Label from "@/shared/components/form/Label"
 
 export default function RoundForm({
@@ -15,6 +15,8 @@ export default function RoundForm({
   mode = "create",
   hasChanges,
 }) {
+  const fileInputRef = React.useRef(null)
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -36,7 +38,7 @@ export default function RoundForm({
             description: "",
             language: "",
             penaltyRate: 0.1,
-            type: value, 
+            type: value,
           },
         }))
       } else {
@@ -54,6 +56,51 @@ export default function RoundForm({
       ...prev,
       [section]: { ...prev[section], [field]: value },
     }))
+  }
+
+  const handleFileChange = (file) => {
+    if (!file) return
+    setFormData((prev) => ({ ...prev, TemplateFile: file }))
+
+    // read content to auto-fill code editor
+    const reader = new FileReader()
+    reader.onload = () => {
+      const content = reader.result
+      setFormData((prev) => ({
+        ...prev,
+        problemConfig: { ...prev.problemConfig, codeTemplate: content },
+      }))
+    }
+    reader.readAsText(file)
+  }
+
+  // Add this handler above your return statement
+  const handleProblemTypeChange = (val) => {
+    setFormData((prev) => {
+      const updated = { ...prev, problemType: val }
+
+      if (val === "McqTest") {
+        updated.mcqTestConfig = { name: "", config: "" }
+        updated.problemConfig = null
+      } else if (val === "Manual" || val === "AutoEvaluation") {
+        updated.mcqTestConfig = null
+        updated.problemConfig = {
+          description: "",
+          language: "",
+          penaltyRate: 0.1,
+          type: val,
+        }
+      } else {
+        updated.mcqTestConfig = null
+        updated.problemConfig = null
+      }
+
+      return updated
+    })
+
+    if (errors?.problemType) {
+      setErrors?.((prev) => ({ ...prev, problemType: "" }))
+    }
   }
 
   const disabled = !!isSubmitting || (mode === "edit" && !hasChanges)
@@ -130,9 +177,7 @@ export default function RoundForm({
                 { value: "AutoEvaluation", label: "Auto Evaluation" },
               ]}
               value={formData.problemType || ""}
-              onChange={(val) =>
-                handleChange({ target: { name: "problemType", value: val } })
-              }
+              onChange={handleProblemTypeChange}
               placeholder="Select type"
               error={!!errors.problemType}
               helperText={errors.problemType}
@@ -166,7 +211,7 @@ export default function RoundForm({
         {/* Problem Config */}
         {["Manual", "AutoEvaluation"].includes(formData.problemType) && (
           <>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" required>Description</Label>
             <TextFieldFluent
               id="description"
               value={formData.problemConfig?.description || ""}
@@ -177,15 +222,19 @@ export default function RoundForm({
                   e.target.value
                 )
               }
+              error={!!errors.problemConfigDescription}
+              helperText={errors.problemConfigDescription}
             />
 
-            <Label htmlFor="language">Language</Label>
+            <Label htmlFor="language" required>Language</Label>
             <TextFieldFluent
               id="language"
               value={formData.problemConfig?.language || ""}
               onChange={(e) =>
                 handleNestedChange("problemConfig", "language", e.target.value)
               }
+              error={!!errors.problemConfigLanguage}
+              helperText={errors.problemConfigLanguage}
             />
 
             <Label htmlFor="penaltyRate">Penalty Rate</Label>
@@ -201,6 +250,47 @@ export default function RoundForm({
                 )
               }
             />
+
+            {/* Template File */}
+            <Label htmlFor="templateFile">Template File</Label>
+
+            <div>
+              <input
+                type="file"
+                id="templateFile"
+                accept=".txt,.py,.js,.java"
+                onChange={(e) => handleFileChange(e.target.files?.[0])}
+                style={{ display: "none" }}
+                ref={(el) => (fileInputRef.current = el)}
+              />
+
+              <button
+                type="button"
+                className="button-orange px-3"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {formData.TemplateFile ? "Change file" : "Browse"}
+              </button>
+
+              {/* Show file name if uploaded, otherwise show current template URL */}
+              {formData.TemplateFile ? (
+                <span className="ml-2 text-sm">
+                  {formData.TemplateFile.name}
+                </span>
+              ) : formData.problemConfig?.templateUrl ? (
+                <span className="ml-2 text-sm text-gray-600">
+                  Current template:{" "}
+                  <a
+                    href={formData.problemConfig.templateUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    {formData.problemConfig.templateUrl.split("/").pop()}
+                  </a>
+                </span>
+              ) : null}
+            </div>
           </>
         )}
 

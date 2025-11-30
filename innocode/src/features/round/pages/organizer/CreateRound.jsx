@@ -44,18 +44,41 @@ const CreateRound = () => {
     }
 
     try {
-      const payload = {
-        ...form,
-        start: fromDatetimeLocal(form.start),
-        end: fromDatetimeLocal(form.end),
+      const formData = new FormData()
+
+      // append all fields
+      formData.append("Name", form.name)
+      formData.append("Start", fromDatetimeLocal(form.start))
+      formData.append("End", fromDatetimeLocal(form.end))
+      formData.append("ProblemType", form.problemType)
+      formData.append("TimeLimitSeconds", String(form.timeLimitSeconds || 0))
+
+      if (form.problemConfig) {
+        formData.append("ProblemConfig.Type", form.problemConfig.type)
+        formData.append(
+          "ProblemConfig.Description",
+          form.problemConfig.description || ""
+        )
+        formData.append(
+          "ProblemConfig.Language",
+          form.problemConfig.language || ""
+        )
+        formData.append(
+          "ProblemConfig.PenaltyRate",
+          String(form.problemConfig.penaltyRate || 0.1)
+        )
+        if (form.TemplateFile) {
+          formData.append("ProblemConfig.TemplateFile", form.TemplateFile)
+        }
       }
-      
-      await createRound({ contestId, data: payload }).unwrap()
+
+      await createRound({ contestId, data: formData }).unwrap()
+
       toast.success("Round created")
       navigate(`/organizer/contests/${contestId}`)
     } catch (err) {
       console.error(err)
-      toast.error("Failed to create round")
+      toast.error(err?.data?.errorMessage || "Failed to create round")
     }
   }
 

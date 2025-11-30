@@ -25,11 +25,13 @@ export const roundApi = api.injectEndpoints({
         { type: "Rounds", id: roundId },
       ],
     }),
+
     createRound: builder.mutation({
       query: ({ contestId, data }) => ({
         url: `rounds/${contestId}`,
         method: "POST",
         body: data,
+        headers: {}, 
       }),
       invalidatesTags: (result, error, { contestId }) => [
         { type: "Rounds", id: `LIST_${contestId}` },
@@ -37,11 +39,13 @@ export const roundApi = api.injectEndpoints({
         { type: "PublishCheck", id: contestId },
       ],
     }),
+
     updateRound: builder.mutation({
       query: ({ id, data }) => ({
         url: `rounds/${id}`,
         method: "PUT",
-        body: data,
+        body: data, 
+        headers: {}, 
       }),
       invalidatesTags: (result, error, { id, contestId }) => [
         { type: "Rounds", id },
@@ -49,6 +53,7 @@ export const roundApi = api.injectEndpoints({
         { type: "PublishCheck", id: contestId },
       ],
     }),
+
     deleteRound: builder.mutation({
       query: (id) => ({
         url: `rounds/${id}`,
