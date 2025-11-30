@@ -219,6 +219,7 @@ export const BREADCRUMBS = {
 
   //Judge
   JUDGE_SUBMISSIONS: ["Submissions"],
+  JUDGE_MANUAL_EVALUATION: ["Submissions", "Evaluation"],
 
   // Error pages
   NOT_FOUND: ["Not Found"],
@@ -457,7 +458,11 @@ export const BREADCRUMB_PATHS = {
   ORGANIZER_SCHOOLS: ["/organizer", "/organizer/schools"],
 
   //Judge
-  JUDGE_SUBMISSIONS: ["/judge/contests"],
+  JUDGE_SUBMISSIONS: ["/judge/manual-submissions"],
+  JUDGE_MANUAL_EVALUATION: (submissionId) => [
+    "/judge/manual-submissions",
+    `/judge/manual-submissions/${submissionId}/rubric-evaluation`,
+  ],
 
   // Error pages
   NOT_FOUND: ["/"],

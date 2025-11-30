@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { useFetchManualResultsQuery } from "@/services/manualProblemApi"
-import ResultsTable from "../../components/ResultsTable"
+import ResultsTable from "../../../problems/manual/components/ResultsTable"
 
 const JudgeManualResultsPage = () => {
   const { submissionId } = useParams()

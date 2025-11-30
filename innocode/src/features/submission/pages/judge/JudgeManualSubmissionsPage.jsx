@@ -1,11 +1,15 @@
 import React, { useState } from "react"
-import { useFetchManualSubmissionsQuery } from "@/services/manualProblemApi"
-import PageContainer from "../../../../../shared/components/PageContainer"
-import DropdownFluent from "../../../../../shared/components/DropdownFluent"
+import {
+  useFetchManualSubmissionsQuery,
+  useLazyDownloadSubmissionQuery,
+} from "../../../../services/submissionApi"
+import PageContainer from "../../../../shared/components/PageContainer"
+import TableFluent from "../../../../shared/components/TableFluent"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-import TableFluent from "../../../../../shared/components/TableFluent"
-import { getJudgeSubmissionsColumns } from "../../columns/getJudgeSubmissionsColumns"
-import JudgeSubmissionsActions from "../../components/JudgeSubmissionsActions"
+import { getJudgeSubmissionsColumns } from "../../../submission/columns/getJudgeSubmissionsColumns"
+import JudgeSubmissionsActions from "../../../problems/manual/components/JudgeSubmissionsActions"
+import { useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
 
 const JudgeManualSubmissionsPage = ({ roundId }) => {
   // Dropdown state
@@ -24,8 +28,18 @@ const JudgeManualSubmissionsPage = ({ roundId }) => {
   const breadcrumbItems = BREADCRUMBS.JUDGE_SUBMISSIONS
   const breadcrumbPaths = BREADCRUMB_PATHS.JUDGE_SUBMISSIONS
 
+  const navigate = useNavigate()
+
+  // Rubric evaluation navigation (unchanged)
+  const handleRubricEvaluation = (submissionId) => {
+    if (!submissionId) return
+    navigate(`/judge/manual-submissions/${submissionId}/rubric-evaluation`)
+  }
+
   // Table columns
-  const columns = getJudgeSubmissionsColumns()
+  const columns = getJudgeSubmissionsColumns(
+    handleRubricEvaluation
+  )
 
   return (
     <PageContainer
@@ -39,7 +53,7 @@ const JudgeManualSubmissionsPage = ({ roundId }) => {
         columns={columns}
         loading={isLoading}
         error={isError}
-        pagination={data?.additionalData}
+        pagination={data?.pagination}
         renderActions={() => (
           <JudgeSubmissionsActions
             statusFilter={statusFilter}

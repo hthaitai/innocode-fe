@@ -75,10 +75,10 @@ import AddTestCasePage from "./features/problems/auto-evaluation/pages/AddTestCa
 import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage"
 
 // Judge pages
-import JudgeManualRubricPage from "./features/problems/manual/pages/judge/JudgeManualRubricPage"
-import JudgeManualResultsPage from "./features/problems/manual/pages/judge/JudgeManualResultsPage"
-import JudgeManualSubmissionsPage from "./features/problems/manual/pages/judge/JudgeManualSubmissionsPage" // new page for pending submissions list
-import JudgeManualEvaluationsPage from "./features/problems/manual/pages/judge/JudgeManualEvaluationsPage"
+import JudgeManualRubricPage from "./features/submission/pages/judge/JudgeManualRubricPage"
+import JudgeManualResultsPage from "./features/submission/pages/judge/JudgeManualResultsPage"
+import JudgeManualSubmissionsPage from "./features/submission/pages/judge/JudgeManualSubmissionsPage" // new page for pending submissions list
+import JudgeManualEvaluationsPage from "./features/submission/pages/judge/JudgeManualEvaluationsPage"
 
 // Initialize EmailJS when app starts
 initEmailJs()
@@ -555,15 +555,15 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "judge/submissions/:submissionId/rubric",
+        path: "judge/manual-submissions/:submissionId/rubric-evaluation",
         element: (
           <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
-            <JudgeManualRubricPage />
+            <JudgeManualEvaluationsPage />
           </ProtectedRoute>
         ),
       },
       {
-        path: "judge/submissions/:submissionId/results",
+        path: "judge/manual-submissions/:submissionId/results",
         element: (
           <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
             <JudgeManualResultsPage />
@@ -571,14 +571,6 @@ const router = createBrowserRouter([
         ),
       },
 
-      {
-        path: "judge/evaluations",
-        element: (
-          <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
-            <JudgeManualEvaluationsPage />
-          </ProtectedRoute>
-        ),
-      },
       {
         path: "/quiz/:roundId/finish",
         element: <FinishQuiz />,

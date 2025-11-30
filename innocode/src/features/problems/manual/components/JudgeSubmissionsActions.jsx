@@ -7,8 +7,6 @@ const JudgeSubmissionsActions = ({ statusFilter, setStatusFilter }) => {
       {/* Header Section */}
       <div className="flex justify-between items-center min-h-[70px] px-5 border-b border-[#E5E5E5]">
         <p className="text-[14px] leading-[20px] font-medium">Submissions</p>
-
-       
       </div>
 
       {/* Filter Section */}

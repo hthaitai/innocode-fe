@@ -1,7 +1,7 @@
 import React from "react"
 import { Info } from "lucide-react"
 
-const InfoSection = ({ title, onEdit, children }) => {
+const InfoSection = ({ title, onEdit, actionText = "Edit", children }) => {
   return (
     <div className="text-sm leading-5 border border-[#E5E5E5] rounded-[5px] bg-white">
       {/* Header */}
@@ -15,7 +15,7 @@ const InfoSection = ({ title, onEdit, children }) => {
             onClick={onEdit}
             className="button-orange"
           >
-            Edit
+            {actionText}
           </button>
         )}
       </div>
