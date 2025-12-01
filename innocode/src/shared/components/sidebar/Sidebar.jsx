@@ -61,7 +61,7 @@ const allMenus = {
   manualSubmissions: {
     path: "/judge/manual-submissions",
     label: "Submissions",
-    icon: "lucide:file-text",
+    icon: "lucide:file-text",},
   //Mentor menus
   appeal: {
     path: "/appeal",
