@@ -1,81 +1,80 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import MainLayout from "./shared/components/layout/MainLayout";
-import AuthLayout from "./shared/components/layout/AuthLayout";
-import { Provider } from "react-redux";
-import { store } from "./store/store";
+import { StrictMode } from "react"
+import { createRoot } from "react-dom/client"
+import "./index.css"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import MainLayout from "./shared/components/layout/MainLayout"
+import AuthLayout from "./shared/components/layout/AuthLayout"
+import { Provider } from "react-redux"
+import { store } from "./store/store"
 // Common pages
-import Home from "./features/common/pages/Home";
-import About from "./features/common/pages/About";
-import Profile from "./features/common/pages/Profile";
-import Dashboard from "./features/common/pages/Dashboard";
-import Announcements from "./features/common/pages/Announcements";
-import Unauthorized from "./features/common/pages/Unauthorized";
-
+import Home from "./features/common/pages/Home"
+import About from "./features/common/pages/About"
+import Profile from "./features/common/pages/Profile"
+import Dashboard from "./features/common/pages/Dashboard"
+import Announcements from "./features/common/pages/Announcements"
+import Unauthorized from "./features/common/pages/Unauthorized"
 // Student pages
-import Contests from "./features/contest/student/Contests";
-import ContestDetail from "./features/contest/student/ContestDetail";
-import ContestProcessing from "./features/contest/student/ContestProcessing";
-import Practice from "./features/contest/student/Practice";
-import PracticeDetail from "./features/contest/student/PracticeDetail";
-import PracticeStart from "./features/contest/student/PracticeStart";
-import Team from "./features/contest/student/Team";
-import Help from "./features/contest/student/Help";
-import MCQTest from "./features/quiz/student/MCQTest";
-import FinishQuiz from "./features/quiz/student/FinishQuiz";
+import Contests from "./features/contest/student/Contests"
+import ContestDetail from "./features/contest/student/ContestDetail"
+import ContestProcessing from "./features/contest/student/ContestProcessing"
+import Practice from "./features/contest/student/Practice"
+import PracticeDetail from "./features/contest/student/PracticeDetail"
+import PracticeStart from "./features/contest/student/PracticeStart"
+import Team from "./features/contest/student/Team"
+import Help from "./features/contest/student/Help"
+import MCQTest from "./features/quiz/student/MCQTest"
+import FinishQuiz from "./features/quiz/student/FinishQuiz"
 // Auth
-import ManualRubricPage from "./features/problems/manual/pages/ManualRubricPage";
-import ManualResultsPage from "./features/problems/manual/pages/ManualResultsPage";
-import AutoEvaluationPage from "./features/problems/auto-evaluation/pages/AutoEvaluationPage";
-import AutoTestResultsPage from "./features/problems/auto-evaluation/pages/AutoTestResultsPage";
-import Login from "./features/auth/components/Login";
-import Register from "./features/auth/components/Register";
-import { ModalProvider } from "./context/ModalContext";
-import { AuthProvider, ROLES } from "./context/AuthContext";
-import OrganizerContests from "./features/contest/pages/organizer/OrganizerContests";
-import OrganizerContestDetail from "./features/contest/pages/organizer/OrganizerContestDetail";
-import OrganizerRoundDetail from "./features/round/pages/organizer/OrganizerRoundDetail";
-import CreateRound from "./features/round/pages/organizer/CreateRound";
-import EditRound from "./features/round/pages/organizer/EditRound";
-import OrganizerProblemDetail from "./features/problem/pages/organizer/OrganizerProblemDetail";
-import OrganizerTeams from "./features/team/pages/organizer/OrganizerTeams";
-import OrganizerTeamDetail from "./features/team/pages/organizer/OrganizerTeamDetail";
-import OrganizerLeaderboard from "./features/leaderboard/pages/organizer/OrganizerLeaderboard";
-import OrganizerCertificates from "./features/certificate/pages/organizer/OrganizerCertificates";
-import OrganizerCertificateTemplateCreate from "./features/certificate/pages/organizer/OrganizerCertificateTemplateCreate";
-import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals";
-import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail";
-import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces";
-import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools";
-import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications";
-import ProtectedRoute from "./shared/components/auth/ProtectedRoute";
-import { Toaster } from "react-hot-toast";
-import PublicRoute from "./shared/components/auth/PublicRoute";
-import OrganizerMcq from "./features/mcq/pages/OrganizerMcq";
-import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate";
-import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts";
-import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail";
-import StudentAutoEvaluation from "./features/problem/pages/student/StudentAutoEvaluation";
-import StudentManualProblem from "./features/problem/pages/student/StudentManualProblem";
-import AddContestPage from "./features/contest/pages/organizer/AddContestPage";
-import EditContestPage from "./features/contest/pages/organizer/EditContestPage";
-import MentorTeam from "./features/team/pages/mentor/MentorTeam";
-import { initEmailJs } from "./shared/services/emailService";
-import TeamInviteResponse from "./features/team/pages/student/TeamInviteResponse";
-import VerifyEmail from "./features/auth/components/VerifyEmail";
-import ForgotPassword from "./features/auth/components/ForgotPassword";
-import ResetPassword from "./features/auth/components/ResetPassword";
-import MyContest from "./features/contest/student/MyContest";
+import ManualRubricPage from "./features/problems/manual/pages/ManualRubricPage"
+import ManualResultsPage from "./features/problems/manual/pages/ManualResultsPage"
+import AutoEvaluationPage from "./features/problems/auto-evaluation/pages/AutoEvaluationPage"
+import AutoTestResultsPage from "./features/problems/auto-evaluation/pages/AutoTestResultsPage"
+import Login from "./features/auth/components/Login"
+import Register from "./features/auth/components/Register"
+import { ModalProvider } from "./context/ModalContext"
+import { AuthProvider, ROLES } from "./context/AuthContext"
+import OrganizerContests from "./features/contest/pages/organizer/OrganizerContests"
+import OrganizerContestDetail from "./features/contest/pages/organizer/OrganizerContestDetail"
+import OrganizerRoundDetail from "./features/round/pages/organizer/OrganizerRoundDetail"
+import CreateRound from "./features/round/pages/organizer/CreateRound"
+import EditRound from "./features/round/pages/organizer/EditRound"
+import OrganizerProblemDetail from "./features/problem/pages/organizer/OrganizerProblemDetail"
+import OrganizerTeams from "./features/team/pages/organizer/OrganizerTeams"
+import OrganizerTeamDetail from "./features/team/pages/organizer/OrganizerTeamDetail"
+import OrganizerLeaderboard from "./features/leaderboard/pages/organizer/OrganizerLeaderboard"
+import OrganizerCertificates from "./features/certificate/pages/organizer/OrganizerCertificates"
+import OrganizerCertificateTemplateCreate from "./features/certificate/pages/organizer/OrganizerCertificateTemplateCreate"
+import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals"
+import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail"
+import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces"
+import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools"
+import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications"
+import ProtectedRoute from "./shared/components/auth/ProtectedRoute"
+import { Toaster } from "react-hot-toast"
+import PublicRoute from "./shared/components/auth/PublicRoute"
+import OrganizerMcq from "./features/mcq/pages/OrganizerMcq"
+import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate"
+import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts"
+import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail"
+import StudentAutoEvaluation from "./features/problem/pages/student/StudentAutoEvaluation"
+import StudentManualProblem from "./features/problem/pages/student/StudentManualProblem"
+import AddContestPage from "./features/contest/pages/organizer/AddContestPage"
+import EditContestPage from "./features/contest/pages/organizer/EditContestPage"
+import MentorTeam from "./features/team/pages/mentor/MentorTeam"
+import { initEmailJs } from "./shared/services/emailService"
+import TeamInviteResponse from "./features/team/pages/student/TeamInviteResponse"
+import VerifyEmail from "./features/auth/components/VerifyEmail"
+import ForgotPassword from "./features/auth/components/ForgotPassword"
+import ResetPassword from "./features/auth/components/ResetPassword"
+import MyContest from "./features/contest/student/MyContest"
 //Mentor pages
-import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal";
+import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal"
 // Organizer pages
-import AddTestCasePage from "./features/problems/auto-evaluation/pages/AddTestCasePage";
-import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage";
-import Leaderboard from "./features/leaderboard/pages/student/Leaderboard";
+import AddTestCasePage from "./features/problems/auto-evaluation/pages/AddTestCasePage"
+import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage"
+import Leaderboard from "./features/leaderboard/pages/student/Leaderboard"
 // Initialize EmailJS when app starts
-initEmailJs();
+initEmailJs()
 const router = createBrowserRouter([
   {
     element: <AuthLayout />, // Auth layout wrapper
@@ -551,7 +550,7 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+])
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -564,4 +563,4 @@ createRoot(document.getElementById("root")).render(
       </AuthProvider>
     </Provider>
   </StrictMode>
-);
+)
