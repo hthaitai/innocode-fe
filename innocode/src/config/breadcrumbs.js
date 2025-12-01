@@ -173,11 +173,26 @@ export const BREADCRUMBS = {
     teamName,
   ],
 
+  // Organizer leaderboard
   ORGANIZER_LEADERBOARD: (contestName) => [
     "Contests",
     contestName,
     "Leaderboard",
   ],
+  ORGANIZER_LEADERBOARD_DETAIL: (contestName, teamName) => [
+    "Contests",
+    contestName,
+    "Leaderboard",
+    teamName,
+  ],
+  ORGANIZER_LEADERBOARD_MEMBER: (contestName, teamName, memberName) => [
+    "Contests",
+    contestName,
+    "Leaderboard",
+    teamName,
+    memberName,
+  ],
+
   ORGANIZER_CERTIFICATES: (contestName) => [
     "Contests",
     contestName,
@@ -411,11 +426,27 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/teams`,
     `/organizer/contests/${contestId}/teams/${teamId}`,
   ],
+
+  // Organizer leaderboard
   ORGANIZER_LEADERBOARD: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/leaderboard`,
   ],
+  ORGANIZER_LEADERBOARD_DETAIL: (contestId, teamId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/leaderboard`,
+    `/organizer/contests/${contestId}/leaderboard/teams/${teamId}`,
+  ],
+  ORGANIZER_LEADERBOARD_MEMBER: (contestId, teamId, memberId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/leaderboard`,
+    `/organizer/contests/${contestId}/leaderboard/teams/${teamId}`,
+    `/organizer/contests/${contestId}/leaderboard/teams/${teamId}/members/${memberId}`,
+  ],
+
   ORGANIZER_CERTIFICATES: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,

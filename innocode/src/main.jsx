@@ -80,6 +80,8 @@ import JudgeManualSubmissionsPage from "./features/submission/pages/judge/JudgeM
 import JudgeManualEvaluationsPage from "./features/submission/pages/judge/JudgeManualEvaluationsPage"
 
 import Leaderboard from "./features/leaderboard/pages/student/Leaderboard"
+import OrganizerLeaderboardDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardDetail"
+import OrganizerLeaderboardMemberDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardMemberDetail"
 // Initialize EmailJS when app starts
 initEmailJs()
 const router = createBrowserRouter([
@@ -470,6 +472,7 @@ const router = createBrowserRouter([
             ),
           },
 
+          // Contest leaderboard
           {
             path: ":contestId/leaderboard",
             element: (
@@ -478,6 +481,23 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
+          {
+            path: ":contestId/leaderboard/teams/:teamId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerLeaderboardDetail />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/leaderboard/teams/:teamId/members/:memberId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerLeaderboardMemberDetail />
+              </ProtectedRoute>
+            ),
+          },
+
           {
             path: ":contestId/certificates",
             children: [
