@@ -68,7 +68,8 @@ import VerifyEmail from "./features/auth/components/VerifyEmail";
 import ForgotPassword from "./features/auth/components/ForgotPassword";
 import ResetPassword from "./features/auth/components/ResetPassword";
 import MyContest from "./features/contest/student/MyContest";
-
+//Mentor pages
+import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal";
 // Organizer pages
 import AddTestCasePage from "./features/problems/auto-evaluation/pages/AddTestCasePage";
 import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage";
@@ -213,6 +214,14 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             {" "}
             <Profile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "appeal",
+        element: (
+          <ProtectedRoute>
+            <MentorAppeal />
           </ProtectedRoute>
         ),
       },

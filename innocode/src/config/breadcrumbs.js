@@ -17,6 +17,7 @@ export const BREADCRUMBS = {
   PROFILE: ["Profile"],
   DASHBOARD: ["Dashboard"],
   ABOUT: ["About"],
+  APPEAL: ["Appeal"],
 
   // Sub-pages
   PROFILE_ABOUT: ["Profile", "Personal Information"],
@@ -241,7 +242,7 @@ export const BREADCRUMB_PATHS = {
   PROFILE: ["/profile"],
   DASHBOARD: ["/dashboard"],
   ABOUT: ["/about"],
-
+  APPEAL: ["/appeal"],
   // Sub-pages
   PROFILE_ABOUT: ["/profile"],
   PROFILE_PASSWORD: ["/profile"],
