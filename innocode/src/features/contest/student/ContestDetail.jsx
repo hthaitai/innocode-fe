@@ -21,9 +21,9 @@ import useContestDetail from "../hooks/useContestDetail";
 import CountdownTimer from "@/shared/components/countdowntimer/CountdownTimer";
 import { useAuth } from "@/context/AuthContext";
 import useTeams from "@/features/team/hooks/useTeams";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchLeaderboardByContest } from "@/features/leaderboard/store/leaderboardThunk";
 import useCompletedQuizzes from "@/features/quiz/hooks/useCompletedQuizzes";
+import { formatDateTime } from "@/shared/utils/dateTime";
+import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
 
 const ContestDetail = () => {
   const { contestId } = useParams();
@@ -38,11 +38,6 @@ const ContestDetail = () => {
   // Fetch team data for student
   const { getMyTeam, loading: teamLoading } = useTeams();
   const [myTeam, setMyTeam] = useState(null);
-
-  // Redux for leaderboard
-  const dispatch = useAppDispatch();
-  const { entries: leaderboardEntries, loading: leaderboardLoading } =
-    useAppSelector((state) => state.leaderboard);
 
   // Use API data if available
   const contest = apiContest;
@@ -65,14 +60,56 @@ const ContestDetail = () => {
     return now >= startDate && now < endDate;
   }, [contest]);
 
-  // Fetch leaderboard if contest is ongoing
+  // Fetch leaderboard using RTK Query (only when ongoing or ranks tab is active)
+  const shouldFetchLeaderboard = contestId && (isOngoing || activeTab === "ranks");
+  const {
+    data: leaderboardData,
+    isLoading: leaderboardLoading,
+    error: leaderboardError,
+  } = useGetTeamsByContestIdQuery(contestId, {
+    skip: !shouldFetchLeaderboard,
+  });
+
+  // Debug: Log leaderboard data in ContestDetail
   useEffect(() => {
-    if (isOngoing && contestId) {
-      dispatch(
-        fetchLeaderboardByContest({ contestId, pageNumber: 1, pageSize: 100 })
-      );
+    if (import.meta.env.VITE_ENV === "development" && shouldFetchLeaderboard) {
+      console.log("🔍 [ContestDetail] contestId:", contestId);
+      console.log("🔍 [ContestDetail] shouldFetchLeaderboard:", shouldFetchLeaderboard);
+      console.log("🔍 [ContestDetail] leaderboardData:", leaderboardData);
+      console.log("🔍 [ContestDetail] leaderboardData type:", typeof leaderboardData);
+      console.log("🔍 [ContestDetail] leaderboardData isArray:", Array.isArray(leaderboardData));
+      console.log("🔍 [ContestDetail] leaderboardLoading:", leaderboardLoading);
+      console.log("🔍 [ContestDetail] leaderboardError:", leaderboardError);
     }
-  }, [isOngoing, contestId, dispatch]);
+  }, [leaderboardData, contestId, shouldFetchLeaderboard, leaderboardLoading, leaderboardError]);
+
+  // Handle data structure - API returns teams array directly or wrapped
+  // transformResponse now always returns object with teams array
+  const leaderboardEntries = Array.isArray(leaderboardData)
+    ? leaderboardData // Fallback for old format
+    : leaderboardData?.teams || 
+      leaderboardData?.teamIdList || 
+      leaderboardData?.entries || 
+      [];
+  
+  // Debug: Log entries
+  useEffect(() => {
+    if (import.meta.env.VITE_ENV === "development" && shouldFetchLeaderboard) {
+      console.log("🔍 [ContestDetail] leaderboardEntries:", leaderboardEntries);
+      console.log("🔍 [ContestDetail] leaderboardEntries length:", leaderboardEntries.length);
+      if (leaderboardEntries.length > 0) {
+        console.log("🔍 [ContestDetail] first entry:", leaderboardEntries[0]);
+      }
+    }
+  }, [leaderboardEntries, shouldFetchLeaderboard]);
+  
+  // Get contest info from contest data
+  const leaderboardContestInfo = {
+    contestName: contest?.name || leaderboardData?.contestName || null,
+    contestId: contestId,
+    totalTeamCount: Array.isArray(leaderboardEntries) ? leaderboardEntries.length : (leaderboardData?.totalTeamCount || 0),
+    snapshotAt: leaderboardData?.snapshotAt || null,
+  };
 
   // Find my team's entry in leaderboard
   const myTeamLeaderboardEntry = useMemo(() => {
@@ -131,6 +168,16 @@ const ContestDetail = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const formatScore = (score) => {
+    return (score ?? 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const getMemberCount = (members) => {
+    if (!Array.isArray(members)) return 0;
+    // Đếm số lượng members dựa trên memberId
+    return members.filter((member) => member && member.memberId).length;
   };
 
   // Determine countdown target and label based on contest status
@@ -196,11 +243,15 @@ const ContestDetail = () => {
 
   const tabs = [
     { id: "overview", label: "Overview", icon: "mdi:information-outline" },
-    { id: "rounds", label: "Rounds", icon: "mdi:trophy-outline" },
     {
-      id: "rules",
-      label: "Rules & Guidelines",
-      icon: "mdi:file-document-outline",
+      id: "rounds",
+      label: "Rounds",
+      icon: "mdi:clipboard-play-multiple-outline",
+    },
+    {
+      id: "ranks",
+      label: "Ranking",
+      icon: "mdi:trophy-outline",
     },
   ];
 
@@ -578,35 +629,272 @@ const ContestDetail = () => {
                 </div>
               )}
 
-              {activeTab === "rules" && (
+              {activeTab === "ranks" && (
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-[#2d3748] mb-3">
-                    Contest Rules & Guidelines
-                  </h3>
-                  {(contest.rules || []).length > 0 ? (
-                    <ul className="space-y-3">
-                      {contest.rules.map((rule, index) => (
-                        <li
-                          key={index}
-                          className="flex items-start gap-3 text-[#4a5568]"
-                        >
-                          <div className="w-6 h-6 rounded-full bg-[#f9fafb] border border-[#E5E5E5] flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <span className="text-xs font-medium text-[#7A7574]">
-                              {index + 1}
-                            </span>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-[#2d3748]">
+                      Ranking and team standings
+                    </h3>
+                    {leaderboardContestInfo?.snapshotAt && (
+                      <p className="text-sm text-[#7A7574]">
+                        Last updated:{" "}
+                        {formatDateTime(leaderboardContestInfo.snapshotAt)}
+                      </p>
+                    )}
+                  </div>
+                  {leaderboardLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
+                        <p className="text-gray-600">Loading leaderboard...</p>
+                      </div>
+                    </div>
+                  ) : leaderboardError ? (
+                    // Check if it's a 404 (no data yet) vs actual error
+                    (typeof leaderboardError === 'object' && leaderboardError?.Message?.includes('Not found')) ||
+                    (typeof leaderboardError === 'string' && leaderboardError.includes('Not found')) ? (
+                      <div className="text-center py-12 text-[#7A7574]">
+                        <Icon
+                          icon="mdi:trophy-outline"
+                          width="48"
+                          className="mx-auto mb-2 opacity-50"
+                        />
+                        <p className="text-lg font-medium mb-1">
+                          No rankings available yet
+                        </p>
+                        <p className="text-sm">
+                          {isOngoing
+                            ? "Leaderboard will appear once teams start participating"
+                            : "This contest has not started yet"}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <Icon
+                          icon="mdi:alert-circle-outline"
+                          width="48"
+                          className="mx-auto mb-2 text-red-500 opacity-50"
+                        />
+                        <p className="text-lg font-medium text-red-600 mb-1">
+                          Failed to load leaderboard
+                        </p>
+                        <p className="text-sm text-[#7A7574]">
+                          {typeof leaderboardError === 'string' 
+                            ? leaderboardError 
+                            : leaderboardError?.Message || leaderboardError?.message || 'An error occurred'}
+                        </p>
+                      </div>
+                    )
+                  ) : leaderboardEntries && leaderboardEntries.length > 0 ? (
+                    <div className="space-y-6">
+                      {/* Top 3 Podium */}
+                      {leaderboardEntries.length >= 3 && (
+                        <div className="relative">
+                          <div className="flex items-end justify-center gap-2 mb-4">
+                            {/* Rank 2 - Left */}
+                            <div className="flex-1 max-w-[200px] flex flex-col items-center">
+                              <div className="w-full bg-white rounded-lg shadow-md p-4 mb-2 border border-[#E5E5E5]">
+                                <div className="flex flex-col items-center">
+                                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center mb-2">
+                                    <Users
+                                      size={24}
+                                      className="text-gray-600"
+                                    />
+                                  </div>
+                                  <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full">
+                                    {leaderboardEntries[1]?.teamName || "—"}
+                                  </p>
+                                  <p className="text-2xl font-bold text-[#ff6b35]">
+                                    {formatScore(leaderboardEntries[1]?.score)}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="w-full bg-yellow-400 rounded-t-lg flex items-center justify-center py-4">
+                                <span className="text-white font-bold text-lg">
+                                  2
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Rank 1 - Center (Tallest) */}
+                            <div className="flex-1 max-w-[220px] flex flex-col items-center relative">
+                              <div className="absolute -top-2 right-2 z-10">
+                                <Icon
+                                  icon="mdi:star"
+                                  className="text-yellow-400"
+                                  width={32}
+                                />
+                              </div>
+                              <div className="w-full bg-white rounded-lg shadow-lg p-5 mb-2 border-2 border-yellow-300">
+                                <div className="flex flex-col items-center">
+                                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 flex items-center justify-center mb-3">
+                                    <Trophy
+                                      className="text-yellow-700"
+                                      size={32}
+                                    />
+                                  </div>
+                                  <p className="text-base font-bold text-[#2d3748] text-center mb-2 truncate w-full">
+                                    {leaderboardEntries[0]?.teamName || "—"}
+                                  </p>
+                                  <p className="text-3xl font-bold text-[#ff6b35]">
+                                    {formatScore(leaderboardEntries[0]?.score)}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="w-full bg-yellow-500 rounded-t-lg flex items-center justify-center py-6">
+                                <span className="text-white font-bold text-xl">
+                                  1
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Rank 3 - Right */}
+                            <div className="flex-1 max-w-[200px] flex flex-col items-center">
+                              <div className="w-full bg-white rounded-lg shadow-md p-4 mb-2 border border-[#E5E5E5]">
+                                <div className="flex flex-col items-center">
+                                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-200 to-amber-300 flex items-center justify-center mb-2">
+                                    <Award
+                                      className="text-amber-700"
+                                      size={24}
+                                    />
+                                  </div>
+                                  <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full">
+                                    {leaderboardEntries[2]?.teamName || "—"}
+                                  </p>
+                                  <p className="text-2xl font-bold text-[#ff6b35]">
+                                    {formatScore(leaderboardEntries[2]?.score)}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="w-full bg-amber-400 rounded-t-lg flex items-center justify-center py-3">
+                                <span className="text-white font-bold text-lg">
+                                  3
+                                </span>
+                              </div>
+                            </div>
                           </div>
-                          <span className="leading-relaxed">{rule}</span>
-                        </li>
-                      ))}
-                    </ul>
+                        </div>
+                      )}
+
+                      {/* Rest of the ranks list (from rank 4+) */}
+                      {leaderboardEntries.length > 3 && (
+                        <div className="space-y-3">
+                          <h4 className="text-md font-semibold text-[#2d3748] mb-3">
+                            Other Rankings
+                          </h4>
+                          {leaderboardEntries.slice(3).map((entry, index) => {
+                            const actualRank = entry.rank || index + 4;
+                            return (
+                              <div
+                                key={entry.teamId || index + 3}
+                                className="bg-white rounded-lg border border-[#E5E5E5] p-4 shadow-sm hover:shadow-md transition-shadow"
+                              >
+                                <div className="flex items-center gap-4">
+                                  {/* Rank Circle */}
+                                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                    <span className="text-lg font-bold text-[#2d3748]">
+                                      {actualRank}
+                                    </span>
+                                  </div>
+
+                                  {/* Team Icon */}
+                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-200 to-purple-300 flex items-center justify-center flex-shrink-0">
+                                    <Users
+                                      size={20}
+                                      className="text-purple-700"
+                                    />
+                                  </div>
+
+                                  {/* Team Name */}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-[#2d3748] truncate">
+                                      {entry.teamName || "—"}
+                                    </p>
+                                  </div>
+
+                                  {/* Score */}
+                                  <div className="text-right flex-shrink-0">
+                                    <p className="text-xl font-bold text-[#ff6b35]">
+                                      {formatScore(entry.score)} pts
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Show top 3 as list if less than 3 entries */}
+                      {leaderboardEntries.length < 3 && (
+                        <div className="space-y-3">
+                          {leaderboardEntries.map((entry, index) => {
+                            const actualRank = entry.rank || index + 1;
+                            const getRankIcon = () => {
+                              if (actualRank === 1)
+                                return (
+                                  <Trophy
+                                    className="text-yellow-500"
+                                    size={20}
+                                  />
+                                );
+                              if (actualRank === 2)
+                                return (
+                                  <Medal className="text-gray-400" size={20} />
+                                );
+                              if (actualRank === 3)
+                                return (
+                                  <Award className="text-amber-600" size={20} />
+                                );
+                              return null;
+                            };
+
+                            return (
+                              <div
+                                key={entry.teamId || index}
+                                className="bg-white rounded-lg border border-[#E5E5E5] p-4 shadow-sm hover:shadow-md transition-shadow"
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                    {getRankIcon() || (
+                                      <span className="text-lg font-bold text-[#2d3748]">
+                                        {actualRank}
+                                      </span>
+                                    )}
+                                  </div>
+                               
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-[#2d3748] truncate">
+                                      {entry.teamName || "—"}
+                                    </p>
+                                  </div>
+                                  <div className="text-right flex-shrink-0">
+                                    <p className="text-xl font-bold text-[#13d45d]">
+                                      {formatScore(entry.score)} <span className="text-xs text-[#13d45d]">pts</span>
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   ) : (
-                    <div className="text-center py-8 text-[#7A7574]">
+                    <div className="text-center py-12 text-[#7A7574]">
                       <Icon
-                        icon="mdi:file-document-outline"
+                        icon="mdi:trophy-outline"
                         width="48"
                         className="mx-auto mb-2 opacity-50"
                       />
-                      <p>No rules available yet</p>
+                      <p className="text-lg font-medium mb-1">
+                        No rankings available yet
+                      </p>
+                      <p className="text-sm">
+                        {isOngoing
+                          ? "Leaderboard will appear once teams start participating"
+                          : "This contest has not started yet"}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -676,20 +964,68 @@ const ContestDetail = () => {
             !completedQuizzesLoading &&
             completedRounds.length > 0 && (
               <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
-                <button
-                  onClick={() =>
-                    navigate(`/quiz/${completedRounds[0].roundId}/finish`, {
-                      state: { contestId },
-                    })
-                  }
-                  className="button-orange w-full flex items-center justify-center gap-2 py-3"
-                >
-                  <Icon icon="mdi:clipboard-check-outline" width="18" />
-                  See Your Result
-                </button>
-                <p className="text-xs text-[#7A7574] text-center mt-2">
-                  View your quiz results and scores
-                </p>
+                {completedRounds.length === 1 ? (
+                  // Single quiz - direct button
+                  <>
+                    <button
+                      onClick={() =>
+                        navigate(`/quiz/${completedRounds[0].roundId}/finish`, {
+                          state: { contestId },
+                        })
+                      }
+                      className="button-green w-full flex items-center justify-center gap-2 py-3"
+                    >
+                      <Icon icon="mdi:clipboard-check-outline" width="18" />
+                      See Your Result
+                    </button>
+                    <p className="text-xs text-[#7A7574] text-center mt-2">
+                      View your quiz results and scores
+                    </p>
+                  </>
+                ) : (
+                  // Multiple quizzes - show list for user to choose
+                  <>
+                    <h3 className="text-sm font-semibold text-gray-800 mb-3">
+                      Your Quiz Results ({completedRounds.length})
+                    </h3>
+                    <div className="space-y-2">
+                      {completedRounds.map((round, index) => {
+                        // Find round name from rounds array
+                        const roundInfo = rounds.find(
+                          (r) => r.roundId === round.roundId
+                        );
+                        const roundName =
+                          roundInfo?.roundName ||
+                          round.roundName ||
+                          `Quiz ${index + 1}`;
+
+                        return (
+                          <button
+                            key={round.roundId || index}
+                            onClick={() =>
+                              navigate(`/quiz/${round.roundId}/finish`, {
+                                state: { contestId },
+                              })
+                            }
+                            className="button-orange w-full flex items-center justify-between gap-2 py-2 px-3 text-sm"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Icon
+                                icon="mdi:clipboard-check-outline"
+                                width="16"
+                              />
+                              <span>{roundName}</span>
+                            </div>
+                            <Icon icon="mdi:chevron-right" width="16" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="text-xs text-[#7A7574] text-center mt-3">
+                      Click on a quiz to view detailed results
+                    </p>
+                  </>
+                )}
               </div>
             )}
           {/* Your Team Status - For both student and mentor */}

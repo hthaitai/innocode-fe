@@ -1,56 +1,226 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageContainer from '@/shared/components/PageContainer';
 import { Icon } from '@iconify/react';
 import useQuiz from '../hooks/useQuiz';
 import useQuizSubmit from '../hooks/useQuizSubmit';
+import useMCQTestFlow from '../hooks/useMCQTestFlow';
 
 const MCQTest = () => {
   const { roundId, contestId } = useParams();
   const navigate = useNavigate();
-  const { quiz, loading, error } = useQuiz(roundId);
-  const { submitQuiz, isSubmitting, submitError } = useQuizSubmit();
+  const { quiz, loading: quizLoading, error: quizError } = useQuiz(roundId);
+  const { submitQuiz, isSubmitting } = useQuizSubmit();
+  
+  // MCQ Test Flow hook
+  const {
+    testKey,
+    startTime,
+    timeLimitInSeconds,
+    loading: flowLoading,
+    error: flowError,
+    initializeTest,
+    saveAnswer,
+    saveAnswerImmediate,
+    getCurrentAnswers,
+    getTimeRemaining,
+  } = useMCQTestFlow(roundId);
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState([]);
+  const [answers, setAnswers] = useState({});
   const [timeRemaining, setTimeRemaining] = useState(null);
-  useEffect(() => {
-    if (quiz?.mcqTest) {
-      setTimeRemaining(3600); // 1 hour default
-      console.log(roundId);
-    }
-  }, [quiz]);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const hasRestoredAnswers = useRef(false);
+  const isRestoring = useRef(false);
 
+  // Initialize test when quiz is loaded
   useEffect(() => {
-    if (timeRemaining === null || timeRemaining <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          handleAutoSubmit();
-          return 0;
-        }
-        return prev - 1;
+    const init = async () => {
+      console.log('🚀 Initializing test...', {
+        hasQuiz: !!quiz,
+        hasMcqTest: !!quiz?.mcqTest,
+        isInitialized
       });
-    }, 1000);
 
-    return () => clearInterval(timer);
-  }, [timeRemaining]);
+      if (!quiz?.mcqTest || isInitialized) {
+        console.log('⏸️ Skip init:', { hasQuiz: !!quiz, hasMcqTest: !!quiz?.mcqTest, isInitialized });
+        return;
+      }
+      
+      console.log('📞 Calling initializeTest...');
+      const result = await initializeTest();
+      console.log('📥 initializeTest result:', result);
+      
+      if (result) {
+        setIsInitialized(true);
+        console.log('✅ Test initialized, testKey:', result.key);
+        
+        // Try to restore answers from API using the key from initializeTest result
+        isRestoring.current = true; // Mark that we're restoring
+        console.log('🔄 Restoring answers from server...', { testKey: result.key });
+        // Use testKey from result instead of waiting for state update
+        const currentData = await getCurrentAnswers(result.key);
+        console.log('📥 getCurrentAnswers result:', currentData);
+        
+        if (currentData?.answers && currentData.answers.length > 0) {
+          const restoredAnswers = {};
+          currentData.answers.forEach(item => {
+            restoredAnswers[item.questionId] = item.selectedOptionId;
+          });
+          // Set answers while isRestoring is true (auto-save will skip)
+          setAnswers(restoredAnswers);
+          console.log(`✅ Restored ${currentData.answers.length} answer(s) from server`, restoredAnswers);
+        } else {
+          console.log('ℹ️ No answers to restore');
+        }
+        // Mark restore as complete first, then enable auto-save in next tick
+        isRestoring.current = false;
+        // Enable auto-save after a brief delay to avoid saving during restore
+        setTimeout(() => {
+          hasRestoredAnswers.current = true;
+          console.log('✅ Auto-save enabled - Ready to save!');
+        }, 50);
+      } else {
+        console.log('❌ Failed to initialize test');
+      }
+    };
+    
+    init();
+  }, [quiz, isInitialized, initializeTest, getCurrentAnswers]);
+
+  // Calculate and update time remaining based on startTime
+  useEffect(() => {
+    if (!isInitialized || !startTime || !timeLimitInSeconds) return;
+
+    const updateTime = () => {
+      const remaining = getTimeRemaining();
+      setTimeRemaining(remaining);
+      
+      if (remaining <= 0) {
+        handleAutoSubmit();
+      }
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    
+    return () => clearInterval(interval);
+  }, [isInitialized, startTime, timeLimitInSeconds, getTimeRemaining]);
+
+  // Auto-save when answer changes (only after initialization and restoring answers)
+  useEffect(() => {
+    console.log('🔍 Auto-save effect triggered', {
+      isInitialized,
+      testKey,
+      hasRestoredAnswers: hasRestoredAnswers.current,
+      isRestoring: isRestoring.current,
+      answersCount: Object.keys(answers).length,
+      answers: answers
+    });
+
+    // Skip auto-save if:
+    // - Not initialized yet
+    // - No testKey
+    // - Haven't finished restoring answers
+    // - Currently restoring (to avoid saving during restore)
+    if (!isInitialized) {
+      console.log('⏸️ Auto-save skipped: Not initialized');
+      return;
+    }
+    if (!testKey) {
+      console.log('⏸️ Auto-save skipped: No testKey');
+      return;
+    }
+    if (!hasRestoredAnswers.current) {
+      console.log('⏸️ Auto-save skipped: Answers not restored yet');
+      return;
+    }
+    if (isRestoring.current) {
+      console.log('⏸️ Auto-save skipped: Currently restoring');
+      return;
+    }
+    
+    const answersArray = Object.entries(answers).map(([questionId, selectedOptionId]) => ({
+      questionId,
+      selectedOptionId,
+    }));
+    
+    if (answersArray.length > 0) {
+      console.log('💾 Auto-saving answers...', answersArray);
+      saveAnswer(answersArray);
+    } else {
+      console.log('⏸️ Auto-save skipped: No answers to save');
+    }
+  }, [answers, testKey, isInitialized, saveAnswer]);
 
   const handleAnswerSelect = (questionId, optionId) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: optionId,
-    }));
+    console.log('👆 User selected answer:', { questionId, optionId });
+    setAnswers((prev) => {
+      const newAnswers = {
+        ...prev,
+        [questionId]: optionId,
+      };
+      console.log('📝 Updated answers:', newAnswers);
+      return newAnswers;
+    });
+    // Auto-save will be triggered by useEffect above
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = async () => {
+    console.log('⬅️ Previous button clicked', {
+      currentQuestion,
+      testKey,
+      answersCount: Object.keys(answers).length
+    });
+
     if (currentQuestion > 0) {
+      // Save answers immediately before navigating
+      if (testKey && Object.keys(answers).length > 0) {
+        const answersArray = Object.entries(answers).map(([questionId, selectedOptionId]) => ({
+          questionId,
+          selectedOptionId,
+        }));
+        console.log('💾 Saving answers before Previous:', answersArray);
+        const result = await saveAnswerImmediate(answersArray);
+        console.log('💾 Save result:', result);
+      } else {
+        console.log('⏸️ Skip save: No testKey or no answers', { testKey, answersCount: Object.keys(answers).length });
+      }
       setCurrentQuestion(currentQuestion - 1);
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    console.log('➡️ Next button clicked', {
+      currentQuestion,
+      totalQuestions: quiz?.mcqTest?.questions?.length,
+      testKey,
+      answersCount: Object.keys(answers).length,
+      answers: answers
+    });
+
     if (currentQuestion < quiz.mcqTest.questions.length - 1) {
+      // Save answers immediately before navigating (even if empty to test)
+      if (testKey) {
+        const answersArray = Object.entries(answers).map(([questionId, selectedOptionId]) => ({
+          questionId,
+          selectedOptionId,
+        }));
+        console.log('💾 Saving answers before Next:', {
+          answersArray,
+          answersArrayLength: answersArray.length,
+          answersObject: answers
+        });
+        
+        if (answersArray.length > 0) {
+          const result = await saveAnswerImmediate(answersArray);
+          console.log('💾 Save result:', result);
+        } else {
+          console.log('⏸️ No answers to save (empty array)');
+        }
+      } else {
+        console.log('⏸️ Skip save: No testKey', { testKey });
+      }
       setCurrentQuestion(currentQuestion + 1);
     }
   };
@@ -66,7 +236,7 @@ const MCQTest = () => {
 
     if (unansweredCount > 0) {
       const confirmMessage = `You have ${unansweredCount} unanswered question(s). Are you sure you want to submit?`;
-      if (!window.confirm(confirmMessage)) ;
+      if (!window.confirm(confirmMessage)) return;
     } else {
       if (!window.confirm('Are you sure you want to submit your answers?'))
         return;
@@ -82,14 +252,22 @@ const MCQTest = () => {
         selectedOptionId,
       })
     );
-    console.log('📝 Body answers gửi lên:', answersArray); // Log để kiểm tra
+    console.log('📝 Body answers gửi lên:', answersArray);
 
     const result = await submitQuiz(roundId, answersArray);
 
     if (result.success) {
-      alert('Quiz submitted successfully!');
+      // Clear sessionStorage after successful submit
+      sessionStorage.removeItem(`mcq_test_key_${roundId}`);
+      sessionStorage.removeItem(`mcq_test_startTime_${roundId}`);
+      sessionStorage.removeItem(`mcq_test_timeLimit_${roundId}`);
+      
+      // Navigate to finish page with result data
       navigate(`/quiz/${roundId}/finish`, {
-        state: { contestId },
+        state: { 
+          contestId,
+          resultData: result.data // Pass the full result data from submit response
+        },
       });
     } else {
       alert(`Failed to submit quiz: ${result.error}`);
@@ -97,6 +275,7 @@ const MCQTest = () => {
   };
 
   const formatTime = (seconds) => {
+    if (seconds === null || seconds === undefined) return '00:00:00';
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
@@ -105,7 +284,8 @@ const MCQTest = () => {
       .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  if (loading) {
+  // Combine loading states
+  if (quizLoading || flowLoading) {
     return (
       <PageContainer bg={false}>
         <div className="flex items-center justify-center min-h-[400px]">
@@ -118,7 +298,8 @@ const MCQTest = () => {
     );
   }
 
-  if (error) {
+  // Combine error states
+  if (quizError || flowError) {
     return (
       <PageContainer bg={false}>
         <div className="flex items-center justify-center min-h-[400px]">
@@ -130,7 +311,7 @@ const MCQTest = () => {
             <h3 className="text-xl font-bold text-gray-800 mb-2">
               Failed to Load Quiz
             </h3>
-            <p className="text-gray-600 mb-4">{error}</p>
+            <p className="text-gray-600 mb-4">{quizError || flowError}</p>
             <button
               onClick={() => navigate(`/contest-detail/${contestId}`)}
               className="button-orange"
@@ -182,7 +363,7 @@ const MCQTest = () => {
                     <p className="text-sm text-gray-600">Time Remaining</p>
                     <p
                       className={`text-xl font-bold ${
-                        timeRemaining < 300 ? 'text-red-600' : 'text-red-600'
+                        timeRemaining !== null && timeRemaining < 300 ? 'text-red-600' : 'text-gray-900'
                       }`}
                     >
                       {formatTime(timeRemaining)}
@@ -243,12 +424,18 @@ const MCQTest = () => {
                             checked={
                               answers[question.questionId] === option.optionId
                             }
-                            onChange={() =>
+                            onChange={(e) => {
+                              console.log('🔘 Radio input onChange triggered', {
+                                questionId: question.questionId,
+                                optionId: option.optionId,
+                                value: e.target.value,
+                                checked: e.target.checked
+                              });
                               handleAnswerSelect(
                                 question.questionId,
                                 option.optionId
-                              )
-                            }
+                              );
+                            }}
                             className="w-5 h-5 text-orange-600 cursor-pointer"
                           />
                           <span className="flex items-center gap-2">

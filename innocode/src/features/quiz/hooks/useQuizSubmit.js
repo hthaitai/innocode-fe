@@ -5,18 +5,24 @@ const useQuizSubmit = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const submitQuiz = async (roundId, answer) => {
+  const submitQuiz = async (roundId, answersArray) => {
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
     try {
-      const submissionDTO = {
-        answers: Object.entries(answer).map(([questionId, optionId]) => ({
-          questionId,
-          selectedOptionId: optionId,
-        })),
+      // Backend expects: { "answers": [...] }
+      // answersArray is already in correct format from MCQTest.jsx
+      const requestBody = {
+        answers: answersArray
       };
-      const response = await quizApi.submitQuiz(roundId, { submissionDTO });
+      
+      console.log('📤 Submitting quiz:', {
+        roundId,
+        body: requestBody,
+        answersCount: answersArray?.length || 0
+      });
+      
+      const response = await quizApi.submitQuiz(roundId, requestBody);
       console.log('✅ Submit Quiz Response:', response.data);
 
       if (response.data && response.data.code === 'SUCCESS') {

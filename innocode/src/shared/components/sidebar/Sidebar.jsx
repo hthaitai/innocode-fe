@@ -1,55 +1,55 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Icon } from '@iconify/react';
-import './sidebar.css';
-import { useAuth } from '@/context/AuthContext';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Icon } from "@iconify/react";
+import "./sidebar.css";
+import { useAuth } from "@/context/AuthContext";
 
 const allMenus = {
-  profile: { path: '/profile', label: 'Profile', icon: 'lucide:user' },
+  profile: { path: "/profile", label: "Profile", icon: "lucide:user" },
   dashboard: {
-    path: '/dashboard',
-    label: 'Dashboard',
-    icon: 'lucide:layout-dashboard',
+    path: "/dashboard",
+    label: "Dashboard",
+    icon: "lucide:layout-dashboard",
   },
 
   // Student menus
-  contests: { path: '/contests', label: 'Contests', icon: 'lucide:trophy' },
+  contests: { path: "/contests", label: "Contests", icon: "lucide:trophy" },
   practice: {
-    path: '/practice',
-    label: 'Practice',
-    icon: 'lucide:file-spreadsheet',
+    path: "/practice",
+    label: "Practice",
+    icon: "lucide:file-spreadsheet",
   },
-  team: { path: '/team', label: 'Team', icon: 'lucide:users' },
+  team: { path: "/team", label: "Team", icon: "lucide:users" },
   leaderboard: {
-    path: '/leaderboard',
-    label: 'Leaderboard',
-    icon: 'lucide:chart-no-axes-column',
+    path: "/leaderboard",
+    label: "Leaderboard",
+    icon: "lucide:chart-no-axes-column",
   },
   certificate: {
-    path: '/certificate',
-    label: 'Certificate',
-    icon: 'lucide:award',
+    path: "/certificate",
+    label: "Certificate",
+    icon: "lucide:award",
   },
   mycontest: {
-    path:'/mycontest',
-    label: 'My Contest',
-    icon: 'lucide:notebook-pen',
+    path: "/mycontest",
+    label: "My Contest",
+    icon: "lucide:notebook-pen",
   },
   // Organizer menus
   organizerContests: {
-    path: '/organizer/contests',
-    label: 'Contests',
-    icon: 'lucide:trophy',
+    path: "/organizer/contests",
+    label: "Contests",
+    icon: "lucide:trophy",
   },
   organizerProvinces: {
-    path: '/organizer/provinces',
-    label: 'Provinces',
-    icon: 'lucide:map-pin',
+    path: "/organizer/provinces",
+    label: "Provinces",
+    icon: "lucide:map-pin",
   },
   organizerSchools: {
-    path: '/organizer/schools',
-    label: 'Schools',
-    icon: 'lucide:school',
+    path: "/organizer/schools",
+    label: "Schools",
+    icon: "lucide:school",
   },
   organizerNotifications: {
     path: "/organizer/notifications",
@@ -62,38 +62,50 @@ const allMenus = {
     path: "/judge/manual-submissions",
     label: "Submissions",
     icon: "lucide:file-text",
+  //Mentor menus
+  appeal: {
+    path: "/appeal",
+    label: "Appeal",
+    icon: "lucide:calendar-range",
   },
-
   // Common menus
   announcements: {
-    path: '/announcements',
-    label: 'Announcements',
-    icon: 'lucide:bell',
+    path: "/announcements",
+    label: "Announcements",
+    icon: "lucide:bell",
   },
-  help: { path: '/help', label: 'Help', icon: 'lucide:circle-question-mark' },
+  help: { path: "/help", label: "Help", icon: "lucide:circle-question-mark" },
 };
 
 const menuByRole = {
   student: [
-    'profile',
-    'contests',
-    'mycontest',
-    'practice',
-    'team',
-    'leaderboard',
-    'certificate',
-    'announcements',
-    'help',
+    "profile",
+    "contests",
+    "mycontest",
+    "practice",
+    "team",
+    "leaderboard",
+    "certificate",
+    "announcements",
+    "help",
   ],
   organizer: [
-    'profile',
-    'organizerContests',
-    'organizerProvinces',
-    'organizerSchools',
-    'organizerNotifications',
-    'help',
+    "profile",
+    "organizerContests",
+    "organizerProvinces",
+    "organizerSchools",
+    "organizerNotifications",
+    "help",
   ],
-  mentor: ['profile', 'dashboard', 'contests', 'team', 'announcements', 'help'],
+  mentor: [
+    "profile",
+    "leaderboard",
+    "contests",
+    "team",
+    "announcements",
+    "appeal",
+    "help",
+  ],
 
   judge: ['profile', 'dashboard', 'manualSubmissions', 'announcements', 'help'],
   admin: ['profile', 'dashboard', 'leaderboard', 'announcements', 'help'],
@@ -102,20 +114,22 @@ const menuByRole = {
 const Sidebar = () => {
   const location = useLocation();
   const { user } = useAuth();
-  const role = user?.role || 'student'; // Get role from AuthContext instead of localStorage
+  const role = user?.role || "student"; // Get role from AuthContext instead of localStorage
   const menuKeys = menuByRole[role] || menuByRole.student;
-  const menuItems = menuKeys.map((key) => {
-    const menu = allMenus[key];
-    // Override team path for mentor
-    if (key === 'team' && role === 'mentor') {
-      return { ...menu, path: '/team' }; // Keep same path, but Team.jsx will handle it
-    }
-    return menu;
-  }).filter(Boolean);
-  
+  const menuItems = menuKeys
+    .map((key) => {
+      const menu = allMenus[key];
+      // Override team path for mentor
+      if (key === "team" && role === "mentor") {
+        return { ...menu, path: "/team" }; // Keep same path, but Team.jsx will handle it
+      }
+      return menu;
+    })
+    .filter(Boolean);
+
   const isActive = (path) => {
-    if (path === '/') {
-      return location.pathname === '/';
+    if (path === "/") {
+      return location.pathname === "/";
     }
     return location.pathname.startsWith(path)
   }
@@ -128,7 +142,7 @@ const Sidebar = () => {
           <div className="avatar-gradient"></div>
         </div>
         <div className="user-info">
-          <div className="user-name">{user?.name || 'User'}</div>
+          <div className="user-name">{user?.name || "User"}</div>
           <div className="user-role">
             {role.charAt(0).toUpperCase() + role.slice(1)} account
           </div>
@@ -141,7 +155,7 @@ const Sidebar = () => {
           <Link
             key={item.path}
             to={item.path}
-            className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+            className={`nav-item ${isActive(item.path) ? "active" : ""}`}
           >
             <Icon icon={item.icon} className="nav-icon" />
             <span className="nav-label">{item.label}</span>

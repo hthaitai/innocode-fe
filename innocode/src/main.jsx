@@ -13,7 +13,6 @@ import Profile from "./features/common/pages/Profile"
 import Dashboard from "./features/common/pages/Dashboard"
 import Announcements from "./features/common/pages/Announcements"
 import Unauthorized from "./features/common/pages/Unauthorized"
-
 // Student pages
 import Contests from "./features/contest/student/Contests"
 import ContestDetail from "./features/contest/student/ContestDetail"
@@ -22,7 +21,6 @@ import Practice from "./features/contest/student/Practice"
 import PracticeDetail from "./features/contest/student/PracticeDetail"
 import PracticeStart from "./features/contest/student/PracticeStart"
 import Team from "./features/contest/student/Team"
-import Leaderboard from "./features/contest/student/Leaderboard"
 import Help from "./features/contest/student/Help"
 import MCQTest from "./features/quiz/student/MCQTest"
 import FinishQuiz from "./features/quiz/student/FinishQuiz"
@@ -69,7 +67,8 @@ import VerifyEmail from "./features/auth/components/VerifyEmail"
 import ForgotPassword from "./features/auth/components/ForgotPassword"
 import ResetPassword from "./features/auth/components/ResetPassword"
 import MyContest from "./features/contest/student/MyContest"
-
+//Mentor pages
+import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal"
 // Organizer pages
 import AddTestCase from "./features/problems/auto-evaluation/pages/AddTestCase"
 import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage"
@@ -80,6 +79,7 @@ import JudgeManualResultsPage from "./features/submission/pages/judge/JudgeManua
 import JudgeManualSubmissionsPage from "./features/submission/pages/judge/JudgeManualSubmissionsPage" // new page for pending submissions list
 import JudgeManualEvaluationsPage from "./features/submission/pages/judge/JudgeManualEvaluationsPage"
 
+import Leaderboard from "./features/leaderboard/pages/student/Leaderboard"
 // Initialize EmailJS when app starts
 initEmailJs()
 const router = createBrowserRouter([
@@ -220,6 +220,14 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             {" "}
             <Profile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "appeal",
+        element: (
+          <ProtectedRoute>
+            <MentorAppeal />
           </ProtectedRoute>
         ),
       },
