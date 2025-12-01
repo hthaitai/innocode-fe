@@ -1,12 +1,35 @@
 import { ExpandColumn } from "../../../shared/components/ExpandColumn"
-import { Trash2 } from "lucide-react"
+import { ChevronRight, Trash2 } from "lucide-react"
 
 export const getMcqSelectedColumns = (deselectQuestion) => [
-  ExpandColumn,
   {
     header: "Question Text",
     accessorKey: "text",
-    cell: (info) => info.getValue() || "Untitled Question",
+    cell: ({ row, getValue }) => {
+      const isExpanded = row.getIsExpanded()
+
+      return (
+        <div className="flex items-center gap-2">
+          {/* Expand toggle */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              row.toggleExpanded()
+            }}
+            className={`p-0 flex items-center justify-center rounded select-none text-[#7A7574] hover:text-black ${
+              isExpanded ? "rotate-90" : "rotate-0"
+            }`}
+            aria-label={isExpanded ? "Collapse" : "Expand"}
+            style={{ transition: "none" }}
+          >
+            <ChevronRight size={16} />
+          </button>
+
+          {/* Question text */}
+          <span>{getValue() || "Untitled Question"}</span>
+        </div>
+      )
+    },
   },
   {
     header: "Options",
