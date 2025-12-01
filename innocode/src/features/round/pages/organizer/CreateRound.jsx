@@ -67,7 +67,7 @@ const CreateRound = () => {
       formPayload.append("ProblemType", form.problemType)
       formPayload.append("TimeLimitSeconds", form.timeLimitSeconds)
 
-      if (form.problemConfig) {
+      if (form.problemType !== "McqTest") {
         formPayload.append("ProblemConfig.Type", form.problemConfig.type)
         formPayload.append(
           "ProblemConfig.Description",

@@ -44,7 +44,6 @@ export default function TestCaseForm({
   }
 
   const disabled = !!isSubmitting || (mode === "edit" && !hasChanges)
-  const showSpinner = !!isSubmitting
 
   return (
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 grid grid-cols-[max-content_1fr] gap-x-[28px] gap-y-5 items-start">
@@ -141,16 +140,17 @@ export default function TestCaseForm({
             disabled ? "button-gray" : "button-orange"
           }`}
         >
-          {showSpinner && (
+          {isSubmitting && (
             <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
           )}
+
           {isSubmitting
             ? mode === "edit"
               ? "Saving..."
               : "Creating..."
             : mode === "edit"
-            ? "Save Changes"
-            : "Create Test Case"}
+            ? "Save"
+            : "Create"}
         </button>
       </div>
     </div>

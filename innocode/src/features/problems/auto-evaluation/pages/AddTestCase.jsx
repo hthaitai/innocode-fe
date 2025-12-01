@@ -17,7 +17,7 @@ const EMPTY_TEST_CASE = {
   memoryKb: null,
 }
 
-export default function AddTestCasePage() {
+export default function AddTestCase() {
   const navigate = useNavigate()
   const { contestId, roundId } = useParams()
   const { data: round, isLoading } = useGetRoundByIdQuery(roundId)
@@ -52,14 +52,7 @@ export default function AddTestCasePage() {
         `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation`
       )
     } catch (err) {
-      if (err?.data?.errors) {
-        const fieldErrors = Array.isArray(err.data.errors)
-          ? Object.fromEntries(err.data.errors.map((e) => [e.field, e.message]))
-          : err.data.errors
-        setErrors(fieldErrors)
-        toast.error("Please fix the highlighted errors.")
-        return
-      }
+      console.error(err)
       toast.error(err?.data?.errorMessage || "Failed to create test case.")
     }
   }

@@ -20,16 +20,10 @@ const OrganizerContestDetail = () => {
   } = useGetContestByIdQuery(contestId)
 
   // Breadcrumbs
-  const breadcrumbItems = useMemo(
-    () =>
-      BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(contest?.name ?? "Contest Detail"),
-    [contest?.name]
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(
+    contest?.name ?? "Contest Detail"
   )
-
-  const breadcrumbPaths = useMemo(
-    () => BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId),
-    [contestId]
-  )
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
 
   // If not found
   if (!contest && !isLoading) {

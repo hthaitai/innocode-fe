@@ -1,16 +1,17 @@
 import StatusBadge from "../../../../shared/components/StatusBadge"
+import { formatDateTime } from "../../../../shared/utils/dateTime"
 
 const getAutoResultColumns = () => [
   {
     accessorKey: "teamName",
-    header: "Team",
+    header: "Team name",
     size: 200,
     meta: { className: "truncate max-w-[200px]" },
     cell: ({ row }) => row.original.teamName || "—",
   },
   {
     accessorKey: "submittedByStudentName",
-    header: "Student",
+    header: "Student name",
     size: 200,
     meta: { className: "truncate max-w-[200px]" },
     cell: ({ row }) => row.original.submittedByStudentName || "—",
@@ -30,16 +31,16 @@ const getAutoResultColumns = () => [
   },
   {
     accessorKey: "submissionAttemptNumber",
-    header: "Attempt",
+    header: "Attempts",
     size: 80,
     meta: { className: "" },
   },
   {
     accessorKey: "createdAt",
-    header: "Created",
+    header: "Created at",
     size: 200,
     meta: { className: "truncate max-w-[200px]" },
-    cell: ({ row }) => row.original.createdAt || "—",
+    cell: ({ row }) => formatDateTime(row.original.createdAt),
   },
 ]
 

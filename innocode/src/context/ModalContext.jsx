@@ -14,8 +14,13 @@ import McqWeightModal from "../features/mcq/components/organizer/McqWeightModal"
 import RubricModal from "../features/problems/manual/components/RubricModal"
 import RubricCsvModal from "../features/problems/manual/components/RubricCsvModal"
 import TestCaseCsvModal from "../features/problems/auto-evaluation/components/TestCaseCsvModal"
+import McqCsvModal from "../features/mcq/components/organizer/McqCsvModal"
+import McqBankModal from "../features/mcq/components/organizer/McqBankModal"
 
-const ModalContext = createContext(null)
+const ModalContext = createContext({
+  openModal: () => {}, // no-op default
+  closeModal: () => {}, // no-op default
+})
 
 export function ModalProvider({ children }) {
   const [modal, setModal] = useState({ type: null, props: {} })
@@ -52,6 +57,8 @@ export function ModalProvider({ children }) {
     rubric: RubricModal,
     rubricCsv: RubricCsvModal,
     testCaseCsv: TestCaseCsvModal,
+    mcqCsv: McqCsvModal,
+    mcqBank: McqBankModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

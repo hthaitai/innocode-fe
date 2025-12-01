@@ -1,14 +1,7 @@
 import Actions from "@/shared/components/Actions"
 import { Edit2, Trash2 } from "lucide-react"
-import { ExpandColumn } from "../../../../shared/components/ExpandColumn"
 
-export const getRubricColumns = (
-  handleField,
-  handleDelete,
-  criteria,
-  roundId,
-  openModal
-) => [
+export const getRubricColumns = (handleEdit, handleDelete) => [
   {
     accessorKey: "description",
     header: "Description",
@@ -31,12 +24,7 @@ export const getRubricColumns = (
           {
             label: "Edit",
             icon: Edit2,
-            onClick: () =>
-              openModal("rubric", {
-                roundId,
-                criteria,
-                initialData: row.original,
-              }),
+            onClick: () => handleEdit(row.original),
           },
           {
             label: "Delete",

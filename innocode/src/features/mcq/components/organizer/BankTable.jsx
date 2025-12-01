@@ -42,22 +42,7 @@ const BankTable = ({ selectedBanks, setSelectedBanks }) => {
   )
 
   return (
-    <div className="space-y-1">
-      <div className="px-5 py-4 flex justify-between items-center border border-[#E5E5E5] rounded-[5px] bg-white">
-        <div className="flex items-center gap-5">
-          <Database size={20} />
-          <div>
-            <p className="text-[14px] leading-[20px]">
-              Import questions from bank
-            </p>
-            <p className="text-[12px] leading-[16px] text-[#7A7574]">
-              Select any question bank to preview its questions and add them to
-              your test.
-            </p>
-          </div>
-        </div>
-      </div>
-
+    <div>
       <TableFluent
         data={banks}
         columns={columns}
@@ -65,6 +50,13 @@ const BankTable = ({ selectedBanks, setSelectedBanks }) => {
         error={isError && "Failed to load banks"}
         pagination={pagination}
         onPageChange={setPage}
+        renderActions={() => (
+          <div className="min-h-[70px] px-5 flex items-center">
+            <p className="text-[14px] leading-[20px] font-medium">
+              Question banks
+            </p>
+          </div>
+        )}
       />
     </div>
   )

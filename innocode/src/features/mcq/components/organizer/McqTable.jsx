@@ -32,7 +32,7 @@ const McqTable = () => {
     { skip: !roundId }
   )
 
-  const mcqs = mcqData?.data?.mcqTest?.questions
+  const mcqs = mcqData?.data?.mcqTest?.questions || []
   const pagination = {
     pageNumber: mcqData?.data?.mcqTest?.currentPage || 1,
     pageSize: mcqData?.data?.mcqTest?.pageSize || 10,

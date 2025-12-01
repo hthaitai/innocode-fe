@@ -16,6 +16,14 @@ const RubricTable = ({ roundId, criteria = [], loadingRubric }) => {
 
   const savingRubric = false // Only needed if you want to disable "Add Criterion" button during some action
 
+  const handleEdit = (criterion) => {
+    openModal("rubric", {
+      roundId,
+      criteria,
+      initialData: criterion,
+    })
+  }
+
   const handleDelete = async (rubricId) => {
     try {
       if (rubricId) {
@@ -36,11 +44,7 @@ const RubricTable = ({ roundId, criteria = [], loadingRubric }) => {
       })),
     [criteria]
   )
-
-  const columns = useMemo(
-    () => getRubricColumns(null, handleDelete, criteria, roundId, openModal),
-    [handleDelete, criteria, roundId, openModal]
-  )
+  const columns = getRubricColumns(handleEdit, handleDelete)
 
   const totalMaxScore = criteria.reduce((a, c) => a + c.maxScore, 0)
 

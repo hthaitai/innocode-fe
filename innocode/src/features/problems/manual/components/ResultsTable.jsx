@@ -1,42 +1,7 @@
 import TableFluent from "@/shared/components/TableFluent"
-import { ExpandColumn } from "../../../../shared/components/ExpandColumn"
+import { getResultColumns } from "../columns/getResultColumns"
 
-const resultColumns = [
-  ExpandColumn,
-  {
-    header: "Student",
-    accessorKey: "studentName",
-    size: 200,
-    meta: { className: "truncate max-w-[200px]" },
-  },
-  {
-    header: "Team",
-    accessorKey: "teamName",
-    size: 200,
-    meta: { className: "truncate max-w-[200px]" },
-  },
-  {
-    header: "Submitted At",
-    accessorKey: "submittedAt",
-    size: 160,
-    cell: ({ getValue }) => new Date(getValue()).toLocaleString(),
-    meta: { className: "truncate max-w-[160px]" },
-  },
-  {
-    header: "Judged By",
-    accessorKey: "judgedBy",
-    size: 160,
-    meta: { className: "truncate max-w-[160px]" },
-  },
-  {
-    header: "Score",
-    accessorKey: "totalScore",
-    size: 80,
-    cell: ({ row }) =>
-      `${row.original.totalScore} / ${row.original.maxPossibleScore}`,
-    meta: { className: "truncate max-w-[80px]" },
-  },
-]
+const columns = getResultColumns()
 
 const ResultsTable = ({ results, loading, pagination, onPageChange }) => {
   const renderSubComponent = (submission) => {
@@ -99,11 +64,18 @@ const ResultsTable = ({ results, loading, pagination, onPageChange }) => {
   return (
     <TableFluent
       data={results}
-      columns={resultColumns}
+      columns={columns}
       loading={loading}
       pagination={pagination}
       onPageChange={onPageChange}
       renderSubComponent={renderSubComponent}
+      renderActions={() => (
+        <div className="min-h-[70px] px-5 flex items-center">
+          <p className="text-[14px] leading-[20px] font-medium">
+            Results
+          </p>
+        </div>
+      )}
     />
   )
 }

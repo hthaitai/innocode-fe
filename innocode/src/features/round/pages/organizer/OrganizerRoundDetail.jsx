@@ -18,18 +18,14 @@ const OrganizerRoundDetail = () => {
   } = useGetRoundByIdQuery(roundId)
 
   // Breadcrumbs
-  const breadcrumbItems = useMemo(
-    () =>
-      BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
-        round?.contestName ?? "Contest",
-        round?.roundName ?? "Round"
-      ),
-    [round?.contestName, round?.roundName]
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
+    round?.contestName ?? "Contest",
+    round?.roundName ?? "Round"
   )
 
-  const breadcrumbPaths = useMemo(
-    () => BREADCRUMB_PATHS.ORGANIZER_ROUND_DETAIL(contestId, roundId),
-    [contestId, roundId]
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_DETAIL(
+    contestId,
+    roundId
   )
 
   if (!round && !loading) {

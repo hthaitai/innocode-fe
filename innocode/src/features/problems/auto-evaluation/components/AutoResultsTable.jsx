@@ -6,11 +6,11 @@ import { useGetAutoTestResultsQuery } from "../../../../services/autoEvaluationA
 
 const AutoResultsTable = () => {
   const { roundId } = useParams()
-  const [pageNumber, setPageNumber] = useState(1)
+  const [page, setPage] = useState(1)
   const pageSize = 10
 
   const { data: resultsData, isLoading } = useGetAutoTestResultsQuery(
-    { roundId, pageNumber, pageSize },
+    { roundId, pageNumber: page, pageSize },
     { skip: !roundId }
   )
 
@@ -19,17 +19,20 @@ const AutoResultsTable = () => {
 
   const columns = getAutoResultColumns()
 
-  const handlePageChange = (newPage) => {
-    setPageNumber(newPage)
-  }
-
   return (
     <TableFluent
       data={autoResults}
       columns={columns}
       loading={isLoading}
       pagination={pagination}
-      onPageChange={handlePageChange}
+      onPageChange={setPage}
+      renderActions={() => (
+        <div className="min-h-[70px] px-5 flex items-center">
+          <p className="text-[14px] leading-[20px] font-medium">
+            Results
+          </p>
+        </div>
+      )}
     />
   )
 }

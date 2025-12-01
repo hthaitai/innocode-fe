@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react"
 import PageContainer from "@/shared/components/PageContainer"
-import CsvImportSection from "../components/organizer/CsvImportSection"
 import BankTable from "../components/organizer/BankTable"
 import QuestionsPreviewSection from "../components/organizer/QuestionsPreviewSection"
 
@@ -13,12 +12,13 @@ import {
 import { useGetRoundByIdQuery } from "@/services/roundApi"
 import { useParams, useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
-import { getPreviewColumns } from "../columns/getPreviewColumns"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useModal } from "../../../shared/hooks/useModal"
 
 const OrganizerMcqCreate = () => {
   const { roundId, contestId } = useParams()
   const navigate = useNavigate()
+  const { openModal } = useModal()
 
   // ===== RTK QUERY HOOKS =====
   const {
@@ -45,10 +45,8 @@ const OrganizerMcqCreate = () => {
 
   // ===== LOCAL STATE =====
   const [uploadedQuestions, setUploadedQuestions] = useState([])
-  const [selectedBanks, setSelectedBanks] = useState([]) // ✅ array of bank objects
+  const [selectedBanks, setSelectedBanks] = useState([])
   const [selectedQuestions, setSelectedQuestions] = useState([])
-
-  const columns = useMemo(() => getPreviewColumns(), [])
 
   // ===== QUESTIONS FROM UPLOAD =====
   const questionsFromUpload = useMemo(
@@ -96,6 +94,15 @@ const OrganizerMcqCreate = () => {
     }
   }, [selectedQuestions, testId, createTest, roundId, contestId, navigate])
 
+  // ===== HANDLERS FOR MODALS =====
+  const handleUploadCsv = useCallback(() => {
+    openModal("mcqCsv", { testId, onUpload: setUploadedQuestions })
+  }, [openModal, testId])
+
+  const handleImportBanks = useCallback(() => {
+    openModal("mcqBank", { selectedBanks, setSelectedBanks })
+  }, [openModal, selectedBanks])
+
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_NEW(
     round?.contestName ?? "Contest",
     round?.roundName ?? "Round"
@@ -112,34 +119,15 @@ const OrganizerMcqCreate = () => {
       loading={roundLoading}
       error={roundError}
     >
-      <div className="space-y-5">
-        {/* CSV Upload Section */}
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">
-            Import questions
-          </div>
-
-          <div className="space-y-5">
-            <CsvImportSection testId={testId} onUpload={setUploadedQuestions} />
-
-            {/* Bank Selector */}
-            <BankTable
-              selectedBanks={selectedBanks}
-              setSelectedBanks={setSelectedBanks}
-            />
-          </div>
-        </div>
-
-        {/* Questions Preview Section */}
-        <QuestionsPreviewSection
-          questions={allQuestions}
-          columns={columns}
-          selectedQuestions={selectedQuestions}
-          setSelectedQuestions={setSelectedQuestions}
-          loading={mcqLoading || banksLoading || createLoading}
-          onChoose={handleChoose}
-        />
-      </div>
+      <QuestionsPreviewSection
+        questions={allQuestions}
+        selectedQuestions={selectedQuestions}
+        setSelectedQuestions={setSelectedQuestions}
+        loading={mcqLoading || banksLoading || createLoading}
+        onChoose={handleChoose}
+        onUploadCsv={handleUploadCsv}
+        onImportBanks={handleImportBanks}
+      />
     </PageContainer>
   )
 }

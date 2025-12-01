@@ -63,14 +63,6 @@ const allMenus = {
     label: "Submissions",
     icon: "lucide:file-text",
   },
-  evaluationHistory: {
-    path: "/judge/evaluations",
-    label: "Evaluations",
-    icon: "lucide:clipboard-check",
-    path: '/organizer/notifications',
-    label: 'Notifications',
-    icon: 'lucide:bell',
-  },
 
   // Common menus
   announcements: {

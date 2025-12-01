@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCQ Side-by-Side Tables</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    margin: 20px;
+  }
+
+  /* Flex container for side-by-side tables */
+  .tables-container {
+    display: flex;
+    gap: 20px; /* gap between the tables */
+    max-width: 1024px;
+    margin: 0 auto;
+  }
+
+  /* Card / Panel for each table */
+  .table-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Widths for side-by-side */
+  .preview-card {
+    flex: 2; /* 2/3 of space */
+  }
+
+  .selected-card {
+    flex: 1; /* 1/3 of space */
+  }
+
+  /* Toolbar styling */
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar button {
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    margin: 4px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .toolbar button:hover {
+    background: #45a049;
+  }
+
+  /* Table styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+
+  th {
+    background: #f0f0f0;
+  }
+
+  /* Scroll for large tables */
+  .table-container {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  /* Responsive for small screens */
+  @media (max-width: 768px) {
+    .tables-container {
+      flex-direction: column;
+    }
+    .preview-card, .selected-card {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="tables-container">
+
+  <!-- Preview Table Card -->
+  <div class="table-card preview-card">
+    <div class="toolbar">
+      <div>
+        <button>Upload CSV</button>
+        <button>Add From Bank</button>
+      </div>
+      <div>
+        <input type="text" placeholder="Search questions...">
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Question</th>
+            <th>Category</th>
+            <th>Difficulty</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td>What is the capital of France?</td>
+            <td>Geography</td>
+            <td>Easy</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td>Which element has atomic number 6?</td>
+            <td>Science</td>
+            <td>Medium</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td>Who wrote 'Hamlet'?</td>
+            <td>Literature</td>
+            <td>Hard</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Selected Table Card -->
+  <div class="table-card selected-card">
+    <div class="toolbar">
+      <h3>Selected Questions</h3>
+      <button>Choose Selected Questions</button>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Question</th>
+            <th>Category</th>
+            <th>Difficulty</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>What is the capital of France?</td>
+            <td>Geography</td>
+            <td>Easy</td>
+            <td><button style="background:#f44336; color:white;">Remove</button></td>
+          </tr>
+          <tr>
+            <td>Which element has atomic number 6?</td>
+            <td>Science</td>
+            <td>Medium</td>
+            <td><button style="background:#f44336; color:white;">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -33,21 +33,15 @@ const ManualResultsPage = () => {
   }, [search, refetch])
 
   // Breadcrumbs (safe defaults)
-  const breadcrumbItems = round
-    ? BREADCRUMBS.ORGANIZER_MANUAL_RESULTS?.(round.contestName, round.name) || [
-        "Contests",
-        "Round",
-        "Manual Results",
-      ]
-    : ["Contests", "Round", "Manual Results"]
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_MANUAL_RESULTS(
+    round?.contestName ?? "Contest",
+    round?.roundName ?? "Round"
+  )
 
-  const breadcrumbPaths = round
-    ? BREADCRUMB_PATHS.ORGANIZER_MANUAL_RESULTS?.(round.contestId, roundId) || [
-        "/contests",
-        `/rounds/${roundId}`,
-        `/rounds/${roundId}/manual-results`,
-      ]
-    : ["/contests", `/rounds/${roundId}`, `/rounds/${roundId}/manual-results`]
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MANUAL_RESULTS(
+    round?.contestId,
+    roundId
+  )
 
   return (
     <PageContainer

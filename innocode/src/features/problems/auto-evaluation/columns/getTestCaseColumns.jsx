@@ -18,7 +18,7 @@ const getTestCaseColumns = (handleEditTestCase, handleDeleteTestCase) => [
   },
   {
     accessorKey: "expectedOutput",
-    header: "Expected Output",
+    header: "Expected output",
     size: 180,
     meta: { className: "truncate max-w-[200px]" },
     cell: ({ row }) => row.original.expectedOutput || "—",

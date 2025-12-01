@@ -71,7 +71,7 @@ import ResetPassword from "./features/auth/components/ResetPassword"
 import MyContest from "./features/contest/student/MyContest"
 
 // Organizer pages
-import AddTestCasePage from "./features/problems/auto-evaluation/pages/AddTestCasePage"
+import AddTestCase from "./features/problems/auto-evaluation/pages/AddTestCase"
 import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage"
 
 // Judge pages
@@ -423,7 +423,7 @@ const router = createBrowserRouter([
             path: ":contestId/rounds/:roundId/auto-evaluation/new",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <AddTestCasePage />
+                <AddTestCase />
               </ProtectedRoute>
             ),
           },

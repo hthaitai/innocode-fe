@@ -10,28 +10,17 @@ const ManualRubricPage = () => {
   const { roundId } = useParams()
 
   const { data: round, isLoading: loadingRound } = useGetRoundByIdQuery(roundId)
-  const { data: criteria = [], isLoading: loadingRubric } =
+  const { data: criteria, isLoading: loadingRubric } =
     useFetchRubricQuery(roundId)
 
-  const breadcrumbItems = useMemo(
-    () =>
-      round
-        ? BREADCRUMBS.ORGANIZER_RUBRIC_EDITOR(round.contestName, round.name)
-        : ["Contests", "Contest", "Round", "Rubric Editor"],
-    [round]
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_RUBRIC_EDITOR(
+    round?.contestName ?? "Contest",
+    round?.name ?? "Round"
   )
 
-  const breadcrumbPaths = useMemo(
-    () =>
-      round
-        ? BREADCRUMB_PATHS.ORGANIZER_RUBRIC_EDITOR(round.contestId, roundId)
-        : [
-            "/contests",
-            "/contests",
-            `/rounds/${roundId}`,
-            `/rounds/${roundId}/rubric`,
-          ],
-    [round, roundId]
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_RUBRIC_EDITOR(
+    round?.contestId,
+    roundId
   )
 
   return (

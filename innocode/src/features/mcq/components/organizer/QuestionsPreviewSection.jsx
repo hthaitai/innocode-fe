@@ -1,14 +1,17 @@
 import TableFluentScrollable from "@/shared/components/table/TableFluentScrollable"
 import PreviewQuestionExpanded from "./PreviewQuestionExpanded"
-import { Trash2 } from "lucide-react"
+import { getMcqPreviewColumns } from "../../columns/getMcqPreviewColumns"
+import { getMcqSelectedColumns } from "../../columns/getMcqSelectedColumns"
+import { Loader2 } from "lucide-react"
 
 const QuestionsPreviewSection = ({
   questions,
-  columns,
   selectedQuestions,
   setSelectedQuestions,
   loading,
   onChoose,
+  onUploadCsv,
+  onImportBanks,
 }) => {
   // Toggle selection from the main table
   const toggleSelect = (question) => {
@@ -28,93 +31,70 @@ const QuestionsPreviewSection = ({
     )
   }
 
-  // Columns for All Questions table (Left)
-  const tableColumns = [
-    columns.find((col) => col.id === "expand"),
-    {
-      id: "select",
-      header: "",
-      cell: ({ row }) => (
-        <div className="flex justify-center items-center h-full">
-          <input
-            type="checkbox"
-            checked={
-              !!selectedQuestions.find(
-                (q) => q.questionId === row.original.questionId
-              )
-            }
-            onChange={() => toggleSelect(row.original)}
-            className="text-[#E05307] accent-[#E05307]"
-          />
-        </div>
-      ),
-      size: 50,
-    },
-    columns.find((col) => col.accessorKey === "text"),
-    columns.find((col) => col.accessorKey === "optionsCount"),
-    columns.find((col) => col.accessorKey === "createdAt"),
-  ]
-
-  // Columns for Selected Questions table (Right)
-  const selectedColumns = [
-    columns.find((col) => col.id === "expand"),
-    columns.find((col) => col.accessorKey === "text"),
-    columns.find((col) => col.accessorKey === "optionsCount"),
-    columns.find((col) => col.accessorKey === "createdAt"),
-    {
-      id: "deselect",
-      header: "",
-      cell: ({ row }) => (
-        <div className="flex justify-end items-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <button
-            className="text-red-500 hover:text-red-700"
-            onClick={() => deselectQuestion(row.original.questionId)}
-            title="Deselect question"
-          >
-            <Trash2 size={16} />
-          </button>
-        </div>
-      ),
-      size: 40,
-    },
-  ]
+  // Columns
+  const tableColumns = getMcqPreviewColumns(selectedQuestions, toggleSelect)
+  const selectedColumns = getMcqSelectedColumns(deselectQuestion)
 
   return (
-    <div className="flex gap-3">
-      <div className="w-1/2">
-        <div className="text-sm font-semibold mb-2">All questions</div>
+    <div className="flex flex-col lg:flex-row md:gap-5 lg:gap-1">
+      <div className="">
+        <div className="text-sm font-semibold mb-2">Preview questions</div>
         <TableFluentScrollable
           data={questions}
           columns={tableColumns}
-          loading={loading}
           renderSubComponent={(q) => <PreviewQuestionExpanded question={q} />}
           expandAt="text"
           maxHeight={400}
+          renderActions={() => (
+            <div className="min-h-[70px] px-5 flex justify-between items-center">
+              <p className="text-[14px] leading-[20px] font-medium">
+                All questions
+              </p>
+
+              <div className="flex gap-2">
+                <button className="button-orange" onClick={onUploadCsv}>
+                  Upload CSV
+                </button>
+                <button className="button-orange px-3" onClick={onImportBanks}>
+                  Import from banks
+                </button>
+              </div>
+            </div>
+          )}
         />
       </div>
 
-      <div className="w-1/2 flex flex-col">
-        <div className="text-sm font-semibold mb-2">
-          Selected questions ({selectedQuestions.length})
-        </div>
+      <div className="">
+        <div className="text-sm font-semibold mb-2">Selected questions</div>
         <TableFluentScrollable
           data={selectedQuestions}
           columns={selectedColumns}
-          loading={loading}
           renderSubComponent={(q) => <PreviewQuestionExpanded question={q} />}
           expandAt="text"
           maxHeight={400}
-        />
+          renderActions={() => (
+            <div className="min-h-[70px] px-5 flex items-center justify-between">
+              <p className="text-[14px] leading-[20px] font-medium">
+                Selected ({selectedQuestions.length})
+              </p>
 
-        <div className="flex justify-end mt-4">
-          <button
-            className="button-orange px-3"
-            disabled={loading || !selectedQuestions.length}
-            onClick={onChoose}
-          >
-            Choose selected questions
-          </button>
-        </div>
+              <button
+                className={`px-3 flex items-center justify-center gap-2 ${
+                  loading || !selectedQuestions.length
+                    ? "button-gray"
+                    : "button-orange"
+                }`}
+                disabled={loading || !selectedQuestions.length}
+                onClick={onChoose}
+              >
+                {loading && (
+                  <Loader2 className="animate-spin w-4 h-4 text-white" />
+                )}
+                {loading ? "Adding questions..." : "Choose selected questions"}{" "}
+              </button>
+            </div>
+          )}
+        />
       </div>
     </div>
   )

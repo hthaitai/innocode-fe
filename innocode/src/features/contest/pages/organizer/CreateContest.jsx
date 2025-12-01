@@ -81,7 +81,7 @@ export default function CreateContest() {
         return
       }
 
-      toast.error(err?.data?.Message || "Failed to update contest.")
+      toast.error(err?.data?.Message || "Failed to create contest.")
     }
   }
 
