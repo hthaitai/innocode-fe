@@ -4,46 +4,63 @@ import PageContainer from "@/shared/components/PageContainer";
 import { Icon } from "@iconify/react";
 import { ArrowLeft, Code, Play, CheckCircle } from "lucide-react";
 import useContestDetail from "@/features/contest/hooks/useContestDetail";
-import useAutoEvaluation from "../../hooks/useAutoEvaluation";
+import {
+  useGetRoundTestCasesQuery,
+  useGetAutoTestResultQuery,
+  useSubmitAutoTestMutation,
+  useSubmitFinalAutoTestMutation,
+} from "@/services/autoEvaluationApi";
 import { toast } from "react-hot-toast";
 
 const StudentAutoEvaluation = () => {
   const { contestId, roundId } = useParams();
   const navigate = useNavigate();
-  
+
   // Tạo key unique cho localStorage dựa trên roundId
   const STORAGE_KEY = `code_${roundId}`;
-  
+
   // Khởi tạo code từ localStorage
   const [code, setCode] = useState(() => {
     const savedCode = localStorage.getItem(STORAGE_KEY);
     return savedCode || "";
   });
+  const [submissionId, setSubmissionId] = useState(null);
+
   const { contest, loading, error } = useContestDetail(contestId);
+
+  // RTK Query hooks
   const {
-    testCases,
-    loading: testCaseLoading,
+    data: testCases,
+    isLoading: testCaseLoading,
     error: testCaseError,
-    submitCode,
-    submitting,
-    submitError,
-    submitResult,
-    testResult,
-    resultLoading,
-    submissionId,
+  } = useGetRoundTestCasesQuery(
+    { roundId, pageNumber: 1, pageSize: 1 },
+    { skip: !roundId }
+  );
+
+  const {
+    data: testResult,
+    isLoading: resultLoading,
+    refetch: refetchTestResult,
+  } = useGetAutoTestResultQuery(roundId, {
+    skip: !roundId,
+  });
+
+  const [submitAutoTest, { isLoading: submitting, error: submitError }] =
+    useSubmitAutoTestMutation();
+
+  const [
     submitFinalAutoTest,
-    finalSubmitting,
-    finalSubmitError,
-    finalSubmitResult,
-  } = useAutoEvaluation(roundId);
+    {
+      isLoading: finalSubmitting,
+      error: finalSubmitError,
+      data: finalSubmitResult,
+    },
+  ] = useSubmitFinalAutoTestMutation();
 
   const round = contest?.rounds?.find((r) => r.roundId === roundId);
   const problem = round?.problem;
   const timeLimitMinutes = round?.timeLimitSeconds / 60;
-
-  // Thêm useEffect để theo dõi submissionId
-  useEffect(() => {
-  }, [submissionId]);
 
   // Lưu code vào localStorage mỗi khi thay đổi
   useEffect(() => {
@@ -70,8 +87,8 @@ const StudentAutoEvaluation = () => {
     }
   };
 
+  // Run code to test against test cases (doesn't submit to leaderboard)
   const handleRuncode = async () => {
-
     if (!code.trim()) {
       toast.dismiss();
       toast.error("Please enter your code before running.");
@@ -79,12 +96,52 @@ const StudentAutoEvaluation = () => {
     }
 
     try {
-      await submitCode(code);
+      // POST /api/rounds/{roundId}/auto-test/submissions - Run code for testing
+      const result = await submitAutoTest({
+        roundId,
+        code: code,
+      }).unwrap();
+
+      console.log("📥 API Response:", result);
+
+      // Extract submissionId from response structure
+      // Response can be: { data: { submissionId, summary, cases }, ... } or { submissionId, summary, cases }
+      const newSubmissionId =
+        result?.data?.submissionId || result?.submissionId;
+
+      console.log("🆔 New Submission ID:", newSubmissionId);
+
+      if (newSubmissionId) {
+        setSubmissionId(newSubmissionId);
+        // Refetch test results after a short delay to allow backend processing
+        setTimeout(() => {
+          refetchTestResult();
+        }, 1000);
+      } else {
+        console.error("❌ No submission ID in response:", result);
+        return; // Don't show success message if no submissionId
+      }
+
+      // Show success message with summary
+      // Summary can be in result.data.summary or result.summary
+      const summary = result?.data?.summary || result?.summary;
+      if (summary) {
+        toast.success(
+          `Code tested! Passed: ${summary.passed}/${summary.total} test cases. Click Submit to add to leaderboard.`
+        );
+      } else {
+        toast.success(
+          "Code tested successfully! Click Submit to add to leaderboard."
+        );
+      }
     } catch (error) {
       console.error("❌ Failed to run code:", error);
+      const errorMessage =
+        error?.data?.errorMessage || "Failed to submit code. Please try again.";
     }
   };
 
+  // Submit final - Accept result and add score to leaderboard
   const handleFinalSubmit = async () => {
     if (!submissionId) {
       toast.dismiss();
@@ -93,15 +150,28 @@ const StudentAutoEvaluation = () => {
     }
 
     try {
-      await submitFinalAutoTest();
+      // PUT /api/submissions/{submissionId}/acceptance - Accept submission and add to leaderboard
+      await submitFinalAutoTest(submissionId).unwrap();
       toast.dismiss();
-      toast.success("Final submission successful!");
+      toast.success(
+        "Submission accepted! Your score has been added to the leaderboard."
+      );
+
+      // Navigate to leaderboard after a short delay to let user see the success message
+      setTimeout(() => {
+        navigate(`/leaderboard/${contestId}`);
+      }, 1500); // 1.5 seconds to see the toast message
     } catch (error) {
       console.error("❌ Failed to submit final test:", error);
+      toast.dismiss();
+      toast.error(
+        error?.data?.errorMessage ||
+          "Failed to submit final test. Please try again."
+      );
     }
   };
   // Loading state
-  if (loading) {
+  if (loading || testCaseLoading) {
     return (
       <PageContainer bg={false}>
         <div className="flex justify-center items-center h-[400px]">
@@ -119,7 +189,7 @@ const StudentAutoEvaluation = () => {
   }
 
   // Error state
-  if (error) {
+  if (error || testCaseError) {
     return (
       <PageContainer bg={false}>
         <div className="max-w-5xl mt-[38px] mx-auto">
@@ -129,8 +199,9 @@ const StudentAutoEvaluation = () => {
               width="48"
               className="mx-auto mb-2 text-red-500"
             />
-            <p className="text-[#7A7574]">Failed to load problem</p>
-            <p className="text-sm text-[#7A7574] mt-1">{error}</p>
+            <p className=" text-[#7A7574]">
+              {testCaseError?.data.errorMessage}
+            </p>
             <button
               onClick={() => navigate(`/contest-detail/${contestId}`)}
               className="button-orange mt-4"
@@ -265,8 +336,6 @@ const StudentAutoEvaluation = () => {
                 <Code size={20} className="text-[#ff6b35]" />
                 Your Solution
               </h2>
-              
-            
             </div>
 
             <div className="mb-4 font-semibold">
@@ -288,16 +357,16 @@ const StudentAutoEvaluation = () => {
                 <span>Auto-saved</span>
               </div>
             )}
-              {/* Optional: Clear button */}
-              {code && (
-                <button
-                  onClick={handleClearCode}
-                  className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
-                >
-                  <Icon icon="mdi:delete" width={14} />
-                  Clear
-                </button>
-              )}
+            {/* Optional: Clear button */}
+            {code && (
+              <button
+                onClick={handleClearCode}
+                className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
+              >
+                <Icon icon="mdi:delete" width={14} />
+                Clear
+              </button>
+            )}
 
             <div className="flex gap-3 mt-4">
               <button
@@ -359,7 +428,11 @@ const StudentAutoEvaluation = () => {
                     <p className="font-semibold text-red-800 mb-1">
                       Run Code Error
                     </p>
-                    <p className="text-sm text-red-600">{submitError}</p>
+                    <p className="text-sm text-red-600">
+                      {submitError?.data?.errorMessage ||
+                        submitError?.message ||
+                        "Failed to submit code"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -378,7 +451,13 @@ const StudentAutoEvaluation = () => {
                     <p className="font-semibold text-red-800 mb-1">
                       Submit Error
                     </p>
-                    <p className="text-sm text-red-600">{finalSubmitError}</p>
+                    <p className="text-sm text-red-600">
+                      {finalSubmitError?.data?.errorMessage ||
+                        finalSubmitError?.data?.message ||
+                        finalSubmitError?.data?.title ||
+                        finalSubmitError?.message ||
+                        "Failed to submit final test"}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -422,7 +501,7 @@ const StudentAutoEvaluation = () => {
               />
               <p className="text-[#7A7574]">Loading results...</p>
             </div>
-          ) : testResult?.data ? (
+          ) : testResult ? (
             <div className="space-y-4">
               {/* Summary */}
               <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
@@ -432,37 +511,36 @@ const StudentAutoEvaluation = () => {
                       Total Test Cases
                     </p>
                     <p className="text-xl font-bold text-[#2d3748]">
-                      {testResult.data.details?.length || 0}
+                      {testResult.details?.length || 0}
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-xs text-[#7A7574] mb-1">Passed</p>
                     <p className="text-xl font-bold text-green-600">
-                      {testResult.data.details?.filter(
-                        (d) => d.note === "success"
-                      ).length || 0}
+                      {testResult.details?.filter((d) => d.note === "success")
+                        .length || 0}
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-xs text-[#7A7574] mb-1">Score</p>
                     <p className="text-xl font-bold text-[#ff6b35]">
-                      {testResult.data.score || 0}
+                      {testResult.score || 0}
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-xs text-[#7A7574] mb-1">Attempt</p>
                     <p className="text-xl font-bold text-[#2d3748]">
-                      {testResult.data.submissionAttemptNumber}
+                      {testResult.submissionAttemptNumber}
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Status */}
-              {testResult.data.status && (
+              {testResult.status && (
                 <div
                   className={`border rounded-[5px] p-3 ${
-                    testResult.data.status === "Finished"
+                    testResult.status === "Finished"
                       ? "bg-green-50 border-green-200"
                       : "bg-yellow-50 border-yellow-200"
                   }`}
@@ -470,82 +548,66 @@ const StudentAutoEvaluation = () => {
                   <div className="flex items-center gap-2">
                     <Icon
                       icon={
-                        testResult.data.status === "Finished"
+                        testResult.status === "Finished"
                           ? "mdi:check-circle"
                           : "mdi:progress-clock"
                       }
                       width="20"
                       className={
-                        testResult.data.status === "Finished"
+                        testResult.status === "Finished"
                           ? "text-green-600"
                           : "text-yellow-600"
                       }
                     />
                     <span className="font-medium text-sm">
-                      Status: {testResult.data.status}
+                      Status: {testResult.status}
                     </span>
                   </div>
                 </div>
               )}
 
-              {/* Submitted Code */}
-              {testResult.data.artifacts &&
-                testResult.data.artifacts.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-[#2d3748] text-sm">
-                      Submitted Code
-                    </h3>
-                    <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
-                      <pre className="text-sm overflow-x-auto">
-                        {testResult.data.artifacts[0].url}
-                      </pre>
-                    </div>
-                  </div>
-                )}
-
               {/* Test Cases Detail */}
-              {testResult.data.details &&
-                testResult.data.details.length > 0 && (
-                  <div className="space-y-3">
-                    <h3 className="font-semibold text-[#2d3748] text-sm">
-                      Test Cases Detail
-                    </h3>
-                    {testResult.data.details.map((detail, index) => (
-                      <div
-                        key={detail.detailsId}
-                        className={`border rounded-[5px] p-4 ${
-                          detail.note === "success"
-                            ? "bg-green-50 border-green-200"
-                            : "bg-red-50 border-red-200"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-sm">
-                              Test Case {index + 1}
-                            </span>
-                            <span
-                              className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                detail.note === "success"
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-red-100 text-red-700"
-                              }`}
-                            >
-                              {detail.note}
-                            </span>
-                          </div>
-                          <div className="text-xs text-[#7A7574]">
-                            Time: {detail.runtimeMs}ms | Memory:{" "}
-                            {detail.memoryKb} KB | Weight: {detail.weight}
-                          </div>
+              {testResult.details && testResult.details.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-[#2d3748] text-sm">
+                    Test Cases Detail
+                  </h3>
+                  {testResult.details.map((detail, index) => (
+                    <div
+                      key={detail.detailsId || index}
+                      className={`border rounded-[5px] p-4 ${
+                        detail.note === "success"
+                          ? "bg-green-50 border-green-200"
+                          : "bg-red-50 border-red-200"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-sm">
+                            Test Case {index + 1}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded text-xs font-medium ${
+                              detail.note === "success"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {detail.note}
+                          </span>
+                        </div>
+                        <div className="text-xs text-[#7A7574]">
+                          Time: {detail.runtimeMs}ms | Memory: {detail.memoryKb}{" "}
+                          KB | Weight: {detail.weight}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Team Info */}
-              {testResult.data.teamName && (
+              {testResult.teamName && (
                 <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
                   <h3 className="font-semibold text-[#2d3748] text-sm mb-2">
                     Submission Info
@@ -553,15 +615,15 @@ const StudentAutoEvaluation = () => {
                   <div className="space-y-1 text-sm">
                     <p className="text-[#4a5568]">
                       <span className="font-medium">Team:</span>{" "}
-                      {testResult.data.teamName}
+                      {testResult.teamName}
                     </p>
                     <p className="text-[#4a5568]">
                       <span className="font-medium">Submitted by:</span>{" "}
-                      {testResult.data.submittedByStudentName}
+                      {testResult.submittedByStudentName}
                     </p>
                     <p className="text-[#4a5568]">
                       <span className="font-medium">Submitted at:</span>{" "}
-                      {new Date(testResult.data.createdAt).toLocaleString()}
+                      {new Date(testResult.createdAt).toLocaleString()}
                     </p>
                   </div>
                 </div>

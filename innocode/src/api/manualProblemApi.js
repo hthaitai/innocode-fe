@@ -40,7 +40,7 @@ const manualProblemApi = {
     } = {}
   ) => {
     const response = await axiosClient.get(
-      `/rounds/${roundId}/manual-test/results`,
+      `/rounds/${roundId}/manual-test/my-result`,
       {
         params: {
           pageNumber,

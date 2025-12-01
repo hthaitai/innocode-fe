@@ -58,6 +58,7 @@ import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts"
 import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail"
 import StudentAutoEvaluation from "./features/problem/pages/student/StudentAutoEvaluation"
 import StudentManualProblem from "./features/problem/pages/student/StudentManualProblem"
+import AutoTestResult from "./features/problem/pages/student/AutoTestResult"
 import CreateContest from "./features/contest/pages/organizer/CreateContest"
 import EditContest from "./features/contest/pages/organizer/EditContest"
 import MentorTeam from "./features/team/pages/mentor/MentorTeam"
@@ -282,6 +283,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
             <StudentAutoEvaluation />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "auto-test-result/:contestId/:roundId",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
+            <AutoTestResult />
           </ProtectedRoute>
         ),
       },

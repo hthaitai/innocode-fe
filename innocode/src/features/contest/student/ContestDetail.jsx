@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
 import { contestsData } from "@/data/contestsData";
@@ -24,6 +24,8 @@ import useTeams from "@/features/team/hooks/useTeams";
 import useCompletedQuizzes from "@/features/quiz/hooks/useCompletedQuizzes";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
+import useCompletedAutoTests from "@/features/problem/hooks/useCompletedAutoTests";
+import manualProblemApi from "@/api/manualProblemApi";
 
 const ContestDetail = () => {
   const { contestId } = useParams();
@@ -141,6 +143,100 @@ const ContestDetail = () => {
   // Check for completed quizzes (only for students)
   const { completedRounds, loading: completedQuizzesLoading } =
     useCompletedQuizzes(role === "student" ? rounds : []);
+  
+  // Check completed AutoEvaluation rounds
+  const { completedRounds: completedAutoTests, loading: completedAutoTestsLoading } =
+    useCompletedAutoTests(role === "student" ? rounds : []);
+  
+  // Check completed Manual problem rounds using RTK Query
+  const manualRounds = useMemo(() => {
+    if (role !== "student" || !rounds || rounds.length === 0) return [];
+    return rounds.filter(
+      (round) => round.problemType === 'Manual' && round.roundId
+    );
+  }, [rounds, role]);
+
+  // Create a stable key from roundIds to prevent infinite loops
+  const manualRoundsKey = useMemo(() => {
+    if (!manualRounds || manualRounds.length === 0) return '';
+    return manualRounds
+      .map((r) => r.roundId)
+      .sort()
+      .join(',');
+  }, [manualRounds]);
+
+  // Check each manual round for completion using manualProblemApi
+  const [completedManualProblems, setCompletedManualProblems] = useState([]);
+  const [completedManualProblemsLoading, setCompletedManualProblemsLoading] = useState(false);
+
+  // Track previous key and userId to prevent unnecessary re-fetches
+  const previousKeyRef = useRef('');
+  const previousUserIdRef = useRef(null);
+  // Store rounds in ref to avoid stale closure
+  const roundsRef = useRef(rounds);
+
+  // Update roundsRef when rounds change
+  useEffect(() => {
+    roundsRef.current = rounds;
+  }, [rounds]);
+
+  useEffect(() => {
+    const currentUserId = user?.id;
+    
+    // Skip if key and userId haven't changed
+    if (manualRoundsKey === previousKeyRef.current && currentUserId === previousUserIdRef.current) {
+      return;
+    }
+
+    // Update previous values
+    previousKeyRef.current = manualRoundsKey;
+    previousUserIdRef.current = currentUserId;
+
+    if (manualRounds.length === 0 || !currentUserId) {
+      setCompletedManualProblems([]);
+      setCompletedManualProblemsLoading(false);
+      return;
+    }
+
+    const checkCompletedManualProblems = async () => {
+      setCompletedManualProblemsLoading(true);
+      try {
+        // Filter rounds from ref to get latest value
+        const manualRoundsFiltered = (roundsRef.current || []).filter(
+          (round) => round.problemType === 'Manual' && round.roundId
+        );
+
+        const checkPromises = manualRoundsFiltered.map(async (round) => {
+          try {
+            const res = await manualProblemApi.getManualTestResults(round.roundId, {
+              pageNumber: 1,
+              pageSize: 1,
+              studentIdSearch: currentUserId,
+            });
+            const results = res.data?.data || res.data || [];
+            return results.length > 0 ? round : null;
+          } catch (err) {
+            if (err?.response?.status === 404) {
+              return null;
+            }
+            console.warn(`Error checking manual result for round ${round.roundId}:`, err);
+            return null;
+          }
+        });
+
+        const results = await Promise.all(checkPromises);
+        const completed = results.filter((round) => round !== null);
+        setCompletedManualProblems(completed);
+      } catch (err) {
+        console.error('Error checking completed manual problems:', err);
+      } finally {
+        setCompletedManualProblemsLoading(false);
+      }
+    };
+
+    checkCompletedManualProblems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [manualRoundsKey, user?.id]); // Only depend on manualRoundsKey and userId, rounds is used inside effect to avoid stale closure
 
   const breadcrumbData = contest
     ? createBreadcrumbWithPaths("CONTEST_DETAIL", contest.name || contest.title)
@@ -540,18 +636,20 @@ const ContestDetail = () => {
                               >
                                 {round.status}
                               </span>
-                              {round.status === "Opened" &&
-                                role === "student" &&
-                                roundRoute &&
-                                myTeam && (
-                                  <button
-                                    onClick={() => navigate(roundRoute)}
-                                    className="button-orange text-xs px-3 p py-1 flex absolute bottom-4 right-4 items-center gap-1"
-                                  >
-                                    <Play size={12} />
-                                    {getButtonLabel()}
-                                  </button>
-                                )}
+                              <div className="flex gap-2 absolute bottom-4 right-4">
+                                {round.status === "Opened" &&
+                                  role === "student" &&
+                                  roundRoute &&
+                                  myTeam && (
+                                    <button
+                                      onClick={() => navigate(roundRoute)}
+                                      className="button-orange text-xs px-3 py-1 flex items-center gap-1"
+                                    >
+                                      <Play size={12} />
+                                      {getButtonLabel()}
+                                    </button>
+                                  )}
+                              </div>
                             </div>
                           </div>
 
@@ -959,73 +1057,122 @@ const ContestDetail = () => {
               Check current rankings and team standings
             </p>
           </div>
-          {/* See My Result Button - Show if student has completed at least one quiz */}
+          {/* See My Result Button - Show if student has completed quiz, manual, or auto test */}
           {role === "student" &&
             !completedQuizzesLoading &&
-            completedRounds.length > 0 && (
+            !completedAutoTestsLoading &&
+            !completedManualProblemsLoading &&
+            (completedRounds.length > 0 ||
+              completedAutoTests.length > 0 ||
+              completedManualProblems.length > 0) && (
               <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
-                {completedRounds.length === 1 ? (
-                  // Single quiz - direct button
-                  <>
-                    <button
-                      onClick={() =>
-                        navigate(`/quiz/${completedRounds[0].roundId}/finish`, {
-                          state: { contestId },
-                        })
-                      }
-                      className="button-green w-full flex items-center justify-center gap-2 py-3"
-                    >
-                      <Icon icon="mdi:clipboard-check-outline" width="18" />
-                      See Your Result
-                    </button>
-                    <p className="text-xs text-[#7A7574] text-center mt-2">
-                      View your quiz results and scores
-                    </p>
-                  </>
-                ) : (
-                  // Multiple quizzes - show list for user to choose
-                  <>
-                    <h3 className="text-sm font-semibold text-gray-800 mb-3">
-                      Your Quiz Results ({completedRounds.length})
-                    </h3>
-                    <div className="space-y-2">
-                      {completedRounds.map((round, index) => {
-                        // Find round name from rounds array
-                        const roundInfo = rounds.find(
-                          (r) => r.roundId === round.roundId
-                        );
-                        const roundName =
-                          roundInfo?.roundName ||
-                          round.roundName ||
-                          `Quiz ${index + 1}`;
+                {/* Combine all completed rounds */}
+                {(() => {
+                  const allResults = [
+                    ...completedRounds.map((r) => ({
+                      ...r,
+                      type: "quiz",
+                      route: `/quiz/${r.roundId}/finish`,
+                      icon: "mdi:clipboard-check-outline",
+                      label: "Quiz",
+                    })),
+                    ...completedAutoTests.map((r) => ({
+                      ...r,
+                      type: "auto",
+                      route: `/auto-test-result/${contestId}/${r.roundId}`,
+                      icon: "mdi:code-tags-check",
+                      label: "Auto Test",
+                    })),
+                    ...completedManualProblems.map((r) => ({
+                      ...r,
+                      type: "manual",
+                      route: `/manual-problem/${contestId}/${r.roundId}`,
+                      icon: "mdi:file-document-check",
+                      label: "Manual",
+                    })),
+                  ];
 
-                        return (
-                          <button
-                            key={round.roundId || index}
-                            onClick={() =>
-                              navigate(`/quiz/${round.roundId}/finish`, {
-                                state: { contestId },
-                              })
-                            }
-                            className="button-orange w-full flex items-center justify-between gap-2 py-2 px-3 text-sm"
-                          >
-                            <div className="flex items-center gap-2">
-                              <Icon
-                                icon="mdi:clipboard-check-outline"
-                                width="16"
-                              />
-                              <span>{roundName}</span>
-                            </div>
-                            <Icon icon="mdi:chevron-right" width="16" />
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <p className="text-xs text-[#7A7574] text-center mt-3">
-                      Click on a quiz to view detailed results
-                    </p>
-                  </>
-                )}
+                  const totalCount =
+                    completedRounds.length +
+                    completedAutoTests.length +
+                    completedManualProblems.length;
+
+                  if (totalCount === 1) {
+                    // Single result - direct button
+                    const result = allResults[0];
+                    const roundInfo = rounds.find(
+                      (r) => r.roundId === result.roundId
+                    );
+                    const roundName =
+                      roundInfo?.roundName ||
+                      result.roundName ||
+                      `${result.label} Result`;
+
+                    return (
+                      <>
+                        <button
+                          onClick={() =>
+                            navigate(result.route, {
+                              state: { contestId },
+                            })
+                          }
+                          className="button-green w-full flex items-center justify-center gap-2 py-3"
+                        >
+                          <Icon icon={result.icon} width="18" />
+                          See Your Result
+                        </button>
+                        <p className="text-xs text-[#7A7574] text-center mt-2">
+                          View your {result.label.toLowerCase()} results and
+                          scores
+                        </p>
+                      </>
+                    );
+                  } else {
+                    // Multiple results - show list for user to choose
+                    return (
+                      <>
+                        <h3 className="text-sm font-semibold text-gray-800 mb-3">
+                          Your Results ({totalCount})
+                        </h3>
+                        <div className="space-y-2">
+                          {allResults.map((result, index) => {
+                            const roundInfo = rounds.find(
+                              (r) => r.roundId === result.roundId
+                            );
+                            const roundName =
+                              roundInfo?.roundName ||
+                              result.roundName ||
+                              `${result.label} ${index + 1}`;
+
+                            return (
+                              <button
+                                key={result.roundId || index}
+                                onClick={() =>
+                                  navigate(result.route, {
+                                    state: { contestId },
+                                  })
+                                }
+                                className="button-orange w-full flex items-center justify-between gap-2 py-2 px-3 text-sm"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Icon icon={result.icon} width="16" />
+                                  <span>{roundName}</span>
+                                  <span className="text-xs text-[#7A7574]">
+                                    ({result.label})
+                                  </span>
+                                </div>
+                                <Icon icon="mdi:chevron-right" width="16" />
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <p className="text-xs text-[#7A7574] text-center mt-3">
+                          Click on a result to view detailed information
+                        </p>
+                      </>
+                    );
+                  }
+                })()}
               </div>
             )}
           {/* Your Team Status - For both student and mentor */}
@@ -1033,10 +1180,12 @@ const ContestDetail = () => {
           {(role === "student" || role === "mentor") &&
             !(registrationClosed && !myTeam) && (
               <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
-                <h3 className="text-sm font-semibold text-[#2d3748] mb-4 flex items-center gap-2">
-                  <Users size={26} className="text-[#ff6b35] flex-shrink-0" />
-                  <span className="min-w-0 break-words">Your Team</span>
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-[#2d3748] flex items-center gap-2">
+                    <Users size={26} className="text-[#ff6b35] flex-shrink-0" />
+                    <span className="min-w-0 break-words">Your Team</span>
+                  </h3>
+                </div>
                 {teamLoading ? (
                   <div className="text-center py-4">
                     <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#ff6b35] border-t-transparent mx-auto mb-2"></div>

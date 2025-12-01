@@ -5,20 +5,20 @@ import { Icon } from '@iconify/react';
 import { ArrowLeft, FileText, Upload, Clock, Calendar, X } from 'lucide-react';
 import useContestDetail from '@/features/contest/hooks/useContestDetail';
 import { useDropzone } from 'react-dropzone';
-import useManualSubmission from '../../hooks/useManualSubmission';
 import { toast } from 'react-hot-toast';
+import { useSaveManualSubmissionMutation, useFinishRoundMutation } from '@/services/manualProblemApi';
 
 const StudentManualProblem = () => {
   const { contestId, roundId } = useParams();
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
-  const {
-    submitSolution,
-    loading: submitting,
-    error: submitError,
-    success,
-  } = useManualSubmission();
+  const [savedSubmissionId, setSavedSubmissionId] = useState(null); // Store submissionId after save
+
+  // RTK Query mutations
+  const [saveManualSubmission, { isLoading: saving }] = useSaveManualSubmissionMutation();
+  const [finishRound, { isLoading: finishing }] = useFinishRoundMutation();
+
   // ✅ Fetch contest data to get round information
   const { contest, loading, error } = useContestDetail(contestId);
 
@@ -61,30 +61,88 @@ const StudentManualProblem = () => {
   };
   const handleRemoveFile = () => {
     setSelectedFile(null);
+    setSavedSubmissionId(null); // Reset saved submissionId when file is removed
   };
-  const handleSubmit = async () => {
+
+  // Handle Save: Save file without finishing
+  const handleSave = async () => {
     if (!selectedFile) {
       toast.dismiss();
-      toast.error('Please select a file to submit');
+      toast.error('Please select a file to save');
+      return;
+    }
+
+    // Check if file is empty
+    if (selectedFile.size === 0) {
+      toast.dismiss();
+      toast.error('Cannot save empty file. Please select a valid file.');
+      return;
+    }
+
+    try {
+      const response = await saveManualSubmission({ roundId, file: selectedFile }).unwrap();
+      
+      // Extract submissionId from response
+      // Response structure: { data: 'submissionId', message: '...', statusCode: 201 }
+      const submissionId = response?.data || response;
+      
+      if (!submissionId) {
+        console.error('❌ No submission ID in response:', response);
+        toast.error('Failed to get submission ID. Please try again.');
+        return;
+      }
+
+      console.log('✅ File saved, submissionId:', submissionId);
+      setSavedSubmissionId(submissionId);
+      toast.dismiss();
+      toast.success('File saved successfully! You can submit it later.');
+    } catch (err) {
+      toast.dismiss();
+      toast.error(
+        `Failed to save: ${err?.data?.errorMessage || err?.data?.message || err?.message || 'Unknown error'}`
+      );
+    }
+  };
+
+  // Handle Submit: Finish the round
+  const handleSubmit = async () => {
+    if (!savedSubmissionId) {
+      toast.dismiss();
+      toast.error('Please save your file first before submitting');
+      return;
+    }
+
+    if (!selectedFile) {
+      toast.dismiss();
+      toast.error('File not found. Please select a file and save it first.');
+      return;
+    }
+
+    // Check if file is empty
+    if (selectedFile.size === 0) {
+      toast.dismiss();
+      toast.error('Cannot submit empty file. Please select a valid file.');
       return;
     }
 
     if (
       window.confirm(
-        `Are you sure you want to submit "${selectedFile.name}"? You can only submit once.`
+        `Are you sure you want to submit "${selectedFile.name}"? This will mark the round as finished.`
       )
     ) {
       try {
-        await submitSolution(roundId, selectedFile);
+        await finishRound(roundId).unwrap();
         toast.dismiss();
-        toast.success('Solution submitted successfully!');
-        // Optional: Navigate back or reset form
+        toast.success('Solution submitted and round finished successfully!');
+        
+        // Navigate back to contest detail
         setSelectedFile(null);
-        // navigate(`/contest-detail/${contestId}`);
+        setSavedSubmissionId(null);
+        navigate(`/contest-detail/${contestId}`);
       } catch (err) {
         toast.dismiss();
         toast.error(
-          `Failed to submit: ${err.response?.data?.errorMessage || err.message}`
+          `Failed to submit: ${err?.data?.errorMessage || err?.data?.message || err?.message || 'Unknown error'}`
         );
       }
     }
@@ -364,17 +422,50 @@ const StudentManualProblem = () => {
 
           <div className="mt-6 flex justify-end gap-3">
             <button
-              onClick={() => navigate(`/contest-detail/${contestId}`)}
+              onClick={handleSave}
               className="button-white"
+              disabled={saving || finishing || !selectedFile || (selectedFile && selectedFile.size === 0) || round.status !== "Opened"}
+              title={!selectedFile ? "Please select a file" : (selectedFile && selectedFile.size === 0) ? "File is empty" : ""}
             >
-              Cancel
+              {saving ? (
+                <>
+                  <Icon
+                    icon="mdi:loading"
+                    className="inline mr-2 animate-spin"
+                    width="16"
+                  />
+                  Saving...
+                </>
+              ) : (
+                'Save'
+              )}
             </button>
             <button
               onClick={handleSubmit}
               className="button-orange"
-              // disabled={round.status !== "Opened"}
+              disabled={saving || finishing || !savedSubmissionId || !selectedFile || (selectedFile && selectedFile.size === 0) || round.status !== "Opened"}
+              title={
+                !savedSubmissionId 
+                  ? "Please save your file first" 
+                  : !selectedFile 
+                  ? "File not found" 
+                  : (selectedFile && selectedFile.size === 0)
+                  ? "File is empty" 
+                  : ""
+              }
             >
-              Submit Solution
+              {finishing ? (
+                <>
+                  <Icon
+                    icon="mdi:loading"
+                    className="inline mr-2 animate-spin"
+                    width="16"
+                  />
+                  Submitting...
+                </>
+              ) : (
+                'Submit'
+              )}
             </button>
           </div>
         </div>
@@ -394,12 +485,24 @@ const StudentManualProblem = () => {
               <ul className="text-[#4a5568] space-y-1 list-disc list-inside">
                 <li>Make sure your file is properly formatted</li>
                 <li>Include all required documentation</li>
-                <li>You can submit only once, so review carefully</li>
                 <li>
-                  Penalty of {(problem.penaltyRate * 100).toFixed(0)}% will be
-                  applied for late submissions
+                  <strong>Save:</strong> Save your file first (required before submitting)
                 </li>
+                <li>
+                  <strong>Submit:</strong> Submit and finish the round (marks round as finished) - Only available after saving
+                </li>
+             
               </ul>
+              {savedSubmissionId && (
+                <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
+                  <Icon
+                    icon="mdi:check-circle"
+                    className="inline mr-1 text-green-600"
+                    width="14"
+                  />
+                  File saved successfully. You can submit it now.
+                </div>
+              )}
             </div>
           </div>
         </div>
