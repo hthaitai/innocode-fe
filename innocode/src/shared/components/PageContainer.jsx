@@ -24,8 +24,6 @@ export default function PageContainer({
     },
   }
 
-  
-
   const hasState = loading || error
 
   return (
@@ -49,9 +47,20 @@ export default function PageContainer({
           {error && (
             <div className="text-red-500 text-center px-4">
               <p className="font-medium">Something went wrong</p>
+
               <p className="text-sm opacity-80 mt-1">
-                {typeof error === "string" ? error : "Please try again later."}
+                {typeof error === "string"
+                  ? error
+                  : error?.errorMessage
+                  ? `${error.errorMessage}`
+                  : "Please try again later."}
               </p>
+
+              {error?.errorCode && (
+                <p className="text-xs opacity-70 mt-1">
+                  Code: {error.errorCode}
+                </p>
+              )}
             </div>
           )}
         </div>

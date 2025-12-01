@@ -1,50 +1,45 @@
-import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import React, { useCallback, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import { Trophy } from "lucide-react"
-import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { formatDateTime } from "@/shared/utils/dateTime"
 import ToggleSwitchFluent from "@/shared/components/ToggleSwitchFluent"
-import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi"
-import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
+import { formatDateTime } from "@/shared/utils/dateTime"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
+import { useGetContestByIdQuery } from "@/services/contestApi"
+import { getContestLeaderboardColumns } from "../../columns/getContestLeaderboardColumns"
 
 const OrganizerLeaderboard = () => {
   const { contestId } = useParams()
-  const dispatch = useAppDispatch()
-
-  const { contests } = useAppSelector((s) => s.contests)
-
   const [isFrozen, setIsFrozen] = useState(false)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const navigate = useNavigate()
 
-  const contest = contests.find(
-    (c) => String(c.contestId) === String(contestId)
-  )
+  // Fetch contest info
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !contestId })
 
-  useEffect(() => {
-    if (!contest && contestId) {
-      dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
-    }
-  }, [contest, contestId, dispatch])
-
-  // Fetch leaderboard using RTK Query
+  // Fetch leaderboard with pagination
   const {
     data: leaderboardData,
-    isLoading: loading,
-    error,
-  } = useGetTeamsByContestIdQuery(contestId, {
-    skip: !contestId,
-  })
+    isLoading: leaderboardLoading,
+    error: leaderboardError,
+  } = useGetLeaderboardByContestQuery(
+    { contestId, pageNumber, pageSize },
+    { skip: !contestId }
+  )
 
-  // Handle data structure - API returns teams array directly or wrapped
-  // transformResponse now always returns object with teams array
-  const entries = Array.isArray(leaderboardData)
-    ? leaderboardData // Fallback for old format
-    : leaderboardData?.teams || 
-      leaderboardData?.teamIdList || 
-      leaderboardData?.entries || 
-      []
+  const entries = leaderboardData?.data?.teamIdList || []
+  const pagination = leaderboardData?.additionalData || {}
+
+  const isNoEntries =
+    leaderboardError?.status === 404 &&
+    leaderboardError?.data?.errorCode === "NOT_FOUND!"
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD(
     contest?.name ?? "Contest"
@@ -56,66 +51,61 @@ const OrganizerLeaderboard = () => {
     // Optional: call backend API to freeze/unfreeze leaderboard
   }
 
-  const leaderboardColumns = [
-    {
-      accessorKey: "rank",
-      header: "Rank",
-      cell: ({ row }) => row.original.rank ?? "—",
+  const columns = getContestLeaderboardColumns()
+
+  const loading = contestLoading || leaderboardLoading
+  const error = contestError || leaderboardError
+
+  const handleRowClick = useCallback(
+    (team) => {
+      navigate(`/organizer/contests/${contestId}/leaderboard/teams/${team.teamId}`)
     },
-    {
-      accessorKey: "teamName",
-      header: "Team",
-      cell: ({ row }) => row.original.teamName ?? "—",
-    },
-    {
-      accessorKey: "score",
-      header: "Score",
-      cell: ({ row }) => (row.original.score ?? 0).toFixed(2),
-    },
-    {
-      accessorKey: "snapshotAt",
-      header: "Last Updated",
-      cell: ({ row }) => formatDateTime(row.original.snapshotAt),
-    },
-  ]
+    [navigate, contestId]
+  )
+
+  // If no entries
+  if (isNoEntries && !leaderboardLoading) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
+          No entries available.
+        </div>
+      </PageContainer>
+    )
+  }
 
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
       loading={loading}
-      error={error}
     >
-      <div className="space-y-1">
-        {/* Leaderboard Header Section */}
-        <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-          <div className="flex gap-5 items-center">
-            <Trophy size={20} />
-            <div>
-              <p className="text-[14px] leading-[20px]">Leaderboard</p>
-              <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                View current contest standings, toggle freeze leaderboard
-              </p>
+      <TableFluent
+        data={entries}
+        columns={columns}
+        title="Leaderboard"
+        pagination={pagination}
+        onRowClick={handleRowClick}
+        renderActions={() => {
+          return (
+            <div className="min-h-[70px] flex items-center justify-between px-5">
+              <p className="text-[14px] leading-[20px] font-medium">Leaderboard</p>
+
+              {/* Toggle Switch */}
+              <ToggleSwitchFluent
+                enabled={isFrozen}
+                onChange={handleFreezeToggle}
+                labelLeft="Freeze"
+                labelRight="Unfreeze"
+                labelPosition="left"
+              />
             </div>
-          </div>
-
-          {/* Toggle Switch */}
-          <ToggleSwitchFluent
-            enabled={isFrozen}
-            onChange={handleFreezeToggle}
-            labelLeft="Freeze"
-            labelRight="Unfreeze"
-            labelPosition="left"
-          />
-        </div>
-
-        {/* Table */}
-        <TableFluent
-          data={entries}
-          columns={leaderboardColumns}
-          title="Leaderboard"
-        />
-      </div>
+          )
+        }}
+      />
     </PageContainer>
   )
 }
