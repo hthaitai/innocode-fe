@@ -16,7 +16,7 @@ export default function SubmissionInfoSection({ submission, onDownload }) {
   return (
     <div className="space-y-1">
       <InfoSection title="Submission information">
-        <DetailTable data={submissionData} />
+        <DetailTable data={submissionData} labelWidth="112px"/>
       </InfoSection>
 
       <div className="border border-[#E5E5E5] bg-white rounded-[5px] px-5 flex justify-between items-center min-h-[70px]">

@@ -28,6 +28,7 @@ const AttemptInfo = ({ attemptDetail }) => {
           },
           { label: "Score", value: safe(formatScore(attemptDetail.score)) },
         ]}
+        labelWidth="124px"
       />
     </InfoSection>
   )

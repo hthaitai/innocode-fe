@@ -110,6 +110,7 @@ const PublishContestSection = ({ contest }) => {
                 label: `Requirement ${idx + 1}`,
                 value: item,
               }))}
+              labelWidth="114px"
             />
           </div>
         </div>

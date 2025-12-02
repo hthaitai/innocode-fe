@@ -102,7 +102,7 @@ const RoundInfo = () => {
 
   return (
     <InfoSection title="Round Information" onEdit={handleEdit}>
-      <DetailTable data={filteredDetails} />
+      <DetailTable data={filteredDetails} labelWidth="151px"/>
     </InfoSection>
   )
 }

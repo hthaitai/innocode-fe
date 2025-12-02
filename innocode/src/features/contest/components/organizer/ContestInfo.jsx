@@ -25,8 +25,14 @@ const ContestInfo = ({ contest }) => {
           { label: "Status", value: <StatusBadge status={contest.status} /> },
           { label: "Year", value: safe(contest.year) },
           { spacer: true },
-          { label: "Contest start date", value: safe(formatDateTime(contest.start)) },
-          { label: "Contest end date", value: safe(formatDateTime(contest.end)) },
+          {
+            label: "Contest start date",
+            value: safe(formatDateTime(contest.start)),
+          },
+          {
+            label: "Contest end date",
+            value: safe(formatDateTime(contest.end)),
+          },
           {
             label: "Registration start date",
             value: contest.registrationStart
@@ -51,6 +57,7 @@ const ContestInfo = ({ contest }) => {
             value: safe(formatDateTime(contest.createdAt)),
           },
         ]}
+        labelWidth="162px"
       />
     </InfoSection>
   )
