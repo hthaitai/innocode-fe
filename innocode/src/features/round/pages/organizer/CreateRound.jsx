@@ -24,7 +24,7 @@ const EMPTY = {
   problemConfig: {
     type: "",
     description: "",
-    language: "",
+    language: "Python 3",
     penaltyRate: 0.1,
     codeTemplate: "",
     templateUrl: "",

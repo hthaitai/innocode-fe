@@ -28,11 +28,25 @@ export default function RoundForm({
       ...prev,
       [section]: { ...prev[section], [field]: value },
     }))
+
+    // Clear nested errors if exist
+    const errorKey =
+      section === "problemConfig" && field === "description"
+        ? "problemConfigDescription"
+        : null
+
+    if (errorKey && errors?.[errorKey]) {
+      setErrors?.((prev) => ({ ...prev, [errorKey]: "" }))
+    }
   }
 
   const handleFileChange = (file) => {
     if (!file) return
     setFormData((prev) => ({ ...prev, TemplateFile: file }))
+
+    if (errors?.templateFile) {
+      setErrors?.((prev) => ({ ...prev, templateFile: "" }))
+    }
   }
 
   const handleProblemTypeChange = (val) => {
@@ -42,7 +56,7 @@ export default function RoundForm({
     else if (val === "Manual" || val === "AutoEvaluation") {
       updated.problemConfig = {
         description: "",
-        language: "",
+        language: "Python 3",
         penaltyRate: 0.1,
         type: val,
       }
@@ -63,7 +77,7 @@ export default function RoundForm({
       <div className="grid grid-cols-[150px_1fr] gap-x-4 gap-y-5 items-start">
         {/* Round Name */}
         <Label htmlFor="name" required>
-          Round Name
+          Round name
         </Label>
         <TextFieldFluent
           id="name"
@@ -103,7 +117,7 @@ export default function RoundForm({
         />
 
         {/* Time Limit */}
-        <Label htmlFor="timeLimitSeconds">Time Limit (seconds)</Label>
+        <Label htmlFor="timeLimitSeconds">Time limit (seconds)</Label>
         <TextFieldFluent
           id="timeLimitSeconds"
           name="timeLimitSeconds"
@@ -120,7 +134,7 @@ export default function RoundForm({
         {showTypeSelector && (
           <>
             <Label htmlFor="problemType" required>
-              Problem Type
+              Problem type
             </Label>
             <DropdownFluent
               id="problemType"
@@ -141,7 +155,7 @@ export default function RoundForm({
         {/* MCQ Config */}
         {formData.problemType === "McqTest" && (
           <>
-            <Label htmlFor="mcqName">Config Name</Label>
+            <Label htmlFor="mcqName">Config name</Label>
             <TextFieldFluent
               id="mcqName"
               value={formData.mcqTestConfig?.name || ""}
@@ -187,14 +201,10 @@ export default function RoundForm({
             <TextFieldFluent
               id="language"
               value={formData.problemConfig?.language || ""}
-              onChange={(e) =>
-                handleNestedChange("problemConfig", "language", e.target.value)
-              }
-              error={!!errors.problemConfigLanguage}
-              helperText={errors.problemConfigLanguage}
+              disabled
             />
 
-            <Label htmlFor="penaltyRate">Penalty Rate</Label>
+            <Label htmlFor="penaltyRate">Penalty rate</Label>
             <TextFieldFluent
               id="penaltyRate"
               type="number"
@@ -209,13 +219,12 @@ export default function RoundForm({
             />
 
             {/* Template File */}
-            <Label htmlFor="templateFile">Template File</Label>
-
+            <Label htmlFor="templateFile">Template file</Label>
             <div>
               <input
                 type="file"
                 id="templateFile"
-                accept=".txt,.py,.js,.java"
+                accept=".py"
                 onChange={(e) => handleFileChange(e.target.files?.[0])}
                 style={{ display: "none" }}
                 ref={(el) => (fileInputRef.current = el)}
@@ -230,23 +239,18 @@ export default function RoundForm({
               </button>
 
               {/* Show file name if uploaded, otherwise show current template URL */}
-              {formData.TemplateFile ? (
-                <span className="ml-2 text-sm">
+              {formData.TemplateFile && (
+                <span className="ml-2 text-sm leading-5">
                   {formData.TemplateFile.name}
                 </span>
-              ) : formData.problemConfig?.templateUrl ? (
-                <span className="ml-2 text-sm text-gray-600">
-                  Current template:{" "}
-                  <a
-                    href={formData.problemConfig.templateUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    {formData.problemConfig.templateUrl.split("/").pop()}
-                  </a>
-                </span>
-              ) : null}
+              )}
+
+              {/* ---- Validation Error for Template File ---- */}
+              {errors.templateFile && (
+                <p className="text-xs leading-4 mt-1 text-[#D32F2F]">
+                  {errors.templateFile}
+                </p>
+              )}
             </div>
           </>
         )}

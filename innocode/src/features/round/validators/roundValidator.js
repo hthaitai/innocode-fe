@@ -60,8 +60,12 @@ export const validateRound = (
     if (!data.problemConfig.description?.trim()) {
       errors.problemConfigDescription = "Description is required"
     }
-    if (!data.problemConfig.language?.trim()) {
-      errors.problemConfigLanguage = "Language is required"
+    // if (!data.problemConfig.language?.trim()) {
+    //   errors.problemConfigLanguage = "Language is required"
+    // }
+    // Template file validation
+    if (!data.TemplateFile) {
+      errors.templateFile = "Template file is required"
     }
   }
 
