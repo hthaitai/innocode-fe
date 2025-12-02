@@ -2,6 +2,15 @@ export const validateContest = (data, { isEdit = false } = {}) => {
   const errors = {}
   const now = new Date()
 
+  // ---- Image File ----
+  if (data.imgFile) {
+    const allowedTypes = ["image/png", "image/jpg", "image/jpeg"]
+
+    if (!allowedTypes.includes(data.imgFile.type)) {
+      errors.imgFile = "Only PNG, JPG, and JPEG files are allowed"
+    }
+  }
+
   // ---- Year ----
   const yearValue = data.year != null ? String(data.year).trim() : ""
   if (!yearValue) {
@@ -17,8 +26,6 @@ export const validateContest = (data, { isEdit = false } = {}) => {
   if (!nameValue) {
     errors.name = "Contest name is required"
   }
-
-
 
   // ---- Image URL ----
   if (data.imgUrl && !/^https?:\/\/.+\..+/.test(data.imgUrl)) {

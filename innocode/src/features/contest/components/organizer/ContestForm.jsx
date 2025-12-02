@@ -65,28 +65,33 @@ const ContestForm = ({
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 grid grid-cols-[max-content_1fr] gap-x-[28px] gap-y-5 items-start">
         {/* Image Upload Button */}
         <Label htmlFor="imgFile">Image upload</Label>
-        <div className="">
-          <input
-            id="imgFile"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) {
-                setFormData((prev) => ({ ...prev, imgFile: file }))
-              }
-            }}
-          />
-          <button
-            type="button"
-            onClick={() => document.getElementById("imgFile").click()}
-            className="button-orange"
-          >
-            {formData.imgFile ? "Change" : "Browse"}
-          </button>
+        <div className="flex flex-col">
+          <div>
+            <input
+              id="imgFile"
+              type="file"
+              accept="image/png, image/jpeg, image/jpg"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) {
+                  setFormData((prev) => ({ ...prev, imgFile: file }))
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => document.getElementById("imgFile").click()}
+              className="button-orange"
+            >
+              {formData.imgFile ? "Change" : "Browse"}
+            </button>
+          </div>
+
           {errors.imgFile && (
-            <span className="text-red-500 text-xs mt-1">{errors.imgFile}</span>
+            <span className="text-xs leading-4 mt-1 text-[#D32F2F]">
+              {errors.imgFile}
+            </span>
           )}
         </div>
 
