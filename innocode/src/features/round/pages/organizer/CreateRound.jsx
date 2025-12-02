@@ -9,7 +9,13 @@ import RoundDateInfo from "@/features/round/components/organizer/RoundDateInfo"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import { validateRound } from "@/features/round/validators/roundValidator"
 import { BREADCRUMB_PATHS } from "../../../../config/breadcrumbs"
-import { fromDatetimeLocal } from "../../../../shared/utils/dateTime"
+import {
+  formatDateTime,
+  fromDatetimeLocal,
+  toDatetimeLocal,
+} from "../../../../shared/utils/dateTime"
+import { useGetRoundsByContestIdQuery } from "@/services/roundApi"
+import ExistingRoundsPanel from "../../components/organizer/ExistingRoundsPanel"
 
 const EMPTY = {
   name: "",
@@ -42,6 +48,9 @@ const CreateRound = () => {
 
   const { data: contest, isLoading: contestLoading } =
     useGetContestByIdQuery(contestId)
+  const { data: roundsData, isLoading: roundsLoading } =
+    useGetRoundsByContestIdQuery(contestId)
+  const rounds = roundsData?.data || []
 
   // Breadcrumbs
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_CREATE(
@@ -102,15 +111,34 @@ const CreateRound = () => {
       loading={contestLoading}
     >
       {contest && <RoundDateInfo contest={contest} />}
-      <RoundForm
-        formData={form}
-        setFormData={setForm}
-        errors={errors}
-        setErrors={setErrors}
-        onSubmit={handleSubmit}
-        isSubmitting={isLoading}
-        mode="create"
-      />
+
+      <div className="space-y-5">
+        <div>
+          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+            Active rounds
+          </div>
+          <ExistingRoundsPanel
+            rounds={rounds}
+            selectedStart={form.start}
+            selectedEnd={form.end}
+          />
+        </div>
+
+        <div>
+          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+            Create a round
+          </div>
+          <RoundForm
+            formData={form}
+            setFormData={setForm}
+            errors={errors}
+            setErrors={setErrors}
+            onSubmit={handleSubmit}
+            isSubmitting={isLoading}
+            mode="create"
+          />
+        </div>
+      </div>
     </PageContainer>
   )
 }

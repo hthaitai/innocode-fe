@@ -3,6 +3,7 @@ import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import DateTimeFieldFluent from "@/shared/components/datetimefieldfluent/DateTimeFieldFluent"
 import DropdownFluent from "../../../../shared/components/DropdownFluent"
 import Label from "@/shared/components/form/Label"
+import { AnimatePresence, motion } from "framer-motion"
 
 export default function RoundForm({
   formData,
@@ -240,17 +241,26 @@ export default function RoundForm({
 
               {/* Show file name if uploaded, otherwise show current template URL */}
               {formData.TemplateFile && (
-                <span className="ml-2 text-sm leading-5">
+                <span className="ml-2 text-sm leading-5 text-[#7A7574]">
                   {formData.TemplateFile.name}
                 </span>
               )}
 
               {/* ---- Validation Error for Template File ---- */}
-              {errors.templateFile && (
-                <p className="text-xs leading-4 mt-1 text-[#D32F2F]">
-                  {errors.templateFile}
-                </p>
-              )}
+              <AnimatePresence>
+                {errors.templateFile && (
+                  <motion.p
+                    key="template-file-error"
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-xs leading-4 mt-1 text-[#D32F2F]"
+                  >
+                    {errors.templateFile}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
           </>
         )}

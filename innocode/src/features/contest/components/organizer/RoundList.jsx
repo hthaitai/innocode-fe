@@ -64,7 +64,7 @@ const RoundsList = ({ contestId }) => {
                 )
               }
             >
-              <div className="flex gap-5 items-center flex-1">
+              <div className="flex gap-5 items-center">
                 <Calendar size={20} />
                 <div>
                   <p className="text-[14px] leading-[20px]">

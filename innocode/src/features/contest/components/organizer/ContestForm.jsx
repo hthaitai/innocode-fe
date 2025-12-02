@@ -65,7 +65,7 @@ const ContestForm = ({
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 grid grid-cols-[max-content_1fr] gap-x-[28px] gap-y-5 items-start">
         {/* Image Upload Button */}
         <Label htmlFor="imgFile">Image upload</Label>
-        <div className="flex flex-col">
+        <div className="flex items-center gap-2">
           <div>
             <input
               id="imgFile"
@@ -79,6 +79,7 @@ const ContestForm = ({
                 }
               }}
             />
+
             <button
               type="button"
               onClick={() => document.getElementById("imgFile").click()}
@@ -88,9 +89,9 @@ const ContestForm = ({
             </button>
           </div>
 
-          {errors.imgFile && (
-            <span className="text-xs leading-4 mt-1 text-[#D32F2F]">
-              {errors.imgFile}
+          {formData.imgFile && (
+            <span className="text-sm leading-5 text-[#7A7574]">
+              {formData.imgFile.name}
             </span>
           )}
         </div>
