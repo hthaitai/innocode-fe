@@ -16,6 +16,7 @@ import {
   Award,
   TrophyIcon,
   JoystickIcon,
+  RefreshCcw,
 } from "lucide-react";
 import useContestDetail from "../hooks/useContestDetail";
 import CountdownTimer from "@/shared/components/countdowntimer/CountdownTimer";
@@ -24,6 +25,7 @@ import useTeams from "@/features/team/hooks/useTeams";
 import useCompletedQuizzes from "@/features/quiz/hooks/useCompletedQuizzes";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
+import { useGetRoundsByContestIdQuery } from "@/services/roundApi";
 import useCompletedAutoTests from "@/features/problem/hooks/useCompletedAutoTests";
 import manualProblemApi from "@/api/manualProblemApi";
 
@@ -37,6 +39,17 @@ const ContestDetail = () => {
   // Fetch contest data from API
   const { contest: apiContest, loading, error } = useContestDetail(contestId);
 
+  // Fetch rounds separately using RTK Query (only when rounds tab is active or contest is loaded)
+  const {
+    data: roundsData,
+    isLoading: roundsLoading,
+    isFetching: roundsFetching,
+    error: roundsError,
+    refetch: refetchRounds,
+  } = useGetRoundsByContestIdQuery(contestId, {
+    skip: !contestId,
+  });
+
   // Fetch team data for student
   const { getMyTeam, loading: teamLoading } = useTeams();
   const [myTeam, setMyTeam] = useState(null);
@@ -44,8 +57,17 @@ const ContestDetail = () => {
   // Use API data if available
   const contest = apiContest;
 
-  // Get rounds from contest data
-  const rounds = contest?.rounds || [];
+  // Get rounds from RTK Query, fallback to contest data
+  const rounds = useMemo(() => {
+    if (roundsData?.data && Array.isArray(roundsData.data)) {
+      return roundsData.data;
+    }
+    // Fallback to contest rounds if RTK Query hasn't loaded yet
+    return contest?.rounds || [];
+  }, [roundsData, contest?.rounds]);
+
+  // Check if we have rounds data from RTK Query (not just fallback)
+  const hasRoundsFromQuery = roundsData?.data && Array.isArray(roundsData.data);
 
   // Check if contest is ongoing
   const isOngoing = useMemo(() => {
@@ -63,7 +85,8 @@ const ContestDetail = () => {
   }, [contest]);
 
   // Fetch leaderboard using RTK Query (only when ongoing or ranks tab is active)
-  const shouldFetchLeaderboard = contestId && (isOngoing || activeTab === "ranks");
+  const shouldFetchLeaderboard =
+    contestId && (isOngoing || activeTab === "ranks");
   const {
     data: leaderboardData,
     isLoading: leaderboardLoading,
@@ -76,40 +99,60 @@ const ContestDetail = () => {
   useEffect(() => {
     if (import.meta.env.VITE_ENV === "development" && shouldFetchLeaderboard) {
       console.log("🔍 [ContestDetail] contestId:", contestId);
-      console.log("🔍 [ContestDetail] shouldFetchLeaderboard:", shouldFetchLeaderboard);
+      console.log(
+        "🔍 [ContestDetail] shouldFetchLeaderboard:",
+        shouldFetchLeaderboard
+      );
       console.log("🔍 [ContestDetail] leaderboardData:", leaderboardData);
-      console.log("🔍 [ContestDetail] leaderboardData type:", typeof leaderboardData);
-      console.log("🔍 [ContestDetail] leaderboardData isArray:", Array.isArray(leaderboardData));
+      console.log(
+        "🔍 [ContestDetail] leaderboardData type:",
+        typeof leaderboardData
+      );
+      console.log(
+        "🔍 [ContestDetail] leaderboardData isArray:",
+        Array.isArray(leaderboardData)
+      );
       console.log("🔍 [ContestDetail] leaderboardLoading:", leaderboardLoading);
       console.log("🔍 [ContestDetail] leaderboardError:", leaderboardError);
     }
-  }, [leaderboardData, contestId, shouldFetchLeaderboard, leaderboardLoading, leaderboardError]);
+  }, [
+    leaderboardData,
+    contestId,
+    shouldFetchLeaderboard,
+    leaderboardLoading,
+    leaderboardError,
+  ]);
 
   // Handle data structure - API returns teams array directly or wrapped
   // transformResponse now always returns object with teams array
   const leaderboardEntries = Array.isArray(leaderboardData)
     ? leaderboardData // Fallback for old format
-    : leaderboardData?.teams || 
-      leaderboardData?.teamIdList || 
-      leaderboardData?.entries || 
+    : leaderboardData?.teams ||
+      leaderboardData?.teamIdList ||
+      leaderboardData?.entries ||
       [];
-  
+
   // Debug: Log entries
   useEffect(() => {
     if (import.meta.env.VITE_ENV === "development" && shouldFetchLeaderboard) {
       console.log("🔍 [ContestDetail] leaderboardEntries:", leaderboardEntries);
-      console.log("🔍 [ContestDetail] leaderboardEntries length:", leaderboardEntries.length);
+      console.log(
+        "🔍 [ContestDetail] leaderboardEntries length:",
+        leaderboardEntries.length
+      );
       if (leaderboardEntries.length > 0) {
         console.log("🔍 [ContestDetail] first entry:", leaderboardEntries[0]);
       }
     }
   }, [leaderboardEntries, shouldFetchLeaderboard]);
-  
+
   // Get contest info from contest data
   const leaderboardContestInfo = {
     contestName: contest?.name || leaderboardData?.contestName || null,
     contestId: contestId,
-    totalTeamCount: Array.isArray(leaderboardEntries) ? leaderboardEntries.length : (leaderboardData?.totalTeamCount || 0),
+    totalTeamCount: Array.isArray(leaderboardEntries)
+      ? leaderboardEntries.length
+      : leaderboardData?.totalTeamCount || 0,
     snapshotAt: leaderboardData?.snapshotAt || null,
   };
 
@@ -143,34 +186,37 @@ const ContestDetail = () => {
   // Check for completed quizzes (only for students)
   const { completedRounds, loading: completedQuizzesLoading } =
     useCompletedQuizzes(role === "student" ? rounds : []);
-  
+
   // Check completed AutoEvaluation rounds
-  const { completedRounds: completedAutoTests, loading: completedAutoTestsLoading } =
-    useCompletedAutoTests(role === "student" ? rounds : []);
-  
+  const {
+    completedRounds: completedAutoTests,
+    loading: completedAutoTestsLoading,
+  } = useCompletedAutoTests(role === "student" ? rounds : []);
+
   // Check completed Manual problem rounds using RTK Query
   const manualRounds = useMemo(() => {
     if (role !== "student" || !rounds || rounds.length === 0) return [];
     return rounds.filter(
-      (round) => round.problemType === 'Manual' && round.roundId
+      (round) => round.problemType === "Manual" && round.roundId
     );
   }, [rounds, role]);
 
   // Create a stable key from roundIds to prevent infinite loops
   const manualRoundsKey = useMemo(() => {
-    if (!manualRounds || manualRounds.length === 0) return '';
+    if (!manualRounds || manualRounds.length === 0) return "";
     return manualRounds
       .map((r) => r.roundId)
       .sort()
-      .join(',');
+      .join(",");
   }, [manualRounds]);
 
   // Check each manual round for completion using manualProblemApi
   const [completedManualProblems, setCompletedManualProblems] = useState([]);
-  const [completedManualProblemsLoading, setCompletedManualProblemsLoading] = useState(false);
+  const [completedManualProblemsLoading, setCompletedManualProblemsLoading] =
+    useState(false);
 
   // Track previous key and userId to prevent unnecessary re-fetches
-  const previousKeyRef = useRef('');
+  const previousKeyRef = useRef("");
   const previousUserIdRef = useRef(null);
   // Store rounds in ref to avoid stale closure
   const roundsRef = useRef(rounds);
@@ -182,9 +228,12 @@ const ContestDetail = () => {
 
   useEffect(() => {
     const currentUserId = user?.id;
-    
+
     // Skip if key and userId haven't changed
-    if (manualRoundsKey === previousKeyRef.current && currentUserId === previousUserIdRef.current) {
+    if (
+      manualRoundsKey === previousKeyRef.current &&
+      currentUserId === previousUserIdRef.current
+    ) {
       return;
     }
 
@@ -203,23 +252,29 @@ const ContestDetail = () => {
       try {
         // Filter rounds from ref to get latest value
         const manualRoundsFiltered = (roundsRef.current || []).filter(
-          (round) => round.problemType === 'Manual' && round.roundId
+          (round) => round.problemType === "Manual" && round.roundId
         );
 
         const checkPromises = manualRoundsFiltered.map(async (round) => {
           try {
-            const res = await manualProblemApi.getManualTestResults(round.roundId, {
-              pageNumber: 1,
-              pageSize: 1,
-              studentIdSearch: currentUserId,
-            });
+            const res = await manualProblemApi.getManualTestResults(
+              round.roundId,
+              {
+                pageNumber: 1,
+                pageSize: 1,
+                studentIdSearch: currentUserId,
+              }
+            );
             const results = res.data?.data || res.data || [];
             return results.length > 0 ? round : null;
           } catch (err) {
             if (err?.response?.status === 404) {
               return null;
             }
-            console.warn(`Error checking manual result for round ${round.roundId}:`, err);
+            console.warn(
+              `Error checking manual result for round ${round.roundId}:`,
+              err
+            );
             return null;
           }
         });
@@ -228,7 +283,7 @@ const ContestDetail = () => {
         const completed = results.filter((round) => round !== null);
         setCompletedManualProblems(completed);
       } catch (err) {
-        console.error('Error checking completed manual problems:', err);
+        console.error("Error checking completed manual problems:", err);
       } finally {
         setCompletedManualProblemsLoading(false);
       }
@@ -556,17 +611,45 @@ const ContestDetail = () => {
               )}
 
               {activeTab === "rounds" && (
-                <div className="space-y-4">
+                <div className="space-y-4 relative">
+                  {/* Loading overlay when refetching with existing data */}
+                  {roundsFetching && hasRoundsFromQuery && rounds.length > 0 && (
+                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-[8px]">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-orange-500"></div>
+                        <p className="text-sm text-[#7A7574] font-medium">
+                          Refreshing rounds...
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold text-[#2d3748]">
                       Contest Rounds
                     </h3>
-                    {loading && (
-                      <span className="text-sm text-[#7A7574]">Loading...</span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {(roundsLoading || roundsFetching) && (
+                        <span className="text-sm text-[#7A7574] animate-pulse font-medium">
+                          {roundsFetching && hasRoundsFromQuery ? "Refreshing..." : "Loading..."}
+                        </span>
+                      )}
+                      <RefreshCcw
+                        size={18}
+                        className={`cursor-pointer text-[#7A7574] hover:text-orange-500 transition-all duration-300 ${
+                          roundsLoading || roundsFetching
+                            ? "animate-spin text-orange-500"
+                            : "hover:rotate-180"
+                        }`}
+                        onClick={() => refetchRounds()}
+                        style={{
+                          transition: "transform 0.3s ease, color 0.2s ease",
+                        }}
+                      />
+                    </div>
                   </div>
 
-                  {error ? (
+                  {roundsError ? (
                     <div className="text-center py-8">
                       <Icon
                         icon="mdi:alert-circle"
@@ -574,7 +657,14 @@ const ContestDetail = () => {
                         className="mx-auto mb-2 text-red-500 opacity-50"
                       />
                       <p className="text-[#7A7574]">Failed to load rounds</p>
-                      <p className="text-sm text-[#7A7574] mt-1">{error}</p>
+                      <p className="text-sm text-[#7A7574] mt-1">
+                        {roundsError?.data?.message || roundsError?.message || "An error occurred"}
+                      </p>
+                    </div>
+                  ) : (roundsLoading || roundsFetching) && !hasRoundsFromQuery ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
+                      <p className="text-[#7A7574]">Loading rounds...</p>
                     </div>
                   ) : rounds && rounds.length > 0 ? (
                     rounds.map((round, index) => {
@@ -749,8 +839,10 @@ const ContestDetail = () => {
                     </div>
                   ) : leaderboardError ? (
                     // Check if it's a 404 (no data yet) vs actual error
-                    (typeof leaderboardError === 'object' && leaderboardError?.Message?.includes('Not found')) ||
-                    (typeof leaderboardError === 'string' && leaderboardError.includes('Not found')) ? (
+                    (typeof leaderboardError === "object" &&
+                      leaderboardError?.Message?.includes("Not found")) ||
+                    (typeof leaderboardError === "string" &&
+                      leaderboardError.includes("Not found")) ? (
                       <div className="text-center py-12 text-[#7A7574]">
                         <Icon
                           icon="mdi:trophy-outline"
@@ -777,9 +869,11 @@ const ContestDetail = () => {
                           Failed to load leaderboard
                         </p>
                         <p className="text-sm text-[#7A7574]">
-                          {typeof leaderboardError === 'string' 
-                            ? leaderboardError 
-                            : leaderboardError?.Message || leaderboardError?.message || 'An error occurred'}
+                          {typeof leaderboardError === "string"
+                            ? leaderboardError
+                            : leaderboardError?.Message ||
+                              leaderboardError?.message ||
+                              "An error occurred"}
                         </p>
                       </div>
                     )
@@ -960,7 +1054,7 @@ const ContestDetail = () => {
                                       </span>
                                     )}
                                   </div>
-                               
+
                                   <div className="flex-1 min-w-0">
                                     <p className="font-semibold text-[#2d3748] truncate">
                                       {entry.teamName || "—"}
@@ -968,7 +1062,10 @@ const ContestDetail = () => {
                                   </div>
                                   <div className="text-right flex-shrink-0">
                                     <p className="text-xl font-bold text-[#13d45d]">
-                                      {formatScore(entry.score)} <span className="text-xs text-[#13d45d]">pts</span>
+                                      {formatScore(entry.score)}{" "}
+                                      <span className="text-xs text-[#13d45d]">
+                                        pts
+                                      </span>
                                     </p>
                                   </div>
                                 </div>
