@@ -1,7 +1,14 @@
 import Label from "../../../shared/components/form/Label"
 import TextFieldFluent from "../../../shared/components/TextFieldFluent"
 
-export default function RubricItem({ index, item, scoreObj, onChange, error }) {
+export default function RubricItem({
+  index,
+  item,
+  scoreObj,
+  onChange,
+  error,
+  readOnly = false,
+}) {
   return (
     <div
       className={`border rounded-[5px] text-sm leading-5 bg-white ${
@@ -20,6 +27,7 @@ export default function RubricItem({ index, item, scoreObj, onChange, error }) {
           <p>{item.description}</p>
         </div>
       </div>
+      
       {/* Input fields */}
       <div className="p-5 grid grid-cols-[max-content_1fr] gap-x-[28px] gap-y-5 items-start">
         <Label htmlFor={`score-${item.rubricId}`}>Score</Label>
@@ -28,9 +36,11 @@ export default function RubricItem({ index, item, scoreObj, onChange, error }) {
           type="number"
           value={scoreObj?.score || 0}
           onChange={(e) =>
+            !readOnly &&
             onChange(item.rubricId, "score", Number(e.target.value))
           }
           style={{ width: "80px" }}
+          disabled={readOnly}
         />
 
         <Label htmlFor={`note-${item.rubricId}`}>Note</Label>
@@ -40,7 +50,10 @@ export default function RubricItem({ index, item, scoreObj, onChange, error }) {
           multiline
           rows={6}
           placeholder="Add a note..."
-          onChange={(e) => onChange(item.rubricId, "note", e.target.value)}
+          onChange={(e) =>
+            !readOnly && onChange(item.rubricId, "note", e.target.value)
+          }
+          disabled={readOnly}
         />
       </div>
     </div>

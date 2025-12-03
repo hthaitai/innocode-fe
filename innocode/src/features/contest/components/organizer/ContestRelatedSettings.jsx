@@ -2,12 +2,12 @@ import { Link } from "react-router-dom"
 import { Users, Trophy, Award, ChevronRight, Scale } from "lucide-react"
 
 const items = [
-  {
-    title: "Teams",
-    subtitle: "Manage registered teams and members",
-    icon: <Users size={20} />,
-    path: "teams",
-  },
+  // {
+  //   title: "Teams",
+  //   subtitle: "Manage registered teams and members",
+  //   icon: <Users size={20} />,
+  //   path: "teams",
+  // },
   {
     title: "Leaderboard",
     subtitle: "View and refresh contest leaderboard",

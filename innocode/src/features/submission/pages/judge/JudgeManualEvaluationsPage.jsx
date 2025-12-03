@@ -13,6 +13,7 @@ import RubricList from "../../components/RubricList"
 import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 import { validateScores } from "../../validators/evaluationValidator"
+import { AlertTriangle } from "lucide-react"
 
 const JudgeManualEvaluationsPage = () => {
   const { submissionId } = useParams()
@@ -31,16 +32,21 @@ const JudgeManualEvaluationsPage = () => {
   const roundId = submission?.roundId
 
   // Fetch rubric using the roundId
-  const { data: rubric, isLoading: rubricLoading } = useFetchRubricQuery(
-    roundId,
-    {
-      skip: !roundId,
-    }
-  )
+  const {
+    data: rubric,
+    isLoading: rubricLoading,
+    isError: rubricError,
+  } = useFetchRubricQuery(roundId, {
+    skip: !roundId,
+  })
 
   // Download submission
-  const { data: downloadData, refetch: fetchDownload } =
-    useDownloadSubmissionQuery(submissionId, { skip: !submissionId })
+  const {
+    data: downloadData,
+    isLoading: downloadLoading,
+    isError: downloadError,
+    refetch: fetchDownload,
+  } = useDownloadSubmissionQuery(submissionId, { skip: !submissionId })
 
   // Evaluate submission
   const [evaluateSubmission, { isLoading: evaluating }] =
@@ -53,14 +59,67 @@ const JudgeManualEvaluationsPage = () => {
   // Initialize scores when rubric loads
   useEffect(() => {
     if (rubric) {
-      const initialScores = rubric.map((c) => ({
-        rubricId: c.rubricId,
-        score: 0,
-        note: "",
-      }))
+      const initialScores = rubric.map((c) => {
+        const existingResult = submission?.criterionResults?.find(
+          (r) => r.rubricId === c.rubricId
+        )
+        return {
+          rubricId: c.rubricId,
+          score: existingResult?.score ?? 0,
+          note: existingResult?.note ?? "",
+        }
+      })
       setScores(initialScores)
     }
-  }, [rubric])
+  }, [rubric, submission])
+
+  if (submissionLoading || rubricLoading || downloadLoading) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+        loading
+      />
+    )
+  }
+
+  if (submissionError || rubricError || downloadError) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+        error={submissionError}
+      />
+    )
+  }
+
+  if (!submission) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
+          Submission not found.
+        </div>
+      </PageContainer>
+    )
+  }
+
+  if (!roundId) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
+          This round has been deleted or is no longer available.
+        </div>
+      </PageContainer>
+    )
+  }
+
+  const isEditable = submission.status === "Pending"
 
   const handleScoreChange = (rubricId, field, value) => {
     setScores((prev) =>
@@ -106,16 +165,25 @@ const JudgeManualEvaluationsPage = () => {
     }
   }
 
-  if (submissionLoading) return <div>Loading submission data...</div>
-  if (!roundId) return <div>Round not found for this submission.</div>
-  if (rubricLoading) return <div>Loading rubric...</div>
-
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
     >
       <div className="space-y-5">
+        {!isEditable && (
+          <div className="flex items-center gap-5 border border-yellow-400 bg-yellow-100 text-yellow-800 rounded-[5px] px-5 min-h-[70px] text-sm leading-5">
+            <AlertTriangle className="w-5 h-5" />
+            <span>
+              This submission is{" "}
+              <span className="font-bold">
+                {submission.status.toLowerCase()}
+              </span>{" "}
+              and cannot be edited.
+            </span>
+          </div>
+        )}
+
         <SubmissionInfoSection
           submission={submission}
           onDownload={handleDownload}
@@ -128,6 +196,7 @@ const JudgeManualEvaluationsPage = () => {
           onScoreChange={handleScoreChange}
           onSubmit={handleSubmitEvaluation}
           errors={errors}
+          readOnly={!isEditable}
         />
       </div>
     </PageContainer>

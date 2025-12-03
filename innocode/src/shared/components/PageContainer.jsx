@@ -51,8 +51,10 @@ export default function PageContainer({
               <p className="text-sm opacity-80 mt-1">
                 {typeof error === "string"
                   ? error
-                  : error?.errorMessage
-                  ? `${error.errorMessage}`
+                  : error?.data?.errorMessage
+                  ? error.data.errorMessage
+                  : error?.message
+                  ? error.message
                   : "Please try again later."}
               </p>
 
