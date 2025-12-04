@@ -71,8 +71,8 @@ const RoundsList = ({ contestId }) => {
                     {round.name ?? "Untitled Round"}
                   </p>
                   <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                    {formatDateTime(toDatetimeLocal(round.start))} -{" "}
-                    {formatDateTime(toDatetimeLocal(round.end))} |{" "}
+                    {formatDateTime(round.start)} -{" "}
+                    {formatDateTime(round.end)} |{" "}
                     {round.problemType || "—"}
                   </p>
                 </div>
