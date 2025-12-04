@@ -37,9 +37,29 @@ const Leaderboard = () => {
   // Get available contests (ongoing or completed)
   const availableContests = useMemo(() => {
     if (!contests || !Array.isArray(contests)) return [];
-    return contests.filter(
-      (c) => c.isStatusVisible && (c.isOngoing || c.isCompleted)
-    );
+    
+    return contests.filter((c) => {
+      // Filter out Draft contests
+      if (c.status === 'Draft') return false;
+      
+      const status = c.status?.toLowerCase() || '';
+      const now = new Date();
+      
+      // Check if ongoing
+      const isOngoing = 
+        status === 'ongoing' || 
+        status === 'registrationopen' || 
+        status === 'registrationclosed' ||
+        (c.start && c.end && now >= new Date(c.start) && now < new Date(c.end));
+      
+      // Check if completed
+      const isCompleted = 
+        status === 'completed' || 
+        (c.end && now > new Date(c.end));
+      
+      // Include if ongoing or completed
+      return isOngoing || isCompleted;
+    });
   }, [contests]);
 
   // Use contestId from URL or first available contest

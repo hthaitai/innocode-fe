@@ -77,7 +77,7 @@ function MentorAppeal() {
   } = useGetTeamsByContestIdQuery(selectedContestId, {
     skip: !selectedContestId,
   });
-
+  
   // Fetch appeals using RTK Query API
   const {
     data: appealsData,
@@ -93,6 +93,12 @@ function MentorAppeal() {
     if (!appealsData) return [];
     return appealsData.appeals || [];
   }, [appealsData]);
+
+  // Console log my appeals
+  useEffect(() => {
+    console.log("My Appeals:", myAppeals);
+    console.log("Appeals Data (raw):", appealsData);
+  }, [myAppeals, appealsData]);
 
   // Format score
   const formatScore = (score) => {
@@ -963,7 +969,10 @@ function MentorAppeal() {
                               </div>
 
                               <div className="font-semibold text-[#2d3748] mb-2">
-                                <p>Reason:</p>
+                              {appeal.contestName || "No contest provided"}
+                              </div>
+                              <div className="font-semibold text-[#2d3748] mb-2">
+                                <p>Your Reason:</p>
                                 <p className="text-sm text-[#4a5568]  p-3  ">{appeal.reason || "No reason provided"}</p>
                               </div>
 

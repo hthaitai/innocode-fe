@@ -15,30 +15,46 @@ const Contests = () => {
   const [inputValue, setInputValue] = useState(''); // Input value (can change while typing)
   
   // Filter only by status since search is now handled by backend
+  // Filter out Draft contests
   const filteredContests = useMemo(() => {
     if (!contests || !Array.isArray(contests)) {
       return [];
     }
 
-    return contests.filter((contest) => contest.isStatusVisible);
+    return contests.filter((contest) => contest.status !== 'Draft');
   }, [contests]);
 
-  // Group by status - update logic
-  const ongoingContests = filteredContests.filter(
-    (c) => c.isOngoing || c.isRegistrationOpen || c.isRegistrationClosed
-  );
+  // Group by status - use status field directly
+  const ongoingContests = filteredContests.filter((c) => {
+    const status = c.status?.toLowerCase() || '';
+    return status === 'ongoing' || status === 'registrationopen' || status === 'registrationclosed';
+  });
 
-  const upcomingContests = filteredContests.filter(
-    (c) => c.isPublished && !c.isOngoing && !c.isCompleted
-  );
+  const upcomingContests = filteredContests.filter((c) => {
+    const status = c.status?.toLowerCase() || '';
+    // Check if contest is published/registration open but not ongoing/completed
+    if (status === 'published' || status === 'registrationopen') {
+      // Check dates to determine if it's upcoming
+      if (c.start) {
+        const now = new Date();
+        const start = new Date(c.start);
+        return now < start;
+      }
+      return true;
+    }
+    return false;
+  });
 
-  const completedContests = filteredContests.filter((c) => c.isCompleted);
+  const completedContests = filteredContests.filter((c) => {
+    const status = c.status?.toLowerCase() || '';
+    return status === 'completed' || (c.end && new Date() > new Date(c.end));
+  });
 
   const handleSearch = (term) => {
     // Only trigger search when user clicks search button or presses Enter
     searchContests(term);
   };
-  
+   
   const handleInputChange = (e) => {
     // Update input value without triggering search
     setInputValue(e.target.value);

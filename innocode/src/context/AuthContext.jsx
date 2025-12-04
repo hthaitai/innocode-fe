@@ -35,6 +35,33 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
+  // Listen for token refresh events from axiosClient
+  useEffect(() => {
+    const handleTokenRefresh = (event) => {
+      try {
+        const newToken = event.detail?.token || authService.getToken();
+        if (newToken && authService.isAuthenticated()) {
+          const newUser = authService.getUser();
+          if (newUser) {
+            setToken(newToken);
+            setUser(newUser);
+            if (import.meta.env.VITE_ENV === "development") {
+              console.log("🔄 AuthContext updated after token refresh");
+            }
+          }
+        }
+      } catch (error) {
+        console.error("❌ Token refresh handler error:", error);
+      }
+    };
+
+    window.addEventListener('tokenRefreshed', handleTokenRefresh);
+
+    return () => {
+      window.removeEventListener('tokenRefreshed', handleTokenRefresh);
+    };
+  }, []);
+
   const login = async (credentials) => {
     const data = await authService.login(credentials);
     setToken(data.token);
