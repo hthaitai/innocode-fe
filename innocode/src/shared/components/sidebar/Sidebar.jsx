@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Icon } from "@iconify/react";
-import "./sidebar.css";
+import "./Sidebar.css";
 import { useAuth } from "@/context/AuthContext";
 
 const allMenus = {
