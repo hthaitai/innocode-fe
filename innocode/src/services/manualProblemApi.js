@@ -103,7 +103,7 @@ export const manualProblemApi = api.injectEndpoints({
 
     fetchManualResults: builder.query({
       query: ({ roundId, search, pageNumber = 1, pageSize = 10 }) => ({
-        url: `rounds/${roundId}/manual-test/results`,
+        url: `rounds/${roundId}/manual-test/my-result`,
         params: { pageNumber, pageSize, ...search },
       }),
       transformResponse: (response) => ({
@@ -114,6 +114,38 @@ export const manualProblemApi = api.injectEndpoints({
       providesTags: (result, error, { roundId }) => [
         { type: "Results", id: roundId },
       ],
+    }),
+
+    // Save manual submission (file upload)
+    saveManualSubmission: builder.mutation({
+      query: ({ roundId, file }) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        return {
+          url: `rounds/${roundId}/manual-test/submissions`,
+          method: "POST",
+          body: formData,
+        };
+      },
+      invalidatesTags: (result, error, { roundId }) => [
+        { type: "Results", id: roundId },
+        { type: "ManualSubmission", id: roundId },
+      ],
+      transformResponse: (response) => response.data, // Extract data from response
+    }),
+
+    // Finish round (submit final)
+    finishRound: builder.mutation({
+      query: (roundId) => ({
+        url: `rounds/${roundId}/finish`,
+        method: "POST",
+      }),
+      invalidatesTags: (result, error, roundId) => [
+        { type: "Results", id: roundId },
+        { type: "ManualSubmission", id: roundId },
+      ],
+      transformResponse: (response) => response.data,
     }),
   }),
 })
@@ -126,4 +158,6 @@ export const {
   useCreateRubricMutation,
   useDeleteCriterionMutation,
   useFetchManualResultsQuery,
+  useSaveManualSubmissionMutation,
+  useFinishRoundMutation,
 } = manualProblemApi

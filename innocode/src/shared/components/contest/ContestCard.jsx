@@ -3,13 +3,68 @@ import './ContestCard.css';
 import { Icon } from '@iconify/react';
 
 const ContestCard = ({ contest, onClick }) => {
-  // ✅ Status badge colors
-  const statusColors = {
-    blue: 'bg-blue-100 text-blue-700',
-    green: 'bg-green-100 text-green-700',
-    gray: 'bg-gray-100 text-gray-700',
-    orange: 'bg-orange-100 text-orange-700',
+  // ✅ Calculate time left from start date
+  const calculateTimeLeft = (startDate) => {
+    if (!startDate) return 'TBA';
+    const now = new Date();
+    const start = new Date(startDate);
+    const diff = start - now;
+    if (diff <= 0) return 'Started';
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    if (days > 0) return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    if (minutes > 0) return `${minutes}m`;
+    return 'Less than a minute';
   };
+
+  // ✅ Get status color - same logic as ContestDetail
+  const getStatusColor = (status) => {
+    if (!status) return "text-gray-500 bg-gray-500/10";
+    
+    const statusLower = status.toLowerCase();
+    switch (statusLower) {
+      case "upcoming":
+        return "text-amber-500 bg-amber-500/10";
+      case "ongoing":
+        return "text-blue-500 bg-blue-500/10";
+      case "completed":
+        return "text-green-500 bg-green-500/10";
+      case "published":
+        return "text-green-500 bg-green-500/10";
+      case "registration open":
+      case "registrationopen":
+        return "text-green-500 bg-green-500/10";
+      case "registration closed":
+      case "registrationclosed":
+        return "text-orange-500 bg-orange-500/10";
+      case "draft":
+        return "text-gray-500 bg-gray-500/10";
+      default:
+        return "text-gray-500 bg-gray-500/10";
+    }
+  };
+
+  // Calculate timeLeft from contest.start
+  const timeLeft = contest.timeLeft || calculateTimeLeft(contest.start);
+
+  // Format status label from status if statusLabel is not available
+  const getStatusLabel = () => {
+    if (contest.statusLabel) return contest.statusLabel;
+    if (!contest.status) return null;
+    
+    // Format status to readable label
+    const status = contest.status;
+    return status
+      .replace(/([A-Z])/g, ' $1')
+      .trim()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
+  const statusLabel = getStatusLabel();
 
   return (
     <div className="contest-card bg-white" onClick={onClick}>
@@ -41,10 +96,12 @@ const ContestCard = ({ contest, onClick }) => {
       {/* Contest Content */}
       <div className="contest-card__content">
         {/* Status Badge */}
-        {contest.statusLabel && (
+        {statusLabel && (
           <div className="mb-2">
-            <span className={`inline-block px-2 py-1 text-xs font-semibold rounded ${statusColors[contest.statusColor] || statusColors.gray}`}>
-              {contest.statusLabel}
+            <span className={`inline-block px-2 py-1 text-xs font-semibold rounded ${getStatusColor(
+              statusLabel || contest.status
+            )}`}>
+              {statusLabel}
             </span>
           </div>
         )}
@@ -59,11 +116,11 @@ const ContestCard = ({ contest, onClick }) => {
         <div className="contest-card__meta">
           <span className="contest-card__teams">
             <Icon icon="mdi:account-group" className="inline mr-1" />
-            {contest.teams > 0 ? `${contest.teams} Teams` : 'No limit'}
+            {contest.teamLimitMax > 0 ? `${contest.teamLimitMax} Teams` : contest.teams > 0 ? `${contest.teams} Teams` : 'No limit'}
           </span>
           <span className="contest-card__time">
             <Icon icon="mdi:clock-outline" className="inline mr-1" />
-            {contest.timeLeft}
+            {timeLeft}
           </span>
         </div>
 

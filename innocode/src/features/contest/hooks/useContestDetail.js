@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { contestService } from '@/features/contest/services/contestService';
-import { mapContestFromAPI } from '@/shared/utils/contestMapper';
 
 export const useContestDetail = (contestId) => {
   const [contest, setContest] = useState(null);
@@ -20,12 +19,8 @@ export const useContestDetail = (contestId) => {
         
         const data = await contestService.getContestById(contestId);
         
-        
-        // Map the contest data from API format
-        const mappedContest = data ? mapContestFromAPI(data) : null;
-        
-        
-        setContest(mappedContest);
+        // Use data directly from API
+        setContest(data);
       } catch (error) {
         console.error('❌ Error fetching contest detail:', error);
         setError(error.message || 'Failed to load contest details');
