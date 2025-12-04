@@ -1,14 +1,12 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
-import { contestsData } from "@/data/contestsData";
 import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs";
 import { Icon } from "@iconify/react";
 import {
   Calendar,
   Users,
   Trophy,
-  Clock,
   Play,
   NotebookPen,
   BookCheck,
@@ -300,13 +298,13 @@ const ContestDetail = () => {
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case "upcoming":
-        return "text-[#fbbc05] bg-[#fef7e0]";
+        return "text-amber-500 bg-amber-500/10";
       case "ongoing":
-        return "text-[#34a853] bg-[#e6f4ea]";
+        return "text-blue-500 bg-blue-500/10";
       case "completed":
-        return "text-[#7A7574] bg-[#f3f3f3]";
+        return "text-green-500 bg-green-500/10";
       default:
-        return "text-[#7A7574] bg-[#f3f3f3]";
+        return "text-gray-500 bg-gray-500/10";
     }
   };
 
@@ -324,13 +322,6 @@ const ContestDetail = () => {
   const formatScore = (score) => {
     return (score ?? 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
-
-  const getMemberCount = (members) => {
-    if (!Array.isArray(members)) return 0;
-    // Đếm số lượng members dựa trên memberId
-    return members.filter((member) => member && member.memberId).length;
-  };
-
   // Determine countdown target and label based on contest status
   const getCountdownTarget = () => {
     if (!contest) return null;

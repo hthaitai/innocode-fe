@@ -26,27 +26,6 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
-// Check if current route is public (should not redirect to login)
-const isPublicRoute = () => {
-  const currentPath = window.location.pathname;
-  const publicRoutes = [
-    "/",
-    "/about",
-    "/contests",
-    "/leaderboard",
-  ];
-  
-  // Check exact match or starts with public route
-  const matchesPublicRoute = publicRoutes.some(route => 
-    currentPath === route || currentPath.startsWith(route + "/")
-  );
-  
-  // Also check for contest-detail routes
-  const isContestDetail = currentPath.startsWith("/contest-detail/");
-  
-  return matchesPublicRoute || isContestDetail;
-};
-
 // Request interceptor
 axiosClient.interceptors.request.use(
   (config) => {
@@ -120,17 +99,29 @@ axiosClient.interceptors.response.use(
             originalRequest.url?.includes("/auth/register") ||
             originalRequest.url?.includes("/auth/refresh");
 
-          // Don't try to refresh if it's an auth request
+          // ✅ Don't try to refresh if it's an auth request
           if (isAuthRequest) {
             if (originalRequest.url?.includes("/auth/refresh")) {
-              // Refresh token failed - only redirect if not on public route
-              if (!isPublicRoute()) {
-                localStorage.removeItem("token");
-                localStorage.removeItem("refreshToken");
-                localStorage.removeItem("user"); // Remove old user data if exists
-                window.location.href = "/login";
-              }
+              // Refresh token failed, logout user
+              localStorage.removeItem("token");
+              localStorage.removeItem("refreshToken");
+              localStorage.removeItem("user");
+              window.location.href = "/login";
             }
+            return Promise.reject(error);
+          }
+
+          // ✅ Check if this is a public route that should allow guest access
+          const isPublicRoute =
+            originalRequest.method?.toLowerCase() === "get" &&
+            originalRequest.url?.includes("/contests") &&
+            !originalRequest.url?.includes("/contests/my-contests") &&
+            !originalRequest.url?.includes("/contests/participation") &&
+            !originalRequest.url?.includes("/contests/advanced");
+
+          // ✅ For public routes, don't redirect, just reject the error
+          // This allows components to handle 401 gracefully for guest users
+          if (isPublicRoute && !localStorage.getItem("token")) {
             return Promise.reject(error);
           }
 
@@ -171,6 +162,13 @@ axiosClient.interceptors.response.use(
                   localStorage.setItem("refreshToken", apiData.refreshToken);
                 }
 
+                // Dispatch custom event to notify AuthContext
+                window.dispatchEvent(
+                  new CustomEvent("tokenRefreshed", {
+                    detail: { token: apiData.token },
+                  })
+                );
+
                 // Update original request with new token
                 originalRequest.headers.Authorization = `Bearer ${apiData.token}`;
 
@@ -185,22 +183,24 @@ axiosClient.interceptors.response.use(
               processQueue(refreshError, null);
               isRefreshing = false;
 
-              // Refresh failed - only redirect if not on public route
-              if (!isPublicRoute()) {
-                localStorage.removeItem("token");
-                localStorage.removeItem("refreshToken");
-                localStorage.removeItem("user"); // Remove old user data if exists
-                window.location.href = "/login";
-              }
-              return Promise.reject(refreshError);
-            }
-          } else {
-            // No refresh token - only redirect if not on public route
-            if (!isPublicRoute()) {
+              // Refresh failed, logout user
               localStorage.removeItem("token");
               localStorage.removeItem("refreshToken");
               localStorage.removeItem("user"); // Remove old user data if exists
               window.location.href = "/login";
+              return Promise.reject(refreshError);
+            }
+          } else {
+            // ✅ Only redirect if it's NOT a public route
+            // For public routes, we already handled it above
+            if (!isPublicRoute) {
+              // No refresh token, logout user
+              localStorage.removeItem("token");
+              localStorage.removeItem("refreshToken");
+              localStorage.removeItem("user");
+            } else {
+              // For public routes without token, just reject
+              return Promise.reject(error);
             }
           }
           break;

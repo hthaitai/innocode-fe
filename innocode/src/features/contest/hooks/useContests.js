@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { contests as fakeData } from "@/data/contests/contests";
-import { mapContestFromAPI } from "../../../shared/utils/contestMapper";
 import { contestService } from "../services/contestService";
 export const useContests = () => {
   const [contests, setContests] = useState([]); // Initialize with empty array instead of undefined
@@ -21,19 +20,10 @@ export const useContests = () => {
         // Extract the actual contests array from the response
         const contestsArray = response?.data || response || [];
 
-        const mappedContests = Array.isArray(contestsArray)
-          ? contestsArray.map(mapContestFromAPI)
-          : [];
-
         console.log("📊 Raw API response:", response);
         console.log("📦 Contests array:", contestsArray);
-        console.log("🗺️ Mapped contests:", mappedContests);
-        console.log(
-          "✅ Non-draft contests:",
-          mappedContests.filter((c) => !c.isDraft)
-        );
 
-        setContests(mappedContests);
+        setContests(Array.isArray(contestsArray) ? contestsArray : []);
       } catch (error) {
         setError(error.message || "Failed to load contests");
       } finally {
@@ -56,10 +46,7 @@ export const useContests = () => {
         nameSearch: nameSearch || undefined,
       });
       const contestsArray = response?.data || response || [];
-      const mappedContests = Array.isArray(contestsArray)
-        ? contestsArray.map(mapContestFromAPI)
-        : [];
-      return mappedContests;
+      return Array.isArray(contestsArray) ? contestsArray : [];
     } catch (error) {
       console.error(error);
       setError(error.message || "Failed to load my contests");

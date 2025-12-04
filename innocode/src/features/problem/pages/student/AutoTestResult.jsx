@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
 import { Icon } from "@iconify/react";
-import { ArrowLeft, Trophy, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, Trophy, CheckCircle, XCircle, Download } from "lucide-react";
 import { useGetAutoTestResultQuery } from "@/services/autoEvaluationApi";
 import useContestDetail from "@/features/contest/hooks/useContestDetail";
 import { toast } from "react-hot-toast";
@@ -312,15 +312,15 @@ const AutoTestResult = () => {
               </p>
             )}
             {testResult?.artifacts && testResult.artifacts.length > 0 && (
-              <div className="mt-4">
-                <p className="font-medium text-[#2d3748] mb-2">Submitted Code:</p>
+              <div className="mt-4 flex items-center gap-2">
+                <p className="font-medium text-[#2d3748]">Your Submitted Code:</p>
                 <a
                   href={testResult.artifacts[0].url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#ff6b35] hover:underline break-all"
+                  download
+                  className=" text-[#ff6b35]  hover:text-[#e55a2b] transition-colors"
+                  title="Download submitted code"
                 >
-                  {testResult.artifacts[0].url}
+                  <Download size={30} />
                 </a>
               </div>
             )}
