@@ -211,10 +211,17 @@ export const BREADCRUMBS = {
     "New Template",
   ],
 
-  ORGANIZER_APPEALS: (contestName) => ["Contests", contestName, "Appeals"],
-  ORGANIZER_APPEAL_DETAIL: (contestName, appealId) => [
+  // Organizer appeals
+  ORGANIZER_APPEALS: (contestName, roundName) => [
     "Contests",
     contestName,
+    roundName,
+    "Appeals",
+  ],
+  ORGANIZER_APPEAL_DETAIL: (contestName, roundName, appealId) => [
+    "Contests",
+    contestName,
+    roundName,
     "Appeals",
     `Appeal #${appealId}`,
   ],
@@ -464,17 +471,20 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/certificates`,
     `/organizer/contests/${contestId}/certificates/templates/new`,
   ],
-  ORGANIZER_APPEALS: (contestId) => [
+
+  ORGANIZER_APPEALS: (contestId, roundId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/appeals`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/appeals`,
   ],
-  ORGANIZER_APPEAL_DETAIL: (contestId, appealId) => [
+  ORGANIZER_APPEAL_DETAIL: (contestId, roundId, appealId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/appeals`,
-    `/organizer/contests/${contestId}/appeals/${appealId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/appeals`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/appeals/${appealId}`,
   ],
+
   ORGANIZER_ACTIVITY: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,

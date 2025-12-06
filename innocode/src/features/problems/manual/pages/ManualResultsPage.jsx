@@ -4,7 +4,7 @@ import PageContainer from "@/shared/components/PageContainer"
 import ResultsTable from "../components/ResultsTable"
 import { useGetRoundByIdQuery } from "@/services/roundApi"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-import { useFetchManualResultsQuery } from "../../../../services/manualProblemApi"
+import { useFetchOrganizerManualResultsQuery } from "../../../../services/manualProblemApi"
 
 const ManualResultsPage = () => {
   const { contestId, roundId } = useParams()
@@ -19,7 +19,7 @@ const ManualResultsPage = () => {
     data: resultsData,
     isLoading: resultsLoading,
     refetch,
-  } = useFetchManualResultsQuery({
+  } = useFetchOrganizerManualResultsQuery({
     roundId,
     search,
     pageNumber,

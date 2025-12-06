@@ -101,6 +101,21 @@ export const manualProblemApi = api.injectEndpoints({
       },
     }),
 
+    fetchOrganizerManualResults: builder.query({
+      query: ({ roundId, search, pageNumber = 1, pageSize = 10 }) => ({
+        url: `rounds/${roundId}/manual-test/results`,
+        params: { pageNumber, pageSize, ...search },
+      }),
+      transformResponse: (response) => ({
+        results: response.data,
+        pagination: response.additionalData,
+        message: response.message,
+      }),
+      providesTags: (result, error, { roundId }) => [
+        { type: "Results", id: roundId },
+      ],
+    }),
+
     fetchManualResults: builder.query({
       query: ({ roundId, search, pageNumber = 1, pageSize = 10 }) => ({
         url: `rounds/${roundId}/manual-test/my-result`,
@@ -158,6 +173,7 @@ export const {
   useCreateRubricMutation,
   useDeleteCriterionMutation,
   useFetchManualResultsQuery,
+  useFetchOrganizerManualResultsQuery,
   useSaveManualSubmissionMutation,
   useFinishRoundMutation,
 } = manualProblemApi

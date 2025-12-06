@@ -1,99 +1,91 @@
-import React from "react"
+import React, { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { Scale } from "lucide-react"
 
-import PageContainer from '@/shared/components/PageContainer'
-import TableFluent from '@/shared/components/TableFluent'
+import PageContainer from "@/shared/components/PageContainer"
+import TableFluent from "@/shared/components/TableFluent"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useGetAppealsQuery } from "../../../../services/appealApi"
+import { useGetRoundByIdQuery } from "@/services/roundApi"
+import { getAppealsColumns } from "../../columns/getAppealsColumns"
+import OrganizerAppealsActions from "../../components/organizer/OrganizerAppealsActions"
+import ReviewAppealModal from "../../components/organizer/ReviewAppealModal"
+import { useModal } from "@/shared/hooks/useModal"
 
-import useAppeals from "@/features/appeal/hooks/useAppeals"
-import useTeams from "@/features/team/hooks/useTeams"
-import useUsers from "@/shared/hooks/useUsers"
-import { formatDateTime } from '@/shared/utils/dateTime'
-import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
-import StatusBadge from "../../../../shared/components/StatusBadge"
-
-const OrganizerAppeals = () => {
+export default function OrganizerAppeals() {
   const navigate = useNavigate()
-  const { contestId } = useParams()
+  const { contestId, roundId } = useParams()
+  const { openModal, modalData, closeModal } = useModal()
 
-  const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_APPEALS")
-  const { appeals, loading, error } = useAppeals()
-  const { teams } = useTeams()
-  const { users } = useUsers()
+  const [stateFilter, setStateFilter] = useState("Opened")
+  const [decisionFilter, setDecisionFilter] = useState("Pending")
 
-  // ----- Table Columns -----
-  const appealsColumns = [
-    {
-      accessorKey: "appeal_id",
-      header: "ID",
-      cell: ({ row }) => `#${row.original.appeal_id}`,
-    },
-    {
-      accessorKey: "team_id",
-      header: "Team",
-      cell: ({ row }) =>
-        teams.find((t) => t.team_id === row.original.team_id)?.name || "—",
-    },
-    {
-      accessorKey: "target_type",
-      header: "Target Type",
-      cell: ({ row }) => row.original.target_type || "—",
-    },
-    {
-      accessorKey: "owner_id",
-      header: "Owner",
-      cell: ({ row }) => {
-        const user = users.find((u) => u.user_id === row.original.owner_id)
-        return user?.fullname || user?.email || "—"
-      },
-    },
-    {
-      accessorKey: "state",
-      header: "Status",
-      cell: ({ row }) => <StatusBadge status={row.original.state} />,
-    },
-    {
-      accessorKey: "created_at",
-      header: "Created At",
-      cell: ({ row }) => formatDateTime(row.original.created_at),
-    },
-  ]
+  // Fetch round info
+  const {
+    data: round,
+    isLoading: roundLoading,
+    isError: roundError,
+  } = useGetRoundByIdQuery(roundId)
+
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_APPEALS(
+    round?.contestName ?? "Contest",
+    round?.roundName ?? "Round"
+  )
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_APPEALS(contestId, roundId)
+
+  // Fetch appeals
+  const {
+    data: appealsData,
+    isLoading: appealsLoading,
+    isError: appealsError,
+  } = useGetAppealsQuery({
+    roundId,
+    state: stateFilter,
+    decision: decisionFilter,
+    pageNumber: 1,
+    pageSize: 10,
+  })
+
+  const appeals = appealsData?.data || []
+  const pagination = appealsData?.additionalData || {}
+
+  // Only real handler: open modal
+  const handleReview = (appeal) => {
+    openModal("reviewAppeal", { appeal })
+  }
+
+  // Columns: all fake/no-op handlers except review opens modal
+  const appealsColumns = getAppealsColumns(handleReview)
 
   return (
     <PageContainer
-      breadcrumb={breadcrumbData.items}
-      breadcrumbPaths={breadcrumbData.paths}
-      loading={loading}
-      error={error}
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
+      loading={appealsLoading || roundLoading}
+      error={appealsError || roundError}
     >
-      <div className="space-y-1">
-        {/* Header */}
-        <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-          <div className="flex gap-5 items-center">
-            <Scale size={20} />
-            <div>
-              <p className="text-[14px] leading-[20px]">Appeals Overview</p>
-              <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                Manage and review contest appeals
-              </p>
-            </div>
-          </div>
-        </div>
+      <TableFluent
+        data={appeals}
+        columns={appealsColumns}
+        title="Appeals"
+        pagination={pagination}
+        renderActions={() => (
+          <OrganizerAppealsActions
+            stateFilter={stateFilter}
+            setStateFilter={setStateFilter}
+            decisionFilter={decisionFilter}
+            setDecisionFilter={setDecisionFilter}
+          />
+        )}
+      />
 
-        {/* Appeals Table */}
-        <TableFluent
-          data={appeals}
-          columns={appealsColumns}
-          title="Appeals"
-          onRowClick={(appeal) =>
-            navigate(
-              `/organizer/contests/${contestId}/appeals/${appeal.appeal_id}`
-            )
-          }
+      {/* Review Appeal Modal: controlled by useModal */}
+      {modalData?.type === "reviewAppeal" && (
+        <ReviewAppealModal
+          isOpen={true}
+          appeal={modalData.appeal}
+          onClose={closeModal}
         />
-      </div>
+      )}
     </PageContainer>
   )
 }
-
-export default OrganizerAppeals

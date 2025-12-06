@@ -1,164 +1,89 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { Award, Download, Trash2, FileBadge } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
-import TableFluent from "@/shared/components/TableFluent"
-import Actions from "@/shared/components/Actions"
-import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
+import ExistingTemplates from "../../components/organizer/ExistingTemplates"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useGetContestByIdQuery } from "@/services/contestApi"
+import { useAwardCertificatesMutation } from "@/services/certificateApi"
+import { useModal } from "@/shared/hooks/useModal"
 
-const OrganizerCertificates = ({ certificates = [], loading = false, error = null }) => {
+export default function OrganizerCertificates() {
   const { contestId } = useParams()
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
+  const { openModal } = useModal()
 
-  const { contests } = useAppSelector((s) => s.contests)
-  const [contestName, setContestName] = useState("Contest")
+  const { data: contest, isLoading: contestLoading, error: contestError } =
+    useGetContestByIdQuery(contestId)
 
-  // --- Fetch contest if missing and update contestName ---
-  useEffect(() => {
-    if (contestId) {
-      if (!contests || contests.length === 0) {
-        dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
-      } else {
-        const contest = contests.find((c) => String(c.contestId) === String(contestId))
-        if (contest) setContestName(contest.name)
-      }
-    }
-  }, [contestId, contests, dispatch])
+  const [awardCertificate, { isLoading: awarding }] = useAwardCertificatesMutation()
 
-  // --- Breadcrumb ---
+  const contestName = contest?.name || "Contest"
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_CERTIFICATES(contestName)
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CERTIFICATES(contestId)
 
-  const handleViewCertificate = (certificate) => {
-    if (!certificate.file_url) return
-    window.open(certificate.file_url, "_blank")
-  }
-
-  const handleRevoke = (certificate) => {
-    console.warn(
-      "Revoke functionality disabled — requires `useModal` and `revokeCertificate`"
+  if (contestLoading)
+    return (
+      <PageContainer breadcrumb={breadcrumbItems} breadcrumbPaths={breadcrumbPaths}>
+        Loading contest...
+      </PageContainer>
     )
-  }
 
-  const handleIssue = (certificate) => {
-    console.warn(
-      "Issue functionality disabled — requires `useCertificateTemplates` and `issueCertificate`"
+  if (contestError)
+    return (
+      <PageContainer breadcrumb={breadcrumbItems} breadcrumbPaths={breadcrumbPaths}>
+        Error loading contest.
+      </PageContainer>
     )
+
+  // Function to handle awarding certificates
+  const handleAwardCertificate = async (templateId, recipients) => {
+    if (!templateId || !recipients?.length) return
+
+    const payload = {
+      templateId,
+      recipients, // array of { teamId, studentId, displayName }
+      output: "png",
+      reissue: true,
+    }
+
+    try {
+      await awardCertificate(payload).unwrap()
+      alert("Certificate awarded successfully!")
+    } catch (err) {
+      console.error(err)
+      alert("Failed to award certificate.")
+    }
   }
 
-  // --- Table columns ---
-  const certificateColumns = useMemo(
-    () => [
-      { accessorKey: "certificate_id", header: "ID" },
-      {
-        accessorKey: "template_name",
-        header: "Template",
-        cell: () => "—", // fallback since templates hook is gone
-      },
-      {
-        accessorKey: "team_name",
-        header: "Team",
-        cell: ({ row }) => row.original.team_name || "—", // fallback since teams hook is gone
-      },
-      {
-        accessorKey: "issued_at",
-        header: "Issued At",
-        cell: ({ row }) => new Date(row.original.issued_at).toLocaleString(),
-      },
-      {
-        accessorKey: "file_url",
-        header: "File",
-        cell: ({ row }) =>
-          row.original.file_url ? (
-            <a
-              href={row.original.file_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-orange-600 hover:underline"
-            >
-              View File
-            </a>
-          ) : (
-            "—"
-          ),
-      },
-      {
-        id: "actions",
-        header: "",
-        enableSorting: false,
-        enableHiding: false,
-        cell: ({ row }) => (
-          <Actions
-            row={row.original}
-            items={[
-              {
-                label: "Download",
-                icon: Download,
-                onClick: () => handleViewCertificate(row.original),
-              },
-              {
-                label: "Issue",
-                icon: FileBadge,
-                onClick: () => handleIssue(row.original),
-                className: "text-gray-400", // indicate disabled
-              },
-              {
-                label: "Revoke",
-                icon: Trash2,
-                onClick: () => handleRevoke(row.original),
-                className: "text-gray-400", // indicate disabled
-              },
-            ]}
-          />
-        ),
-      },
-    ],
-    []
-  )
+  // Function to open the template selection modal
+  const openTemplateModal = (recipients) => {
+    openModal("template", {
+      contestId,
+      onSelectTemplate: (templateId) => handleAwardCertificate(templateId, recipients),
+    })
+  }
 
   return (
-    <PageContainer
-      breadcrumb={breadcrumbItems}
-      breadcrumbPaths={breadcrumbPaths}
-    >
-      <div className="space-y-1">
-        {/* Header Section */}
-        <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-          <div className="flex gap-5 items-center">
-            <Award size={20} />
-            <div>
-              <p className="text-[14px] leading-[20px]">Certificates</p>
-              <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                View and manage all issued certificates
-              </p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button
-              className="button-orange"
-              onClick={() =>
-                navigate(`/organizer/contests/${contestId}/certificates/templates/new`)
-              }
-            >
-              New Template
-            </button>
-          </div>
-        </div>
-
-        {/* Table Section */}
-        <TableFluent
-          data={certificates}
-          columns={certificateColumns}
-          title="Certificates"
-          loading={loading}
-          error={error}
-        />
+    <PageContainer breadcrumb={breadcrumbItems} breadcrumbPaths={breadcrumbPaths}>
+      {/* Templates Header */}
+      <div className="flex justify-between items-center mb-3 border border-[#E5E5E5] bg-white min-h-[70px] px-5 rounded-[5px]">
+        <h2 className="text-sm leading-5 font-semibold">Templates</h2>
+        <button
+          className="button-orange"
+          onClick={() =>
+            navigate(`/organizer/contests/${contestId}/certificates/templates/new`)
+          }
+        >
+          New template
+        </button>
       </div>
+
+      {/* Existing Templates List */}
+      <ExistingTemplates
+        contestId={contestId}
+        onAwardCertificate={openTemplateModal} // pass function to award a template
+        awarding={awarding} // can disable buttons if needed
+      />
     </PageContainer>
   )
 }
-
-export default OrganizerCertificates

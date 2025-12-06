@@ -35,6 +35,7 @@ const TestCaseTable = ({ contestId, roundId, roundLoading }) => {
     openModal("confirmDelete", {
       type: "test case",
       item: testCase,
+      message: `Are you sure you want to delete "${testCase.description}"?`,
       onConfirm: async (close) => {
         await deleteTestCase({ roundId, testCaseId: testCase.testCaseId })
         close()

@@ -124,7 +124,7 @@ const EditRound = () => {
         }
       }
 
-      await updateRound({ id: roundId, data: formPayload }).unwrap()
+      await updateRound({ id: roundId, contestId, data: formPayload }).unwrap()
 
       toast.success("Round updated successfully!")
       navigate(`/organizer/contests/${contestId}/rounds/${roundId}`)

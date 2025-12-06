@@ -1,118 +1,148 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "react-hot-toast"
+import { Loader } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import CertificateTemplateForm from "../../components/organizer/CertificateTemplateForm"
-import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { fetchOrganizerContests } from "@/features/contest/store/contestThunks"
+
+import { useUploadCertificateTemplateMutation } from "../../../../services/certificateApi"
+import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import ExistingTemplates from "../../components/organizer/ExistingTemplates"
 
 const EMPTY_TEMPLATE = {
   name: "",
-  file_url: "",
+  file: null,
 }
 
 export default function OrganizerCertificateTemplateCreate() {
   const { contestId } = useParams()
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
 
-  const { contests } = useAppSelector((s) => s.contests)
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId)
 
-  // --- State ---
+  const [uploadTemplate] = useUploadCertificateTemplateMutation()
   const [formData, setFormData] = useState(EMPTY_TEMPLATE)
   const [errors, setErrors] = useState({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [contestName, setContestName] = useState("Contest")
+  const [submitting, setSubmitting] = useState(false) // covers Cloudinary + mutation
 
-  // --- Fetch contest if missing ---
-  useEffect(() => {
-    if (contestId) {
-      if (!contests || contests.length === 0) {
-        dispatch(fetchOrganizerContests({ pageNumber: 1, pageSize: 50 }))
-      } else {
-        const contest = contests.find((c) => String(c.contestId) === String(contestId))
-        if (contest) setContestName(contest.name)
-      }
-    }
-  }, [contestId, contests, dispatch])
+  const contestName = contest?.name || "Contest"
+  const breadcrumbItems =
+    BREADCRUMBS.ORGANIZER_CERTIFICATE_TEMPLATE_CREATE(contestName)
+  const breadcrumbPaths =
+    BREADCRUMB_PATHS.ORGANIZER_CERTIFICATE_TEMPLATE_CREATE(contestId)
 
-  // --- Breadcrumb setup using contest name dynamically ---
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CERTIFICATE_TEMPLATE_CREATE(contestName)
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CERTIFICATE_TEMPLATE_CREATE(contestId)
-
-  // --- Placeholder for missing hook ---
-  const addCertificateTemplate = async (data) => {
-    console.warn("addCertificateTemplate is not available — useCertificateTemplates hook missing")
-    toast.success("Pretend template was created!") // optional feedback
-  }
-
-  // --- Handle submit ---
   const handleSubmit = async () => {
+    if (submitting) return
+
     const validationErrors = {}
-    if (!formData.name || formData.name.trim() === "") {
+    if (!formData.name.trim())
       validationErrors.name = "Template name is required."
-    }
-    if (!formData.file_url || formData.file_url.trim() === "") {
-      validationErrors.file_url = "Template file URL is required."
-    }
+    if (!formData.file) validationErrors.file = "Template file is required."
 
-    setErrors(validationErrors)
-
-    const errorCount = Object.keys(validationErrors).length
-    if (errorCount > 0) {
-      toast.error(`Please fix ${errorCount} field${errorCount > 1 ? "s" : ""}`)
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors)
+      toast.error("Please fix form errors.")
       return
     }
 
-    setIsSubmitting(true)
+    setSubmitting(true)
     try {
-      await addCertificateTemplate({
+      let uploadedFileUrl = formData.fileUrl
+
+      // Upload file to Cloudinary if it's local
+      if (formData.file && !formData.fileUrl) {
+        const formDataUpload = new FormData()
+        formDataUpload.append("file", formData.file)
+        formDataUpload.append("upload_preset", "certificate-templates")
+        formDataUpload.append("folder", "certificate-templates")
+
+        const res = await fetch(
+          "https://api.cloudinary.com/v1_1/dkb7cihxq/auto/upload",
+          { method: "POST", body: formDataUpload }
+        )
+        const data = await res.json()
+        uploadedFileUrl = data.url
+      }
+
+      // RTK Query mutation
+      await uploadTemplate({
+        contestId,
         name: formData.name.trim(),
-        file_url: formData.file_url.trim(),
-      })
+        fileUrl: uploadedFileUrl,
+        text: { ...formData.text },
+      }).unwrap()
+
       toast.success("Certificate template created successfully!")
       navigate(`/organizer/contests/${contestId}/certificates`)
     } catch (err) {
       console.error(err)
-      toast.error("An unexpected error occurred.")
+      toast.error(err?.data?.message || "Something went wrong.")
     } finally {
-      setIsSubmitting(false)
+      setSubmitting(false)
     }
   }
 
-  // --- Render ---
+  if (contestLoading)
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        Loading contest...
+      </PageContainer>
+    )
+
+  if (contestError)
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        Error loading contest.
+      </PageContainer>
+    )
+
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
     >
-      <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5">
+      <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 mb-5">
         <CertificateTemplateForm
           formData={formData}
           setFormData={setFormData}
           errors={errors}
         />
 
-        <div className="flex justify-end gap-2 pt-8">
+        <div className="flex justify-end pt-8">
           <button
             type="button"
-            className="button-white"
-            onClick={() => navigate(`/organizer/contests/${contestId}/certificates`)}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            className={isSubmitting ? "button-gray" : "button-orange"}
             onClick={handleSubmit}
-            disabled={isSubmitting}
+            disabled={submitting}
+            className={`flex items-center justify-center gap-2 ${
+              submitting ? "button-gray" : "button-orange"
+            }`}
           >
-            {isSubmitting ? "Creating..." : "Create Template"}
+            {/* Spinner */}
+            {submitting && (
+              <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
+            )}
+
+            {/* Button text */}
+            {submitting ? "Creating..." : "Create"}
           </button>
         </div>
       </div>
+
+      <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+        Existing templates
+      </div>
+      <ExistingTemplates contestId={contestId} />
     </PageContainer>
   )
 }

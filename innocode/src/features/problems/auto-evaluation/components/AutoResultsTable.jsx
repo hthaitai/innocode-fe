@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom"
 import TableFluent from "@/shared/components/TableFluent"
 import getAutoResultColumns from "../columns/getAutoResultColumns"
 import { useGetAutoTestResultsQuery } from "../../../../services/autoEvaluationApi"
+import AutoResultExpandedRow from "./AutoResultExpandedRow"
 
 const AutoResultsTable = () => {
   const { roundId } = useParams()
@@ -28,10 +29,14 @@ const AutoResultsTable = () => {
       onPageChange={setPage}
       renderActions={() => (
         <div className="min-h-[70px] px-5 flex items-center">
-          <p className="text-[14px] leading-[20px] font-medium">
-            Results
-          </p>
+          <p className="text-[14px] leading-[20px] font-medium">Results</p>
         </div>
+      )}
+      renderSubComponent={(submission) => (
+        <AutoResultExpandedRow
+          details={submission.details}
+          artifacts={submission.artifacts}
+        />
       )}
     />
   )

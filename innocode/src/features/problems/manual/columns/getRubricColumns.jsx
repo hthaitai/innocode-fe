@@ -30,7 +30,7 @@ export const getRubricColumns = (handleEdit, handleDelete) => [
             label: "Delete",
             icon: Trash2,
             className: "text-red-500",
-            onClick: () => handleDelete(row.original.rubricId, row.index),
+            onClick: () => handleDelete(row.original),
           },
         ]}
       />

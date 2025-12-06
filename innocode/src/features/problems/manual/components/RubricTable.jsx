@@ -24,16 +24,25 @@ const RubricTable = ({ roundId, criteria = [], loadingRubric }) => {
     })
   }
 
-  const handleDelete = async (rubricId) => {
-    try {
-      if (rubricId) {
-        await deleteCriterion({ roundId, rubricId }).unwrap()
-        toast.success("Criterion deleted")
-      }
-    } catch (err) {
-      console.error("Failed to delete criterion", err)
-      toast.error("Failed to delete criterion")
-    }
+  const handleDelete = (criterion) => {
+    openModal("confirmDelete", {
+      type: "Criterion",
+      item: { id: criterion.rubricId, name: criterion.description },
+      message: `Are you sure you want to delete "${criterion.description}"?`,
+      onConfirm: async (onClose) => {
+        try {
+          await deleteCriterion({
+            roundId,
+            rubricId: criterion.rubricId,
+          }).unwrap()
+          toast.success("Criterion deleted successfully")
+          onClose()
+        } catch (err) {
+          console.error("Failed to delete criterion", err)
+          toast.error("Failed to delete criterion")
+        }
+      },
+    })
   }
 
   const tableData = useMemo(

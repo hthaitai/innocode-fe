@@ -17,6 +17,8 @@ import RubricCsvModal from "../features/problems/manual/components/RubricCsvModa
 import TestCaseCsvModal from "../features/problems/auto-evaluation/components/TestCaseCsvModal"
 import McqCsvModal from "../features/mcq/components/organizer/McqCsvModal"
 import McqBankModal from "../features/mcq/components/organizer/McqBankModal"
+import TemplateModal from "../features/leaderboard/components/TemplateModal"
+import ReviewAppealModal from "../features/appeal/components/organizer/ReviewAppealModal"
 
 const ModalContext = createContext({
   openModal: () => {}, // no-op default
@@ -61,6 +63,8 @@ export function ModalProvider({ children }) {
     testCaseCsv: TestCaseCsvModal,
     mcqCsv: McqCsvModal,
     mcqBank: McqBankModal,
+    template: TemplateModal,
+    reviewAppeal: ReviewAppealModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null
