@@ -97,6 +97,18 @@ const EditRound = () => {
       formPayload.append("ProblemType", formData.problemType)
       formPayload.append("TimeLimitSeconds", formData.timeLimitSeconds)
 
+      // Append MCQ config when editing MCQ rounds
+      if (formData.problemType === "McqTest") {
+        formPayload.append(
+          "McqTestConfig.Name",
+          formData.mcqTestConfig.name
+        )
+        formPayload.append(
+          "McqTestConfig.Config",
+          formData.mcqTestConfig.config
+        )
+      }
+
       if (formData.problemConfig) {
         formPayload.append(
           "ProblemConfig.Type",

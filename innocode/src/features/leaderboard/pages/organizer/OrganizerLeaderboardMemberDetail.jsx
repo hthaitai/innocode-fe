@@ -1,16 +1,12 @@
-import React, { useState } from "react"
+import React from "react"
 import { useParams } from "react-router-dom"
 import { Calendar } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
-import { useAwardCertificatesMutation } from "@/services/certificateApi"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-import TemplateModal from "../../components/TemplateModal"
 
 const OrganizerLeaderboardMemberDetail = () => {
   const { contestId, teamId, memberId } = useParams()
-  const [isTemplateModalOpen, setTemplateModalOpen] = useState(false)
-  const [selectedTemplateId, setSelectedTemplateId] = useState(null)
 
   const {
     data: leaderboardData,
@@ -20,9 +16,6 @@ const OrganizerLeaderboardMemberDetail = () => {
     { contestId, pageNumber: 1, pageSize: 10 },
     { skip: !contestId }
   )
-
-  const [awardCertificate, { isLoading: awarding }] =
-    useAwardCertificatesMutation()
 
   const team = leaderboardData?.data?.teamIdList?.find(
     (t) => t.teamId === teamId
@@ -57,30 +50,6 @@ const OrganizerLeaderboardMemberDetail = () => {
     )
   }
 
-  const handleAwardCertificate = async (templateId) => {
-    if (!member || !templateId) return
-
-    const payload = {
-      templateId,
-      recipients: [
-        {
-          studentId: member.memberId,
-          displayName: member.memberName,
-        },
-      ],
-      output: "png",
-      reissue: true,
-    }
-
-    try {
-      await awardCertificate(payload).unwrap()
-      alert("Certificate awarded successfully!")
-    } catch (err) {
-      console.error(err)
-      alert("Failed to award certificate.")
-    }
-  }
-
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
@@ -88,18 +57,7 @@ const OrganizerLeaderboardMemberDetail = () => {
       loading={isLoading}
       error={error}
     >
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Rounds for {memberName}</h2>
-        <button
-          className="button-orange"
-          onClick={() => setTemplateModalOpen(true)}
-          disabled={awarding}
-        >
-          {awarding ? "Awarding..." : "Award Certificate"}
-        </button>
-      </div>
-
-      <div className="flex flex-col gap-2">
+      <div className="space-y-1">
         {(member?.roundScores ?? []).map((round) => (
           <div
             key={round.roundId}
@@ -127,16 +85,6 @@ const OrganizerLeaderboardMemberDetail = () => {
           </div>
         ))}
       </div>
-
-      {/* Template Selection Modal */}
-      {isTemplateModalOpen && (
-        <TemplateModal
-          isOpen={isTemplateModalOpen}
-          onClose={() => setTemplateModalOpen(false)}
-          contestId={contestId}
-          onSelectTemplate={(templateId) => handleAwardCertificate(templateId)}
-        />
-      )}
     </PageContainer>
   )
 }

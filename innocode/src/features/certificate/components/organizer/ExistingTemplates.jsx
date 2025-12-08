@@ -1,5 +1,6 @@
 import React from "react"
 import { useGetCertificateTemplatesQuery } from "../../../../services/certificateApi"
+import TemplatePreviewCanvas from "./TemplatePreviewCanvas"
 
 export default function ExistingTemplates({ contestId }) {
   const { data, isLoading, error } = useGetCertificateTemplatesQuery({
@@ -15,29 +16,23 @@ export default function ExistingTemplates({ contestId }) {
   if (templates.length === 0) return <p>No templates uploaded yet.</p>
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
       {templates.map((tpl) => (
         <a
           key={tpl.templateId}
           href={tpl.fileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="block overflow-hidden rounded-[5px] border border-[#E5E5E5] bg-white transform transition-transform hover:-translate-y-1"
+          className="block rounded-lg border border-[#E5E5E5] bg-white hover:shadow-md transition-shadow"
         >
-          {/* Image container */}
-          <div className="relative w-full h-48 overflow-hidden rounded-t-[5px]">
-            {/* Template Image */}
-            <img
-              src={tpl.fileUrl}
-              alt={tpl.name}
-              className="w-full h-full object-cover"
-            />
+          {/* Image container — locked to 16:9 */}
+          <div className="relative w-full aspect-video bg-gray-100 overflow-hidden">
+            <TemplatePreviewCanvas template={tpl} />
+          </div>
 
-            {/* Full image gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
-
-            {/* Text at the bottom */}
-            <h3 className="absolute bottom-2 left-2 right-2 text-white text-sm font-medium line-clamp-2">
+          {/* Name below */}
+          <div className="p-3">
+            <h3 className="text-sm leading-5 font-medium line-clamp-2">
               {tpl.name}
             </h3>
           </div>

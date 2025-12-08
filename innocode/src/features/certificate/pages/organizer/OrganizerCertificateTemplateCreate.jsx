@@ -69,13 +69,20 @@ export default function OrganizerCertificateTemplateCreate() {
         uploadedFileUrl = data.url
       }
 
-      // RTK Query mutation
-      await uploadTemplate({
+      // Prepare payload
+      const payload = {
         contestId,
         name: formData.name.trim(),
         fileUrl: uploadedFileUrl,
         text: { ...formData.text },
-      }).unwrap()
+      }
+
+      // Log payload
+      console.log("Sending payload to backend:", payload)
+
+      // RTK Query mutation
+      const response = await uploadTemplate(payload).unwrap()
+      console.log("Backend response:", response)
 
       toast.success("Certificate template created successfully!")
       navigate(`/organizer/contests/${contestId}/certificates`)

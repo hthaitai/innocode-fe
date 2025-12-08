@@ -76,6 +76,19 @@ const CreateRound = () => {
       formPayload.append("ProblemType", form.problemType)
       formPayload.append("TimeLimitSeconds", form.timeLimitSeconds)
 
+      // Append MCQ config when problem type is McqTest
+      if (form.problemType === "McqTest") {
+        formPayload.append(
+          "McqTestConfig.Name",
+          form.mcqTestConfig.name
+        )
+        formPayload.append(
+          "McqTestConfig.Config",
+          form.mcqTestConfig.config
+        )
+      }
+
+      // Append problem config for non-MCQ problem types
       if (form.problemType !== "McqTest") {
         formPayload.append("ProblemConfig.Type", form.problemConfig.type)
         formPayload.append(
