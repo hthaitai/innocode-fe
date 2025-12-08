@@ -31,10 +31,16 @@ export default function RoundForm({
     }))
 
     // Clear nested errors if exist
-    const errorKey =
-      section === "problemConfig" && field === "description"
-        ? "problemConfigDescription"
-        : null
+    let errorKey = null
+    if (section === "problemConfig" && field === "description") {
+      errorKey = "problemConfigDescription"
+    }
+    if (section === "mcqTestConfig" && field === "name") {
+      errorKey = "mcqName"
+    }
+    if (section === "mcqTestConfig" && field === "config") {
+      errorKey = "mcqConfig"
+    }
 
     if (errorKey && errors?.[errorKey]) {
       setErrors?.((prev) => ({ ...prev, [errorKey]: "" }))
@@ -163,6 +169,8 @@ export default function RoundForm({
               onChange={(e) =>
                 handleNestedChange("mcqTestConfig", "name", e.target.value)
               }
+              error={!!errors.mcqName}
+              helperText={errors.mcqName}
             />
 
             <Label htmlFor="mcqConfig">Config</Label>
@@ -172,6 +180,8 @@ export default function RoundForm({
               onChange={(e) =>
                 handleNestedChange("mcqTestConfig", "config", e.target.value)
               }
+              error={!!errors.mcqConfig}
+              helperText={errors.mcqConfig}
             />
           </>
         )}

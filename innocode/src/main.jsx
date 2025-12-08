@@ -84,6 +84,7 @@ import Leaderboard from "./features/leaderboard/pages/student/Leaderboard"
 import OrganizerLeaderboardDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardDetail"
 import OrganizerLeaderboardMemberDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardMemberDetail"
 import NotFound from "./pages/NotFound"
+import ContestJudgesPage from "./features/contest/pages/organizer/ContestJudgesPage"
 // Initialize EmailJS when app starts
 initEmailJs()
 const router = createBrowserRouter([
@@ -448,20 +449,12 @@ const router = createBrowserRouter([
             ),
           },
 
-          //Teams
+          // Contest judges
           {
-            path: ":contestId/teams",
+            path: ":contestId/judges",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <OrganizerTeams />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: ":contestId/teams/:teamId",
-            element: (
-              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <OrganizerTeamDetail />
+                <ContestJudgesPage />
               </ProtectedRoute>
             ),
           },

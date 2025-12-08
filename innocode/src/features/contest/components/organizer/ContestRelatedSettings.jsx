@@ -9,6 +9,12 @@ const items = [
   //   path: "teams",
   // },
   {
+    title: "Judges",
+    subtitle: "Invite and manage contest judges",
+    icon: <Users size={20} />,
+    path: "judges",
+  },
+  {
     title: "Leaderboard",
     subtitle: "View and refresh contest leaderboard",
     icon: <Trophy size={20} />,
