@@ -13,14 +13,19 @@ const ConfirmModal = ({ isOpen, title, description, onClose, onConfirm }) => (
         </button>
         <button
           className="button-orange"
-          onClick={() => onConfirm(onClose)}
+          onClick={() => {
+            if (onConfirm) {
+              onConfirm();
+            }
+            onClose();
+          }}
         >
           Confirm
         </button>
       </>
     }
   >
-    <p>{description}</p>
+    {typeof description === 'string' ? <p>{description}</p> : description}
   </Modal>
 )
 

@@ -61,7 +61,8 @@ const allMenus = {
   manualSubmissions: {
     path: "/judge/manual-submissions",
     label: "Submissions",
-    icon: "lucide:file-text",},
+    icon: "lucide:file-text",
+  },
   //Mentor menus
   appeal: {
     path: "/appeal",
@@ -74,7 +75,16 @@ const allMenus = {
     label: "Announcements",
     icon: "lucide:bell",
   },
-  help: { path: "/help", label: "Help", icon: "lucide:circle-question-mark" },
+  provinceStaff: {
+    path: "/province-staff",
+    label: "Provinces",
+    icon: "lucide:map-pin",
+  },
+  schoolStaff:{
+    path: "/school-staff",
+    label: "Schools",
+    icon: "lucide:school",
+  }
 };
 
 const menuByRole = {
@@ -87,7 +97,6 @@ const menuByRole = {
     "leaderboard",
     "certificate",
     "announcements",
-    "help",
   ],
   organizer: [
     "profile",
@@ -95,7 +104,6 @@ const menuByRole = {
     "organizerProvinces",
     "organizerSchools",
     "organizerNotifications",
-    "help",
   ],
   mentor: [
     "profile",
@@ -104,11 +112,18 @@ const menuByRole = {
     "team",
     "announcements",
     "appeal",
-    "help",
   ],
-
-  judge: ['profile', 'dashboard', 'manualSubmissions', 'announcements', 'help'],
-  admin: ['profile', 'dashboard', 'leaderboard', 'announcements', 'help'],
+  staff: [
+    "profile",
+    "provinceStaff",
+    "schoolStaff",
+    "leaderboard",
+    "contests",
+    "team",
+    "announcements",
+  ],
+  judge: ["profile", "dashboard", "manualSubmissions", "announcements", "help"],
+  admin: ["profile", "dashboard", "leaderboard", "announcements", "help"],
 };
 
 const Sidebar = () => {
@@ -131,8 +146,8 @@ const Sidebar = () => {
     if (path === "/") {
       return location.pathname === "/";
     }
-    return location.pathname.startsWith(path)
-  }
+    return location.pathname.startsWith(path);
+  };
 
   return (
     <div className="sidebar">
@@ -164,7 +179,7 @@ const Sidebar = () => {
         ))}
       </nav>
     </div>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

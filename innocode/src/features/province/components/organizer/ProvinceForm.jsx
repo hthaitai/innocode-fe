@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 
 export default function ProvinceForm({
@@ -7,7 +7,7 @@ export default function ProvinceForm({
   errors,
   setErrors,
 }) {
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
 
@@ -15,7 +15,7 @@ export default function ProvinceForm({
     if (errors?.[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
-  }
+  }, [errors, setFormData, setErrors])
 
   return (
     <div className="flex flex-col gap-4">

@@ -19,11 +19,22 @@ export const roundApi = api.injectEndpoints({
           : [{ type: "Rounds", id: `LIST_${contestId}` }],
     }),
     getRoundById: builder.query({
-      query: (roundId) => `rounds/${roundId}`,
+      query: (arg) => {
+        // Support both old format (roundId string) and new format (object)
+        const roundId = typeof arg === 'string' ? arg : arg.roundId;
+        const openCode = typeof arg === 'object' ? arg.openCode : undefined;
+        return {
+          url: `rounds/${roundId}`,
+          params: openCode ? { openCode } : {},
+        };
+      },
       transformResponse: (response) => response.data,
-      providesTags: (result, error, roundId) => [
-        { type: "Rounds", id: roundId },
-      ],
+      providesTags: (result, error, arg) => {
+        const roundId = typeof arg === 'string' ? arg : arg.roundId;
+        return [
+          { type: "Rounds", id: roundId },
+        ];
+      },
     }),
 
     createRound: builder.mutation({

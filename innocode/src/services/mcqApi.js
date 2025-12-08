@@ -4,9 +4,9 @@ export const mcqApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Fetch MCQs of a round
     getRoundMcqs: builder.query({
-      query: ({ roundId, pageNumber = 1, pageSize = 10 }) => ({
+      query: ({ roundId, pageNumber = 1, pageSize = 10, openCode }) => ({
         url: `rounds/${roundId}/mcq-test`,
-        params: { pageNumber, pageSize },
+        params: { pageNumber, pageSize, ...(openCode ? { openCode } : {}) },
       }),
       providesTags: (result) => {
         const questions = result?.data?.mcqTest?.questions ?? []
