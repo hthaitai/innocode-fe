@@ -15,7 +15,9 @@ const useQuiz = (roundId) => {
       try {
         setLoading(true);
         setError(null);
-        const response = await quizApi.getQuiz(roundId);
+        // Get openCode from sessionStorage
+        const openCode = sessionStorage.getItem(`openCode_${roundId}`);
+        const response = await quizApi.getQuiz(roundId, openCode);
         console.log("✅ Quiz API Response:", response);
 
         // axiosClient returns response.data directly

@@ -7,10 +7,12 @@ import useContestDetail from '@/features/contest/hooks/useContestDetail';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-hot-toast';
 import { useSaveManualSubmissionMutation, useFinishRoundMutation } from '@/services/manualProblemApi';
+import { useModal } from '@/shared/hooks/useModal';
 
 const StudentManualProblem = () => {
   const { contestId, roundId } = useParams();
   const navigate = useNavigate();
+  const { openModal } = useModal();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [savedSubmissionId, setSavedSubmissionId] = useState(null); // Store submissionId after save
@@ -39,6 +41,7 @@ const StudentManualProblem = () => {
 
     if (acceptedFiles.length > 0) {
       setSelectedFile(acceptedFiles[0]);
+      setSavedSubmissionId(null); // Reset saved submissionId when new file is selected
     }
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -105,7 +108,7 @@ const StudentManualProblem = () => {
   };
 
   // Handle Submit: Finish the round
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!savedSubmissionId) {
       toast.dismiss();
       toast.error('Please save your file first before submitting');
@@ -125,27 +128,52 @@ const StudentManualProblem = () => {
       return;
     }
 
-    if (
-      window.confirm(
-        `Are you sure you want to submit "${selectedFile.name}"? This will mark the round as finished.`
-      )
-    ) {
-      try {
-        await finishRound(roundId).unwrap();
-        toast.dismiss();
-        toast.success('Solution submitted and round finished successfully!');
-        
-        // Navigate back to contest detail
-        setSelectedFile(null);
-        setSavedSubmissionId(null);
-        navigate(`/contest-detail/${contestId}`);
-      } catch (err) {
-        toast.dismiss();
-        toast.error(
-          `Failed to submit: ${err?.data?.errorMessage || err?.data?.message || err?.message || 'Unknown error'}`
-        );
-      }
-    }
+    // Show confirm modal
+    openModal("confirm", {
+      title: "Confirm Submission",
+      description: (
+        <div className="space-y-3">
+          <p className="text-[#2d3748]">
+            Are you sure you want to submit <strong>"{selectedFile.name}"</strong>?
+          </p>
+          <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-3">
+            <div className="flex items-center justify-between text-sm mb-2">
+              <span className="text-[#7A7574]">File name:</span>
+              <span className="font-semibold text-[#2d3748]">{selectedFile.name}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-[#7A7574]">File size:</span>
+              <span className="font-semibold text-[#2d3748]">{formatFileSize(selectedFile.size)}</span>
+            </div>
+          </div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-[5px] p-3">
+            <div className="flex items-start gap-2">
+              <Icon icon="mdi:alert" width="18" className="text-yellow-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-yellow-800">
+                This will mark the round as finished. Once submitted, you cannot change your submission.
+              </p>
+            </div>
+          </div>
+        </div>
+      ),
+      onConfirm: async () => {
+        try {
+          await finishRound(roundId).unwrap();
+          toast.dismiss();
+          toast.success('Solution submitted and round finished successfully!');
+          
+          // Navigate back to contest detail
+          setSelectedFile(null);
+          setSavedSubmissionId(null);
+          navigate(`/contest-detail/${contestId}`);
+        } catch (err) {
+          toast.dismiss();
+          toast.error(
+            `Failed to submit: ${err?.data?.errorMessage || err?.data?.message || err?.message || 'Unknown error'}`
+          );
+        }
+      },
+    });
   };
   // ✅ Format date helper
   const formatDate = (dateString) => {
@@ -422,8 +450,16 @@ const StudentManualProblem = () => {
 
           <div className="mt-6 flex justify-end gap-3">
             <button
-              onClick={handleSave}
-              className="button-white"
+              onClick={(e) => {
+                const isDisabled = saving || finishing || !selectedFile || (selectedFile && selectedFile.size === 0) || round.status !== "Opened";
+                if (isDisabled) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  return;
+                }
+                handleSave();
+              }}
+              className="button-white disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
               disabled={saving || finishing || !selectedFile || (selectedFile && selectedFile.size === 0) || round.status !== "Opened"}
               title={!selectedFile ? "Please select a file" : (selectedFile && selectedFile.size === 0) ? "File is empty" : ""}
             >
@@ -441,8 +477,16 @@ const StudentManualProblem = () => {
               )}
             </button>
             <button
-              onClick={handleSubmit}
-              className="button-orange"
+              onClick={(e) => {
+                const isDisabled = saving || finishing || !savedSubmissionId || !selectedFile || (selectedFile && selectedFile.size === 0) || round.status !== "Opened";
+                if (isDisabled) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  return;
+                }
+                handleSubmit();
+              }}
+              className="button-orange disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
               disabled={saving || finishing || !savedSubmissionId || !selectedFile || (selectedFile && selectedFile.size === 0) || round.status !== "Opened"}
               title={
                 !savedSubmissionId 

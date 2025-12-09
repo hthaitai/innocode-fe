@@ -250,7 +250,9 @@ export const BREADCRUMBS = {
   //Judge
   JUDGE_SUBMISSIONS: ["Submissions"],
   JUDGE_MANUAL_EVALUATION: ["Submissions", "Evaluation"],
-
+  //Staff
+  STAFF_PROVINCES: ["Provinces"],
+  STAFF_SCHOOLS: ["Schools"],
   // Error pages
   NOT_FOUND: ["Not Found"],
   UNAUTHORIZED: ["Unauthorized"],
@@ -512,13 +514,19 @@ export const BREADCRUMB_PATHS = {
 
   ORGANIZER_PROVINCES: ["/organizer", "/organizer/provinces"],
   ORGANIZER_SCHOOLS: ["/organizer", "/organizer/schools"],
-
+  //Staff
+  STAFF_PROVINCES: ["/province-staff"],
+  STAFF_SCHOOLS: ["/school-staff"],
   //Judge
   JUDGE_SUBMISSIONS: ["/judge/manual-submissions"],
   JUDGE_MANUAL_EVALUATION: (submissionId) => [
     "/judge/manual-submissions",
     `/judge/manual-submissions/${submissionId}/rubric-evaluation`,
   ],
+
+  //Staff
+  STAFF_PROVINCES: ["/province-staff"],
+  STAFF_SCHOOLS: ["/school-staff"],
 
   // Error pages
   NOT_FOUND: ["/"],

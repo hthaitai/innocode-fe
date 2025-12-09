@@ -16,28 +16,67 @@ const DateTimeFieldFluent = ({
   const [focused, setFocused] = useState(false)
   const [showPicker, setShowPicker] = useState(false)
   const [selectedDate, setSelectedDate] = useState(value ? dayjs(value) : null)
+  const [initialDate, setInitialDate] = useState(null) // Store initial date when picker opens
   const containerRef = useRef()
+
+  // Sync selectedDate with value prop when it changes externally (only when picker is closed)
+  useEffect(() => {
+    if (!showPicker) {
+      if (value) {
+        const dateValue = dayjs(value)
+        setSelectedDate(dateValue)
+        setInitialDate(dateValue)
+      } else {
+        setSelectedDate(null)
+        setInitialDate(null)
+      }
+    }
+  }, [value, showPicker])
+
+  // When picker opens, save the current value as initial (snapshot)
+  useEffect(() => {
+    if (showPicker) {
+      // Save current selectedDate as initial when opening picker
+      setInitialDate(selectedDate)
+    }
+  }, [showPicker]) // Only when showPicker changes to true
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
+        // Reset to initial value when clicking outside
+        setSelectedDate(initialDate)
         setShowPicker(false)
         setFocused(false)
       }
     }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    if (showPicker) {
+      document.addEventListener("mousedown", handleClickOutside)
+      return () => document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [showPicker, initialDate])
 
-  // Wrap setSelectedDate to immediately trigger onChange
+  // Handle date change without triggering onChange immediately
+  // onChange will be triggered only when Save button is clicked
   const handleDateChange = (date) => {
     setSelectedDate(date)
-    if (date) {
-      onChange({
-        target: { name, value: date.format("YYYY-MM-DDTHH:mm") },
-      })
-    }
   }
+
+  // Handle save button click
+  const handleSave = () => {
+    if (selectedDate) {
+      onChange({
+        target: { name, value: selectedDate.format("YYYY-MM-DDTHH:mm") },
+      })
+      // Update initialDate to the saved value
+      setInitialDate(selectedDate)
+    }
+    setShowPicker(false)
+    setFocused(false)
+  }
+
+  // Display the saved value (from value prop) or selectedDate if picker is open
+  const displayDate = showPicker ? selectedDate : (value ? dayjs(value) : null)
 
   return (
     <div className="flex flex-col w-full relative" ref={containerRef}>
@@ -53,11 +92,20 @@ const DateTimeFieldFluent = ({
             ? "border border-[#ECECEC] border-b-[#E05307]"
             : "border border-[#ECECEC] border-b-[#D3D3D3]"
         } cursor-pointer w-max`}
-        onClick={() => setShowPicker((prev) => !prev)} // <-- toggle instead of always true
+        onClick={() => {
+          const willOpen = !showPicker
+          if (willOpen) {
+            // When opening, save current value as initial
+            const currentValue = value ? dayjs(value) : null
+            setInitialDate(currentValue)
+            setSelectedDate(currentValue)
+          }
+          setShowPicker(willOpen)
+        }}
       >
         <span className="text-sm text-gray-700">
-          {selectedDate
-            ? selectedDate.format("DD/MM/YYYY hh:mm A")
+          {displayDate
+            ? displayDate.format("DD/MM/YYYY hh:mm A")
             : "Select date and time"}
         </span>
         <ChevronDown
@@ -87,15 +135,28 @@ const DateTimeFieldFluent = ({
             }}
             className="absolute top-full bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg p-5 z-50"
           >
-            <div className="flex gap-5">
-              <CalendarPicker
-                selectedDate={selectedDate}
-                setSelectedDate={handleDateChange} // <-- use wrapped handler
-              />
-              <TimeDropdown
-                selectedDate={selectedDate}
-                setSelectedDate={handleDateChange} // <-- use wrapped handler
-              />
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-5">
+                <CalendarPicker
+                  selectedDate={selectedDate}
+                  setSelectedDate={handleDateChange} // <-- use wrapped handler
+                />
+                <TimeDropdown
+                  selectedDate={selectedDate}
+                  setSelectedDate={handleDateChange} // <-- use wrapped handler
+                />
+              </div>
+              
+              {/* Save Button */}
+              <div className="flex justify-end pt-2  ">
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  className="button-orange px-4 py-2 text-sm"
+                >
+                  Save
+                </button>
+              </div>
             </div>
           </motion.div>
         )}

@@ -5,12 +5,14 @@ import { Icon } from '@iconify/react';
 import useQuiz from '../hooks/useQuiz';
 import useQuizSubmit from '../hooks/useQuizSubmit';
 import useMCQTestFlow from '../hooks/useMCQTestFlow';
+import { useModal } from '@/shared/hooks/useModal';
 
 const MCQTest = () => {
   const { roundId, contestId } = useParams();
   const navigate = useNavigate();
   const { quiz, loading: quizLoading, error: quizError } = useQuiz(roundId);
   const { submitQuiz, isSubmitting } = useQuizSubmit();
+  const { openModal } = useModal();
   
   // MCQ Test Flow hook
   const {
@@ -230,19 +232,49 @@ const MCQTest = () => {
     await handleSubmitQuiz();
   };
 
-  const handleSubmit = async () => {
-    const unansweredCount =
-      quiz.mcqTest.totalQuestions - Object.keys(answers).length;
+  const handleSubmit = () => {
+    const answeredCount = Object.keys(answers).length;
+    const unansweredCount = quiz.mcqTest.totalQuestions - answeredCount;
 
-    if (unansweredCount > 0) {
-      const confirmMessage = `You have ${unansweredCount} unanswered question(s). Are you sure you want to submit?`;
-      if (!window.confirm(confirmMessage)) return;
-    } else {
-      if (!window.confirm('Are you sure you want to submit your answers?'))
-        return;
-    }
+    const title = unansweredCount > 0 
+      ? "Confirm Submission" 
+      : "Submit Your Answers";
+    
+    const description = unansweredCount > 0
+      ? `You have ${unansweredCount} unanswered question(s) out of ${quiz.mcqTest.totalQuestions} total questions. Are you sure you want to submit?`
+      : `You have answered all ${quiz.mcqTest.totalQuestions} questions. Are you sure you want to submit your answers?`;
 
-    await handleSubmitQuiz();
+    openModal("confirm", {
+      title,
+      description: (
+        <div className="space-y-3">
+          <p className="text-[#2d3748]">{description}</p>
+          <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-[#7A7574]">Answered:</span>
+              <span className="font-semibold text-green-600">{answeredCount}/{quiz.mcqTest.totalQuestions}</span>
+            </div>
+            {unansweredCount > 0 && (
+              <div className="flex items-center justify-between text-sm mt-2">
+                <span className="text-[#7A7574]">Unanswered:</span>
+                <span className="font-semibold text-orange-600">{unansweredCount}</span>
+              </div>
+            )}
+          </div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-[5px] p-3">
+            <div className="flex items-start gap-2">
+              <Icon icon="mdi:alert" width="18" className="text-yellow-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-yellow-800">
+                Once submitted, you cannot change your answers.
+              </p>
+            </div>
+          </div>
+        </div>
+      ),
+      onConfirm: () => {
+        handleSubmitQuiz();
+      },
+    });
   };
 
   const handleSubmitQuiz = async () => {

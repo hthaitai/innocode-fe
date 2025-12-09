@@ -84,6 +84,8 @@ import Leaderboard from "./features/leaderboard/pages/student/Leaderboard"
 import OrganizerLeaderboardDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardDetail"
 import OrganizerLeaderboardMemberDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardMemberDetail"
 import NotFound from "./pages/NotFound"
+import StaffProvinces from "./features/province/pages/staff/StaffProvinces"
+import StaffSchools from "./features/school/pages/staff/StaffSchools"
 import ContestJudgesPage from "./features/contest/pages/organizer/ContestJudgesPage"
 // Initialize EmailJS when app starts
 initEmailJs()
@@ -241,7 +243,23 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-
+      //staff routes
+      {
+        path: "province-staff",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STAFF]}>
+            <StaffProvinces />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "school-staff",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STAFF]}>
+            <StaffSchools />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "contest-detail/:contestId",
         element: <ContestDetail />,

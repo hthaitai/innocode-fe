@@ -26,6 +26,7 @@ import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
 import { useGetRoundsByContestIdQuery } from "@/services/roundApi";
 import useCompletedAutoTests from "@/features/problem/hooks/useCompletedAutoTests";
 import manualProblemApi from "@/api/manualProblemApi";
+import { useModal } from "@/shared/hooks/useModal";
 
 const ContestDetail = () => {
   const { contestId } = useParams();
@@ -33,6 +34,7 @@ const ContestDetail = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const { user } = useAuth();
   const role = user?.role || "student";
+  const { openModal } = useModal();
 
   // Fetch contest data from API
   const { contest: apiContest, loading, error } = useContestDetail(contestId);
@@ -723,7 +725,32 @@ const ContestDetail = () => {
                                   roundRoute &&
                                   myTeam && (
                                     <button
-                                      onClick={() => navigate(roundRoute)}
+                                      onClick={() => {
+                                        // Check if openCode already exists in sessionStorage
+                                        const existingOpenCode = sessionStorage.getItem(
+                                          `openCode_${round.roundId}`
+                                        );
+                                        
+                                        if (existingOpenCode) {
+                                          // If openCode exists, navigate directly
+                                          navigate(roundRoute);
+                                        } else {
+                                          // If no openCode, open modal to enter it
+                                          openModal("openCode", {
+                                            roundName: round.roundName || round.name || `Round ${index + 1}`,
+                                            roundId: round.roundId,
+                                            onConfirm: (openCode) => {
+                                              // Store openCode in sessionStorage for this round
+                                              sessionStorage.setItem(
+                                                `openCode_${round.roundId}`,
+                                                openCode
+                                              );
+                                              // Navigate to round
+                                              navigate(roundRoute);
+                                            },
+                                          });
+                                        }
+                                      }}
                                       className="button-orange text-xs px-3 py-1 flex items-center gap-1"
                                     >
                                       <Play size={12} />

@@ -19,6 +19,7 @@ import McqCsvModal from "../features/mcq/components/organizer/McqCsvModal"
 import McqBankModal from "../features/mcq/components/organizer/McqBankModal"
 import TemplateModal from "../features/leaderboard/components/TemplateModal"
 import ReviewAppealModal from "../features/appeal/components/organizer/ReviewAppealModal"
+import OpenCodeModal from "../features/round/components/student/OpenCodeModal"
 
 const ModalContext = createContext({
   openModal: () => {}, // no-op default
@@ -65,6 +66,7 @@ export function ModalProvider({ children }) {
     mcqBank: McqBankModal,
     template: TemplateModal,
     reviewAppeal: ReviewAppealModal,
+    openCode: OpenCodeModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

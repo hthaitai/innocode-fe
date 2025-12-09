@@ -23,6 +23,7 @@ const MentorTeam = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [students, setStudents] = useState([]);
+  const [allStudents, setAllStudents] = useState([]); // Store all students for lookup
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [invitingStudentId, setInvitingStudentId] = useState(null);
   const [inviteError, setInviteError] = useState("");
@@ -199,6 +200,9 @@ const MentorTeam = () => {
               studentsData = response.data.data;
             }
           }
+          
+          // Store all students for lookup (e.g., in pending invites)
+          setAllStudents(studentsData);
           
           // Filter out students who are already members, have been invited, or have pending invites
           const existingMemberIds = (myTeam.members || []).map(
@@ -684,101 +688,102 @@ const MentorTeam = () => {
                       </div>
                     </div>
 
-                    {/* Team Members Section */}
-                    <div className="border border-[#E5E5E5] rounded-[8px] p-6 bg-white">
-                      <div className="flex items-center justify-between mb-4">
-                        <h5 className="text-lg font-semibold text-[#2d3748]">
-                          Team Members
-                        </h5>
+                    {/* Team Members and Pending Invitations - Side by Side */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Team Members Section */}
+                      <div className="border border-[#E5E5E5] rounded-[8px] p-6 bg-white">
+                        <div className="flex items-center justify-between mb-4">
+                          <h5 className="text-lg font-semibold text-[#2d3748]">
+                            Team Members
+                          </h5>
+                        </div>
+
+                        {myTeam.members && myTeam.members.length > 0 ? (
+                          <div className="space-y-3">
+                            {myTeam.members.map((member, index) => {
+                              // Handle different field name formats (camelCase and snake_case)
+                              // API returns: studentFullname, studentEmail
+                              const memberName = 
+                                member.studentFullname ||
+                                member.student_fullname ||
+                                member.userFullname || 
+                                member.user_fullname ||
+                                member.user?.name ||
+                                member.user?.fullName ||
+                                member.name ||
+                                "Unknown Member";
+                              
+                              const memberEmail = 
+                                member.studentEmail ||
+                                member.student_email ||
+                                member.userEmail || 
+                                member.user_email ||
+                                member.user?.email ||
+                                member.email ||
+                                "";
+                              
+                              const memberInitial = 
+                                member.studentFullname?.charAt(0)?.toUpperCase() ||
+                                member.user?.name?.charAt(0)?.toUpperCase() ||
+                                member.user?.fullName?.charAt(0)?.toUpperCase() ||
+                                memberName?.charAt(0)?.toUpperCase() ||
+                                "M";
+                              
+                              // Log member data for debugging only if still missing
+                              if (memberName === "Unknown Member") {
+                                console.warn("⚠️ Member data missing:", member);
+                              }
+                              
+                              return (
+                                <div
+                                  key={
+                                    member.studentId || member.student_id || index
+                                  }
+                                  className="flex items-center justify-between p-4 bg-[#f9fafb] rounded-[5px] hover:bg-[#f3f4f6] transition-colors"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#ff8c5a] text-white flex items-center justify-center font-semibold shadow-sm">
+                                      {memberInitial}
+                                    </div>
+                                    <div>
+                                      <p className="font-semibold text-[#2d3748]">
+                                        {memberName}
+                                      </p>
+                                      {memberEmail && (
+                                        <div className="flex items-center gap-2 mt-1">
+                                          <Mail
+                                            size={14}
+                                            className="text-[#7A7574]"
+                                          />
+                                          <p className="text-sm text-[#7A7574]">
+                                            {memberEmail}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                    Active
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8">
+                            <Users
+                              size={48}
+                              className="text-[#E5E5E5] mx-auto mb-3"
+                            />
+                            <p className="text-[#7A7574] text-sm mb-4">
+                              No members yet. Invite members to join your team.
+                            </p>
+                          
+                          </div>
+                        )}
                       </div>
 
-                      {myTeam.members && myTeam.members.length > 0 ? (
-                        <div className="space-y-3">
-                          {myTeam.members.map((member, index) => {
-                            // Handle different field name formats (camelCase and snake_case)
-                            // API returns: studentFullname, studentEmail
-                            const memberName = 
-                              member.studentFullname ||
-                              member.student_fullname ||
-                              member.userFullname || 
-                              member.user_fullname ||
-                              member.user?.name ||
-                              member.user?.fullName ||
-                              member.name ||
-                              "Unknown Member";
-                            
-                            const memberEmail = 
-                              member.studentEmail ||
-                              member.student_email ||
-                              member.userEmail || 
-                              member.user_email ||
-                              member.user?.email ||
-                              member.email ||
-                              "";
-                            
-                            const memberInitial = 
-                              member.studentFullname?.charAt(0)?.toUpperCase() ||
-                              member.user?.name?.charAt(0)?.toUpperCase() ||
-                              member.user?.fullName?.charAt(0)?.toUpperCase() ||
-                              memberName?.charAt(0)?.toUpperCase() ||
-                              "M";
-                            
-                            // Log member data for debugging only if still missing
-                            if (memberName === "Unknown Member") {
-                              console.warn("⚠️ Member data missing:", member);
-                            }
-                            
-                            return (
-                              <div
-                                key={
-                                  member.studentId || member.student_id || index
-                                }
-                                className="flex items-center justify-between p-4 bg-[#f9fafb] rounded-[5px] hover:bg-[#f3f4f6] transition-colors"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#ff8c5a] text-white flex items-center justify-center font-semibold shadow-sm">
-                                    {memberInitial}
-                                  </div>
-                                  <div>
-                                    <p className="font-semibold text-[#2d3748]">
-                                      {memberName}
-                                    </p>
-                                    {memberEmail && (
-                                      <div className="flex items-center gap-2 mt-1">
-                                        <Mail
-                                          size={14}
-                                          className="text-[#7A7574]"
-                                        />
-                                        <p className="text-sm text-[#7A7574]">
-                                          {memberEmail}
-                                        </p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                                  Active
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8">
-                          <Users
-                            size={48}
-                            className="text-[#E5E5E5] mx-auto mb-3"
-                          />
-                          <p className="text-[#7A7574] text-sm mb-4">
-                            No members yet. Invite members to join your team.
-                          </p>
-                        
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Pending Student Invitations Section */}
-                    {pendingInvites.length > 0 && (
+                      {/* Pending Student Invitations Section */}
                       <div className="border border-[#E5E5E5] rounded-[8px] p-6 bg-white">
                         <div className="flex items-center justify-between mb-4">
                           <h5 className="text-lg font-semibold text-[#2d3748]">
@@ -789,68 +794,89 @@ const MentorTeam = () => {
                           )}
                         </div>
 
-                        <div className="space-y-3">
-                          {pendingInvites.map((invite) => {
-                            // Try to get student info from pending invite or find in students list
-                            const studentInfo = students.find(
-                              (s) => s.studentId === invite.studentId
-                            ) || {
-                              userFullname: invite.studentId || "Unknown Student",
-                              userEmail: invite.inviteeEmail || "No email",
-                            };
+                        {pendingInvites.length > 0 ? (
+                          <div className="space-y-3">
+                            {pendingInvites.map((invite) => {
+                              // Try to get student info from invite object first
+                              const studentNameFromInvite = 
+                                invite.student?.userFullname ||
+                                invite.student?.user_fullname ||
+                                invite.student?.name ||
+                                invite.studentFullname ||
+                                invite.student_fullname ||
+                                invite.studentName ||
+                                invite.student_name ||
+                                null;
 
-                            const studentName = 
-                              studentInfo.userFullname || 
-                              invite.studentId || 
-                              "Unknown Student";
-                            const studentEmail = 
-                              studentInfo.userEmail || 
-                              invite.inviteeEmail || 
-                              "No email";
-                            const studentInitial = 
-                              studentName.charAt(0).toUpperCase() || "S";
+                              // If not in invite, try to find in allStudents list (not filtered)
+                              const studentInfo = allStudents.find(
+                                (s) => s.studentId === invite.studentId
+                              );
 
-                            // Format expiration date
-                            const expiresAt = invite.expiresAt 
-                              ? new Date(invite.expiresAt).toLocaleDateString()
-                              : "N/A";
+                              // Get student name with priority: invite object > students list > fallback
+                              const studentName = 
+                                studentNameFromInvite ||
+                                studentInfo?.userFullname ||
+                                studentInfo?.user_fullname ||
+                                studentInfo?.name ||
+                                "Unknown Student";
+                              
+                              const studentEmail = 
+                                invite.inviteeEmail ||
+                                invite.invitee_email ||
+                                studentInfo?.userEmail ||
+                                studentInfo?.user_email ||
+                                "No email";
+                              
+                              const studentInitial = 
+                                studentName.charAt(0).toUpperCase() || "S";
 
-                            return (
-                              <div
-                                key={invite.inviteId}
-                                className="flex items-center justify-between p-4 bg-yellow-50 border border-yellow-200 rounded-[5px]"
-                              >
-                                <div className="flex items-center gap-3 flex-1">
-                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 text-white flex items-center justify-center font-semibold shadow-sm">
-                                    {studentInitial}
-                                  </div>
-                                  <div className="flex-1">
-                                    <p className="font-semibold text-[#2d3748]">
-                                      {studentName}
-                                    </p>
-                                    <div className="flex items-center gap-2 mt-1">
-                                      <Mail
-                                        size={14}
-                                        className="text-[#7A7574]"
-                                      />
-                                      <p className="text-sm text-[#7A7574]">
-                                        {studentEmail}
-                                      </p>
+                              
+                              return (
+                                <div
+                                  key={invite.inviteId}
+                                  className="flex items-center justify-between p-4 bg-yellow-50 border border-yellow-200 rounded-[5px]"
+                                >
+                                  <div className="flex items-center gap-3 flex-1">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 text-white flex items-center justify-center font-semibold shadow-sm">
+                                      {studentInitial}
                                     </div>
-                                    <p className="text-xs text-[#7A7574] mt-1">
-                                      Expires: {expiresAt}
-                                    </p>
+                                    <div className="flex-1">
+                                      <p className="font-semibold text-[#2d3748]">
+                                        {studentName}
+                                      </p>
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <Mail
+                                          size={14}
+                                          className="text-[#7A7574]"
+                                        />
+                                        <p className="text-sm text-[#7A7574]">
+                                          {studentEmail}
+                                        </p>
+                                      </div>
+                                  
+                                    </div>
                                   </div>
+                                  <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+                                    Pending
+                                  </span>
                                 </div>
-                                <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
-                                  Pending
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8">
+                            <Mail
+                              size={48}
+                              className="text-[#E5E5E5] mx-auto mb-3"
+                            />
+                            <p className="text-[#7A7574] text-sm">
+                              No pending invitations.
+                            </p>
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
 
                     {/* Available Students to Invite Section */}
                     <div className="border border-[#E5E5E5] rounded-[8px] p-6 bg-white">
@@ -945,20 +971,7 @@ const MentorTeam = () => {
                       )}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => navigate(`/contest-detail/${contestId}`)}
-                        className="button-white flex-1"
-                      >
-                        <Icon
-                          icon="mdi:arrow-left"
-                          width="18"
-                          className="mr-2"
-                        />
-                        Back to Contest
-                      </button>
-                    </div>
+            
                   </div>
                 ) : (
                   <div className="text-center py-12">

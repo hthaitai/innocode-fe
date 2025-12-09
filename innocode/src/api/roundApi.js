@@ -6,6 +6,11 @@ const roundApi = {
   // GET /api/rounds for contest
   getByContestId: (contestId) =>
     axiosClient.get("/rounds", { params: { contestIdSearch: contestId } }),
+  // GET /api/rounds/{id}
+  getById: (roundId, openCode) => {
+    const params = openCode ? { openCode } : {};
+    return axiosClient.get(`/rounds/${roundId}`, { params });
+  },
   // POST /api/rounds
   create: (contestId, data) => axiosClient.post(`/rounds/${contestId}`, data),
   

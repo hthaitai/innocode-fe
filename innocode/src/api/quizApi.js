@@ -2,7 +2,10 @@ import axiosClient from "./axiosClient";
 
 const quizApi = {
   //Get quiz for round
-  getQuiz: (roundId) => axiosClient.get(`/rounds/${roundId}/mcq-test`),
+  getQuiz: (roundId, openCode) => {
+    const params = openCode ? { openCode } : {};
+    return axiosClient.get(`/rounds/${roundId}/mcq-test`, { params });
+  },
   //Submit quiz answers
   submitQuiz: (roundId, data) =>
     axiosClient.post(`/rounds/${roundId}/mcq-test/submit`, data),

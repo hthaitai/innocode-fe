@@ -1,7 +1,6 @@
-import React from "react"
+import React, { useMemo, useCallback } from "react"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import DropdownFluent from "@/shared/components/DropdownFluent"
-import { AnimatePresence, motion } from "framer-motion"
 
 export default function SchoolForm({
   formData,
@@ -10,7 +9,15 @@ export default function SchoolForm({
   setErrors,
   provinces = [],
 }) {
-  const handleChange = (e) => {
+  // Memoize province options to prevent unnecessary re-renders
+  const provinceOptions = useMemo(() => {
+    return provinces.map((p) => ({
+      value: p.provinceId || p.province_id,
+      label: p.provinceName || p.name,
+    }))
+  }, [provinces])
+
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
 
@@ -18,16 +25,22 @@ export default function SchoolForm({
     if (errors?.[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
-  }
+  }, [errors, setFormData, setErrors])
 
-  const handleSelect = (value, field) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+  const handleProvinceSelect = useCallback((value) => {
+    setFormData((prev) => ({ 
+      ...prev, 
+      province_id: value,
+      provinceId: value 
+    }))
 
     // Clear dropdown error when selecting
-    if (errors?.[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }))
+    if (errors?.province_id) {
+      setErrors((prev) => ({ ...prev, province_id: "" }))
     }
-  }
+  }, [errors, setFormData, setErrors])
+
+  const currentProvinceValue = formData.province_id || formData.provinceId
 
   return (
     <div className="flex flex-col gap-4">
@@ -45,12 +58,9 @@ export default function SchoolForm({
       <DropdownFluent
         label="Province"
         placeholder="Select a province"
-        value={formData.province_id}
-        options={provinces.map((p) => ({
-          value: p.province_id,
-          label: p.name,
-        }))}
-        onChange={(value) => handleSelect(value, "province_id")}
+        value={currentProvinceValue}
+        options={provinceOptions}
+        onChange={handleProvinceSelect}
         error={!!errors?.province_id}
         helperText={errors?.province_id}
       />
