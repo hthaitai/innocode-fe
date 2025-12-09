@@ -134,6 +134,15 @@ const router = createBrowserRouter([
       </PublicRoute>
     ),
   },
+  // Full-screen certificate template create page (outside MainLayout)
+  {
+    path: "organizer/contests/:contestId/certificates/templates/new",
+    element: (
+      <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+        <OrganizerCertificateTemplateCreate />
+      </ProtectedRoute>
+    ),
+  },
   {
     element: <MainLayout />, // layout wrapper
     children: [
@@ -496,14 +505,14 @@ const router = createBrowserRouter([
                   </ProtectedRoute>
                 ),
               },
-              {
-                path: "templates/new",
-                element: (
-                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerCertificateTemplateCreate />
-                  </ProtectedRoute>
-                ),
-              },
+              // {
+              //   path: "templates/new",
+              //   element: (
+              //     <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+              //       <OrganizerCertificateTemplateCreate />
+              //     </ProtectedRoute>
+              //   ),
+              // },
             ],
           },
 

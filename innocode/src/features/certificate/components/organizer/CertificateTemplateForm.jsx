@@ -8,68 +8,89 @@ export default function CertificateTemplateForm({
   formData,
   setFormData,
   errors = {},
+  onSubmit,
+  submitting,
 }) {
   const imgRef = useRef(null)
 
-  // Initialize text overlay
+  const hasImage = !!formData.file // <-- check if an image is uploaded
+
   useEffect(() => {
-    if (!formData.text) {
+    if (formData.file && !formData.text) {
       setFormData((prev) => ({
         ...prev,
         text: {
-          fontFamily: "Arial",
-          fontSize: 24,
-          colorHex: "#000000",
+          value: "Text",
           x: 50,
           y: 50,
+          fontSize: 24,
+          fontFamily: "Arial",
+          colorHex: "#000000",
           maxWidth: 300,
           align: "left",
         },
       }))
     }
-  }, [formData.text, setFormData])
-
-  // Get image dimensions
-  useEffect(() => {
-    if (imgRef.current && !formData.imgWidth) {
-      setFormData((prev) => ({
-        ...prev,
-        imgWidth: imgRef.current.width,
-        imgHeight: imgRef.current.height,
-      }))
-    }
-  }, [formData.imgWidth, setFormData])
-
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  }, [formData.file])
 
   return (
-    <div className="grid grid-cols-3 gap-5">
-      {/* Image: 2/3 width */}
-      <div className="col-span-2">
-        <TemplatePreview formData={formData} imgRef={imgRef} />
-      </div>
-
-      {/* Editor: 1/3 width */}
-      <div className="col-span-1 flex flex-col gap-3">
-        <TextFieldFluent
-          label="Template Name"
-          name="name"
-          value={formData.name || ""}
-          onChange={handleChange}
-          error={!!errors.name}
-          helperText={errors.name}
-        />
-
-        <TemplateFileUpload
+    <div className="flex gap-1 h-full">
+      {/* Fixed Preview Area */}
+      <div className="flex-1">
+        <TemplatePreview
           formData={formData}
           setFormData={setFormData}
-          errors={errors}
+          imgRef={imgRef}
         />
+      </div>
 
-        <TextOverlaySettings formData={formData} setFormData={setFormData} />
+      {/* Scrollable Editor Drawer */}
+      <div className="w-[380px] bg-white rounded-[5px] border border-[#E5E5E5] overflow-y-auto p-4 max-h-screen">
+        {hasImage ? (
+          <>
+            <TextFieldFluent
+              label="Template Name"
+              name="name"
+              value={formData.name || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, name: e.target.value }))
+              }
+              error={!!errors.name}
+              helperText={errors.name}
+            />
+
+            <TemplateFileUpload
+              formData={formData}
+              setFormData={setFormData}
+              errors={errors}
+            />
+
+            <TextOverlaySettings
+              formData={formData}
+              setFormData={setFormData}
+            />
+
+            <div className="flex justify-end pt-8">
+              <button
+                type="button"
+                onClick={onSubmit}
+                disabled={submitting}
+                className={`flex items-center justify-center gap-2 ${
+                  submitting ? "button-gray" : "button-orange"
+                }`}
+              >
+                {submitting && (
+                  <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
+                )}
+                {submitting ? "Creating..." : "Create"}
+              </button>
+            </div>
+          </>
+        ) : (
+          <p className="text-gray-500 text-center mt-4">
+            Please upload a template image to edit the fields.
+          </p>
+        )}
       </div>
     </div>
   )
