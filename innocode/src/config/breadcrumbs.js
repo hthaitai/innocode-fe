@@ -18,7 +18,7 @@ export const BREADCRUMBS = {
   DASHBOARD: ["Dashboard"],
   ABOUT: ["About"],
   APPEAL: ["Appeal"],
-
+  STUDENT_CERTIFICATE: ["Student Certificate"],
   // Sub-pages
   PROFILE_ABOUT: ["Profile", "Personal Information"],
   PROFILE_PASSWORD: ["Profile", "Change Password"],
@@ -262,7 +262,7 @@ export const BREADCRUMBS = {
   // Error pages
   NOT_FOUND: ["Not Found"],
   UNAUTHORIZED: ["Unauthorized"],
-}
+};
 
 // Breadcrumb paths configuration for navigation
 export const BREADCRUMB_PATHS = {
@@ -284,6 +284,7 @@ export const BREADCRUMB_PATHS = {
   DASHBOARD: ["/dashboard"],
   ABOUT: ["/about"],
   APPEAL: ["/appeal"],
+  STUDENT_CERTIFICATE: ["/student-certificate"],
   // Sub-pages
   PROFILE_ABOUT: ["/profile"],
   PROFILE_PASSWORD: ["/profile"],
@@ -542,27 +543,27 @@ export const BREADCRUMB_PATHS = {
   // Error pages
   NOT_FOUND: ["/"],
   UNAUTHORIZED: ["/"],
-}
+};
 
 // Helper function to create dynamic breadcrumb
 export const createBreadcrumb = (type, ...params) => {
   if (typeof BREADCRUMBS[type] === "function") {
-    return BREADCRUMBS[type](...params)
+    return BREADCRUMBS[type](...params);
   }
-  return BREADCRUMBS[type] || ["Home"]
-}
+  return BREADCRUMBS[type] || ["Home"];
+};
 
 // Helper function to create breadcrumb with paths for navigation
 export const createBreadcrumbWithPaths = (type, ...params) => {
   const items =
     typeof BREADCRUMBS[type] === "function"
       ? BREADCRUMBS[type](...params)
-      : BREADCRUMBS[type] || ["Home"]
+      : BREADCRUMBS[type] || ["Home"];
 
   const paths =
     typeof BREADCRUMB_PATHS[type] === "function"
       ? BREADCRUMB_PATHS[type](...params)
-      : BREADCRUMB_PATHS[type] || ["/"]
+      : BREADCRUMB_PATHS[type] || ["/"];
 
-  return { items, paths }
-}
+  return { items, paths };
+};

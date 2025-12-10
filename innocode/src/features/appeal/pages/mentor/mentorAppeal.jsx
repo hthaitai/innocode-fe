@@ -37,12 +37,27 @@ function MentorAppeal() {
   // Fetch contests list
   const { contests, loading: contestsLoading } = useContests();
 
-  // Get available contests (ongoing or completed)
+  // Get available contests (only ongoing - for appeal requests)
   const availableContests = useMemo(() => {
     if (!contests || !Array.isArray(contests)) return [];
-    return contests.filter(
-      (c) => c.isStatusVisible && (c.isOngoing || c.isCompleted)
-    );
+    
+    return contests.filter((c) => {
+      // Filter out Draft contests
+      if (c.status === 'Draft') return false;
+      
+      const status = c.status?.toLowerCase() || '';
+      const now = new Date();
+      
+      // Check if ongoing - only ongoing contests can have appeals
+      const isOngoing = 
+        status === 'ongoing' || 
+        status === 'registrationopen' || 
+        status === 'registrationclosed' ||
+        (c.start && c.end && now >= new Date(c.start) && now < new Date(c.end));
+      
+      // Only include ongoing contests
+      return isOngoing;
+    });
   }, [contests]);
 
   // Use contestId from URL or first available contest
@@ -415,8 +430,7 @@ function MentorAppeal() {
                       No contests available
                     </p>
                     <p className="text-[#7A7574] text-xs">
-                      There are no active or completed contests to display
-                      results for.
+                      There are no ongoing contests to display results for. Appeals can only be requested for ongoing contests.
                     </p>
                   </div>
                 ) : !selectedContestId ? (
