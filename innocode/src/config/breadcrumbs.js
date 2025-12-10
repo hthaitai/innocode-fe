@@ -216,11 +216,30 @@ export const BREADCRUMBS = {
     contestName,
     "Certificates",
   ],
+  ORGANIZER_CERTIFICATE_TEMPLATES: (contestName) => [
+    "Contests",
+    contestName,
+    "Certificates",
+    "Templates",
+  ],
   ORGANIZER_CERTIFICATE_ISSUE: (contestName) => [
     "Contests",
     contestName,
     "Certificates",
     "Issue Certificate",
+  ],
+  ORGANIZER_CERTIFICATE_TEAM_MEMBERS: (contestName, teamName) => [
+    "Contests",
+    contestName,
+    "Certificates",
+    "Issue Certificate",
+    teamName,
+  ],
+  ORGANIZER_CERTIFICATE_ISSUED: (contestName) => [
+    "Contests",
+    contestName,
+    "Certificates",
+    "Issued",
   ],
   ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestName) => [
     "Contests",
@@ -497,11 +516,30 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/certificates`,
   ],
+  ORGANIZER_CERTIFICATE_TEMPLATES: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
+    `/organizer/contests/${contestId}/certificates/templates`,
+  ],
   ORGANIZER_CERTIFICATE_ISSUE: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/certificates`,
     `/organizer/contests/${contestId}/certificates/issue`,
+  ],
+  ORGANIZER_CERTIFICATE_TEAM_MEMBERS: (contestId, teamId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
+    `/organizer/contests/${contestId}/certificates/issue`,
+    `/organizer/contests/${contestId}/certificates/issue/teams/${teamId}`,
+  ],
+  ORGANIZER_CERTIFICATE_ISSUED: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
+    `/organizer/contests/${contestId}/certificates/issued`,
   ],
   ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestId) => [
     "/organizer/contests",

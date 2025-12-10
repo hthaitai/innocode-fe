@@ -45,8 +45,12 @@ import OrganizerProblemDetail from "./features/problem/pages/organizer/Organizer
 import OrganizerTeams from "./features/team/pages/organizer/OrganizerTeams"
 import OrganizerTeamDetail from "./features/team/pages/organizer/OrganizerTeamDetail"
 import OrganizerLeaderboard from "./features/leaderboard/pages/organizer/OrganizerLeaderboard"
-import OrganizerCertificates from "./features/certificate/pages/organizer/OrganizerCertificates"
 import OrganizerCertificateTemplateCreate from "./features/certificate/pages/organizer/OrganizerCertificateTemplateCreate"
+import OrganizerCertificates from "./features/certificate/pages/organizer/OrganizerCertificates"
+import OrganizerCertificateTemplates from "./features/certificate/pages/organizer/OrganizerCertificateTemplates"
+import OrganizerIssuedCertificates from "./features/certificate/pages/organizer/OrganizerIssuedCertificates"
+import OrganizerCertificateIssue from "./features/certificate/pages/organizer/OrganizerCertificateIssue"
+import OrganizerCertificateTeamMembers from "./features/certificate/pages/organizer/OrganizerCertificateTeamMembers"
 import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals"
 import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail"
 import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces"
@@ -576,6 +580,38 @@ const router = createBrowserRouter([
                 element: (
                   <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                     <OrganizerCertificates />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "templates",
+                element: (
+                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                    <OrganizerCertificateTemplates />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "issue",
+                element: (
+                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                    <OrganizerCertificateIssue />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "issue/teams/:teamId",
+                element: (
+                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                    <OrganizerCertificateTeamMembers />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "issued",
+                element: (
+                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                    <OrganizerIssuedCertificates />
                   </ProtectedRoute>
                 ),
               },

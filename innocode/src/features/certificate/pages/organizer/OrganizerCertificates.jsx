@@ -1,13 +1,13 @@
 import React from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
+import { Award, LayoutTemplate, FileBadge2, ChevronRight } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
-import ExistingTemplates from "../../components/organizer/ExistingTemplates"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetContestByIdQuery } from "@/services/contestApi"
+import { Link } from "react-router-dom"
 
 export default function OrganizerCertificates() {
   const { contestId } = useParams()
-  const navigate = useNavigate()
 
   const {
     data: contest,
@@ -19,46 +19,54 @@ export default function OrganizerCertificates() {
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_CERTIFICATES(contestName)
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CERTIFICATES(contestId)
 
-  if (contestLoading)
-    return (
-      <PageContainer
-        breadcrumb={breadcrumbItems}
-        breadcrumbPaths={breadcrumbPaths}
-      >
-        Loading contest...
-      </PageContainer>
-    )
-
-  if (contestError)
-    return (
-      <PageContainer
-        breadcrumb={breadcrumbItems}
-        breadcrumbPaths={breadcrumbPaths}
-      >
-        Error loading contest.
-      </PageContainer>
-    )
+  const items = [
+    {
+      title: "Template gallery",
+      subtitle: "Browse templates for this contest or upload new ones",
+      icon: <LayoutTemplate size={20} />,
+      path: "certificates/templates",
+    },
+    {
+      title: "Issue certificates",
+      subtitle: "Select a team or member and award a template",
+      icon: <Award size={20} />,
+      path: "certificates/issue",
+    },
+    {
+      title: "Issued certificates",
+      subtitle: "View every certificate that has been issued so far",
+      icon: <FileBadge2 size={20} />,
+      path: "certificates/issued",
+    },
+  ]
 
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
+      loading={contestLoading}
+      error={contestError}
     >
-      <div className="flex justify-between items-center mb-3">
-        <h2 className="text-sm leading-5 font-semibold">Templates</h2>
-        <button
-          className="button-orange"
-          onClick={() =>
-            navigate(
-              `/organizer/contests/${contestId}/certificates/templates/new`
-            )
-          }
-        >
-          New template
-        </button>
+      <div className="space-y-1">
+        {items.map((item) => (
+          <Link
+            key={item.title}
+            to={`/organizer/contests/${contestId}/${item.path}`}
+            className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors"
+          >
+            <div className="flex gap-5 items-center">
+              {item.icon}
+              <div>
+                <p className="text-[14px] leading-[20px]">{item.title}</p>
+                <p className="text-[12px] leading-[16px] text-[#7A7574]">
+                  {item.subtitle}
+                </p>
+              </div>
+            </div>
+            <ChevronRight size={20} className="text-[#7A7574]" />
+          </Link>
+        ))}
       </div>
-
-      <ExistingTemplates contestId={contestId} />
     </PageContainer>
   )
 }

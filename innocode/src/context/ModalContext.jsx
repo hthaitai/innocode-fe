@@ -21,6 +21,7 @@ import TemplateModal from "../features/leaderboard/components/TemplateModal"
 import ReviewAppealModal from "../features/appeal/components/organizer/ReviewAppealModal"
 import OpenCodeModal from "../features/round/components/student/OpenCodeModal"
 import InviteJudgeModal from "../features/invite-judge/components/InviteJudgeModal"
+import CertificateTemplateModal from "../features/certificate/components/organizer/CertificateTemplateModal"
 
 const ModalContext = createContext({
   openModal: () => {}, // no-op default
@@ -69,6 +70,7 @@ export function ModalProvider({ children }) {
     reviewAppeal: ReviewAppealModal,
     openCode: OpenCodeModal,
     inviteJudge: InviteJudgeModal,
+    certificateTemplate: CertificateTemplateModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

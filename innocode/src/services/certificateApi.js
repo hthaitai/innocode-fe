@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api } from "./api"
 
 export const certificateApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -36,6 +36,7 @@ export const certificateApi = api.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Certificates", id: "LIST" }],
     }),
+
     getMyCertificates: builder.query({
       query: () => ({
         url: "certificates/my-certificate",
@@ -51,7 +52,8 @@ export const certificateApi = api.injectEndpoints({
             ]
           : [{ type: "Certificates", id: "LIST" }],
     }),
-    getCertificates: builder.query({
+
+    getIssuedCertificates: builder.query({
       query: ({
         contestId,
         templateId,
@@ -62,7 +64,7 @@ export const certificateApi = api.injectEndpoints({
         sortBy = "issuedAt",
         desc = true,
       }) => ({
-        url: "certificates",
+        url: "certificates", // just /api/certificates
         params: {
           contestId,
           templateId,
@@ -86,12 +88,12 @@ export const certificateApi = api.injectEndpoints({
           : [{ type: "Certificates", id: "LIST" }],
     }),
   }),
-});
+})
 
 export const {
   useUploadCertificateTemplateMutation,
   useGetCertificateTemplatesQuery,
   useAwardCertificatesMutation,
-  useGetCertificatesQuery,
+  useGetIssuedCertificatesQuery,
   useGetMyCertificatesQuery,
-} = certificateApi;
+} = certificateApi
