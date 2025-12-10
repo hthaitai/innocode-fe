@@ -41,23 +41,76 @@ const PublishContestSection = ({ contest }) => {
       title: "Publish Contest",
       description: `Are you sure you want to publish "${contest.name}"?`,
       onConfirm: async (onClose) => {
+        let hasShownToast = false // Prevent duplicate toasts
+        
         try {
-          await publishContest(contest.contestId).unwrap()
-          toast.success("Contest published successfully!")
-          onClose()
+          const result = await publishContest(contest.contestId).unwrap()
+          console.log("✅ Publish contest result:", result)
+          
+          // If we get here, the request was successful
+          // Check the actual response data to determine if publish succeeded
+          const responseData = result?.data || result
+          
+          // Check if publish was actually successful
+          if (responseData?.code === "SUCCESS" || 
+              responseData?.status === "Published" || 
+              result?.code === "SUCCESS" ||
+              !responseData?.Message) {
+            if (!hasShownToast) {
+              toast.success("Contest published successfully!")
+              hasShownToast = true
+            }
+            onClose()
+          } else {
+            // Response indicates failure even though request succeeded
+            const missingFromError = responseData?.AdditionalData?.missing ?? responseData?.data?.missing ?? []
+            const errorMessage = responseData?.Message || responseData?.message || "Failed to publish contest"
+            
+            if (!hasShownToast) {
+              if (missingFromError.length > 0) {
+                toast.error(
+                  <ul className="list-disc ml-4">
+                    {missingFromError.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                )
+              } else {
+                toast.error(errorMessage)
+              }
+              hasShownToast = true
+            }
+          }
         } catch (err) {
-          const missingFromError = err?.data?.AdditionalData?.missing ?? []
-          toast.error(
-            missingFromError.length ? (
-              <ul className="list-disc ml-4">
-                {missingFromError.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            ) : (
-              err?.data?.Message || "Failed to publish contest"
-            )
-          )
+          console.error("❌ Publish contest error:", err)
+          
+          // Only show error if we haven't shown a toast yet
+          if (!hasShownToast) {
+            const errorData = err?.data || err
+            const missingFromError = errorData?.AdditionalData?.missing ?? errorData?.data?.missing ?? []
+            const errorMessage = errorData?.Message || errorData?.message || errorData?.errorMessage || "Failed to publish contest"
+            
+            // Double check: sometimes error response might actually indicate success
+            if (errorData?.code === "SUCCESS" || errorData?.status === "Published") {
+              toast.success("Contest published successfully!")
+              onClose()
+              return
+            }
+            
+            // Show actual error
+            if (missingFromError.length > 0) {
+              toast.error(
+                <ul className="list-disc ml-4">
+                  {missingFromError.map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+              )
+            } else {
+              toast.error(errorMessage)
+            }
+            hasShownToast = true
+          }
         }
       },
     })

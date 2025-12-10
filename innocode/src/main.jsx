@@ -4,6 +4,7 @@ import "./index.css"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import MainLayout from "./shared/components/layout/MainLayout"
 import AuthLayout from "./shared/components/layout/AuthLayout"
+import HomeLayout from "./shared/components/layout/HomeLayout"
 import { Provider } from "react-redux"
 import { store } from "./store/store"
 // Common pages
@@ -169,10 +170,16 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+  // Home page with its own layout (full width, no constraints)
+  {
+    element: <HomeLayout />,
+    children: [
+      { index: true, element: <Home /> },
+    ],
+  },
   {
     element: <MainLayout />, // layout wrapper
     children: [
-      { index: true, element: <Home /> },
       { path: "about", element: <About /> },
       {
         path: "contests",

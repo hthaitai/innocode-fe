@@ -6,6 +6,10 @@
   overflow: hidden;
 }
 
+.main-content.no-sidebar {
+  margin-left: 0; /* Remove left margin when sidebar is hidden */
+}
+
 .page-sidebar {
   position: fixed; /* Stay in place */
   top: 84px; /* below Navbar (adjust to match Navbar height) */
@@ -41,6 +45,19 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Home Layout - Full width, no constraints */
+.home-layout {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.home-content {
+  width: 100%;
+  margin-top: 84px; /* height of Navbar */
+  overflow-x: hidden;
 }
 
 /* Auth Layout */
