@@ -52,7 +52,7 @@ export default function BaseModal({
       {isOpen && (
         <motion.div
           key="backdrop"
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 px-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm h-full flex justify-center items-center z-50 px-4"
           initial={{ opacity: 0 }}
           animate={{
             opacity: 1,

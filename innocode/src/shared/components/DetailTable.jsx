@@ -1,6 +1,6 @@
 import React from "react";
 
-const DetailTable = ({ data, labelWidth = "150px" }) => (
+const DetailTable = ({ data, labelWidth = "150px", onOpencode }) => (
   <table
     className="table-auto border-collapse w-full"
     style={{ tableLayout: "fixed" }} 
@@ -21,6 +21,7 @@ const DetailTable = ({ data, labelWidth = "150px" }) => (
             : row.value;
 
         return (
+          
           <tr key={`${row.label}-${index}`}>
             <th
               className="py-1 pr-7 font-normal whitespace-nowrap align-top text-left"
@@ -31,8 +32,9 @@ const DetailTable = ({ data, labelWidth = "150px" }) => (
             </th>
             <td className="py-1 text-[#7A7574] break-words">{displayValue}</td>
           </tr>
+          
         );
-      })}
+      })} 
     </tbody>
   </table>
 );

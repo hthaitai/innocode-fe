@@ -1,29 +1,29 @@
-import { StrictMode } from "react"
-import { createRoot } from "react-dom/client"
-import "./index.css"
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import MainLayout from "./shared/components/layout/MainLayout"
-import AuthLayout from "./shared/components/layout/AuthLayout"
-import { Provider } from "react-redux"
-import { store } from "./store/store"
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import MainLayout from "./shared/components/layout/MainLayout";
+import AuthLayout from "./shared/components/layout/AuthLayout";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 // Common pages
-import Home from "./features/common/pages/Home"
-import About from "./features/common/pages/About"
-import Profile from "./features/common/pages/Profile"
-import Dashboard from "./features/common/pages/Dashboard"
-import Announcements from "./features/common/pages/Announcements"
-import Unauthorized from "./features/common/pages/Unauthorized"
+import Home from "./features/common/pages/Home";
+import About from "./features/common/pages/About";
+import Profile from "./features/common/pages/Profile";
+import Dashboard from "./features/common/pages/Dashboard";
+import Announcements from "./features/common/pages/Announcements";
+import Unauthorized from "./features/common/pages/Unauthorized";
 // Student pages
-import Contests from "./features/contest/student/Contests"
-import ContestDetail from "./features/contest/student/ContestDetail"
-import ContestProcessing from "./features/contest/student/ContestProcessing"
-import Practice from "./features/contest/student/Practice"
-import PracticeDetail from "./features/contest/student/PracticeDetail"
-import PracticeStart from "./features/contest/student/PracticeStart"
-import Team from "./features/contest/student/Team"
-import Help from "./features/contest/student/Help"
-import MCQTest from "./features/quiz/student/MCQTest"
-import FinishQuiz from "./features/quiz/student/FinishQuiz"
+import Contests from "./features/contest/student/Contests";
+import ContestDetail from "./features/contest/student/ContestDetail";
+import ContestProcessing from "./features/contest/student/ContestProcessing";
+import Practice from "./features/contest/student/Practice";
+import PracticeDetail from "./features/contest/student/PracticeDetail";
+import PracticeStart from "./features/contest/student/PracticeStart";
+import Team from "./features/contest/student/Team";
+import Help from "./features/contest/student/Help";
+import MCQTest from "./features/quiz/student/MCQTest";
+import FinishQuiz from "./features/quiz/student/FinishQuiz";
 // Auth
 import ManualRubricPage from "./features/problems/manual/pages/ManualRubricPage"
 import ManualResultsPage from "./features/problems/manual/pages/ManualResultsPage"
@@ -70,27 +70,27 @@ import ForgotPassword from "./features/auth/components/ForgotPassword"
 import ResetPassword from "./features/auth/components/ResetPassword"
 import MyContest from "./features/contest/student/MyContest"
 //Mentor pages
-import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal"
+import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal";
 // Organizer pages
-import AddTestCase from "./features/problems/auto-evaluation/pages/AddTestCase"
-import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage"
+import AddTestCase from "./features/problems/auto-evaluation/pages/AddTestCase";
+import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage";
 
 // Judge pages
-import JudgeManualRubricPage from "./features/submission/pages/judge/JudgeManualRubricPage"
-import JudgeManualResultsPage from "./features/submission/pages/judge/JudgeManualResultsPage"
-import JudgeManualSubmissionsPage from "./features/submission/pages/judge/JudgeManualSubmissionsPage" // new page for pending submissions list
-import JudgeManualEvaluationsPage from "./features/submission/pages/judge/JudgeManualEvaluationsPage"
+import JudgeManualRubricPage from "./features/submission/pages/judge/JudgeManualRubricPage";
+import JudgeManualResultsPage from "./features/submission/pages/judge/JudgeManualResultsPage";
+import JudgeManualSubmissionsPage from "./features/submission/pages/judge/JudgeManualSubmissionsPage"; // new page for pending submissions list
+import JudgeManualEvaluationsPage from "./features/submission/pages/judge/JudgeManualEvaluationsPage";
 
-import Leaderboard from "./features/leaderboard/pages/student/Leaderboard"
-import OrganizerLeaderboardDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardDetail"
-import OrganizerLeaderboardMemberDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardMemberDetail"
-import NotFound from "./pages/NotFound"
-import StaffProvinces from "./features/province/pages/staff/StaffProvinces"
-import StaffSchools from "./features/school/pages/staff/StaffSchools"
-import ContestJudgesPage from "./features/invite-judge/pages/ContestJudgesPage"
-
+import Leaderboard from "./features/leaderboard/pages/student/Leaderboard";
+import OrganizerLeaderboardDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardDetail";
+import OrganizerLeaderboardMemberDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardMemberDetail";
+import NotFound from "./pages/NotFound";
+import StaffProvinces from "./features/province/pages/staff/StaffProvinces";
+import StaffSchools from "./features/school/pages/staff/StaffSchools";
+import ContestJudgesPage from "./features/contest/pages/organizer/ContestJudgesPage";
+import StudentCertificate from "./features/certificate/pages/student/StudentCertificate";
 // Initialize EmailJS when app starts
-initEmailJs()
+initEmailJs();
 const router = createBrowserRouter([
   {
     element: <AuthLayout />, // Auth layout wrapper
@@ -634,6 +634,14 @@ const router = createBrowserRouter([
       },
 
       {
+        path: "certificate",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
+            <StudentCertificate />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "/quiz/:roundId/finish",
         element: <FinishQuiz />,
       },
@@ -642,7 +650,7 @@ const router = createBrowserRouter([
 
   // Not found route
   { path: "*", element: <NotFound /> },
-])
+]);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -655,4 +663,4 @@ createRoot(document.getElementById("root")).render(
       </AuthProvider>
     </Provider>
   </StrictMode>
-)
+);

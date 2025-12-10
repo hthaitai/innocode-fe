@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
-import { Users, Mail, Trophy, Calendar, School } from "lucide-react";
+import { Users, Mail, Trophy, Calendar, School, Search } from "lucide-react";
 import PageContainer from "@/shared/components/PageContainer";
 import { BREADCRUMBS } from "@/config/breadcrumbs";
 import { useAuth } from "@/context/AuthContext";
