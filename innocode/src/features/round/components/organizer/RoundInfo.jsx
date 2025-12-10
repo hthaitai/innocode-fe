@@ -16,11 +16,14 @@ const RoundInfo = () => {
   // State for open code modal
   const [isOpenCodeModalOpen, setIsOpenCodeModalOpen] = useState(false);
   const [shouldFetchCode, setShouldFetchCode] = useState(false);
+  const [isReloading, setIsReloading] = useState(false);
   
   // Fetch open code only when modal is opened
-  const { data: openCodeData, isLoading: codeLoading, error: codeError, refetch: refetchOpenCode } = useGetOpenCodeQuery(roundId, {
+  const { data: openCodeData, isLoading: codeLoading, isFetching: codeFetching, error: codeError, refetch: refetchOpenCode } = useGetOpenCodeQuery(roundId, {
     skip: !shouldFetchCode,
   });
+
+ 
 
   const handleEdit = useCallback(() => {
     if (!round) return;
@@ -43,10 +46,38 @@ const RoundInfo = () => {
 
   // Handle reload open code
   const handleReloadCode = useCallback(() => {
-    if (shouldFetchCode) {
-      refetchOpenCode();
+    console.log("Reload button clicked", { roundId, shouldFetchCode });
+    // Set reloading state to show loading effect
+    setIsReloading(true);
+    // Ensure shouldFetchCode is true when reloading
+    if (!shouldFetchCode) {
+      setShouldFetchCode(true);
     }
-  }, [shouldFetchCode, refetchOpenCode]);
+    // Always refetch when reload button is clicked
+    refetchOpenCode()
+      .then((result) => {
+        console.log("Refetch result:", result);
+        if (result.error) {
+          console.error("Refetch returned error:", {
+            status: result.error.status,
+            errorCode: result.error?.data?.errorCode,
+            errorMessage: result.error?.data?.errorMessage,
+            fullError: result.error,
+          });
+        } else if (result.data) {
+          console.log("Refetch success - data received:", result.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Refetch failed with exception:", error);
+      })
+      .finally(() => {
+        // Reset reloading state after a small delay to ensure loading effect is visible
+        setTimeout(() => {
+          setIsReloading(false);
+        }, 300);
+      });
+  }, [shouldFetchCode, refetchOpenCode, roundId]);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError || !round) return <div>Failed to load round information.</div>;
@@ -134,6 +165,25 @@ const RoundInfo = () => {
   // Extract open code from API response
   const openCode = openCodeData?.data?.openCode || openCodeData?.openCode || openCodeData?.data || "";
 
+  // Check if error is "Open code not found" - should be treated as "no code available" not an error
+  const errorMessage = codeError?.data?.errorMessage || 
+                       codeError?.data?.message || 
+                       codeError?.message || "";
+  const isNotFoundError = errorMessage === "Open code not found." || 
+                          errorMessage === "Open code not found" ||
+                          codeError?.status === 403 && codeError?.data?.errorCode === "FORBIDDEN";
+
+  // Log API response for debugging
+  React.useEffect(() => {
+    if (openCodeData) {
+      console.log("Open Code Data received:", {
+        openCodeData,
+        extractedOpenCode: openCode,
+        roundId,
+      });
+    }
+  }, [openCodeData, openCode, roundId]);
+
   return (
     <>
       <InfoSection
@@ -165,19 +215,19 @@ const RoundInfo = () => {
           </h2>
           <button
             onClick={handleReloadCode}
-            disabled={codeLoading}
+            disabled={isReloading || codeLoading || codeFetching}
             className="flex items-center cursor-pointer  gap-2 px-3 py-1.5 text-sm text-[#7A7574] hover:text-[#ff6b35] hover:bg-[#f9fafb] rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Reload code"
           >
             <Icon
               icon="mdi:reload"
               width="20"
-              className={codeLoading ? "animate-spin" : ""}
+              className={(isReloading || codeLoading || codeFetching) ? "animate-spin" : ""}
             />
             <span>Reload</span>
           </button>
         </div>
-        {codeLoading && !openCode ? (
+        {(codeLoading || codeFetching) && !openCode && !isReloading ? (
           <div className="space-y-4">
             {/* Skeleton loader */}
             <div className="animate-pulse">
@@ -197,20 +247,10 @@ const RoundInfo = () => {
               </div>
             </div>
           </div>
-        ) : codeError ? (
-          <div className="bg-red-50 border border-red-200 rounded-[5px] p-4">
-            <div className="flex items-center gap-2 text-red-600 mb-2">
-              <Icon icon="mdi:alert-circle" width="20" />
-              <span className="font-medium">Error loading code</span>
-            </div>
-            <p className="text-sm text-red-500">
-              {codeError?.data?.message || codeError?.message || "Failed to load open code"}
-            </p>
-          </div>
-        ) : openCode ? (
-          <div className="space-y-4 relative">
-            {/* Loading overlay when refetching */}
-            {codeLoading && (
+        ) : codeError && !isNotFoundError && !isReloading && !codeFetching ? (
+          <div className="bg-red-50 border border-red-200 rounded-[5px] p-4 relative">
+            {/* Loading overlay when reloading with error */}
+            {(isReloading || codeFetching) && (
               <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-[5px]">
                 <div className="text-center">
                   <Icon
@@ -222,7 +262,32 @@ const RoundInfo = () => {
                 </div>
               </div>
             )}
-            <div className={codeLoading ? "opacity-50 transition-opacity duration-300" : "transition-opacity duration-300"}>
+            <div className={isReloading || codeFetching ? "opacity-50 transition-opacity duration-300" : ""}>
+              <div className="flex items-center gap-2 text-red-600 mb-2">
+                <Icon icon="mdi:alert-circle" width="20" />
+                <span className="font-medium">Error loading code</span>
+              </div>
+              <p className="text-sm text-red-500">
+                {errorMessage || "Failed to load open code"}
+              </p>
+            </div>
+          </div>
+        ) : openCode ? (
+          <div className="space-y-4 relative">
+            {/* Loading overlay when refetching */}
+            {(isReloading || codeLoading || codeFetching) && (
+              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-[5px]">
+                <div className="text-center">
+                  <Icon
+                    icon="mdi:loading"
+                    width="32"
+                    className="mx-auto mb-2 text-[#ff6b35] animate-spin"
+                  />
+                  <p className="text-sm text-[#7A7574] font-medium">Reloading...</p>
+                </div>
+              </div>
+            )}
+            <div className={(isReloading || codeLoading || codeFetching) ? "opacity-50 transition-opacity duration-300" : "transition-opacity duration-300"}>
               <div>
                 <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
                   <code className="text-lg font-mono font-bold text-[#2d3748] break-all">
@@ -245,9 +310,26 @@ const RoundInfo = () => {
             </div>
           </div>
         ) : (
-          <div className="text-center py-8 text-[#7A7574]">
-            <Icon icon="mdi:code-braces" width="48" className="mx-auto mb-2 opacity-50" />
-            <p>No open code available for this round.</p>
+          <div className="space-y-4 relative">
+            {/* Loading overlay when reloading */}
+            {(isReloading || codeFetching) && (
+              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-[5px]">
+                <div className="text-center">
+                  <Icon
+                    icon="mdi:loading"
+                    width="32"
+                    className="mx-auto mb-2 text-[#ff6b35] animate-spin"
+                  />
+                  <p className="text-sm text-[#7A7574] font-medium">Reloading...</p>
+                </div>
+              </div>
+            )}
+            <div className={isReloading || codeFetching ? "opacity-50 transition-opacity duration-300" : ""}>
+              <div className="text-center py-8 text-[#7A7574]">
+                <Icon icon="mdi:code-braces" width="48" className="mx-auto mb-2 opacity-50" />
+                <p>No open code available for this round.</p>
+              </div>
+            </div>
           </div>
         )}
       </BaseModal>
