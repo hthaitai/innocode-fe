@@ -45,12 +45,13 @@ export default function TemplatePreviewCanvas({ template }) {
       ctx.fillStyle = t.colorHex
       ctx.textAlign = t.align
 
-      // Convert original coordinates to thumbnail scale
-      const scaleX = w / img.width
-      const scaleY = h / img.height
+      // Scale based on drawn image (cover mode scaling)
+      const scaleX = drawWidth / img.width
+      const scaleY = drawHeight / img.height
 
-      const textX = t.x * scaleX
-      const textY = t.y * scaleY
+      // Convert original coordinates to drawn image position
+      const textX = offsetX + t.x * scaleX
+      const textY = offsetY + t.y * scaleY
 
       ctx.fillText("Sample Text", textX, textY)
     }

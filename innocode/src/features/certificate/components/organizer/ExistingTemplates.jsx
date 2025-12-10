@@ -1,6 +1,7 @@
 import React from "react"
 import { useGetCertificateTemplatesQuery } from "../../../../services/certificateApi"
 import TemplatePreviewCanvas from "./TemplatePreviewCanvas"
+import { Award } from "lucide-react"
 
 export default function ExistingTemplates({ contestId }) {
   const { data, isLoading, error } = useGetCertificateTemplatesQuery({
@@ -16,14 +17,14 @@ export default function ExistingTemplates({ contestId }) {
   if (templates.length === 0) return <p>No templates uploaded yet.</p>
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-1">
       {templates.map((tpl) => (
         <a
           key={tpl.templateId}
           href={tpl.fileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="block rounded-lg border border-[#E5E5E5] bg-white hover:shadow-md transition-shadow"
+          className="rounded-[5px] border border-[#E5E5E5] bg-white hover:shadow-md transition-shadow"
         >
           {/* Image container — locked to 16:9 */}
           <div className="relative w-full aspect-video bg-gray-100 overflow-hidden">
@@ -31,8 +32,9 @@ export default function ExistingTemplates({ contestId }) {
           </div>
 
           {/* Name below */}
-          <div className="p-3">
-            <h3 className="text-sm leading-5 font-medium line-clamp-2">
+          <div className="p-3 flex items-center gap-2">
+            <Award size={20}/>
+            <h3 className="text-sm leading-5 line-clamp-2">
               {tpl.name}
             </h3>
           </div>

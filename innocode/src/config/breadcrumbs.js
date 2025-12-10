@@ -66,6 +66,12 @@ export const BREADCRUMBS = {
     contestName,
     "Judges",
   ],
+  ORGANIZER_CONTEST_JUDGE_INVITES: (contestName) => [
+    "Contests",
+    contestName,
+    "Judge Invites",
+  ],
+
 
   // Organizer rounds
   ORGANIZER_ROUND_DETAIL: (contestName, roundName) => [
@@ -332,6 +338,11 @@ export const BREADCRUMB_PATHS = {
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/judges`,
+  ],
+  ORGANIZER_CONTEST_JUDGE_INVITES: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/judges/invites`,
   ],
 
   // Organizer rounds

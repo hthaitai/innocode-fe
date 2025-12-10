@@ -44,8 +44,7 @@ export default function OrganizerCertificates() {
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
     >
-      {/* Templates Header */}
-      <div className="flex justify-between items-center mb-3 border border-[#E5E5E5] bg-white min-h-[70px] px-5 rounded-[5px]">
+      <div className="flex justify-between items-center mb-3">
         <h2 className="text-sm leading-5 font-semibold">Templates</h2>
         <button
           className="button-orange"
@@ -59,7 +58,6 @@ export default function OrganizerCertificates() {
         </button>
       </div>
 
-      {/* Existing Templates List (no award logic passed anymore) */}
       <ExistingTemplates contestId={contestId} />
     </PageContainer>
   )

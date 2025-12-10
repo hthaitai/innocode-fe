@@ -16,6 +16,7 @@ const TableFluent = ({
   pagination,
   onPageChange,
   onRowClick,
+  rowHighlightId,
   renderSubComponent,
   expandAt = null,
   renderActions = null,
@@ -31,7 +32,10 @@ const TableFluent = ({
     state: { expanded },
     onExpandedChange: setExpanded,
     getRowCanExpand: () => true,
-    getRowId: getRowId || ((row, index) => row.teamId || row.questionId || row.id || `row-${index}`),
+    getRowId:
+      getRowId ||
+      ((row, index) =>
+        row.teamId || row.questionId || row.id || `row-${index}`),
   })
 
   const isClickable = typeof onRowClick === "function"
@@ -44,7 +48,7 @@ const TableFluent = ({
           <div className="border-b border-[#E5E5E5]">{renderActions()}</div>
         )}
 
-        <div className="relative overflow-x-auto">
+        <div className="relative overflow-x-auto min-h-[393px]">
           <table className="table-fixed w-full border-collapse">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => {
@@ -94,11 +98,16 @@ const TableFluent = ({
                 <>
                   {table.getRowModel().rows.map((row) => {
                     const visibleCells = row.getVisibleCells()
+                    const isSelected = rowHighlightId
+                      ? row.original.judgeId === rowHighlightId
+                      : false
 
                     return (
                       <React.Fragment key={row.id}>
                         <tr
-                          className={`group hover:bg-[#F6F6F6] align-middle transition-colors ${
+                          className={`group align-middle transition-colors ${
+                            isSelected ? "bg-orange-50" : "hover:bg-[#F6F6F6]"
+                          } ${
                             isClickable ? "cursor-pointer" : "cursor-default"
                           }`}
                           onClick={() =>
@@ -133,28 +142,6 @@ const TableFluent = ({
                       </React.Fragment>
                     )
                   })}
-
-                  {/* Empty rows to keep table height consistent */}
-                  {Array.from({
-                    length: pageSize - table.getRowModel().rows.length,
-                  }).map((_, rowIndex) => (
-                    <tr
-                      key={`empty-${rowIndex}`}
-                      style={{ height: "33px" }} // match your data rows
-                    >
-                      {columns.map((col, colIndex) => (
-                        <td
-                          key={`empty-${rowIndex}-${colIndex}`}
-                          className={`text-[14px] leading-[20px] border-[#E5E5E5] align-middle p-2 px-5 ${
-                            col.columnDef?.meta?.className || ""
-                          }`}
-                          style={{ width: col.getSize?.() }}
-                        >
-                          &#8203;
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
                 </>
               )}
             </tbody>

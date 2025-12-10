@@ -30,6 +30,14 @@ export const statusColorMap = {
   registrationclosed: "bg-red-600",
 
   escalated: "bg-purple-500",
+
+  accepted: "bg-green-600",
+  cancelled: "bg-red-500",
+  revoked: "bg-red-700",
+  expired: "bg-gray-500",
+  pendinginvite: "bg-amber-400", 
+
+  notinvited: "bg-gray-400",
 }
 
 // StatusBadge component
