@@ -5,6 +5,7 @@ export const getMcqColumns = (handleEditWeight) => [
   {
     header: "Question",
     accessorKey: "text",
+    size: 40,
     cell: ({ row, getValue }) => {
       const isExpanded = row.getIsExpanded()
       return (

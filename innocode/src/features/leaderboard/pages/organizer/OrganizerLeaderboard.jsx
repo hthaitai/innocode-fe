@@ -1,12 +1,16 @@
 import React, { useCallback, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { toast } from "react-hot-toast"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import { Trophy } from "lucide-react"
 import ToggleSwitchFluent from "@/shared/components/ToggleSwitchFluent"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
+import {
+  useGetLeaderboardByContestQuery,
+  useToggleFreezeLeaderboardMutation,
+} from "@/services/leaderboardApi"
 import { useGetContestByIdQuery } from "@/services/contestApi"
 import { getContestLeaderboardColumns } from "../../columns/getContestLeaderboardColumns"
 
@@ -34,6 +38,10 @@ const OrganizerLeaderboard = () => {
     { skip: !contestId }
   )
 
+  // Toggle freeze mutation
+  const [toggleFreeze, { isLoading: isTogglingFreeze }] =
+    useToggleFreezeLeaderboardMutation()
+
   const entries = leaderboardData?.data?.teamIdList || []
   const pagination = leaderboardData?.additionalData || {}
 
@@ -46,9 +54,28 @@ const OrganizerLeaderboard = () => {
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_LEADERBOARD(contestId)
 
-  const handleFreezeToggle = (newState) => {
-    setIsFrozen(newState)
-    // Optional: call backend API to freeze/unfreeze leaderboard
+  const handleFreezeToggle = async (newState) => {
+    try {
+      const response = await toggleFreeze(contestId).unwrap()
+      setIsFrozen(newState)
+      const message = response?.message || response?.data?.message
+      if (message) {
+        toast.success(message)
+      } else {
+        toast.success(
+          newState
+            ? "Leaderboard frozen successfully"
+            : "Leaderboard unfrozen successfully"
+        )
+      }
+    } catch (error) {
+      console.error("Failed to toggle freeze:", error)
+      // Revert the toggle on error
+      setIsFrozen(!newState)
+      const errorMessage =
+        error?.data?.message || error?.message || "Failed to toggle freeze"
+      toast.error(errorMessage)
+    }
   }
 
   const columns = getContestLeaderboardColumns()

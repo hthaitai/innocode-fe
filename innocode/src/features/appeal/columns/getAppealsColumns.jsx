@@ -35,9 +35,27 @@ export const getAppealsColumns = (handleReview) => [
   {
     accessorKey: "createdAt",
     header: "Created",
-    size: 160,
+    size: 180,
     cell: ({ row }) => formatDateTime(row.original.createdAt),
     meta: { className: "truncate max-w-[160px]" },
+  },
+  {
+    id: "evidences",
+    header: "Evidence",
+    size: 100,
+    enableSorting: false,
+    cell: ({ row }) => {
+      const count = row.original.evidences?.length || 0
+      return count > 0 ? (
+        <div className="flex items-center gap-1">
+          <FileText className="w-4 h-4 text-gray-500" />
+          <span>{count}</span>
+        </div>
+      ) : (
+        "—"
+      )
+    },
+    meta: { className: "truncate max-w-[100px]" },
   },
   {
     id: "actions",
@@ -51,7 +69,7 @@ export const getAppealsColumns = (handleReview) => [
         items={[
           {
             label: "Review",
-            icon: FileText, 
+            icon: FileText,
             onClick: () => handleReview(row.original),
           },
         ]}

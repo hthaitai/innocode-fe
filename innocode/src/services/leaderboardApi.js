@@ -37,8 +37,21 @@ export const leaderboardApi = api.injectEndpoints({
         { type: "Leaderboard", id: contestId },
       ],
     }),
+
+    toggleFreezeLeaderboard: builder.mutation({
+      query: (contestId) => ({
+        url: `leaderboard-entries/contests/${contestId}/toggle-freeze`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, contestId) => [
+        { type: "Leaderboard", id: contestId },
+      ],
+    }),
   }),
 })
 
-export const { useGetTeamsByContestIdQuery, useGetLeaderboardByContestQuery } =
-  leaderboardApi
+export const {
+  useGetTeamsByContestIdQuery,
+  useGetLeaderboardByContestQuery,
+  useToggleFreezeLeaderboardMutation,
+} = leaderboardApi

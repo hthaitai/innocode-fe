@@ -19,6 +19,15 @@ const TextFieldFluent = ({
   const handleFocus = () => setFocused(true)
   const handleBlur = () => setFocused(false)
 
+  const maxLength = 200 // max characters allowed
+
+  const handleChange = (e) => {
+    const newValue = e.target.value
+    if (newValue.length <= maxLength) {
+      onChange(e) // only call parent if within limit
+    }
+  }
+
   return (
     <div className="flex flex-col w-full">
       {label && (
@@ -42,7 +51,7 @@ const TextFieldFluent = ({
             name={name}
             value={value}
             placeholder={placeholder}
-            onChange={onChange}
+            onChange={handleChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
             rows={rows}
@@ -55,7 +64,7 @@ const TextFieldFluent = ({
             name={name}
             value={value}
             placeholder={placeholder}
-            onChange={onChange}
+            onChange={handleChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
             disabled={disabled}
@@ -63,6 +72,17 @@ const TextFieldFluent = ({
           />
         )}
       </div>
+
+      {/* live character count */}
+      {multiline && (
+        <div
+          className={`text-xs mt-1 ${
+            value.length > maxLength ? "text-red-500" : "text-gray-500"
+          }`}
+        >
+          {value.length}/{maxLength}
+        </div>
+      )}
 
       <AnimatePresence>
         {helperText && (

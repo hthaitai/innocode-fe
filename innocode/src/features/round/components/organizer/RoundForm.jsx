@@ -162,7 +162,7 @@ export default function RoundForm({
         {/* MCQ Config */}
         {formData.problemType === "McqTest" && (
           <>
-            <Label htmlFor="mcqName">Config name</Label>
+            <Label htmlFor="mcqName">Test name</Label>
             <TextFieldFluent
               id="mcqName"
               value={formData.mcqTestConfig?.name || ""}
@@ -173,7 +173,7 @@ export default function RoundForm({
               helperText={errors.mcqName}
             />
 
-            <Label htmlFor="mcqConfig">Config</Label>
+            {/* <Label htmlFor="mcqConfig">Config</Label>
             <TextFieldFluent
               id="mcqConfig"
               value={formData.mcqTestConfig?.config || ""}
@@ -182,7 +182,7 @@ export default function RoundForm({
               }
               error={!!errors.mcqConfig}
               helperText={errors.mcqConfig}
-            />
+            /> */}
           </>
         )}
 

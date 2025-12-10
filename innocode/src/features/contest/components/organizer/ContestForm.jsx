@@ -21,7 +21,7 @@ const ContestForm = ({
     const finalValue = type === "checkbox" ? checked : value
     setFormData((prev) => ({ ...prev, [name]: finalValue }))
 
-    if (errors?.[name]) {
+    if (errors?.[name] && !errors.nameSuggestion) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
   }

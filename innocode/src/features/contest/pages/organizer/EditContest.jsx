@@ -102,19 +102,19 @@ export default function EditContest() {
     } catch (err) {
       console.error(err)
 
-      if (err?.data?.Code === "DUPLICATE") {
-        toast.error(err.data.Message)
+      if (err?.data?.errorCode === "DUPLICATE") {
+        toast.error(err.data.errorMessage)
         setErrors((prev) => ({
           ...prev,
-          name: err.data.Message,
-          ...(err.data.AdditionalData?.suggestion
-            ? { nameSuggestion: err.data.AdditionalData.suggestion }
+          name: err.data.errorMessage,
+          ...(err.data.additionalData?.suggestion
+            ? { nameSuggestion: err.data.additionalData.suggestion }
             : {}),
         }))
         return
       }
 
-      toast.error(err?.data?.Message || "Failed to update contest.")
+      toast.error(err?.data?.errorMessage || "Failed to update contest.")
     }
   }
 

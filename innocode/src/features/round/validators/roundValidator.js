@@ -46,7 +46,7 @@ export const validateRound = (
   // Validate MCQ-specific fields when MCQ is selected
   if (data.problemType === "McqTest") {
     if (!data.mcqTestConfig?.name?.trim()) {
-      errors.mcqName = "MCQ config name is required"
+      errors.mcqName = "MCQ test name is required"
     }
   }
 

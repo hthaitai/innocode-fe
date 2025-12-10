@@ -3,6 +3,7 @@ import BaseModal from "@/shared/components/BaseModal"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { validateWeight } from "../../validators/weightValidator"
 import { useUpdateQuestionWeightMutation } from "@/services/mcqApi"
+import { toast } from "react-hot-toast"
 
 export default function McqWeightModal({ isOpen, question, testId, onClose }) {
   const [weight, setWeight] = useState("")
@@ -45,6 +46,7 @@ export default function McqWeightModal({ isOpen, question, testId, onClose }) {
         questions: [{ questionId: question.questionId, weight: numericWeight }],
       }).unwrap()
 
+      toast.success("Question weight updated successfully!")
       onClose()
     } catch (err) {
       const errorMessage =
@@ -52,7 +54,7 @@ export default function McqWeightModal({ isOpen, question, testId, onClose }) {
         err?.data?.Message ||
         err?.error ||
         "Failed to update weight"
-      setError(errorMessage)
+      toast.error(errorMessage)
     }
   }
 

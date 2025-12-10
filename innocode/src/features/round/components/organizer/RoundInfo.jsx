@@ -1,93 +1,97 @@
-import React, { useCallback, useState } from "react";
-import InfoSection from "@/shared/components/InfoSection";
-import DetailTable from "@/shared/components/DetailTable";
-import { formatDateTime } from "@/shared/utils/dateTime";
-import { useNavigate, useParams } from "react-router-dom";
-import { useGetRoundByIdQuery } from "@/services/roundApi";
-import { useGetOpenCodeQuery } from "../../../../services/openCodeApi";
-import BaseModal from "@/shared/components/BaseModal";
-import { Icon } from "@iconify/react";
+import React, { useCallback, useState } from "react"
+import InfoSection from "@/shared/components/InfoSection"
+import DetailTable from "@/shared/components/DetailTable"
+import { formatDateTime } from "@/shared/utils/dateTime"
+import { useNavigate, useParams } from "react-router-dom"
+import { useGetRoundByIdQuery } from "@/services/roundApi"
+import { useGetOpenCodeQuery } from "../../../../services/openCodeApi"
+import BaseModal from "@/shared/components/BaseModal"
+import { Icon } from "@iconify/react"
 
 const RoundInfo = () => {
-  const navigate = useNavigate();
-  const { roundId } = useParams();
-  const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId);
-  
-  // State for open code modal
-  const [isOpenCodeModalOpen, setIsOpenCodeModalOpen] = useState(false);
-  const [shouldFetchCode, setShouldFetchCode] = useState(false);
-  const [isReloading, setIsReloading] = useState(false);
-  
-  // Fetch open code only when modal is opened
-  const { data: openCodeData, isLoading: codeLoading, isFetching: codeFetching, error: codeError, refetch: refetchOpenCode } = useGetOpenCodeQuery(roundId, {
-    skip: !shouldFetchCode,
-  });
+  const navigate = useNavigate()
+  const { roundId } = useParams()
+  const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId)
 
- 
+  // State for open code modal
+  const [isOpenCodeModalOpen, setIsOpenCodeModalOpen] = useState(false)
+  const [shouldFetchCode, setShouldFetchCode] = useState(false)
+  const [isReloading, setIsReloading] = useState(false)
+
+  // Fetch open code only when modal is opened
+  const {
+    data: openCodeData,
+    isLoading: codeLoading,
+    isFetching: codeFetching,
+    error: codeError,
+    refetch: refetchOpenCode,
+  } = useGetOpenCodeQuery(roundId, {
+    skip: !shouldFetchCode,
+  })
 
   const handleEdit = useCallback(() => {
-    if (!round) return;
+    if (!round) return
     navigate(
       `/organizer/contests/${round.contestId}/rounds/${round.roundId}/edit`
-    );
-  }, [round, navigate]);
+    )
+  }, [round, navigate])
 
   // Handle open code button click
   const handleOpenCode = useCallback(() => {
-    setShouldFetchCode(true);
-    setIsOpenCodeModalOpen(true);
-  }, []);
+    setShouldFetchCode(true)
+    setIsOpenCodeModalOpen(true)
+  }, [])
 
   // Close modal and reset fetch flag
   const handleCloseCodeModal = useCallback(() => {
-    setIsOpenCodeModalOpen(false);
-    setShouldFetchCode(false);
-  }, []);
+    setIsOpenCodeModalOpen(false)
+    setShouldFetchCode(false)
+  }, [])
 
   // Handle reload open code
   const handleReloadCode = useCallback(() => {
-    console.log("Reload button clicked", { roundId, shouldFetchCode });
+    console.log("Reload button clicked", { roundId, shouldFetchCode })
     // Set reloading state to show loading effect
-    setIsReloading(true);
+    setIsReloading(true)
     // Ensure shouldFetchCode is true when reloading
     if (!shouldFetchCode) {
-      setShouldFetchCode(true);
+      setShouldFetchCode(true)
     }
     // Always refetch when reload button is clicked
     refetchOpenCode()
       .then((result) => {
-        console.log("Refetch result:", result);
+        console.log("Refetch result:", result)
         if (result.error) {
           console.error("Refetch returned error:", {
             status: result.error.status,
             errorCode: result.error?.data?.errorCode,
             errorMessage: result.error?.data?.errorMessage,
             fullError: result.error,
-          });
+          })
         } else if (result.data) {
-          console.log("Refetch success - data received:", result.data);
+          console.log("Refetch success - data received:", result.data)
         }
       })
       .catch((error) => {
-        console.error("Refetch failed with exception:", error);
+        console.error("Refetch failed with exception:", error)
       })
       .finally(() => {
         // Reset reloading state after a small delay to ensure loading effect is visible
         setTimeout(() => {
-          setIsReloading(false);
-        }, 300);
-      });
-  }, [shouldFetchCode, refetchOpenCode, roundId]);
+          setIsReloading(false)
+        }, 300)
+      })
+  }, [shouldFetchCode, refetchOpenCode, roundId])
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError || !round) return <div>Failed to load round information.</div>;
+  if (isLoading) return <div>Loading...</div>
+  if (isError || !round) return <div>Failed to load round information.</div>
 
   const safe = (val) =>
-    val === null || val === undefined || val === "" ? "—" : val;
+    val === null || val === undefined || val === "" ? "—" : val
   const formatPenaltyRate = (rate) =>
-    rate == null || rate === "" ? "—" : `${(rate * 100).toFixed(0)}%`;
+    rate == null || rate === "" ? "—" : `${(rate * 100).toFixed(0)}%`
 
-  const details = [];
+  const details = []
 
   // Core Round Info
   details.push(
@@ -105,7 +109,7 @@ const RoundInfo = () => {
           : safe(round.problemType),
     },
     { spacer: true }
-  );
+  )
 
   // Timing
   details.push(
@@ -113,36 +117,41 @@ const RoundInfo = () => {
     { label: "End Time", value: safe(formatDateTime(round.end)) },
     { label: "Time Limit (seconds)", value: safe(round.timeLimitSeconds) },
     { spacer: true }
-  );
+  )
 
-  // MCQ Test Info
+  // MCQ Test Info (simplified, remove config)
   if (round.mcqTest) {
-    details.push({ label: "MCQ Test Name", value: safe(round.mcqTest.name) });
-
-    try {
-      const parsedConfig = JSON.parse(round.mcqTest.config || "{}");
-      if (Object.keys(parsedConfig).length > 0) {
-        Object.entries(parsedConfig).forEach(([key, value]) => {
-          details.push({
-            label: `MCQ Config – ${key.replace(/_/g, " ")}`,
-            value:
-              value === true
-                ? "Yes"
-                : value === false
-                ? "No"
-                : value?.toString?.() ?? "—",
-          });
-        });
-      } else {
-        details.push({ label: "MCQ Config", value: "—" });
-      }
-    } catch {
-      details.push({
-        label: "MCQ Config (Raw String)",
-        value: safe(round.mcqTest.config),
-      });
-    }
+    details.push({ label: "MCQ Test Name", value: safe(round.mcqTest.name) })
   }
+
+  // // MCQ Test Info
+  // if (round.mcqTest) {
+  //   details.push({ label: "MCQ Test Name", value: safe(round.mcqTest.name) })
+
+  //   try {
+  //     const parsedConfig = JSON.parse(round.mcqTest.config || "{}")
+  //     if (Object.keys(parsedConfig).length > 0) {
+  //       Object.entries(parsedConfig).forEach(([key, value]) => {
+  //         details.push({
+  //           label: `MCQ Config – ${key.replace(/_/g, " ")}`,
+  //           value:
+  //             value === true
+  //               ? "Yes"
+  //               : value === false
+  //               ? "No"
+  //               : value?.toString?.() ?? "—",
+  //         })
+  //       })
+  //     } else {
+  //       details.push({ label: "MCQ Config", value: "—" })
+  //     }
+  //   } catch {
+  //     details.push({
+  //       label: "MCQ Config (Raw String)",
+  //       value: safe(round.mcqTest.config),
+  //     })
+  //   }
+  // }
 
   // Problem Info (AutoEval / Manual)
   if (round.problem) {
@@ -153,25 +162,32 @@ const RoundInfo = () => {
         value: formatPenaltyRate(round.problem.penaltyRate),
       },
       { label: "Problem Description", value: safe(round.problem.description) }
-    );
+    )
   } else if (!round.mcqTest) {
-    details.push({ label: "Problem Configuration", value: "—" });
+    details.push({ label: "Problem Configuration", value: "—" })
   }
 
   const filteredDetails = details.filter(
     (d) => d.value !== undefined || d.spacer
-  );
+  )
 
   // Extract open code from API response
-  const openCode = openCodeData?.data?.openCode || openCodeData?.openCode || openCodeData?.data || "";
+  const openCode =
+    openCodeData?.data?.openCode ||
+    openCodeData?.openCode ||
+    openCodeData?.data ||
+    ""
 
   // Check if error is "Open code not found" - should be treated as "no code available" not an error
-  const errorMessage = codeError?.data?.errorMessage || 
-                       codeError?.data?.message || 
-                       codeError?.message || "";
-  const isNotFoundError = errorMessage === "Open code not found." || 
-                          errorMessage === "Open code not found" ||
-                          codeError?.status === 403 && codeError?.data?.errorCode === "FORBIDDEN";
+  const errorMessage =
+    codeError?.data?.errorMessage ||
+    codeError?.data?.message ||
+    codeError?.message ||
+    ""
+  const isNotFoundError =
+    errorMessage === "Open code not found." ||
+    errorMessage === "Open code not found" ||
+    (codeError?.status === 403 && codeError?.data?.errorCode === "FORBIDDEN")
 
   // Log API response for debugging
   React.useEffect(() => {
@@ -180,20 +196,14 @@ const RoundInfo = () => {
         openCodeData,
         extractedOpenCode: openCode,
         roundId,
-      });
+      })
     }
-  }, [openCodeData, openCode, roundId]);
+  }, [openCodeData, openCode, roundId])
 
   return (
     <>
-      <InfoSection
-        title="Round Information"
-        onEdit={handleEdit}
-      >
-        <DetailTable
-          data={filteredDetails}
-          labelWidth="180px"
-        />
+      <InfoSection title="Round Information" onEdit={handleEdit}>
+        <DetailTable data={filteredDetails} labelWidth="180px" />
         <div className="flex justify-end">
           <button onClick={handleOpenCode} className="button-blue">
             Open Code
@@ -222,7 +232,9 @@ const RoundInfo = () => {
             <Icon
               icon="mdi:reload"
               width="20"
-              className={(isReloading || codeLoading || codeFetching) ? "animate-spin" : ""}
+              className={
+                isReloading || codeLoading || codeFetching ? "animate-spin" : ""
+              }
             />
             <span>Reload</span>
           </button>
@@ -258,11 +270,19 @@ const RoundInfo = () => {
                     width="32"
                     className="mx-auto mb-2 text-[#ff6b35] animate-spin"
                   />
-                  <p className="text-sm text-[#7A7574] font-medium">Reloading...</p>
+                  <p className="text-sm text-[#7A7574] font-medium">
+                    Reloading...
+                  </p>
                 </div>
               </div>
             )}
-            <div className={isReloading || codeFetching ? "opacity-50 transition-opacity duration-300" : ""}>
+            <div
+              className={
+                isReloading || codeFetching
+                  ? "opacity-50 transition-opacity duration-300"
+                  : ""
+              }
+            >
               <div className="flex items-center gap-2 text-red-600 mb-2">
                 <Icon icon="mdi:alert-circle" width="20" />
                 <span className="font-medium">Error loading code</span>
@@ -283,11 +303,19 @@ const RoundInfo = () => {
                     width="32"
                     className="mx-auto mb-2 text-[#ff6b35] animate-spin"
                   />
-                  <p className="text-sm text-[#7A7574] font-medium">Reloading...</p>
+                  <p className="text-sm text-[#7A7574] font-medium">
+                    Reloading...
+                  </p>
                 </div>
               </div>
             )}
-            <div className={(isReloading || codeLoading || codeFetching) ? "opacity-50 transition-opacity duration-300" : "transition-opacity duration-300"}>
+            <div
+              className={
+                isReloading || codeLoading || codeFetching
+                  ? "opacity-50 transition-opacity duration-300"
+                  : "transition-opacity duration-300"
+              }
+            >
               <div>
                 <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
                   <code className="text-lg font-mono font-bold text-[#2d3748] break-all">
@@ -320,13 +348,25 @@ const RoundInfo = () => {
                     width="32"
                     className="mx-auto mb-2 text-[#ff6b35] animate-spin"
                   />
-                  <p className="text-sm text-[#7A7574] font-medium">Reloading...</p>
+                  <p className="text-sm text-[#7A7574] font-medium">
+                    Reloading...
+                  </p>
                 </div>
               </div>
             )}
-            <div className={isReloading || codeFetching ? "opacity-50 transition-opacity duration-300" : ""}>
+            <div
+              className={
+                isReloading || codeFetching
+                  ? "opacity-50 transition-opacity duration-300"
+                  : ""
+              }
+            >
               <div className="text-center py-8 text-[#7A7574]">
-                <Icon icon="mdi:code-braces" width="48" className="mx-auto mb-2 opacity-50" />
+                <Icon
+                  icon="mdi:code-braces"
+                  width="48"
+                  className="mx-auto mb-2 opacity-50"
+                />
                 <p>No open code available for this round.</p>
               </div>
             </div>
@@ -334,7 +374,7 @@ const RoundInfo = () => {
         )}
       </BaseModal>
     </>
-  );
-};
+  )
+}
 
-export default RoundInfo;
+export default RoundInfo
