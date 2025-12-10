@@ -7,6 +7,7 @@ import { useGetContestByIdQuery } from "../../../services/contestApi"
 import {
   useGetJudgesToInviteQuery,
   useResendJudgeInviteMutation,
+  useRevokeJudgeInviteMutation,
 } from "../../../services/contestJudgeApi"
 import { useModal } from "@/shared/hooks/useModal"
 import { getJudgeInviteColumns } from "../columns/judgeInviteColumns"
@@ -33,6 +34,8 @@ const ContestJudgesPage = () => {
 
   const [resendJudgeInvite, { isLoading: isResending }] =
     useResendJudgeInviteMutation()
+  const [revokeJudgeInvite, { isLoading: isRevoking }] =
+    useRevokeJudgeInviteMutation()
 
   const judges = judgesData?.data || []
   const pagination = judgesData?.additionalData || {}
@@ -108,10 +111,30 @@ const ContestJudgesPage = () => {
     [contestId, resendJudgeInvite, contest?.name]
   )
 
-  const handleRevoke = useCallback((judge) => {
-    toast("Revoke invite will be available soon", { icon: "🛑" })
-    console.debug("Revoke invite requested for judge", judge)
-  }, [])
+  const handleRevoke = useCallback(
+    async (judge) => {
+      if (!judge || !contestId || !judge.inviteId) return
+
+      const confirmed = window.confirm(
+        `Are you sure you want to revoke the invite for ${judge.judgeName}?`
+      )
+
+      if (!confirmed) return
+
+      try {
+        await revokeJudgeInvite({
+          contestId,
+          inviteId: judge.inviteId,
+        }).unwrap()
+
+        toast.success(`Invite revoked for ${judge.judgeName}`)
+      } catch (error) {
+        console.error("Failed to revoke invite:", error)
+        toast.error(`Failed to revoke invite for ${judge.judgeName}`)
+      }
+    },
+    [contestId, revokeJudgeInvite]
+  )
 
   const columns = useMemo(
     () =>

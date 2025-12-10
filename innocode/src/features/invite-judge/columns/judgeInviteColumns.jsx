@@ -1,5 +1,5 @@
 import Actions from "@/shared/components/Actions"
-import { UserPlus, Repeat, Trash2 } from "lucide-react"
+import { UserPlus, Repeat, Trash2, MoreHorizontal } from "lucide-react"
 import StatusBadge from "@/shared/components/StatusBadge"
 import { formatDateTime } from "@/shared/utils/dateTime"
 
@@ -97,6 +97,9 @@ export const getJudgeInviteColumns = ({
           onClick: () => onRevoke?.(row.original),
         })
       }
+
+      // 👉 No actions? Show disabled kebab icon.
+      if (items.length === 0) return null
 
       return <Actions row={row.original} items={items} />
     },
