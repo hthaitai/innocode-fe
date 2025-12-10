@@ -135,9 +135,9 @@ function StudentCertificate() {
 
                       <div>
                         <p className="text-xs text-gray-500">Issued</p>
-                          <p className="text-gray-900 font-medium">
-                            {formatDateToUTC7(certificate.issuedAt)}
-                          </p>
+                        <p className="text-gray-900 font-medium">
+                          {formatDateToUTC7(certificate.issuedAt)}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -152,11 +152,15 @@ function StudentCertificate() {
                       View Certificate
                     </a>
                     <button
-                      onClick={() => handleDownload(certificate.fileUrl, certificate.templateName + ".png")}
+                      onClick={() =>
+                        handleDownload(
+                          certificate.fileUrl,
+                          certificate.templateName + ".png"
+                        )
+                      }
                       className="flex-1 cursor-pointer flex items-center justify-center gap-2 border-2 border-gray-300 hover:border-orange-500 text-gray-700 hover:text-orange-500 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
                     >
-                    <Download size={16} />  Download Certificate 
-
+                      <Download size={16} /> Download Certificate
                     </button>
                   </div>
                 </div>
