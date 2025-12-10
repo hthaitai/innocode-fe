@@ -87,8 +87,8 @@ import OrganizerLeaderboardMemberDetail from "./features/leaderboard/pages/organ
 import NotFound from "./pages/NotFound"
 import StaffProvinces from "./features/province/pages/staff/StaffProvinces"
 import StaffSchools from "./features/school/pages/staff/StaffSchools"
-import ContestJudgesPage from "./features/contest/pages/organizer/ContestJudgesPage"
 import StudentCertificate from "./features/certificate/pages/student/StudentCertificate"
+import ContestJudgesPage from "./features/invite-judge/pages/ContestJudgesPage"
 // Initialize EmailJS when app starts
 initEmailJs()
 const router = createBrowserRouter([
