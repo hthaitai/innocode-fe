@@ -32,7 +32,7 @@ export default function MainLayout() {
   return (
     <div>
       <Navbar />
-      <div className="main-content">
+      <div className={`main-content ${hideSidebar ? 'no-sidebar' : ''}`}>
         {!hideSidebar && (
           <div className="page-sidebar">
             <Sidebar />
