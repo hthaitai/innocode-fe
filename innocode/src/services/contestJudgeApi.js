@@ -8,30 +8,7 @@ export const contestJudgeApi = api.injectEndpoints({
         method: "GET",
         params: { contestId, page, pageSize },
       }),
-
-      providesTags: (result, error, { contestId }) =>
-        result?.data
-          ? [
-              ...result.data.map((judge) => ({
-                type: "JudgesToInvite",
-                id: `${contestId}-${judge.judgeId}`,
-              })),
-              { type: "JudgesToInvite", id: `CONTEST-${contestId}` },
-            ]
-          : [{ type: "JudgesToInvite", id: `CONTEST-${contestId}` }],
-    }),
-
-    inviteJudgeToContest: builder.mutation({
-      query: ({ contestId, judgeUserId, ttlDays }) => ({
-        url: `/contests/${contestId}/judge-invites`,
-        method: "POST",
-        body: { judgeUserId, ttlDays },
-      }),
-
-      invalidatesTags: (result, error, { contestId }) => [
-        { type: "JudgesToInvite", id: `CONTEST-${contestId}` },
-        { type: "JudgeInvites", id: `CONTEST-${contestId}` },
-      ],
+      providesTags: ["JudgesInvite"],
     }),
 
     getJudgeInvitesByContest: builder.query({
@@ -40,34 +17,16 @@ export const contestJudgeApi = api.injectEndpoints({
         method: "GET",
         params,
       }),
-      providesTags: (result, error, { contestId }) =>
-        result?.data && Array.isArray(result.data)
-          ? [
-              ...result.data.map((invite) => ({
-                type: "JudgeInvites",
-                id: `${contestId}-${invite.inviteId}`,
-              })),
-              { type: "JudgeInvites", id: `CONTEST-${contestId}` },
-            ]
-          : [{ type: "JudgeInvites", id: `CONTEST-${contestId}` }],
+      providesTags: ["JudgesInvite"],
     }),
 
-    acceptJudgeInvite: builder.mutation({
-      query: (inviteCode) => ({
-        url: "judge-invites/accept",
+    inviteJudgeToContest: builder.mutation({
+      query: ({ contestId, judgeUserId, ttlDays }) => ({
+        url: `/contests/${contestId}/judge-invites`,
         method: "POST",
-        body: { inviteCode },
+        body: { judgeUserId, ttlDays },
       }),
-      invalidatesTags: [{ type: "JudgeInvites" }],
-    }),
-
-    declineJudgeInvite: builder.mutation({
-      query: (inviteCode) => ({
-        url: "judge-invites/decline",
-        method: "POST",
-        body: { inviteCode },
-      }),
-      invalidatesTags: [{ type: "JudgeInvites" }],
+      invalidatesTags: ["JudgesInvite"],
     }),
 
     resendJudgeInvite: builder.mutation({
@@ -75,18 +34,52 @@ export const contestJudgeApi = api.injectEndpoints({
         url: `/contests/${contestId}/judge-invites/${inviteId}/resend`,
         method: "POST",
       }),
-      invalidatesTags: (result, error, { contestId }) => [
-        { type: "JudgeInvites", id: `CONTEST-${contestId}` },
-      ],
+      invalidatesTags: ["JudgesInvite"],
+    }),
+
+    revokeJudgeInvite: builder.mutation({
+      query: ({ contestId, inviteId }) => ({
+        url: `/contests/${contestId}/judge-invites/${inviteId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["JudgesInvite"],
+    }),
+
+    getContestJudges: builder.query({
+      query: (contestId) => ({
+        url: `/contest-judges/${contestId}/judges`,
+        method: "GET",
+      }),
+      providesTags: ["JudgesInvite"],
+    }),
+
+    acceptJudgeInvite: builder.mutation({
+      query: (inviteCode) => ({
+        url: "judge-invites/accept",
+        method: "POST",
+        params: { inviteCode },
+      }),
+      invalidatesTags: ["JudgesInvite"],
+    }),
+
+    declineJudgeInvite: builder.mutation({
+      query: (inviteCode) => ({
+        url: "judge-invites/decline",
+        method: "POST",
+        params: { inviteCode },
+      }),
+      invalidatesTags: ["JudgesInvite"],
     }),
   }),
 })
 
 export const {
   useGetJudgesToInviteQuery,
-  useInviteJudgeToContestMutation,
   useGetJudgeInvitesByContestQuery,
-  useAcceptJudgeInviteMutation,  
-  useDeclineJudgeInviteMutation, 
+  useGetContestJudgesQuery,
+  useInviteJudgeToContestMutation,
   useResendJudgeInviteMutation,
+  useRevokeJudgeInviteMutation,
+  useAcceptJudgeInviteMutation,
+  useDeclineJudgeInviteMutation,
 } = contestJudgeApi

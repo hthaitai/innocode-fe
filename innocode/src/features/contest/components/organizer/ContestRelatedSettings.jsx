@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { Users, Trophy, Award, ChevronRight, Scale, Mail } from "lucide-react"
+import { Users, Trophy, Award, ChevronRight, Scale, Mail, UserCheck } from "lucide-react"
 
 const items = [
   // {
@@ -20,6 +20,13 @@ const items = [
     icon: <Mail size={20} />,
     path: "judges/invites",
   },
+  {
+    title: "Active Judges",
+    subtitle: "Judges currently assigned to this contest",
+    icon: <UserCheck size={20} />,
+    path: "judges/active",
+  },
+
   {
     title: "Leaderboard",
     subtitle: "View and refresh contest leaderboard",

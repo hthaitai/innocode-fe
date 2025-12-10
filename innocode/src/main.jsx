@@ -36,6 +36,7 @@ import { AuthProvider, ROLES } from "./context/AuthContext"
 import OrganizerContests from "./features/contest/pages/organizer/OrganizerContests"
 import OrganizerContestDetail from "./features/contest/pages/organizer/OrganizerContestDetail"
 import ContestJudgeInvitesPage from "./features/invite-judge/pages/ContestJudgeInvitesPage"
+import ContestJudgesListPage from "./features/invite-judge/pages/ContestJudgesListPage"
 import OrganizerRoundDetail from "./features/round/pages/organizer/OrganizerRoundDetail"
 import CreateRound from "./features/round/pages/organizer/CreateRound"
 import EditRound from "./features/round/pages/organizer/EditRound"
@@ -89,6 +90,9 @@ import StaffProvinces from "./features/province/pages/staff/StaffProvinces"
 import StaffSchools from "./features/school/pages/staff/StaffSchools"
 import StudentCertificate from "./features/certificate/pages/student/StudentCertificate"
 import ContestJudgesPage from "./features/invite-judge/pages/ContestJudgesPage"
+import JudgeInviteAccept from "./features/invite-judge/pages/JudgeInviteAccept"
+import JudgeInviteDecline from "./features/invite-judge/pages/JudgeInviteDecline"
+
 // Initialize EmailJS when app starts
 initEmailJs()
 const router = createBrowserRouter([
@@ -121,6 +125,24 @@ const router = createBrowserRouter([
       },
     ],
   },
+
+  {
+    path: "judge/accept",
+    element: (
+      <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+        <JudgeInviteAccept />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "judge/decline",
+    element: (
+      <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+        <JudgeInviteDecline />
+      </ProtectedRoute>
+    ),
+  },
+
   { path: "unauthorized", element: <Unauthorized /> },
   {
     path: "verify-email",
@@ -341,14 +363,14 @@ const router = createBrowserRouter([
             ),
           },
           // Judge invites (table)
-          {
-            path: ":contestId/judges/invites",
-            element: (
-              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <ContestJudgeInvitesPage />
-              </ProtectedRoute>
-            ),
-          },
+          // {
+          //   path: ":contestId/judges/invites",
+          //   element: (
+          //     <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+          //       <ContestJudgeInvitesPage />
+          //     </ProtectedRoute>
+          //   ),
+          // },
           {
             path: "add",
             element: (
@@ -497,7 +519,15 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: ":contestId/judges",
+            path: ":contestId/judges/active",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <ContestJudgesListPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/judges/invites",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <ContestJudgeInvitesPage />
