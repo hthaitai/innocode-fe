@@ -52,71 +52,32 @@ export const contestJudgeApi = api.injectEndpoints({
           : [{ type: "JudgeInvites", id: `CONTEST-${contestId}` }],
     }),
 
-    getJudgesByContest: builder.query({
-      query: (contestId) => `contest-judges/${contestId}/judges`,
-      transformResponse: (response) => response.data,
-      providesTags: (result, error, contestId) =>
-        result
-          ? [
-              ...result.map((judge) => ({
-                type: "ContestJudges",
-                id: `${contestId}-${judge.judgeId}`,
-              })),
-              { type: "ContestJudges", id: `CONTEST-${contestId}` },
-            ]
-          : [{ type: "ContestJudges", id: `CONTEST-${contestId}` }],
+    acceptJudgeInvite: builder.mutation({
+      query: (inviteCode) => ({
+        url: "judge-invites/accept",
+        method: "POST",
+        body: { inviteCode },
+      }),
+      invalidatesTags: [{ type: "JudgeInvites" }],
     }),
 
-    assignJudge: builder.mutation({
-      query: (body) => ({
-        url: "contest-judges/participate",
+    declineJudgeInvite: builder.mutation({
+      query: (inviteCode) => ({
+        url: "judge-invites/decline",
         method: "POST",
-        body,
+        body: { inviteCode },
+      }),
+      invalidatesTags: [{ type: "JudgeInvites" }],
+    }),
+
+    resendJudgeInvite: builder.mutation({
+      query: ({ contestId, inviteId }) => ({
+        url: `/contests/${contestId}/judge-invites/${inviteId}/resend`,
+        method: "POST",
       }),
       invalidatesTags: (result, error, { contestId }) => [
-        { type: "ContestJudges", id: `CONTEST-${contestId}` },
+        { type: "JudgeInvites", id: `CONTEST-${contestId}` },
       ],
-    }),
-
-    removeJudge: builder.mutation({
-      query: (body) => ({
-        url: "contest-judges/leave",
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: (result, error, { contestId }) => [
-        { type: "ContestJudges", id: `CONTEST-${contestId}` },
-      ],
-    }),
-
-    getMyJudgingContests: builder.query({
-      query: () => "contest-judges/my-contests",
-      transformResponse: (res) => res.data,
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map((contest) => ({
-                type: "JudgeContests",
-                id: contest.contestId,
-              })),
-              { type: "JudgeContests", id: "LIST" },
-            ]
-          : [{ type: "JudgeContests", id: "LIST" }],
-    }),
-
-    getContestsByJudge: builder.query({
-      query: (judgeId) => `contest-judges/judge/${judgeId}/contests`,
-      transformResponse: (res) => res.data,
-      providesTags: (result, error, judgeId) =>
-        result
-          ? [
-              ...result.map((contest) => ({
-                type: "JudgeContests",
-                id: `${judgeId}-${contest.contestId}`,
-              })),
-              { type: "JudgeContests", id: `JUDGE-${judgeId}` },
-            ]
-          : [{ type: "JudgeContests", id: `JUDGE-${judgeId}` }],
     }),
   }),
 })
@@ -125,9 +86,7 @@ export const {
   useGetJudgesToInviteQuery,
   useInviteJudgeToContestMutation,
   useGetJudgeInvitesByContestQuery,
-  useGetJudgesByContestQuery,
-  useAssignJudgeMutation,
-  useRemoveJudgeMutation,
-  useGetMyJudgingContestsQuery,
-  useGetContestsByJudgeQuery,
+  useAcceptJudgeInviteMutation,  
+  useDeclineJudgeInviteMutation, 
+  useResendJudgeInviteMutation,
 } = contestJudgeApi

@@ -1,19 +1,22 @@
-import React, { useState, useCallback, useEffect, useRef } from "react"
+import React, { useState, useCallback, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetContestByIdQuery } from "../../../services/contestApi"
-import { useGetJudgesToInviteQuery } from "../../../services/contestJudgeApi"
+import {
+  useGetJudgesToInviteQuery,
+  useResendJudgeInviteMutation,
+} from "../../../services/contestJudgeApi"
 import { useModal } from "@/shared/hooks/useModal"
 import { getJudgeInviteColumns } from "../columns/judgeInviteColumns"
+import { sendJudgeInviteEmail } from "@/shared/services/emailService"
+import { toast } from "react-hot-toast"
 
 const ContestJudgesPage = () => {
   const { contestId } = useParams()
   const [page, setPage] = useState(1)
   const pageSize = 10
-
-  const [selectedJudgeId, setSelectedJudgeId] = useState(null)
   const { openModal } = useModal()
 
   const {
@@ -28,6 +31,9 @@ const ContestJudgesPage = () => {
     isError: isJudgesError,
   } = useGetJudgesToInviteQuery({ contestId, page, pageSize })
 
+  const [resendJudgeInvite, { isLoading: isResending }] =
+    useResendJudgeInviteMutation()
+
   const judges = judgesData?.data || []
   const pagination = judgesData?.additionalData || {}
 
@@ -36,42 +42,86 @@ const ContestJudgesPage = () => {
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_JUDGES(contestId)
 
-  // Invite handler
-  const handleInvite = useCallback(() => {
-    if (!selectedJudgeId) return
+  // Invite handler (per row)
+  const handleInvite = useCallback(
+    (judge) => {
+      if (!judge) return
 
-    const judge = judges.find((j) => j.judgeId === selectedJudgeId)
-    if (!judge) return
+      openModal("inviteJudge", {
+        contestId,
+        judgeUserId: judge.judgeId,
+        judgeName: judge.judgeName,
+        judgeEmail: judge.judgeEmail,
+      })
+    },
+    [contestId, openModal]
+  )
 
-    openModal("inviteJudge", {
-      contestId,
-      judgeUserId: selectedJudgeId,
-      judgeName: judge.judgeName,
-      judgeEmail: judge.judgeEmail,
-    })
-  }, [selectedJudgeId, openModal, contestId, judges])
+  // Placeholders for future functionality
+  const handleResend = useCallback(
+    async (judge) => {
+      if (!judge || !contestId || !judge.inviteId) return
 
-  const canInviteJudge = (judgeId) => {
-    const judge = judges.find((j) => j.judgeId === judgeId)
-    if (!judge) return false
+      try {
+        const result = await resendJudgeInvite({
+          contestId,
+          inviteId: judge.inviteId,
+        }).unwrap()
 
-    // Only allow invite if inviteStatus is null, Cancelled, Revoked, or Expired
-    return (
-      !judge.inviteStatus ||
-      ["Cancelled", "Revoked", "Expired"].includes(judge.inviteStatus)
-    )
-  }
+        const payload = result?.data || result || {}
+        const inviteCode = payload.inviteCode
+        const contestName = payload.contestName || contest?.name || "Contest"
+        const judgeEmail = judge.judgeEmail
+        const judgeName = judge.judgeName || "Judge"
 
-  const handleRowClick = (row) => {
-    if (selectedJudgeId === row.judgeId) {
-      // click again → deselect
-      setSelectedJudgeId(null)
-    } else {
-      setSelectedJudgeId(row.judgeId)
-    }
-  }
+        if (!inviteCode) {
+          toast.error("Unable to resend invite (missing invite code)")
+          return
+        }
+        if (!judgeEmail) {
+          toast.error("Unable to resend invite (missing judge email)")
+          return
+        }
 
-  const columns = getJudgeInviteColumns()
+        const baseUrl = window.location.origin
+        const acceptUrl = `${baseUrl}/judge/accept?inviteCode=${inviteCode}`
+        const declineUrl = `${baseUrl}/judge/decline?inviteCode=${inviteCode}`
+
+        const emailed = await sendJudgeInviteEmail({
+          judgeEmail,
+          judgeName,
+          contestName,
+          acceptUrl,
+          declineUrl,
+        })
+
+        if (emailed) {
+          toast.success(`Invite resent to ${judgeName}`)
+        } else {
+          toast.error("Invite resent but email failed to send")
+        }
+      } catch (error) {
+        console.error("Failed to resend invite:", error)
+        toast.error(`Failed to resend invite to ${judge.judgeName}`)
+      }
+    },
+    [contestId, resendJudgeInvite, contest?.name]
+  )
+
+  const handleRevoke = useCallback((judge) => {
+    toast("Revoke invite will be available soon", { icon: "🛑" })
+    console.debug("Revoke invite requested for judge", judge)
+  }, [])
+
+  const columns = useMemo(
+    () =>
+      getJudgeInviteColumns({
+        onInvite: handleInvite,
+        onResend: handleResend,
+        onRevoke: handleRevoke,
+      }),
+    [handleInvite, handleResend, handleRevoke]
+  )
 
   return (
     <PageContainer
@@ -88,22 +138,9 @@ const ContestJudgesPage = () => {
           error={isJudgesError}
           pagination={pagination}
           onPageChange={setPage}
-          rowHighlightId={selectedJudgeId} // highlight selected row
-          onRowClick={handleRowClick}
           renderActions={() => (
             <div className="flex items-center justify-between px-5 min-h-[70px]">
               <div className="text-sm leading-5 font-medium">Judges list</div>
-              <button
-                onClick={handleInvite}
-                disabled={!selectedJudgeId || !canInviteJudge(selectedJudgeId)}
-                className={`flex items-center gap-2 justify-center ${
-                  !selectedJudgeId || !canInviteJudge(selectedJudgeId)
-                    ? "button-gray"
-                    : "button-orange"
-                }`}
-              >
-                Invite
-              </button>
             </div>
           )}
         />

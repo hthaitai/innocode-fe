@@ -3,6 +3,7 @@ import BaseModal from "@/shared/components/BaseModal"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { useInviteJudgeToContestMutation } from "@/services/contestJudgeApi"
 import { toast } from "react-hot-toast"
+import { sendJudgeInviteEmail } from "../../../shared/services/emailService"
 
 export default function InviteJudgeModal({
   isOpen,
@@ -16,6 +17,7 @@ export default function InviteJudgeModal({
   const [error, setError] = useState("")
   const [inviteJudgeToContest, { isLoading }] =
     useInviteJudgeToContestMutation()
+  const [sendingEmail, setSendingEmail] = useState(false)
 
   const MIN_TTL = 1
   const MAX_TTL = 60
@@ -41,15 +43,38 @@ export default function InviteJudgeModal({
     if (!contestId || !judgeUserId)
       return toast.error("Missing contest or judge info")
     if (error || !ttlDays) return
+
     try {
-      await inviteJudgeToContest({ contestId, judgeUserId, ttlDays }).unwrap()
-      toast.success("Invite sent")
+      const result = await inviteJudgeToContest({
+        contestId,
+        judgeUserId,
+        ttlDays,
+      }).unwrap()
+
+      const { inviteCode, contestName } = result.data
+
+      const acceptUrl = `${window.location.origin}/judge/accept?inviteCode=${inviteCode}`
+      const declineUrl = `${window.location.origin}/judge/decline?inviteCode=${inviteCode}`
+
+      setSendingEmail(true)
+      await sendJudgeInviteEmail({
+        judgeEmail,
+        judgeName,
+        contestName,
+        acceptUrl,
+        declineUrl,
+      })
+      setSendingEmail(false)
+
+      toast.success("Invite sent and email delivered!")
       onClose()
     } catch (err) {
       console.error(err)
       toast.error(err?.data?.message || "Failed to send invite")
     }
   }
+
+  const loading = isLoading || sendingEmail
 
   return (
     <BaseModal
@@ -59,21 +84,21 @@ export default function InviteJudgeModal({
       size="sm"
       footer={
         <div className="flex justify-end gap-2">
-          <button
-            className="button-white"
-            onClick={onClose}
-            disabled={isLoading}
-          >
+          <button className="button-white" onClick={onClose} disabled={loading}>
             Cancel
           </button>
           <button
             className={`flex items-center gap-2 justify-center ${
-              isLoading || !!error || !ttlDays ? "button-gray" : "button-orange"
+              loading || !!error || !ttlDays ? "button-gray" : "button-orange"
             }`}
             onClick={handleSubmit}
-            disabled={isLoading || !!error || !ttlDays}
+            disabled={loading || !!error || !ttlDays}
           >
-            {isLoading ? "Inviting..." : "Invite"}
+            {loading && (
+              <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
+            )}
+
+            {loading ? "Inviting..." : "Invite"}
           </button>
         </div>
       }
