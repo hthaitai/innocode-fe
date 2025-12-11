@@ -13,18 +13,20 @@ const TextFieldFluent = ({
   error = false,
   helperText = "",
   disabled = false,
+  maxLength = null, // null means no limit, or can be set per field
 }) => {
   const [focused, setFocused] = useState(false)
 
   const handleFocus = () => setFocused(true)
   const handleBlur = () => setFocused(false)
 
-  const maxLength = 200 // max characters allowed
+  // Default maxLength: 200 for single-line inputs, no limit for multiline unless specified
+  const effectiveMaxLength = maxLength !== null ? maxLength : (multiline ? null : 200)
 
   const handleChange = (e) => {
     const newValue = e.target.value
-    if (newValue.length <= maxLength) {
-      onChange(e) // only call parent if within limit
+    if (effectiveMaxLength === null || newValue.length <= effectiveMaxLength) {
+      onChange(e) // only call parent if within limit (or no limit)
     }
   }
 
@@ -74,13 +76,13 @@ const TextFieldFluent = ({
       </div>
 
       {/* live character count */}
-      {multiline && (
+      {multiline && effectiveMaxLength !== null && (
         <div
           className={`text-xs mt-1 ${
-            value.length > maxLength ? "text-red-500" : "text-gray-500"
+            value.length > effectiveMaxLength ? "text-red-500" : "text-gray-500"
           }`}
         >
-          {value.length}/{maxLength}
+          {value.length}/{effectiveMaxLength}
         </div>
       )}
 

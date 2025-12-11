@@ -202,6 +202,8 @@ export default function RoundForm({
                   e.target.value
                 )
               }
+              multiline
+              rows={10}
               error={!!errors.problemConfigDescription}
               helperText={errors.problemConfigDescription}
             />
