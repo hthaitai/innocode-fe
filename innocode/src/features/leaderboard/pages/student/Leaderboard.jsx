@@ -87,15 +87,24 @@ const Leaderboard = () => {
     data: leaderboardData,
     isLoading: loading,
     error,
+    refetch,
   } = useGetTeamsByContestIdQuery(selectedContestId, {
     skip: !selectedContestId,
   });
 
   // Handle live updates from SignalR
   const handleLiveUpdate = useCallback((data) => {
-    if (import.meta.env.VITE_ENV === "development") {
-      console.log("🔄 Live leaderboard update received:", data);
-    }
+    console.log("🔄 ========== HANDLE LIVE UPDATE ==========");
+    console.log("🔄 Raw data received in component:", data);
+    console.log("🔄 Data type:", typeof data);
+    console.log("�� Is array:", Array.isArray(data));
+    console.log("🔄 Data structure:", {
+      isArray: Array.isArray(data),
+      hasTeams: !!data?.teams,
+      hasTeamIdList: !!data?.teamIdList,
+      hasEntries: !!data?.entries,
+      keys: data ? Object.keys(data) : "null"
+    });
     
     // Update live data state
     // The data structure might be: { teams: [...] } or just the teams array
@@ -104,6 +113,13 @@ const Leaderboard = () => {
       : data?.teams 
         ? data 
         : { teams: data?.teamIdList || data?.entries || [] };
+    
+    console.log("🔄 Processed updatedData:", updatedData);
+    console.log("🔄 Teams count:", updatedData?.teams?.length || 0);
+    if (updatedData?.teams?.length > 0) {
+      console.log("🔄 First team:", updatedData.teams[0]);
+    }
+    console.log("🔄 ========================================");
     
     setLiveData(updatedData);
   }, []);
@@ -115,10 +131,14 @@ const Leaderboard = () => {
     !!selectedContestId
   );
 
-  // Reset live data when contest changes
+  // Reset live data and refetch when contest changes
   useEffect(() => {
     setLiveData(null);
-  }, [selectedContestId]);
+    if (selectedContestId) {
+      // Refetch leaderboard data when contest changes
+      refetch();
+    }
+  }, [selectedContestId, refetch]);
 
   // Debug: Log leaderboard data
   useEffect(() => {

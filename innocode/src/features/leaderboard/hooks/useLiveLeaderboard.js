@@ -32,13 +32,18 @@ export const useLiveLeaderboard = (contestId, onUpdate, enabled = true) => {
       return;
     }
 
+    // Check if we're already connecting/connected for this contest
+    // Use the ref value BEFORE updating it to check the actual current state
+    const previousContestId = currentContestIdRef.current;
+    const isForSameContest = previousContestId === contestId;
+
     // Clean up existing connection properly
     if (connectionRef.current) {
       const state = connectionRef.current.state;
       
       // Only skip if actively connecting to the same contest
       if (state === signalR.HubConnectionState.Connecting && 
-          currentContestIdRef.current === contestId &&
+          isForSameContest &&
           isConnectingRef.current) {
         if (import.meta.env.VITE_ENV === "development") {
           console.log("Connection already in progress for same contest, skipping...");
@@ -46,10 +51,41 @@ export const useLiveLeaderboard = (contestId, onUpdate, enabled = true) => {
         return;
       }
       
-      // Stop existing connection if it exists and is not the same contest
-      if (currentContestIdRef.current !== contestId || 
+      // If connection is already connected for the same contest, verify group subscription
+      if (state === signalR.HubConnectionState.Connected && isForSameContest) {
+        if (import.meta.env.VITE_ENV === "development") {
+          console.log("Connection already active for same contest, verifying group subscription");
+        }
+        const groupName = `leaderboard_${contestId}`;
+        connectionRef.current.invoke("JoinGroup", groupName)
+          .catch(() => connectionRef.current.invoke("JoinLeaderboardGroup", contestId))
+          .then(() => {
+            if (import.meta.env.VITE_ENV === "development") {
+              console.log("✅ Verified group subscription");
+            }
+          })
+          .catch((err) => {
+            if (import.meta.env.VITE_ENV === "development") {
+              console.warn("Could not verify group subscription:", err);
+            }
+          });
+        // Don't recreate connection, just verify subscription
+        return;
+      }
+      
+      // Stop existing connection if it's for a different contest or disconnected
+      // Always stop if contest changed, or if disconnected/disconnecting
+      if (!isForSameContest || 
           state === signalR.HubConnectionState.Disconnected ||
-          state === signalR.HubConnectionState.Connected) {
+          state === signalR.HubConnectionState.Disconnecting) {
+        if (import.meta.env.VITE_ENV === "development") {
+          console.log("Stopping existing connection before reconnecting", {
+            isForSameContest,
+            state,
+            previousContestId,
+            newContestId: contestId
+          });
+        }
         connectionRef.current.stop().catch(err => {
           if (import.meta.env.VITE_ENV === "development") {
             console.warn("Error stopping existing connection:", err);
@@ -59,6 +95,7 @@ export const useLiveLeaderboard = (contestId, onUpdate, enabled = true) => {
       }
     }
 
+    // Update refs after checking previous state
     isConnectingRef.current = true;
     currentContestIdRef.current = contestId;
 
@@ -293,20 +330,53 @@ export const useLiveLeaderboard = (contestId, onUpdate, enabled = true) => {
 
   // Effect to manage connection lifecycle - only depend on contestId and enabled
   useEffect(() => {
+    if (!enabled || !contestId) {
+      disconnectRef.current();
+      return;
+    }
+
     // Update ref when contestId changes
     const previousContestId = currentContestIdRef.current;
+    const contestIdChanged = previousContestId !== contestId;
     currentContestIdRef.current = contestId;
     
-    if (enabled && contestId) {
-      // Only connect if contestId actually changed or connection doesn't exist
-      if (previousContestId !== contestId || !connectionRef.current) {
-        if (import.meta.env.VITE_ENV === "development") {
-          console.log(`🔄 Connecting to leaderboard for contest: ${contestId}`);
-        }
-        connectRef.current();
+    const connection = connectionRef.current;
+    const isConnectionActive = connection && 
+      connection.state === signalR.HubConnectionState.Connected;
+    
+    // Always connect if:
+    // 1. ContestId changed (navigating to different contest or coming back)
+    // 2. No connection exists
+    // 3. Connection exists but is disconnected
+    if (contestIdChanged || !connection || !isConnectionActive) {
+      if (import.meta.env.VITE_ENV === "development") {
+        console.log(`🔄 Connecting to leaderboard for contest: ${contestId}`, {
+          previousContestId,
+          currentContestId: contestId,
+          hasConnection: !!connection,
+          connectionState: connection?.state,
+          reason: contestIdChanged ? 'contestId changed' : 
+                 !connection ? 'no connection' : 'connection disconnected'
+        });
       }
-    } else {
-      disconnectRef.current();
+      connectRef.current();
+    } else if (isConnectionActive && !contestIdChanged) {
+      // Connection exists and is connected for the same contest
+      // Ensure we're still subscribed to the group (rejoin if needed)
+      // This handles cases where group subscription might have been lost
+      const groupName = `leaderboard_${contestId}`;
+      connection.invoke("JoinGroup", groupName)
+        .catch(() => connection.invoke("JoinLeaderboardGroup", contestId))
+        .then(() => {
+          if (import.meta.env.VITE_ENV === "development") {
+            console.log(`✅ Re-verified subscription to contest ${contestId} leaderboard group`);
+          }
+        })
+        .catch((err) => {
+          if (import.meta.env.VITE_ENV === "development") {
+            console.warn("Could not verify/rejoin leaderboard group:", err);
+          }
+        });
     }
 
     // Cleanup function - only disconnect if contestId changed or disabled
