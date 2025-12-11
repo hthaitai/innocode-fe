@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
 import {
@@ -8,6 +8,8 @@ import {
   Users,
   ChevronDown,
   ChevronUp,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { BREADCRUMBS } from "@/config/breadcrumbs";
@@ -16,6 +18,7 @@ import useContests from "../../../contest/hooks/useContests";
 import { Icon } from "@iconify/react";
 import DropdownFluent from "../../../../shared/components/DropdownFluent";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLiveLeaderboard } from "../../hooks/useLiveLeaderboard";
 
 const Leaderboard = () => {
   const { contestId: urlContestId } = useParams();
@@ -23,6 +26,7 @@ const Leaderboard = () => {
   const { contests, loading: contestsLoading } = useContests();
 
   const [expandedTeamId, setExpandedTeamId] = useState(null);
+  const [liveData, setLiveData] = useState(null);
 
   // Format score with commas
   const formatScore = (score) => {
@@ -87,6 +91,35 @@ const Leaderboard = () => {
     skip: !selectedContestId,
   });
 
+  // Handle live updates from SignalR
+  const handleLiveUpdate = useCallback((data) => {
+    if (import.meta.env.VITE_ENV === "development") {
+      console.log("🔄 Live leaderboard update received:", data);
+    }
+    
+    // Update live data state
+    // The data structure might be: { teams: [...] } or just the teams array
+    const updatedData = Array.isArray(data) 
+      ? { teams: data }
+      : data?.teams 
+        ? data 
+        : { teams: data?.teamIdList || data?.entries || [] };
+    
+    setLiveData(updatedData);
+  }, []);
+
+  // Connect to live leaderboard hub
+  const { isConnected, connectionError } = useLiveLeaderboard(
+    selectedContestId,
+    handleLiveUpdate,
+    !!selectedContestId
+  );
+
+  // Reset live data when contest changes
+  useEffect(() => {
+    setLiveData(null);
+  }, [selectedContestId]);
+
   // Debug: Log leaderboard data
   useEffect(() => {
     if (import.meta.env.VITE_ENV === "development") {
@@ -111,13 +144,14 @@ const Leaderboard = () => {
     }
   }, [leaderboardData, selectedContestId, loading, error]);
 
-  // Handle data structure - API returns teams array directly or wrapped
-  // transformResponse now always returns object with teams array
-  const entries = Array.isArray(leaderboardData)
-    ? leaderboardData // Fallback for old format
-    : leaderboardData?.teams ||
-      leaderboardData?.teamIdList ||
-      leaderboardData?.entries ||
+  // Handle data structure - Use live data if available, otherwise use initial data
+  // Priority: liveData > leaderboardData
+  const currentData = liveData || leaderboardData;
+  const entries = Array.isArray(currentData)
+    ? currentData // Fallback for old format
+    : currentData?.teams ||
+      currentData?.teamIdList ||
+      currentData?.entries ||
       [];
 
   // Debug: Log entries
@@ -137,12 +171,12 @@ const Leaderboard = () => {
 
   // Get contest info from selected contest or from data
   const contestInfo = {
-    contestName: selectedContest?.name || leaderboardData?.contestName || null,
+    contestName: selectedContest?.name || currentData?.contestName || null,
     contestId: selectedContestId,
     totalTeamCount: Array.isArray(entries)
       ? entries.length
-      : leaderboardData?.totalTeamCount || 0,
-    snapshotAt: leaderboardData?.snapshotAt || null,
+      : currentData?.totalTeamCount || 0,
+    snapshotAt: currentData?.snapshotAt || null,
   };
 
   // Get rank icon based on position
@@ -343,15 +377,39 @@ const Leaderboard = () => {
                 />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {contestInfo.contestName || "Contest Leaderboard"}
-                </h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {contestInfo.contestName || "Contest Leaderboard"}
+                  </h2>
+                  {/* Live indicator */}
+                  {selectedContestId && (
+                    <div className="flex items-center gap-1.5">
+                      {isConnected ? (
+                        <div className="flex items-center gap-1 text-green-600">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="text-xs font-medium">Live</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-gray-400">
+                          <WifiOff size={14} />
+                          <span className="text-xs">Offline</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <p className="text-sm text-gray-600">
-                  View current standings and team rankings
-                  {contestInfo.snapshotAt && (
+                  {isConnected ? "Live updates enabled" : "View current standings and team rankings"}
+                  {!isConnected && contestInfo.snapshotAt && (
                     <span>
                       {" "}
                       • Last updated: {formatDateTime(contestInfo.snapshotAt)}
+                    </span>
+                  )}
+                  {isConnected && liveData && (
+                    <span className="text-green-600">
+                      {" "}
+                      • Updated just now
                     </span>
                   )}
                 </p>

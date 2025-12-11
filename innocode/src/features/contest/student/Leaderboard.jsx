@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
 import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs";
@@ -9,16 +9,19 @@ import {
   Users,
   ChevronDown,
   ChevronUp,
+  WifiOff,
 } from "lucide-react";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
 import useContestDetail from "../hooks/useContestDetail";
 import { Icon } from "@iconify/react";
+import { useLiveLeaderboard } from "@/features/leaderboard/hooks/useLiveLeaderboard";
 
 const Leaderboard = () => {
   const { contestId } = useParams();
   const navigate = useNavigate();
   const [expandedTeamId, setExpandedTeamId] = useState(null);
+  const [liveData, setLiveData] = useState(null);
 
   // Fetch contest details
   const {
@@ -36,6 +39,35 @@ const Leaderboard = () => {
     skip: !contestId,
   });
 
+  // Handle live updates from SignalR
+  const handleLiveUpdate = useCallback((data) => {
+    if (import.meta.env.VITE_ENV === "development") {
+      console.log("🔄 Live leaderboard update received:", data);
+    }
+    
+    // Update live data state
+    // The data structure might be: { teams: [...] } or just the teams array
+    const updatedData = Array.isArray(data) 
+      ? { teams: data }
+      : data?.teams 
+        ? data 
+        : { teams: data?.teamIdList || data?.entries || [] };
+    
+    setLiveData(updatedData);
+  }, []);
+
+  // Connect to live leaderboard hub
+  const { isConnected, connectionError } = useLiveLeaderboard(
+    contestId,
+    handleLiveUpdate,
+    !!contestId
+  );
+
+  // Reset live data when contest changes
+  useEffect(() => {
+    setLiveData(null);
+  }, [contestId]);
+
   // Format score with commas
   const formatScore = (score) => {
     return (score ?? 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -46,21 +78,22 @@ const Leaderboard = () => {
     setExpandedTeamId(expandedTeamId === teamId ? null : teamId);
   };
 
-  // Handle data structure - API returns teams array directly or wrapped
-  // transformResponse now always returns object with teams array
-  const entries = Array.isArray(leaderboardData)
-    ? leaderboardData // Fallback for old format
-    : leaderboardData?.teams || 
-      leaderboardData?.teamIdList || 
-      leaderboardData?.entries || 
+  // Handle data structure - Use live data if available, otherwise use initial data
+  // Priority: liveData > leaderboardData
+  const currentData = liveData || leaderboardData;
+  const entries = Array.isArray(currentData)
+    ? currentData // Fallback for old format
+    : currentData?.teams || 
+      currentData?.teamIdList || 
+      currentData?.entries || 
       [];
 
   // Get contest info
   const contestInfo = {
-    contestName: contest?.name || leaderboardData?.contestName || null,
+    contestName: contest?.name || currentData?.contestName || null,
     contestId: contestId,
-    totalTeamCount: Array.isArray(entries) ? entries.length : (leaderboardData?.totalTeamCount || 0),
-    snapshotAt: leaderboardData?.snapshotAt || null,
+    totalTeamCount: Array.isArray(entries) ? entries.length : (currentData?.totalTeamCount || 0),
+    snapshotAt: currentData?.snapshotAt || null,
   };
 
   // Format round type for display
@@ -247,15 +280,39 @@ const Leaderboard = () => {
                 <Trophy className="text-blue-600" size={24} />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {contestInfo.contestName || "Contest Leaderboard"}
-                </h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {contestInfo.contestName || "Contest Leaderboard"}
+                  </h2>
+                  {/* Live indicator */}
+                  {contestId && (
+                    <div className="flex items-center gap-1.5">
+                      {isConnected ? (
+                        <div className="flex items-center gap-1 text-green-600">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="text-xs font-medium">Live</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-gray-400">
+                          <WifiOff size={14} />
+                          <span className="text-xs">Offline</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <p className="text-sm text-gray-600">
-                  View current standings and team rankings
-                  {contestInfo.snapshotAt && (
+                  {isConnected ? "Live updates enabled" : "View current standings and team rankings"}
+                  {!isConnected && contestInfo.snapshotAt && (
                     <span>
                       {" "}
                       • Last updated: {formatDateTime(contestInfo.snapshotAt)}
+                    </span>
+                  )}
+                  {isConnected && liveData && (
+                    <span className="text-green-600">
+                      {" "}
+                      • Updated just now
                     </span>
                   )}
                 </p>

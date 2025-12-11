@@ -1,9 +1,9 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "react-hot-toast"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
-import { Trophy } from "lucide-react"
+import { Trophy, WifiOff } from "lucide-react"
 import ToggleSwitchFluent from "@/shared/components/ToggleSwitchFluent"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
@@ -13,6 +13,7 @@ import {
 } from "@/services/leaderboardApi"
 import { useGetContestByIdQuery } from "@/services/contestApi"
 import { getContestLeaderboardColumns } from "../../columns/getContestLeaderboardColumns"
+import { useLiveLeaderboard } from "../../hooks/useLiveLeaderboard"
 
 const OrganizerLeaderboard = () => {
   const { contestId } = useParams()
@@ -33,6 +34,7 @@ const OrganizerLeaderboard = () => {
     data: leaderboardData,
     isLoading: leaderboardLoading,
     error: leaderboardError,
+    refetch: refetchLeaderboard,
   } = useGetLeaderboardByContestQuery(
     { contestId, pageNumber, pageSize },
     { skip: !contestId }
@@ -41,6 +43,24 @@ const OrganizerLeaderboard = () => {
   // Toggle freeze mutation
   const [toggleFreeze, { isLoading: isTogglingFreeze }] =
     useToggleFreezeLeaderboardMutation()
+
+  // Handle live updates from SignalR
+  const handleLiveUpdate = useCallback((data) => {
+    if (import.meta.env.VITE_ENV === "development") {
+      console.log("🔄 Live leaderboard update received (organizer):", data);
+    }
+    
+    // Refresh the current page data when live update comes in
+    // This ensures pagination stays consistent
+    refetchLeaderboard();
+  }, [refetchLeaderboard]);
+
+  // Connect to live leaderboard hub
+  const { isConnected, connectionError } = useLiveLeaderboard(
+    contestId,
+    handleLiveUpdate,
+    !!contestId && !isFrozen // Only connect if not frozen
+  )
 
   const entries = leaderboardData?.data?.teamIdList || []
   const pagination = leaderboardData?.additionalData || {}
@@ -119,7 +139,25 @@ const OrganizerLeaderboard = () => {
         renderActions={() => {
           return (
             <div className="min-h-[70px] flex items-center justify-between px-5">
-              <p className="text-[14px] leading-[20px] font-medium">Leaderboard</p>
+              <div className="flex items-center gap-3">
+                <p className="text-[14px] leading-[20px] font-medium">Leaderboard</p>
+                {/* Live indicator */}
+                {contestId && !isFrozen && (
+                  <div className="flex items-center gap-1.5">
+                    {isConnected ? (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-xs font-medium">Live</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-gray-400">
+                        <WifiOff size={14} />
+                        <span className="text-xs">Offline</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Toggle Switch */}
               <ToggleSwitchFluent
