@@ -1,5 +1,11 @@
 import emailjs from "@emailjs/browser"
 
+// Helper function to get frontend base URL
+// Uses VITE_FRONTEND_URL if set, otherwise falls back to window.location.origin
+const getFrontendBaseUrl = () => {
+  return import.meta.env.VITE_FRONTEND_URL || window.location.origin
+}
+
 export const initEmailJs = () => {
   const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
   if (publicKey) {
@@ -51,7 +57,7 @@ export const sendVerificationEmail = async ({
   }
 
   // Construct verification URL
-  const baseUrl = window.location.origin
+  const baseUrl = getFrontendBaseUrl()
   const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`
 
   const templateParams = {
@@ -91,7 +97,7 @@ export const sendResetPasswordEmail = async ({
   }
 
   // Construct reset password URL
-  const baseUrl = window.location.origin
+  const baseUrl = getFrontendBaseUrl()
   const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`
 
   const templateParams = {

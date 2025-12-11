@@ -53,8 +53,9 @@ export default function InviteJudgeModal({
 
       const { inviteCode, contestName } = result.data
 
-      const acceptUrl = `${window.location.origin}/judge/accept?inviteCode=${inviteCode}`
-      const declineUrl = `${window.location.origin}/judge/decline?inviteCode=${inviteCode}`
+      const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin
+      const acceptUrl = `${baseUrl}/judge/accept?inviteCode=${inviteCode}`
+      const declineUrl = `${baseUrl}/judge/decline?inviteCode=${inviteCode}`
 
       setSendingEmail(true)
       await sendJudgeInviteEmail({

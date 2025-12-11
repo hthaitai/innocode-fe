@@ -86,7 +86,7 @@ const ContestJudgesPage = () => {
           return
         }
 
-        const baseUrl = window.location.origin
+        const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin
         const acceptUrl = `${baseUrl}/judge/accept?inviteCode=${inviteCode}`
         const declineUrl = `${baseUrl}/judge/decline?inviteCode=${inviteCode}`
 

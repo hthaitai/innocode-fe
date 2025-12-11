@@ -342,7 +342,7 @@ const MentorTeam = () => {
         
         // Generate accept and decline URLs
         // Format: /team-invite?token={token}&action=accept|decline
-        const baseUrl = window.location.origin;
+        const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
         const acceptUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(token)}&action=accept`;
         const declineUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(token)}&action=decline`;
 
