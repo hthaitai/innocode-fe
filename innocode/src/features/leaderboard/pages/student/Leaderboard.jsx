@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
 import {
@@ -108,9 +108,9 @@ const Leaderboard = () => {
     setLiveData(updatedData);
   }, []);
 
-  // Connect to live leaderboard hub
+  // Connect to live leaderboard hub - ensure this is always called
   const { isConnected, connectionError } = useLiveLeaderboard(
-    selectedContestId,
+    selectedContestId || null, // Always pass a value, never undefined
     handleLiveUpdate,
     !!selectedContestId
   );

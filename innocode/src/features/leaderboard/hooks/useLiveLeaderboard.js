@@ -15,19 +15,52 @@ export const useLiveLeaderboard = (contestId, onUpdate, enabled = true) => {
   const [connectionError, setConnectionError] = useState(null);
   const reconnectTimeoutRef = useRef(null);
   const reconnectAttemptsRef = useRef(0);
+  const isConnectingRef = useRef(false); // Track if we're currently connecting
+  const currentContestIdRef = useRef(contestId); // Track current contestId
+  const onUpdateRef = useRef(onUpdate); // Store onUpdate callback in ref
+  
+  // Update onUpdate ref when it changes
+  useEffect(() => {
+    onUpdateRef.current = onUpdate;
+  }, [onUpdate]);
+  
   const MAX_RECONNECT_ATTEMPTS = 5;
-  const RECONNECT_DELAY = 3000; // 3 seconds
+  const RECONNECT_DELAY = 3000;
 
   const connect = useCallback(() => {
     if (!contestId || !enabled) {
       return;
     }
 
-    // Clean up existing connection
+    // Clean up existing connection properly
     if (connectionRef.current) {
-      connectionRef.current.stop();
-      connectionRef.current = null;
+      const state = connectionRef.current.state;
+      
+      // Only skip if actively connecting to the same contest
+      if (state === signalR.HubConnectionState.Connecting && 
+          currentContestIdRef.current === contestId &&
+          isConnectingRef.current) {
+        if (import.meta.env.VITE_ENV === "development") {
+          console.log("Connection already in progress for same contest, skipping...");
+        }
+        return;
+      }
+      
+      // Stop existing connection if it exists and is not the same contest
+      if (currentContestIdRef.current !== contestId || 
+          state === signalR.HubConnectionState.Disconnected ||
+          state === signalR.HubConnectionState.Connected) {
+        connectionRef.current.stop().catch(err => {
+          if (import.meta.env.VITE_ENV === "development") {
+            console.warn("Error stopping existing connection:", err);
+          }
+        });
+        connectionRef.current = null;
+      }
     }
+
+    isConnectingRef.current = true;
+    currentContestIdRef.current = contestId;
 
     // Get token for authentication
     const token = localStorage.getItem("token");
@@ -41,32 +74,38 @@ export const useLiveLeaderboard = (contestId, onUpdate, enabled = true) => {
       })
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
-          // Exponential backoff: 2s, 4s, 8s, 16s, max 30s
           const delay = Math.min(2000 * Math.pow(2, retryContext.previousRetryCount), 30000);
           return delay;
         },
       })
-      .configureLogging(signalR.LogLevel.Warning)
+      .configureLogging(import.meta.env.VITE_ENV === "development" ? signalR.LogLevel.Information : signalR.LogLevel.Warning)
       .build();
 
     // Connection event handlers
     connection.onclose((error) => {
       setIsConnected(false);
-      if (error) {
-        console.error("SignalR connection closed with error:", error);
-        setConnectionError(error.message || "Connection closed");
-        
-        // Manual reconnection if automatic reconnect fails
-        if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
-          reconnectAttemptsRef.current++;
-          reconnectTimeoutRef.current = setTimeout(() => {
-            connect();
-          }, RECONNECT_DELAY);
+      isConnectingRef.current = false;
+      
+      // Only attempt reconnect if this is still the current contest
+      if (currentContestIdRef.current === contestId && enabled) {
+        if (error) {
+          console.error("SignalR connection closed with error:", error);
+          setConnectionError(error.message || "Connection closed");
+          
+          // Manual reconnection if automatic reconnect fails
+          if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
+            reconnectAttemptsRef.current++;
+            reconnectTimeoutRef.current = setTimeout(() => {
+              if (currentContestIdRef.current === contestId && enabled) {
+                connect();
+              }
+            }, RECONNECT_DELAY);
+          } else {
+            setConnectionError("Failed to reconnect after multiple attempts");
+          }
         } else {
-          setConnectionError("Failed to reconnect after multiple attempts");
+          setConnectionError(null);
         }
-      } else {
-        setConnectionError(null);
       }
     });
 
@@ -81,34 +120,42 @@ export const useLiveLeaderboard = (contestId, onUpdate, enabled = true) => {
       setIsConnected(true);
       setConnectionError(null);
       reconnectAttemptsRef.current = 0;
+      isConnectingRef.current = false;
       console.log("SignalR reconnected:", connectionId);
       
       // Re-subscribe to contest updates after reconnection
-      if (contestId) {
-        connection.invoke("JoinContestGroup", contestId)
-          .catch(() => connection.invoke("SubscribeToContest", contestId))
-          .catch(() => connection.invoke("JoinGroup", contestId))
-          .catch(() => connection.invoke("Subscribe", contestId))
+      if (currentContestIdRef.current) {
+        const groupName = `leaderboard_${currentContestIdRef.current}`;
+        connection.invoke("JoinGroup", groupName)
+          .catch(() => connection.invoke("JoinLeaderboardGroup", currentContestIdRef.current))
           .catch((err) => {
-            if (import.meta.env.VITE_ENV === "development") {
-              console.warn("Could not rejoin contest group after reconnection:", err);
-            }
+            console.error("Could not rejoin leaderboard group after reconnection:", err);
           });
       }
     });
 
     // Listen for leaderboard updates
-    connection.on("UpdateLeaderboard", (data) => {
+    connection.on("LeaderboardUpdated", (data) => {
       if (import.meta.env.VITE_ENV === "development") {
         console.log("📊 Live leaderboard update received:", data);
       }
       
-      if (onUpdate && typeof onUpdate === "function") {
+      if (onUpdateRef.current && typeof onUpdateRef.current === "function") {
         try {
-          onUpdate(data);
+          // Backend sends: { ContestId, Leaderboard, Timestamp }
+          // Extract the Leaderboard array from the data object
+          const leaderboardData = data?.Leaderboard || data?.leaderboard || data;
+          onUpdateRef.current(leaderboardData);
         } catch (error) {
           console.error("Error in onUpdate callback:", error);
         }
+      }
+    });
+
+    // Optional: Listen for successful group join confirmation
+    connection.on("JoinedGroup", (data) => {
+      if (import.meta.env.VITE_ENV === "development") {
+        console.log("✅ Joined leaderboard group:", data);
       }
     });
 
@@ -116,88 +163,163 @@ export const useLiveLeaderboard = (contestId, onUpdate, enabled = true) => {
     connection
       .start()
       .then(() => {
+        // Check if contestId hasn't changed during connection
+        if (currentContestIdRef.current !== contestId) {
+          if (import.meta.env.VITE_ENV === "development") {
+            console.warn("ContestId changed during connection, disconnecting...");
+          }
+          connection.stop();
+          return;
+        }
+        
+        isConnectingRef.current = false;
         setIsConnected(true);
         setConnectionError(null);
         reconnectAttemptsRef.current = 0;
-        console.log("SignalR connected to leaderboard hub");
+        
+        if (import.meta.env.VITE_ENV === "development") {
+          console.log("✅ SignalR connected to leaderboard hub");
+        }
 
-        // Join the contest group
-        // Note: The method name may vary depending on the backend implementation
-        // Common names: JoinContestGroup, SubscribeToContest, JoinGroup, Subscribe
+        // Join the contest leaderboard group
+        // Backend uses group name format: "leaderboard_{contestId}"
         if (contestId) {
-          return connection.invoke("JoinContestGroup", contestId).catch((err) => {
-            // If JoinContestGroup doesn't exist, try alternative methods
-            if (import.meta.env.VITE_ENV === "development") {
-              console.warn("JoinContestGroup method not found, trying alternatives...", err);
-            }
-            
-            // Try alternative method names
-            return connection.invoke("SubscribeToContest", contestId)
-              .catch(() => connection.invoke("JoinGroup", contestId))
-              .catch(() => connection.invoke("Subscribe", contestId))
-              .catch((finalErr) => {
-                // If all methods fail, connection still works for broadcasts
-                if (import.meta.env.VITE_ENV === "development") {
-                  console.warn("Could not join contest group, but connection is active:", finalErr);
-                }
-                return Promise.resolve();
-              });
-          });
+          const groupName = `leaderboard_${contestId}`;
+          // Try JoinGroup first (standard SignalR method), fallback to custom method
+          return connection.invoke("JoinGroup", groupName)
+            .catch(() => connection.invoke("JoinLeaderboardGroup", contestId))
+            .catch((err) => {
+              if (import.meta.env.VITE_ENV === "development") {
+                console.warn("Could not join group, but connection is active:", err);
+              }
+              return Promise.resolve();
+            });
         }
       })
       .then(() => {
-        if (import.meta.env.VITE_ENV === "development") {
-          console.log(`Subscribed to contest ${contestId} leaderboard updates`);
+        if (contestId && import.meta.env.VITE_ENV === "development") {
+          console.log(`✅ Subscribed to contest ${contestId} leaderboard updates`);
         }
       })
       .catch((error) => {
-        console.error("SignalR connection error:", error);
-        setConnectionError(error.message || "Failed to connect");
+        isConnectingRef.current = false;
         setIsConnected(false);
+        console.error("❌ SignalR connection error:", error);
+        setConnectionError(error.message || "Failed to connect");
+        
+        // Log more details for debugging
+        if (import.meta.env.VITE_ENV === "development") {
+          console.error("Connection error details:", {
+            contestId,
+            enabled,
+            connectionState: connectionRef.current?.state,
+            errorMessage: error.message,
+            errorStack: error.stack
+          });
+        }
+        
+        // Retry connection if it failed and we still have the same contestId
+        if (currentContestIdRef.current === contestId && enabled) {
+          if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
+            reconnectAttemptsRef.current++;
+            reconnectTimeoutRef.current = setTimeout(() => {
+              // Only retry if contestId hasn't changed
+              if (currentContestIdRef.current === contestId && enabled && !isConnectingRef.current) {
+                if (import.meta.env.VITE_ENV === "development") {
+                  console.log(`🔄 Retrying connection (attempt ${reconnectAttemptsRef.current}/${MAX_RECONNECT_ATTEMPTS})...`);
+                }
+                connectRef.current();
+              }
+            }, RECONNECT_DELAY);
+          } else {
+            setConnectionError("Failed to connect after multiple attempts");
+          }
+        }
       });
 
     connectionRef.current = connection;
-  }, [contestId, onUpdate, enabled]);
+  }, [contestId, enabled]);
 
   const disconnect = useCallback(() => {
+    isConnectingRef.current = false;
+    
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
     }
 
     if (connectionRef.current) {
-      connectionRef.current
-        .stop()
-        .then(() => {
-          console.log("SignalR disconnected");
-          setIsConnected(false);
-        })
-        .catch((error) => {
-          console.error("Error disconnecting SignalR:", error);
+      const state = connectionRef.current.state;
+      const contestIdToLeave = currentContestIdRef.current;
+      
+      // Only try to leave group if connected
+      if (state === signalR.HubConnectionState.Connected && contestIdToLeave) {
+        const groupName = `leaderboard_${contestIdToLeave}`;
+        connectionRef.current
+          .invoke("LeaveGroup", groupName)
+          .catch(() => connectionRef.current.invoke("LeaveLeaderboardGroup", contestIdToLeave))
+          .catch((err) => {
+            console.warn("Could not leave leaderboard group:", err);
+          })
+          .finally(() => {
+            connectionRef.current?.stop().catch(err => {
+              console.warn("Error stopping connection:", err);
+            });
+            connectionRef.current = null;
+            setIsConnected(false);
+          });
+      } else {
+        // If not connected, just stop
+        connectionRef.current.stop().catch(err => {
+          console.warn("Error stopping connection:", err);
         });
-      connectionRef.current = null;
+        connectionRef.current = null;
+        setIsConnected(false);
+      }
+      
+      console.log("SignalR disconnected");
     }
   }, []);
 
-  // Effect to manage connection lifecycle
+  // Store callbacks in refs to avoid dependency issues
+  const connectRef = useRef(connect);
+  const disconnectRef = useRef(disconnect);
+  
+  // Update refs when callbacks change
   useEffect(() => {
+    connectRef.current = connect;
+    disconnectRef.current = disconnect;
+  }, [connect, disconnect]);
+
+  // Effect to manage connection lifecycle - only depend on contestId and enabled
+  useEffect(() => {
+    // Update ref when contestId changes
+    const previousContestId = currentContestIdRef.current;
+    currentContestIdRef.current = contestId;
+    
     if (enabled && contestId) {
-      connect();
+      // Only connect if contestId actually changed or connection doesn't exist
+      if (previousContestId !== contestId || !connectionRef.current) {
+        if (import.meta.env.VITE_ENV === "development") {
+          console.log(`🔄 Connecting to leaderboard for contest: ${contestId}`);
+        }
+        connectRef.current();
+      }
     } else {
-      disconnect();
+      disconnectRef.current();
     }
 
+    // Cleanup function - only disconnect if contestId changed or disabled
     return () => {
-      disconnect();
+      // Only cleanup if contestId changed or component unmounting
+      if (currentContestIdRef.current !== contestId || !enabled) {
+        if (import.meta.env.VITE_ENV === "development") {
+          console.log(`🔌 Cleaning up connection for contest: ${contestId}`);
+        }
+        disconnectRef.current();
+      }
     };
-  }, [contestId, enabled, connect, disconnect]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      disconnect();
-    };
-  }, [disconnect]);
+  }, [contestId, enabled]);
 
   return {
     isConnected,
@@ -206,4 +328,3 @@ export const useLiveLeaderboard = (contestId, onUpdate, enabled = true) => {
     disconnect,
   };
 };
-
