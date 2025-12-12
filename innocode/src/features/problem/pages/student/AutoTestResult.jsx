@@ -5,7 +5,6 @@ import { Icon } from "@iconify/react";
 import { ArrowLeft, Trophy, CheckCircle, XCircle, Download } from "lucide-react";
 import { useGetAutoTestResultQuery } from "@/services/autoEvaluationApi";
 import useContestDetail from "@/features/contest/hooks/useContestDetail";
-import { toast } from "react-hot-toast";
 
 const AutoTestResult = () => {
   const { contestId: contestIdParam, roundId } = useParams();
@@ -50,17 +49,6 @@ const AutoTestResult = () => {
       return;
     }
   }, [roundId, contestId, navigate]);
-
-  // Debug logging
-  useEffect(() => {
-    if (import.meta.env.VITE_ENV === "development") {
-      console.log("🔍 AutoTestResult - testResultData:", testResultData);
-      console.log("🔍 AutoTestResult - testResult:", testResult);
-      console.log("🔍 AutoTestResult - resultError:", resultError);
-      console.log("🔍 AutoTestResult - contestId:", contestId, "roundId:", roundId);
-    }
-  }, [testResultData, testResult, resultError, contestId, roundId]);
-
   // Show error if contest fetch failed
   if (contestError && !shouldSkipContest) {
     return (

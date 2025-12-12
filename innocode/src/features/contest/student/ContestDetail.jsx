@@ -606,17 +606,19 @@ const ContestDetail = () => {
               {activeTab === "rounds" && (
                 <div className="space-y-4 relative">
                   {/* Loading overlay when refetching with existing data */}
-                  {roundsFetching && hasRoundsFromQuery && rounds.length > 0 && (
-                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-[8px]">
-                      <div className="flex flex-col items-center gap-3">
-                        <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-orange-500"></div>
-                        <p className="text-sm text-[#7A7574] font-medium">
-                          Refreshing rounds...
-                        </p>
+                  {roundsFetching &&
+                    hasRoundsFromQuery &&
+                    rounds.length > 0 && (
+                      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-[8px]">
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-orange-500"></div>
+                          <p className="text-sm text-[#7A7574] font-medium">
+                            Refreshing rounds...
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  
+                    )}
+
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold text-[#2d3748]">
                       Contest Rounds
@@ -624,7 +626,9 @@ const ContestDetail = () => {
                     <div className="flex items-center gap-2">
                       {(roundsLoading || roundsFetching) && (
                         <span className="text-sm text-[#7A7574] animate-pulse font-medium">
-                          {roundsFetching && hasRoundsFromQuery ? "Refreshing..." : "Loading..."}
+                          {roundsFetching && hasRoundsFromQuery
+                            ? "Refreshing..."
+                            : "Loading..."}
                         </span>
                       )}
                       <RefreshCcw
@@ -651,16 +655,55 @@ const ContestDetail = () => {
                       />
                       <p className="text-[#7A7574]">Failed to load rounds</p>
                       <p className="text-sm text-[#7A7574] mt-1">
-                        {roundsError?.data?.message || roundsError?.message || "An error occurred"}
+                        {roundsError?.data?.message ||
+                          roundsError?.message ||
+                          "An error occurred"}
                       </p>
                     </div>
-                  ) : (roundsLoading || roundsFetching) && !hasRoundsFromQuery ? (
+                  ) : (roundsLoading || roundsFetching) &&
+                    !hasRoundsFromQuery ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
                       <p className="text-[#7A7574]">Loading rounds...</p>
                     </div>
                   ) : rounds && rounds.length > 0 ? (
                     rounds.map((round, index) => {
+                      // ✅ Check if round is completed
+                      const isRoundCompleted = () => {
+                        if (!round.roundId) return false;
+
+                        switch (round.problemType) {
+                          case "McqTest":
+                            return completedRounds.some(
+                              (r) => r.roundId === round.roundId
+                            );
+                          case "AutoEvaluation":
+                            return completedAutoTests.some(
+                              (r) => r.roundId === round.roundId
+                            );
+                          case "Manual":
+                            return completedManualProblems.some(
+                              (r) => r.roundId === round.roundId
+                            );
+                          default:
+                            return false;
+                        }
+                      };
+
+                      // ✅ Get result route based on problemType
+                      const getResultRoute = () => {
+                        switch (round.problemType) {
+                          case "McqTest":
+                            return `/quiz/${round.roundId}/finish`;
+                          case "AutoEvaluation":
+                            return `/auto-test-result/${contestId}/${round.roundId}`;
+                          case "Manual":
+                            return `/manual-problem/${contestId}/${round.roundId}`;
+                          default:
+                            return null;
+                        }
+                      };
+
                       // ✅ Determine route based on problemType
                       const getRoundRoute = () => {
                         switch (round.problemType) {
@@ -675,8 +718,11 @@ const ContestDetail = () => {
                         }
                       };
 
-                      // ✅ Get button label based on problemType
+                      // ✅ Get button label based on problemType and completion status
                       const getButtonLabel = () => {
+                        if (isRoundCompleted()) {
+                          return "View Result";
+                        }
                         switch (round.problemType) {
                           case "McqTest":
                             return "Start Test";
@@ -690,6 +736,8 @@ const ContestDetail = () => {
                       };
 
                       const roundRoute = getRoundRoute();
+                      const resultRoute = getResultRoute();
+                      const isCompleted = isRoundCompleted();
 
                       return (
                         <div
@@ -720,24 +768,37 @@ const ContestDetail = () => {
                                 {round.status}
                               </span>
                               <div className="flex gap-2 absolute bottom-4 right-4">
+                                <span className=" flex items-center gap-1 text-xs font-semibold  text-[#7A7574]">
+                                  You have completed this round
+                                  <Icon icon="mdi:check-circle" width="15" />
+
+                                </span>
                                 {round.status === "Opened" &&
                                   role === "student" &&
-                                  roundRoute &&
-                                  myTeam && (
+                                  (roundRoute || resultRoute) &&
+                                  myTeam &&
+                                  !isCompleted && (
                                     <button
                                       onClick={() => {
+                                        // If not completed, proceed with normal start flow
+                                        if (!roundRoute) return;
+
                                         // Check if openCode already exists in sessionStorage
-                                        const existingOpenCode = sessionStorage.getItem(
-                                          `openCode_${round.roundId}`
-                                        );
-                                        
+                                        const existingOpenCode =
+                                          sessionStorage.getItem(
+                                            `openCode_${round.roundId}`
+                                          );
+
                                         if (existingOpenCode) {
                                           // If openCode exists, navigate directly
                                           navigate(roundRoute);
                                         } else {
                                           // If no openCode, open modal to enter it
                                           openModal("openCode", {
-                                            roundName: round.roundName || round.name || `Round ${index + 1}`,
+                                            roundName:
+                                              round.roundName ||
+                                              round.name ||
+                                              `Round ${index + 1}`,
                                             roundId: round.roundId,
                                             onConfirm: (openCode) => {
                                               // Store openCode in sessionStorage for this round

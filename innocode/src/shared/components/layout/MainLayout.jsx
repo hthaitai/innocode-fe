@@ -26,8 +26,14 @@ export default function MainLayout() {
   const publicRoutes = ['/', '/about'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
 
-  // Hide sidebar if not authenticated OR on public routes
-  const hideSidebar = !isAuthenticated || isPublicRoute;
+  // Define routes that should hide sidebar (like auto-evaluation)
+  const hideSidebarRoutes = ['/auto-evaluation'];
+  const shouldHideSidebar = hideSidebarRoutes.some(route => 
+    location.pathname.includes(route)
+  );
+
+  // Hide sidebar if not authenticated OR on public routes OR on specific routes
+  const hideSidebar = !isAuthenticated || isPublicRoute || shouldHideSidebar;
 
   return (
     <div>
