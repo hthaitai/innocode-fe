@@ -29,14 +29,17 @@ const processQueue = (error, token = null) => {
 // Request interceptor
 axiosClient.interceptors.request.use(
   (config) => {
-    // Chỉ attach token nếu có và không phải request login/register/refresh
+    // Chỉ attach token nếu có và không phải request login/register/refresh hoặc team-invites (public endpoints)
     const token = localStorage.getItem("token");
     const isAuthRequest =
       config.url?.includes("/auth/login") ||
       config.url?.includes("/auth/register") ||
       config.url?.includes("/auth/refresh");
+    const isPublicTeamInviteRequest =
+      config.url?.includes("/team-invites/accept") ||
+      config.url?.includes("/team-invites/decline");
 
-    if (token && !isAuthRequest && token !== "null") {
+    if (token && !isAuthRequest && !isPublicTeamInviteRequest && token !== "null") {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
@@ -98,9 +101,12 @@ axiosClient.interceptors.response.use(
             originalRequest.url?.includes("/auth/login") ||
             originalRequest.url?.includes("/auth/register") ||
             originalRequest.url?.includes("/auth/refresh");
+          const isPublicTeamInviteRequest =
+            originalRequest.url?.includes("/team-invites/accept") ||
+            originalRequest.url?.includes("/team-invites/decline");
 
-          // ✅ Don't try to refresh if it's an auth request
-          if (isAuthRequest) {
+          // ✅ Don't try to refresh if it's an auth request or public team invite request
+          if (isAuthRequest || isPublicTeamInviteRequest) {
             if (originalRequest.url?.includes("/auth/refresh")) {
               // Refresh token failed, logout user
               localStorage.removeItem("token");

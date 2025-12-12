@@ -129,24 +129,27 @@ const MentorTeam = () => {
         try {
           const response = await teamInviteApi.getByTeam(teamId);
           console.log("🔍 Pending invites response:", response);
-          
+
           // Extract invites from response
           let invitesData = [];
           if (response.data) {
             if (Array.isArray(response.data)) {
               invitesData = response.data;
-            } else if (response.data.data && Array.isArray(response.data.data)) {
+            } else if (
+              response.data.data &&
+              Array.isArray(response.data.data)
+            ) {
               invitesData = response.data.data;
             }
           }
-          
+
           // Filter only pending invites
           const pending = invitesData.filter(
             (invite) => invite.status === "pending"
           );
-          
+
           setPendingInvites(pending);
-          
+
           // Update invitedStudentIds with pending invite student IDs
           const pendingStudentIds = new Set(
             pending.map((invite) => invite.studentId)
@@ -190,20 +193,23 @@ const MentorTeam = () => {
         setLoadingStudents(true);
         try {
           const response = await studentApi.getBySchoolId(schoolId);
-          
+
           // Handle different response structures
           let studentsData = [];
           if (response.data) {
             if (Array.isArray(response.data)) {
               studentsData = response.data;
-            } else if (response.data.data && Array.isArray(response.data.data)) {
+            } else if (
+              response.data.data &&
+              Array.isArray(response.data.data)
+            ) {
               studentsData = response.data.data;
             }
           }
-          
+
           // Store all students for lookup (e.g., in pending invites)
           setAllStudents(studentsData);
-          
+
           // Filter out students who are already members, have been invited, or have pending invites
           const existingMemberIds = (myTeam.members || []).map(
             (m) => m.studentId || m.student_id
@@ -212,12 +218,12 @@ const MentorTeam = () => {
             pendingInvites.map((invite) => invite.studentId)
           );
           const availableStudents = studentsData.filter(
-            (s) => 
+            (s) =>
               !existingMemberIds.includes(s.studentId) &&
               !invitedStudentIds.has(s.studentId) &&
               !pendingInviteStudentIds.has(s.studentId)
           );
-          
+
           setStudents(availableStudents);
         } catch (error) {
           console.error("❌ Error fetching students:", error);
@@ -274,11 +280,11 @@ const MentorTeam = () => {
         schoolId: String(schoolIdValue),
       };
       await addTeam(requestBody);
-      
+
       // Fetch the newly created team from API to ensure we have complete data including teamId
       // Wait a bit for the backend to process the creation
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       const teamData = await getMyTeam(contestId);
       if (teamData) {
         console.log("✅ Team created and fetched:", teamData);
@@ -286,7 +292,7 @@ const MentorTeam = () => {
       } else {
         console.warn("⚠️ Team created but could not be fetched");
       }
-      
+
       // Switch to My Team tab after successful creation
       setActiveTab("myTeam");
       setTeamName("");
@@ -333,18 +339,24 @@ const MentorTeam = () => {
       const inviteData = response.data?.data || {};
       const token = inviteData.token || response.data?.token;
       const teamName = inviteData.teamName || myTeam?.name || "Team";
-      const contestName = inviteData.contestName || contest?.name || contest?.title || "Contest";
+      const contestName =
+        inviteData.contestName || contest?.name || contest?.title || "Contest";
       const mentorName = user?.name || "Mentor";
       const studentEmail = student.userEmail;
 
       if (token && studentEmail) {
         console.log("✅ Invitation token:", token);
-        
+
         // Generate accept and decline URLs
-        // Format: /team-invite?token={token}&action=accept|decline
-        const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
-        const acceptUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(token)}&action=accept`;
-        const declineUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(token)}&action=decline`;
+        // Format: /team-invite?token={token}&email={email}&action=accept|decline
+        const baseUrl =
+          import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+        const acceptUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(
+          token
+        )}&email=${encodeURIComponent(studentEmail)}&action=accept`;
+        const declineUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(
+          token
+        )}&email=${encodeURIComponent(studentEmail)}&action=decline`;
 
         // Send invitation email
         try {
@@ -356,9 +368,12 @@ const MentorTeam = () => {
             acceptUrl: acceptUrl,
             declineUrl: declineUrl,
           });
-          
+
           if (emailSent) {
-            console.log("✅ Invitation email sent successfully to:", studentEmail);
+            console.log(
+              "✅ Invitation email sent successfully to:",
+              studentEmail
+            );
           } else {
             console.warn("⚠️ Failed to send invitation email");
           }
@@ -367,7 +382,10 @@ const MentorTeam = () => {
           // Don't throw error - invitation was created successfully, just email failed
         }
       } else {
-        console.warn("⚠️ Cannot send email: missing token or student email", { token, studentEmail });
+        console.warn("⚠️ Cannot send email: missing token or student email", {
+          token,
+          studentEmail,
+        });
       }
       // Add student to invited list
       setInvitedStudentIds((prev) => new Set([...prev, student.studentId]));
@@ -386,7 +404,10 @@ const MentorTeam = () => {
           if (invitesResponse.data) {
             if (Array.isArray(invitesResponse.data)) {
               invitesData = invitesResponse.data;
-            } else if (invitesResponse.data.data && Array.isArray(invitesResponse.data.data)) {
+            } else if (
+              invitesResponse.data.data &&
+              Array.isArray(invitesResponse.data.data)
+            ) {
               invitesData = invitesResponse.data.data;
             }
           }
@@ -403,38 +424,39 @@ const MentorTeam = () => {
       setStudents((prev) =>
         prev.filter((s) => s.studentId !== student.studentId)
       );
-
     } catch (error) {
       console.error("❌ Error inviting member:", error);
-      
+
       // Handle different error cases
       let errorMessage = "Failed to send invitation";
-      
+
       if (error.response) {
         const status = error.response.status;
         const responseData = error.response.data;
-        
+
         // Check for specific error codes
         const errorCode = responseData?.errorCode;
         const errorMsg = responseData?.errorMessage || responseData?.message;
-        
+
         // Handle REG_CLOSED - Registration window is closed
         if (errorCode === "REG_CLOSED") {
-          errorMessage = errorMsg || "Registration window is closed. You cannot invite members at this time.";
+          errorMessage =
+            errorMsg ||
+            "Registration window is closed. You cannot invite members at this time.";
         }
         // Handle 409 Conflict - student already invited or is member
         else if (status === 409) {
-          errorMessage = 
+          errorMessage =
             errorMsg ||
-            responseData?.message || 
+            responseData?.message ||
             responseData?.error ||
             `${student.userFullname} has already been invited or is already a member of this team.`;
-          
+
           // Remove student from list if already invited/member
           setStudents((prev) =>
             prev.filter((s) => s.studentId !== student.studentId)
           );
-          
+
           // Refresh team data to get updated members (with contestId filter)
           try {
             const teamData = await getMyTeam(contestId);
@@ -447,25 +469,25 @@ const MentorTeam = () => {
         }
         // Handle other errors
         else {
-          errorMessage = 
+          errorMessage =
             errorMsg ||
-            responseData?.message || 
-            responseData?.error || 
+            responseData?.message ||
+            responseData?.error ||
             responseData?.data?.message ||
             `Error: ${status}`;
         }
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       setInviteError(errorMessage);
-      
+
       // Auto clear error after 5 seconds (except for REG_CLOSED which should stay longer)
-      const clearTimeout = error.response?.data?.errorCode === "REG_CLOSED" ? 10000 : 5000;
+      const clearTimeout =
+        error.response?.data?.errorCode === "REG_CLOSED" ? 10000 : 5000;
       setTimeout(() => {
         setInviteError("");
       }, clearTimeout);
-      
     } finally {
       setInvitingStudentId(null);
     }
@@ -474,19 +496,19 @@ const MentorTeam = () => {
   // Check if registration is closed
   const isRegistrationClosed = () => {
     if (!contest) return false;
-    
+
     // Check by status
     if (contest.status === "RegistrationClosed") {
       return true;
     }
-    
+
     // Check by registrationEnd date
     if (contest.registrationEnd) {
       const now = new Date();
       const registrationEnd = new Date(contest.registrationEnd);
       return now > registrationEnd;
     }
-    
+
     return false;
   };
 
@@ -559,11 +581,13 @@ const MentorTeam = () => {
                   Registration Closed
                 </h3>
                 <p className="text-[#7A7574] text-sm mb-4">
-                  The registration window has closed. You can no longer create new teams for this contest.
+                  The registration window has closed. You can no longer create
+                  new teams for this contest.
                 </p>
                 {contest.registrationEnd && (
                   <p className="text-xs text-[#7A7574]">
-                    Registration closed on {new Date(contest.registrationEnd).toLocaleDateString()}
+                    Registration closed on{" "}
+                    {new Date(contest.registrationEnd).toLocaleDateString()}
                   </p>
                 )}
               </div>
@@ -662,7 +686,6 @@ const MentorTeam = () => {
                               <h4 className="text-2xl font-bold text-[#2d3748] mb-1">
                                 {myTeam.name}
                               </h4>
-                           
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-4 mt-4">
@@ -703,41 +726,47 @@ const MentorTeam = () => {
                             {myTeam.members.map((member, index) => {
                               // Handle different field name formats (camelCase and snake_case)
                               // API returns: studentFullname, studentEmail
-                              const memberName = 
+                              const memberName =
                                 member.studentFullname ||
                                 member.student_fullname ||
-                                member.userFullname || 
+                                member.userFullname ||
                                 member.user_fullname ||
                                 member.user?.name ||
                                 member.user?.fullName ||
                                 member.name ||
                                 "Unknown Member";
-                              
-                              const memberEmail = 
+
+                              const memberEmail =
                                 member.studentEmail ||
                                 member.student_email ||
-                                member.userEmail || 
+                                member.userEmail ||
                                 member.user_email ||
                                 member.user?.email ||
                                 member.email ||
                                 "";
-                              
-                              const memberInitial = 
-                                member.studentFullname?.charAt(0)?.toUpperCase() ||
+
+                              const memberInitial =
+                                member.studentFullname
+                                  ?.charAt(0)
+                                  ?.toUpperCase() ||
                                 member.user?.name?.charAt(0)?.toUpperCase() ||
-                                member.user?.fullName?.charAt(0)?.toUpperCase() ||
+                                member.user?.fullName
+                                  ?.charAt(0)
+                                  ?.toUpperCase() ||
                                 memberName?.charAt(0)?.toUpperCase() ||
                                 "M";
-                              
+
                               // Log member data for debugging only if still missing
                               if (memberName === "Unknown Member") {
                                 console.warn("⚠️ Member data missing:", member);
                               }
-                              
+
                               return (
                                 <div
                                   key={
-                                    member.studentId || member.student_id || index
+                                    member.studentId ||
+                                    member.student_id ||
+                                    index
                                   }
                                   className="flex items-center justify-between p-4 bg-[#f9fafb] rounded-[5px] hover:bg-[#f3f4f6] transition-colors"
                                 >
@@ -778,7 +807,6 @@ const MentorTeam = () => {
                             <p className="text-[#7A7574] text-sm mb-4">
                               No members yet. Invite members to join your team.
                             </p>
-                          
                           </div>
                         )}
                       </div>
@@ -798,7 +826,7 @@ const MentorTeam = () => {
                           <div className="space-y-3">
                             {pendingInvites.map((invite) => {
                               // Try to get student info from invite object first
-                              const studentNameFromInvite = 
+                              const studentNameFromInvite =
                                 invite.student?.userFullname ||
                                 invite.student?.user_fullname ||
                                 invite.student?.name ||
@@ -814,24 +842,23 @@ const MentorTeam = () => {
                               );
 
                               // Get student name with priority: invite object > students list > fallback
-                              const studentName = 
+                              const studentName =
                                 studentNameFromInvite ||
                                 studentInfo?.userFullname ||
                                 studentInfo?.user_fullname ||
                                 studentInfo?.name ||
                                 "Unknown Student";
-                              
-                              const studentEmail = 
+
+                              const studentEmail =
                                 invite.inviteeEmail ||
                                 invite.invitee_email ||
                                 studentInfo?.userEmail ||
                                 studentInfo?.user_email ||
                                 "No email";
-                              
-                              const studentInitial = 
+
+                              const studentInitial =
                                 studentName.charAt(0).toUpperCase() || "S";
 
-                              
                               return (
                                 <div
                                   key={invite.inviteId}
@@ -854,7 +881,6 @@ const MentorTeam = () => {
                                           {studentEmail}
                                         </p>
                                       </div>
-                                  
                                     </div>
                                   </div>
                                   <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
@@ -888,7 +914,9 @@ const MentorTeam = () => {
 
                       {inviteError && (
                         <div className="mb-4 bg-red-50 border border-red-200 rounded-[5px] p-3 flex items-start justify-between gap-2">
-                          <p className="text-red-600 text-sm flex-1">{inviteError}</p>
+                          <p className="text-red-600 text-sm flex-1">
+                            {inviteError}
+                          </p>
                           <button
                             onClick={() => setInviteError("")}
                             className="text-red-600 hover:text-red-800 transition-colors"
@@ -938,7 +966,9 @@ const MentorTeam = () => {
                               </div>
                               <button
                                 onClick={() => handleInviteStudent(student)}
-                                disabled={invitingStudentId === student.studentId}
+                                disabled={
+                                  invitingStudentId === student.studentId
+                                }
                                 className="flex items-center gap-2 px-4 py-2 bg-[#ff6b35] text-white rounded-[5px] hover:bg-[#ff5722] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 {invitingStudentId === student.studentId ? (
@@ -970,8 +1000,6 @@ const MentorTeam = () => {
                         </div>
                       )}
                     </div>
-
-            
                   </div>
                 ) : (
                   <div className="text-center py-12">
