@@ -30,11 +30,11 @@
   scroll-behavior: smooth;
 }
 
-/* Full width content when sidebar is hidden */
+/* Keep container constraints when sidebar is hidden */
 .main-content.no-sidebar .page-content {
-  padding-left: 0;
-  padding-right: 0;
-  padding-bottom: 0;
+  padding-left: calc(var(--spacing) * 5);
+  padding-right: calc(var(--spacing) * 5);
+  padding-bottom: calc(var(--spacing) * 5);
 }
 
 .content-wrapper {
@@ -43,10 +43,10 @@
   animation: fadeInContent 0.4s ease-out;
 }
 
-/* Full width wrapper when sidebar is hidden */
+/* Keep max-width and centered margin when sidebar is hidden */
 .main-content.no-sidebar .content-wrapper {
-  max-width: 100%;
-  margin: 0;
+  max-width: 1024px;
+  margin: 0 auto;
 }
 
 @keyframes fadeInContent {

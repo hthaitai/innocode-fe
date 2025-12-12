@@ -1,28 +1,178 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import { authService } from "@/features/auth/services/authService";
+import { shouldRefreshToken } from "@/shared/utils/jwtUtils";
 // Xóa dòng import useNavigate
 // import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
+// Token refresh check interval (check every 1 minute)
+const TOKEN_CHECK_INTERVAL = 60 * 1000; // 1 minute
+// Refresh token if it expires within 5 minutes (industry standard)
+const REFRESH_THRESHOLD_MINUTES = 5;
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true); // Thêm loading state
+  const refreshIntervalRef = useRef(null);
   // Xóa dòng này: const navigate = useNavigate();
+
+  // Stop automatic token refresh interval
+  const stopTokenRefreshInterval = useCallback(() => {
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+      refreshIntervalRef.current = null;
+    }
+  }, []);
+
+  // Automatic token refresh function
+  const refreshTokenIfNeeded = useCallback(async () => {
+    try {
+      const currentToken = authService.getToken();
+
+      // Only refresh if user is authenticated and has a token
+      if (!currentToken || !authService.isAuthenticated()) {
+        return;
+      }
+
+      // Check if token should be refreshed (expires within threshold)
+      if (shouldRefreshToken(currentToken, REFRESH_THRESHOLD_MINUTES)) {
+        if (import.meta.env.VITE_ENV === "development") {
+          console.log("🔄 Token expires soon, refreshing automatically...");
+        }
+
+        try {
+          const data = await authService.refreshToken();
+          setToken(data.token);
+          setUser(data.user);
+
+          // Dispatch event to notify axiosClient and other listeners
+          window.dispatchEvent(
+            new CustomEvent("tokenRefreshed", {
+              detail: { token: data.token },
+            })
+          );
+
+          if (import.meta.env.VITE_ENV === "development") {
+            console.log("✅ Token refreshed automatically");
+          }
+        } catch (refreshError) {
+          console.error("❌ Automatic token refresh failed:", refreshError);
+          // If refresh fails, clear tokens and redirect to login
+          stopTokenRefreshInterval();
+          localStorage.removeItem("token");
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("user");
+          setToken(null);
+          setUser(null);
+          window.location.href = "/login";
+        }
+      }
+    } catch (error) {
+      console.error("❌ Token refresh check error:", error);
+    }
+  }, [stopTokenRefreshInterval]);
+
+  // Start automatic token refresh interval
+  const startTokenRefreshInterval = useCallback(() => {
+    // Clear existing interval if any
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+    }
+
+    // Check immediately
+    refreshTokenIfNeeded();
+
+    // Set up interval to check every minute
+    refreshIntervalRef.current = setInterval(() => {
+      refreshTokenIfNeeded();
+    }, TOKEN_CHECK_INTERVAL);
+  }, [refreshTokenIfNeeded]);
 
   // Khôi phục auth state từ JWT token khi app load
   useEffect(() => {
-    const initializeAuth = () => {
+    const initializeAuth = async () => {
       try {
         const storedToken = authService.getToken();
+        const refreshToken = authService.getRefreshToken();
 
-        // Check if token exists and is valid
+        // If we have a token and it's valid, restore auth state
         if (storedToken && authService.isAuthenticated()) {
           const storedUser = authService.getUser();
           if (storedUser) {
             setToken(storedToken);
             setUser(storedUser);
+            // Start automatic token refresh
+            startTokenRefreshInterval();
+          }
+        }
+        // If token is expired but we have refreshToken, try to refresh immediately
+        else if (refreshToken && storedToken) {
+          // Token exists but expired, try to refresh it
+          try {
+            if (import.meta.env.VITE_ENV === "development") {
+              console.log(
+                "🔄 Token expired, attempting to refresh on app load..."
+              );
+            }
+            const data = await authService.refreshToken();
+            setToken(data.token);
+            setUser(data.user);
+            // Start automatic token refresh after successful refresh
+            startTokenRefreshInterval();
+
+            // Dispatch event to notify axiosClient
+            window.dispatchEvent(
+              new CustomEvent("tokenRefreshed", {
+                detail: { token: data.token },
+              })
+            );
+          } catch (refreshError) {
+            console.error("❌ Initial token refresh failed:", refreshError);
+            // If refresh fails, clear tokens but don't redirect (let user stay on page)
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("user");
+            setToken(null);
+            setUser(null);
+          }
+        }
+        // If we have refreshToken but no token, try to refresh
+        else if (refreshToken) {
+          try {
+            if (import.meta.env.VITE_ENV === "development") {
+              console.log(
+                "🔄 No token found, attempting to refresh using refreshToken..."
+              );
+            }
+            const data = await authService.refreshToken();
+            setToken(data.token);
+            setUser(data.user);
+            // Start automatic token refresh after successful refresh
+            startTokenRefreshInterval();
+
+            // Dispatch event to notify axiosClient
+            window.dispatchEvent(
+              new CustomEvent("tokenRefreshed", {
+                detail: { token: data.token },
+              })
+            );
+          } catch (refreshError) {
+            console.error("❌ Initial token refresh failed:", refreshError);
+            // If refresh fails, clear tokens
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("user");
+            setToken(null);
+            setUser(null);
           }
         }
       } catch (error) {
@@ -33,7 +183,12 @@ export const AuthProvider = ({ children }) => {
     };
 
     initializeAuth();
-  }, []);
+
+    // Cleanup on unmount
+    return () => {
+      stopTokenRefreshInterval();
+    };
+  }, [startTokenRefreshInterval, stopTokenRefreshInterval]);
 
   // Listen for token refresh events from axiosClient
   useEffect(() => {
@@ -55,10 +210,10 @@ export const AuthProvider = ({ children }) => {
       }
     };
 
-    window.addEventListener('tokenRefreshed', handleTokenRefresh);
+    window.addEventListener("tokenRefreshed", handleTokenRefresh);
 
     return () => {
-      window.removeEventListener('tokenRefreshed', handleTokenRefresh);
+      window.removeEventListener("tokenRefreshed", handleTokenRefresh);
     };
   }, []);
 
@@ -66,6 +221,8 @@ export const AuthProvider = ({ children }) => {
     const data = await authService.login(credentials);
     setToken(data.token);
     setUser(data.user);
+    // Start automatic token refresh after login
+    startTokenRefreshInterval();
     return data;
   };
 
@@ -76,11 +233,15 @@ export const AuthProvider = ({ children }) => {
     if (autoLogin) {
       setToken(data.token);
       setUser(data.user);
+      // Start automatic token refresh after auto login
+      startTokenRefreshInterval();
     }
     return data;
   };
 
   const logout = async () => {
+    // Stop automatic token refresh
+    stopTokenRefreshInterval();
     await authService.logout();
     setToken(null);
     setUser(null);
@@ -90,6 +251,8 @@ export const AuthProvider = ({ children }) => {
 
   // Clear auth state without redirect (useful for registration flow)
   const clearAuth = () => {
+    // Stop automatic token refresh
+    stopTokenRefreshInterval();
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
@@ -107,7 +270,16 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isAuthenticated, login, register, logout, clearAuth, loading }}
+      value={{
+        user,
+        token,
+        isAuthenticated,
+        login,
+        register,
+        logout,
+        clearAuth,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>
