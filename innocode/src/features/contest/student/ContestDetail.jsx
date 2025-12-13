@@ -768,11 +768,7 @@ const ContestDetail = () => {
                                 {round.status}
                               </span>
                               <div className="flex gap-2 absolute bottom-4 right-4">
-                                <span className=" flex items-center gap-1 text-xs font-semibold  text-[#7A7574]">
-                                  You have completed this round
-                                  <Icon icon="mdi:check-circle" width="15" />
-
-                                </span>
+                            
                                 {round.status === "Opened" &&
                                   role === "student" &&
                                   (roundRoute || resultRoute) &&

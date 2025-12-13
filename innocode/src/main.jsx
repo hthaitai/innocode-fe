@@ -10,7 +10,7 @@ import { store } from "./store/store"
 // Common pages
 import Home from "./features/common/pages/Home"
 import About from "./features/common/pages/About"
-import Profile from "./features/common/pages/Profile"
+import Profile from "./features/common/profile/pages/Profile"
 import Dashboard from "./features/common/pages/Dashboard"
 import Announcements from "./features/common/pages/Announcements"
 import Unauthorized from "./features/common/pages/Unauthorized"
