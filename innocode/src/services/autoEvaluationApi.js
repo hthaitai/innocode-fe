@@ -7,7 +7,7 @@ export const autoEvaluationApi = api.injectEndpoints({
     }),
 
     importTestCasesCsv: builder.mutation({
-      query: ({ roundId, csvFile }) => {
+      query: ({ roundId, csvFile, contestId }) => {
         const formData = new FormData()
         formData.append("csvFile", csvFile)
 
@@ -17,16 +17,22 @@ export const autoEvaluationApi = api.injectEndpoints({
           body: formData,
         }
       },
-      invalidatesTags: ["TestCases"],
+      invalidatesTags: (result, error, { contestId }) => [
+        "TestCases",
+        { type: "PublishCheck", id: contestId },
+      ],
     }),
 
     createRoundTestCase: builder.mutation({
-      query: ({ roundId, payload }) => ({
+      query: ({ roundId, payload, contestId }) => ({
         url: `/rounds/${roundId}/test-cases`,
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["TestCases"],
+      invalidatesTags: (result, error, { contestId }) => [
+        "TestCases",
+        { type: "PublishCheck", id: contestId },
+      ],
     }),
 
     getRoundTestCases: builder.query({
@@ -58,11 +64,14 @@ export const autoEvaluationApi = api.injectEndpoints({
     }),
 
     deleteRoundTestCase: builder.mutation({
-      query: ({ roundId, testCaseId }) => ({
+      query: ({ roundId, testCaseId, contestId }) => ({
         url: `/rounds/${roundId}/test-cases/${testCaseId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["TestCases"],
+      invalidatesTags: (result, error, { contestId }) => [
+        "TestCases",
+        { type: "PublishCheck", id: contestId },
+      ],
     }),
 
     getAutoTestResults: builder.query({

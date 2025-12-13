@@ -3,6 +3,7 @@ import React from "react"
 const RubricActions = ({
   openModal,
   roundId,
+  contestId,
   criteria,
   totalMaxScore,
   savingRubric,
@@ -21,14 +22,14 @@ const RubricActions = ({
       <div className="flex gap-2">
         <button
           className="button-orange"
-          onClick={() => openModal("rubricCsv", { roundId })}
+          onClick={() => openModal("rubricCsv", { roundId, contestId })}
         >
           Upload CSV
         </button>
 
         <button
           className="button-white"
-          onClick={() => openModal("rubric", { roundId, criteria })}
+          onClick={() => openModal("rubric", { roundId, contestId, criteria })}
           disabled={savingRubric}
         >
           Add Criterion

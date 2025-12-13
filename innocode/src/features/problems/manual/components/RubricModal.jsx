@@ -6,11 +6,13 @@ import {
   useCreateRubricMutation,
   useFetchRubricQuery,
 } from "../../../../services/manualProblemApi"
+import toast from "react-hot-toast"
 
 export default function RubricModal({
   isOpen,
   onClose,
   roundId,
+  contestId,
   initialData = null,
 }) {
   const isEditMode = !!initialData
@@ -58,9 +60,15 @@ export default function RubricModal({
         const updated = criteria.map((c) =>
           c.rubricId === initialData.rubricId ? { ...c, ...formData } : c
         )
-        await updateRubric({ roundId, criteria: updated }).unwrap()
+        await updateRubric({ roundId, criteria: updated, contestId }).unwrap()
+        toast.success("Criterion updated successfully")
       } else {
-        await createRubric({ roundId, criteria: [formData] }).unwrap()
+        await createRubric({
+          roundId,
+          criteria: [formData],
+          contestId,
+        }).unwrap()
+        toast.success("Criterion created successfully")
       }
       onClose()
     } catch (err) {

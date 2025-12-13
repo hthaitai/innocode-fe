@@ -63,7 +63,15 @@ export default function CreateContest() {
 
       if (formData.imgFile) formPayload.append("ImageFile", formData.imgFile)
 
-      await addContest(formPayload).unwrap()
+      console.log("FormData preview:", {
+        Year: formData.year,
+        Name: formData.name,
+        Description: formData.description,
+        RewardsText: formData.rewardsText,
+      })
+
+      const res = await addContest(formPayload).unwrap()
+      console.log(res)
       toast.success("Contest created successfully!")
       navigate("/organizer/contests")
     } catch (err) {

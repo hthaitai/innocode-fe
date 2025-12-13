@@ -6,6 +6,7 @@ const TextFieldFluent = ({
   name,
   value = "",
   onChange,
+  onKeyDown,
   placeholder,
   type = "text",
   multiline = false,
@@ -13,7 +14,9 @@ const TextFieldFluent = ({
   error = false,
   helperText = "",
   disabled = false,
-  maxLength = null, // null means no limit, or can be set per field
+  maxLength = null, // null means no limit, or can be set per
+  startIcon = null, // optional icon at the start
+  endButton = null, // optional button inside input at the end
 }) => {
   const [focused, setFocused] = useState(false)
 
@@ -21,7 +24,8 @@ const TextFieldFluent = ({
   const handleBlur = () => setFocused(false)
 
   // Default maxLength: 200 for single-line inputs, no limit for multiline unless specified
-  const effectiveMaxLength = maxLength !== null ? maxLength : (multiline ? null : 200)
+  const effectiveMaxLength =
+    maxLength !== null ? maxLength : multiline ? null : 200
 
   const handleChange = (e) => {
     const newValue = e.target.value
@@ -37,7 +41,7 @@ const TextFieldFluent = ({
       )}
 
       <div
-        className={`flex items-start rounded-[5px] bg-white border transition-all duration-200
+        className={`flex items-center rounded-[5px] bg-white border transition-all duration-200
           ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-text"}
           ${
             error
@@ -48,6 +52,8 @@ const TextFieldFluent = ({
           }
         `}
       >
+        {startIcon && <div className="pl-2">{startIcon}</div>}
+
         {multiline ? (
           <textarea
             name={name}
@@ -57,6 +63,7 @@ const TextFieldFluent = ({
             onFocus={handleFocus}
             onBlur={handleBlur}
             rows={rows}
+            onKeyDown={onKeyDown}
             disabled={disabled}
             className="w-full text-sm leading-5 px-3 py-[5px] rounded-[5px] resize-none outline-none bg-transparent"
           />
@@ -69,10 +76,13 @@ const TextFieldFluent = ({
             onChange={handleChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
+            onKeyDown={onKeyDown}
             disabled={disabled}
             className="w-full text-sm leading-5 px-3 py-[5px] rounded-[5px] outline-none bg-transparent"
           />
         )}
+
+        {endButton && <div className="pr-1">{endButton}</div>}
       </div>
 
       {/* live character count */}

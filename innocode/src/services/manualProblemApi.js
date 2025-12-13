@@ -6,10 +6,18 @@ export const manualProblemApi = api.injectEndpoints({
   endpoints: (builder) => ({
     fetchRubric: builder.query({
       query: (roundId) => `rounds/${roundId}/rubric`,
-      providesTags: (result, error, roundId) => [
-        { type: "Rubric", id: roundId },
-      ],
-      transformResponse: (response) => response.data.criteria || [],
+
+      providesTags: (result) => {
+        const criteria = result?.data?.criteria || []
+
+        return [
+          ...criteria.map((c) => ({
+            type: "Rubric",
+            id: c.rubricId,
+          })),
+          { type: "Rubric", id: "LIST" },
+        ]
+      },
     }),
 
     // Fetch Rubric Template
@@ -20,7 +28,7 @@ export const manualProblemApi = api.injectEndpoints({
 
     // Import Rubric CSV
     importRubricCsv: builder.mutation({
-      query: ({ roundId, file }) => {
+      query: ({ roundId, file, contestId }) => {
         const formData = new FormData()
         formData.append("roundId", roundId) // keep this if backend needs it
         formData.append("csvFile", file) // <-- use "csvFile" like MCQ
@@ -32,16 +40,10 @@ export const manualProblemApi = api.injectEndpoints({
           // DO NOT set Content-Type; fetch sets it automatically for multipart/form-data
         }
       },
-      invalidatesTags: (result, error, { roundId }) => [
-        { type: "Rubric", id: roundId },
+      invalidatesTags: (result, error, { roundId, contestId }) => [
+        { type: "Rubric", id: "LIST" },
+        { type: "PublishCheck", id: contestId },
       ],
-      async onQueryStarted(args, { queryFulfilled }) {
-        try {
-          await queryFulfilled
-        } catch {
-          toast.error("Failed to import rubric CSV")
-        }
-      },
     }),
 
     // Update existing criteria
@@ -52,53 +54,38 @@ export const manualProblemApi = api.injectEndpoints({
         body: { criteria },
       }),
       invalidatesTags: (result, error, { roundId }) => [
-        { type: "Rubric", id: roundId },
+        { type: "Rubric", id: "LIST" },
       ],
-      async onQueryStarted(args, { queryFulfilled }) {
-        try {
-          await queryFulfilled
-          toast.success("Rubric updated")
-        } catch {
-          toast.error("Failed to update rubric")
-        }
-      },
     }),
 
     // Create new criteria
     createRubric: builder.mutation({
-      query: ({ roundId, criteria }) => ({
+      query: ({ roundId, criteria, contestId }) => ({
         url: `rounds/${roundId}/rubric`,
         method: "POST",
         body: { criteria },
       }),
-      invalidatesTags: (result, error, { roundId }) => [
-        { type: "Rubric", id: roundId },
+      invalidatesTags: (result, error, { roundId, contestId }) => [
+        { type: "Rubric", id: "LIST" },
+        { type: "PublishCheck", id: contestId },
       ],
-      async onQueryStarted(args, { queryFulfilled }) {
-        try {
-          await queryFulfilled
-          toast.success("Rubric created")
-        } catch {
-          toast.error("Failed to create rubric")
-        }
-      },
     }),
 
     deleteCriterion: builder.mutation({
-      query: ({ roundId, rubricId }) => ({
+      query: ({ roundId, rubricId, contestId }) => ({
         url: `rounds/${roundId}/rubric/${rubricId}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, { roundId }) => [
-        { type: "Rubric", id: roundId },
+      invalidatesTags: (result, error, { roundId, rubricId, contestId }) => [
+        // 2. Invalidate the generic list (handles 2 -> 1 items)
+        { type: "Rubric", id: "LIST" },
+
+        // 3. Invalidate the SPECIFIC item (Fixes the 1 -> 0 item bug) 👇
+        { type: "Rubric", id: rubricId },
+
+        // Existing check
+        { type: "PublishCheck", id: contestId },
       ],
-      async onQueryStarted(args, { queryFulfilled }) {
-        try {
-          await queryFulfilled
-        } catch {
-          toast.error("Failed to delete criterion")
-        }
-      },
     }),
 
     fetchOrganizerManualResults: builder.query({
@@ -134,14 +121,14 @@ export const manualProblemApi = api.injectEndpoints({
     // Save manual submission (file upload)
     saveManualSubmission: builder.mutation({
       query: ({ roundId, file }) => {
-        const formData = new FormData();
-        formData.append("file", file);
+        const formData = new FormData()
+        formData.append("file", file)
 
         return {
           url: `rounds/${roundId}/manual-test/submissions`,
           method: "POST",
           body: formData,
-        };
+        }
       },
       invalidatesTags: (result, error, { roundId }) => [
         { type: "Results", id: roundId },

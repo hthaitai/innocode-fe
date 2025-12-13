@@ -65,7 +65,7 @@ const Actions = ({ row, items = [] }) => {
         }}
         className="flex items-center justify-end h-full w-full"
       >
-        <MoreHorizontal className="w-5 h-5 cursor-pointer text-[#7A7574] hover:text-black transition-colors" />
+        <MoreHorizontal size={18} className="cursor-pointer text-[#7A7574] hover:text-black transition-colors" />
       </button>
 
       {createPortal(

@@ -6,7 +6,12 @@ import {
   useImportTestCasesCsvMutation,
 } from "@/services/autoEvaluationApi"
 
-export default function TestCaseCsvModal({ isOpen, onClose, roundId }) {
+export default function TestCaseCsvModal({
+  isOpen,
+  onClose,
+  roundId,
+  contestId,
+}) {
   const { data: templateResponse } = useGetTestCaseTemplateQuery()
   const templateUrl = templateResponse?.data
 
@@ -37,7 +42,11 @@ export default function TestCaseCsvModal({ isOpen, onClose, roundId }) {
     }
 
     try {
-      await importTestCasesCsv({ roundId, csvFile: selectedFile }).unwrap()
+      await importTestCasesCsv({
+        roundId,
+        contestId,
+        csvFile: selectedFile,
+      }).unwrap()
       toast.success("Test cases imported successfully")
       setSelectedFile(null)
       onClose()

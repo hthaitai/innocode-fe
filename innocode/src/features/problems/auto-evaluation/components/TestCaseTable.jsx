@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { useModal } from "@/shared/hooks/useModal"
 import TableFluent from "@/shared/components/TableFluent"
 import getTestCaseColumns from "../columns/getTestCaseColumns"
+import { toast } from "react-hot-toast"
 
 import {
   useGetRoundTestCasesQuery,
@@ -37,9 +38,19 @@ const TestCaseTable = ({ contestId, roundId, roundLoading }) => {
       item: testCase,
       message: `Are you sure you want to delete "${testCase.description}"?`,
       onConfirm: async (close) => {
-        await deleteTestCase({ roundId, testCaseId: testCase.testCaseId })
-        close()
-        refetch()
+        try {
+          await deleteTestCase({
+            roundId,
+            testCaseId: testCase.testCaseId,
+            contestId,
+          }).unwrap()
+          toast.success("Test case deleted")
+          refetch()
+        } catch (err) {
+          toast.error("Failed to delete test case")
+        } finally {
+          close()
+        }
       },
     })
   }
@@ -75,6 +86,7 @@ const TestCaseTable = ({ contestId, roundId, roundLoading }) => {
             isLoading={isLoading || roundLoading}
             openModal={openModal}
             roundId={roundId}
+            contestId={contestId}
           />
         )}
       />

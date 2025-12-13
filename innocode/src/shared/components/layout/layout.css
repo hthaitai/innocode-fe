@@ -33,10 +33,10 @@
 .content-wrapper {
   max-width: 1024px;
   margin: 0 auto;
-  animation: fadeInContent 0.4s ease-out;
+  /* animation: fadeInContent 0.4s ease-out; */
 }
 
-@keyframes fadeInContent {
+/* @keyframes fadeInContent {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -45,7 +45,7 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
+} */
 
 /* Home Layout - Full width, no constraints */
 .home-layout {

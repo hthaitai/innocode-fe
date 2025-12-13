@@ -28,11 +28,11 @@ const TableFluentScrollable = ({
     state: { expanded },
     onExpandedChange: setExpanded,
     getRowCanExpand: () => true,
-    getRowId: (row) => row.questionId,
+    getRowId: (row) => row.questionId,s
   })
 
   const isClickable = typeof onRowClick === "function"
-  const pageSize = data.length // use data length for consistent empty rows
+  const pageSize = data.length
 
   return (
     <div className="border border-[#E5E5E5] bg-white rounded-[5px] ">

@@ -46,7 +46,7 @@ export default function AddTestCase() {
     }
 
     try {
-      await createTestCase({ roundId, payload: formData }).unwrap()
+      await createTestCase({ roundId, payload: formData, contestId }).unwrap()
       toast.success("Test case created successfully!")
       navigate(
         `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation`

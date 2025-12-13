@@ -1,5 +1,4 @@
 import React from "react"
-import { motion } from "framer-motion"
 import { BreadcrumbTitle } from "./breadcrumb"
 import { Spinner } from "./SpinnerFluent"
 
@@ -13,17 +12,6 @@ export default function PageContainer({
   loading = false,
   error = null,
 }) {
-  // Fluent design motion curve
-  const fluentEaseOut = [0.16, 1, 0.3, 1]
-
-  const slideVariants = {
-    hidden: { x: 30 },
-    enter: {
-      x: 0,
-      transition: { duration: 0.5, ease: fluentEaseOut },
-    },
-  }
-
   const hasState = loading || error
 
   return (
@@ -67,15 +55,7 @@ export default function PageContainer({
           )}
         </div>
       ) : (
-        <motion.div
-          key={breadcrumbPaths?.join("/") || "page"}
-          variants={slideVariants}
-          initial="hidden"
-          animate="enter"
-          className="w-full"
-        >
-          {children}
-        </motion.div>
+        <div className="w-full">{children}</div>
       )}
     </div>
   )

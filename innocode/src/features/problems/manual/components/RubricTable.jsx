@@ -1,24 +1,27 @@
-import React, { useMemo } from "react"
+import React from "react"
 import TableFluentScrollable from "@/shared/components/table/TableFluentScrollable"
 import { getRubricColumns } from "../columns/getRubricColumns"
 import {
   useDeleteCriterionMutation,
-  useFetchRubricTemplateQuery,
+  useFetchRubricQuery,
 } from "../../../../services/manualProblemApi"
 import { useModal } from "@/shared/hooks/useModal"
 import toast from "react-hot-toast"
 import RubricActions from "./RubricActions"
 
-const RubricTable = ({ roundId, criteria = [], loadingRubric }) => {
+const RubricTable = ({ roundId, contestId }) => {
+  const { data, isLoading: loadingRubric } = useFetchRubricQuery(roundId)
+  const criteria = data?.data?.criteria ?? []
+
   const [deleteCriterion] = useDeleteCriterionMutation()
   const { openModal } = useModal()
-  const { data: templateUrl } = useFetchRubricTemplateQuery() // Optional if modal fetches itself
 
   const savingRubric = false // Only needed if you want to disable "Add Criterion" button during some action
 
   const handleEdit = (criterion) => {
     openModal("rubric", {
       roundId,
+      contestId,
       criteria,
       initialData: criterion,
     })
@@ -34,33 +37,26 @@ const RubricTable = ({ roundId, criteria = [], loadingRubric }) => {
           await deleteCriterion({
             roundId,
             rubricId: criterion.rubricId,
+            contestId,
           }).unwrap()
           toast.success("Criterion deleted successfully")
-          onClose()
         } catch (err) {
           console.error("Failed to delete criterion", err)
           toast.error("Failed to delete criterion")
+        } finally {
+          onClose()
         }
       },
     })
   }
 
-  const tableData = useMemo(
-    () =>
-      criteria.map((c, idx) => ({
-        ...c,
-        questionId: c.rubricId ?? `new-${idx}`,
-      })),
-    [criteria]
-  )
   const columns = getRubricColumns(handleEdit, handleDelete)
-
   const totalMaxScore = criteria.reduce((a, c) => a + c.maxScore, 0)
 
   return (
     <div>
       <TableFluentScrollable
-        data={tableData}
+        data={criteria}
         columns={columns}
         loading={loadingRubric}
         error={null}
@@ -70,6 +66,7 @@ const RubricTable = ({ roundId, criteria = [], loadingRubric }) => {
           <RubricActions
             openModal={openModal}
             roundId={roundId}
+            contestId={contestId}
             criteria={criteria}
             savingRubric={savingRubric}
             totalMaxScore={totalMaxScore}

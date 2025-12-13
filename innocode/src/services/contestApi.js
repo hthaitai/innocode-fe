@@ -20,9 +20,9 @@ export const contestApi = api.injectEndpoints({
     }),
 
     getOrganizerContests: builder.query({
-      query: ({ pageNumber = 1, pageSize = 10 }) => ({
+      query: ({ pageNumber = 1, pageSize = 10, nameSearch = "" }) => ({
         url: "contests/my-contests",
-        params: { pageNumber, pageSize },
+        params: { pageNumber, pageSize, nameSearch },
       }),
       providesTags: (result) =>
         result?.data
@@ -35,6 +35,7 @@ export const contestApi = api.injectEndpoints({
             ]
           : [{ type: "Contests", id: "LIST" }],
     }),
+
     getContestById: builder.query({
       query: (id) => `contests/${id}`,
       transformResponse: (response) => response.data,

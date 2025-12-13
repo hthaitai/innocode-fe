@@ -6,7 +6,7 @@ import {
   useFetchRubricTemplateQuery,
 } from "../../../../services/manualProblemApi"
 
-export default function RubricCsvModal({ isOpen, onClose, roundId }) {
+export default function RubricCsvModal({ isOpen, onClose, roundId, contestId }) {
   const { data: templateUrl } = useFetchRubricTemplateQuery()
   const [importRubricCsv, { isLoading: importing }] =
     useImportRubricCsvMutation()
@@ -32,7 +32,7 @@ export default function RubricCsvModal({ isOpen, onClose, roundId }) {
     }
 
     try {
-      await importRubricCsv({ roundId, file: selectedFile }).unwrap()
+      await importRubricCsv({ roundId, file: selectedFile, contestId }).unwrap()
       toast.success("CSV imported successfully")
       setSelectedFile(null)
       onClose()

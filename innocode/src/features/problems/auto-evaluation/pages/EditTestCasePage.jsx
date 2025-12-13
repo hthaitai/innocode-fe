@@ -13,7 +13,7 @@ import { validateTestCase } from "../validators/testCaseValidator"
 
 export default function EditTestCasePage() {
   const navigate = useNavigate()
-  const { roundId, testCaseId } = useParams()
+  const { contestId, roundId, testCaseId } = useParams()
 
   const { data: round, isLoading: isRoundLoading } =
     useGetRoundByIdQuery(roundId)
@@ -65,6 +65,7 @@ export default function EditTestCasePage() {
       await updateTestCases({
         roundId,
         testCases: [{ testCaseId, ...formData }],
+        contestId: contestId || round?.contestId,
       }).unwrap()
 
       toast.success("Test case updated successfully!")
