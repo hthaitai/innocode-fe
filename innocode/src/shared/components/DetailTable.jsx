@@ -30,7 +30,7 @@ const DetailTable = ({ data, labelWidth = "150px", onOpencode }) => (
             >
               {row.label}
             </th>
-            <td className="py-1 text-[#7A7574] break-words">{displayValue}</td>
+            <td className="py-1 text-[#7A7574] break-words whitespace-pre-wrap">{displayValue}</td>
           </tr>
           
         );

@@ -8,16 +8,21 @@ const CodeEditor = ({
   theme = "vs-dark",
   height = "100%",
   width = "100%",
+  readOnly = false,
   ...props
 }) => {
   return (
     <Editor
       value={value}
-      onChange={(newValue) => onChange(newValue || '')}
+      onChange={readOnly ? undefined : (newValue) => onChange && onChange(newValue || '')}
       language={"python"}
       theme={theme}
       height={height}
       width={width}
+      options={{
+        readOnly,
+        ...props.options,
+      }}
       {...props}
     />
   );

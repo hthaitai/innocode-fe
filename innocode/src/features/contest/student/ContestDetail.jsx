@@ -768,7 +768,6 @@ const ContestDetail = () => {
                                 {round.status}
                               </span>
                               <div className="flex gap-2 absolute bottom-4 right-4">
-                            
                                 {round.status === "Opened" &&
                                   role === "student" &&
                                   (roundRoute || resultRoute) &&
@@ -1324,12 +1323,12 @@ const ContestDetail = () => {
                                     state: { contestId },
                                   })
                                 }
-                                className="button-orange w-full flex items-center justify-between gap-2 py-2 px-3 text-sm"
+                                className="button-green w-full flex items-center justify-between gap-2 py-2 px-3 text-sm"
                               >
                                 <div className="flex items-center gap-2">
                                   <Icon icon={result.icon} width="16" />
                                   <span>{roundName}</span>
-                                  <span className="text-xs text-[#7A7574]">
+                                  <span className="text-xs">
                                     ({result.label})
                                   </span>
                                 </div>

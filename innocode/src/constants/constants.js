@@ -1,4 +1,6 @@
 export const CODE_SNIPPETS = {
-  python: `\ndef greet(name):
-    return f"Hello, {name}!"`,
+  python: `def hello_world():
+    print("Hello, World!")
+
+hello_world()`,
 };

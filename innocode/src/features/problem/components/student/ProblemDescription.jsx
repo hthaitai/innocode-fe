@@ -13,7 +13,7 @@ const ProblemDescription = ({ problem, testCase, timeLimitMinutes }) => {
         Problem Description
       </h2>
       <div className="text-[#4a5568] space-y-3">
-        <p>{problem.description}</p>
+        <p className="whitespace-pre-wrap">{problem.description}</p>
 
         {/* Sample Test Case */}
         {testCase && (

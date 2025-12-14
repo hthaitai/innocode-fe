@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
 import { Icon } from "@iconify/react";
-import { ArrowLeft, Code, Moon, Sun } from "lucide-react";
+import { ArrowLeft, Code, Moon, Sun, Clock } from "lucide-react";
 import useContestDetail from "@/features/contest/hooks/useContestDetail";
 import useStudentAutoEvaluation from "../../hooks/useStudentAutoEvaluation";
+import {
+  useSubmitFinalAutoTestMutation,
+  useSubmitAutoTestMutation,
+} from "@/services/autoEvaluationApi";
+import { toast } from "react-hot-toast";
+import { useRoundTimer } from "../../hooks/useRoundTimer";
 import ProblemDescription from "../../components/student/ProblemDescription";
 import CodeEditorSection from "../../components/student/CodeEditorSection";
 import TestResultsSection from "../../components/student/TestResultsSection";
@@ -46,11 +52,87 @@ const StudentAutoEvaluation = () => {
     handleFinalSubmit,
   } = useStudentAutoEvaluation(contestId, roundId);
 
+  // Direct submit mutation for auto-submit
+  const [submitFinalAutoTest] = useSubmitFinalAutoTestMutation();
+  const [submitAutoTest] = useSubmitAutoTestMutation();
+
   // Extract round and problem data
   const round = contest?.rounds?.find((r) => r.roundId === roundId);
   const problem = round?.problem;
   const timeLimitMinutes = round?.timeLimitSeconds / 60;
   const sampleTestCase = testCases?.data?.[0];
+
+  // Auto-submit when time expires (direct submit without modal)
+  // Submit ngay cả khi chưa có code (submit code trống)
+  const handleAutoSubmit = useCallback(async () => {
+    if (finalSubmitting) return; // Đang submit rồi thì bỏ qua
+
+    try {
+      toast.dismiss();
+      toast.loading("Time is up! Submitting your solution...");
+
+      let finalSubmissionId = submissionId;
+
+      // Nếu chưa có submissionId, submit code hiện tại (hoặc code trống) trước
+      if (!finalSubmissionId) {
+        try {
+          const result = await submitAutoTest({
+            roundId,
+            code: code || "", // Submit code hiện tại hoặc code trống
+          }).unwrap();
+
+          finalSubmissionId =
+            result?.data?.submissionId || result?.submissionId;
+
+          if (!finalSubmissionId) {
+            throw new Error("Failed to get submission ID");
+          }
+
+          // Đợi một chút để submission được xử lý
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        } catch (error) {
+          console.error("❌ Failed to submit code:", error);
+          toast.dismiss();
+          toast.error(
+            `Failed to submit code. ${error?.data?.errorMessage || error?.message || "Unknown error"}`,
+            {
+              duration: 3000, // Tự động tắt sau 3 giây
+            }
+          );
+          return;
+        }
+      }
+
+      // Submit final với submissionId
+      await submitFinalAutoTest(finalSubmissionId).unwrap();
+
+      toast.dismiss();
+      toast.success(
+        "Submission accepted! Your score has been added to the leaderboard."
+      );
+    } catch (error) {
+      console.error("❌ Failed to auto-submit:", error);
+      toast.dismiss();
+      toast.error(
+        error?.data?.errorMessage || "Failed to auto-submit. Please try again."
+      );
+    }
+  }, [
+    submissionId,
+    finalSubmitting,
+    submitFinalAutoTest,
+    submitAutoTest,
+    contestId,
+    navigate,
+    roundId,
+    code,
+  ]);
+
+  // Timer for round
+  const { timeRemaining, formatTime, isExpired } = useRoundTimer(
+    round,
+    handleAutoSubmit
+  );
   // Loading state
   if (loading || testCaseLoading) {
     return (
@@ -126,6 +208,25 @@ const StudentAutoEvaluation = () => {
             <ArrowLeft size={16} />
             <span className="text-sm">Back to Contest</span>
           </button>
+
+          {/* Timer */}
+          {timeRemaining !== null && (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Clock size={18} className="text-[#7A7574]" />
+                <div className="text-right">
+                  <p className="text-xs text-[#7A7574]">Time Remaining</p>
+                  <p
+                    className={`text-lg font-bold ${
+                      timeRemaining < 300 ? "text-red-600" : "text-[#2d3748]"
+                    }`}
+                  >
+                    {formatTime(timeRemaining)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3 mb-2">
@@ -139,9 +240,8 @@ const StudentAutoEvaluation = () => {
           </div>
         </div>
       </div>
-     
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        
         {/* Code Editor Section */}
         <CodeEditorSection
           theme={theme}
@@ -158,6 +258,7 @@ const StudentAutoEvaluation = () => {
           onClearCode={handleClearCode}
           onRunCode={handleRunCode}
           onFinalSubmit={handleFinalSubmit}
+          isTimeUp={isExpired}
         />
 
         {/* Problem Description */}
