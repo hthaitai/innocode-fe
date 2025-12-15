@@ -9,22 +9,21 @@ export const teamInviteApi = {
   getByTeam: (teamId) => 
     axiosClient.get(`/teams/${teamId}/invites`),
   
-  // POST /api/team-invites/accept?token={token}
-  // Send token in both query params and body for compatibility
-  accept: (token) => {
-    console.log("📤 Accept invite request - token:", token);
-    return axiosClient.post("/team-invites/accept", { token }, {
-      params: { token }
+  // POST /api/team-invites/accept?token={token}&email={email}
+  // Public endpoint - no authentication required
+  accept: (token, email) => {
+    console.log("📤 Accept invite request - token:", token, "email:", email);
+    return axiosClient.post("/team-invites/accept", null, {
+      params: { token, email }
     });
   },
   
-  // POST /api/team-invites/decline?token={token}
-  // Try with query params only first (some APIs prefer this for decline)
-  decline: (token) => {
-    console.log("📤 Decline invite request - token:", token);
-    // Try query params only first
+  // POST /api/team-invites/decline?token={token}&email={email}
+  // Public endpoint - no authentication required
+  decline: (token, email) => {
+    console.log("📤 Decline invite request - token:", token, "email:", email);
     return axiosClient.post("/team-invites/decline", null, {
-      params: { token }
+      params: { token, email }
     });
   },
 };

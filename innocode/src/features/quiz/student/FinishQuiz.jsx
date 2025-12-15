@@ -103,26 +103,6 @@ const FinishQuiz = () => {
     });
   };
 
-  // Calculate duration
-  const calculateDuration = () => {
-    if (!myQuiz?.startTime) return "--";
-    const endTime = myQuiz?.endTime || myQuiz?.submittedAt;
-    if (!endTime) return "--";
-
-    const start = new Date(myQuiz.startTime);
-    const end = new Date(endTime);
-    const diffMs = end - start;
-
-    if (diffMs < 0) return "--";
-
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffSecs = Math.floor((diffMs % 60000) / 1000);
-
-    if (diffMins > 0) {
-      return `${diffMins}m ${diffSecs}s`;
-    }
-    return `${diffSecs}s`;
-  };
 
   return (
     <PageContainer bg={false}>
@@ -233,29 +213,6 @@ const FinishQuiz = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Duration - only show if we have start and end time */}
-              {myQuiz?.startTime &&
-                (myQuiz?.endTime || myQuiz?.submittedAt) && (
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Icon
-                          icon="mdi:timer"
-                          className="w-6 h-6 text-green-600"
-                        />
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-gray-500 uppercase">
-                          Duration
-                        </p>
-                        <p className="text-sm font-semibold text-gray-800">
-                          {calculateDuration()}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
             </div>
 
             {/* Answer Results - Detail for each question */}

@@ -1,4 +1,4 @@
-import { api } from "./api"
+import { api } from "./api";
 
 export const autoEvaluationApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -7,15 +7,15 @@ export const autoEvaluationApi = api.injectEndpoints({
     }),
 
     importTestCasesCsv: builder.mutation({
-      query: ({ roundId, csvFile, contestId }) => {
-        const formData = new FormData()
-        formData.append("csvFile", csvFile)
+      query: ({ roundId, csvFile }) => {
+        const formData = new FormData();
+        formData.append("csvFile", csvFile);
 
         return {
           url: `/rounds/${roundId}/test-cases/import-csv`,
           method: "POST",
           body: formData,
-        }
+        };
       },
       invalidatesTags: (result, error, { contestId }) => [
         "TestCases",
@@ -100,13 +100,13 @@ export const autoEvaluationApi = api.injectEndpoints({
     submitAutoTest: builder.mutation({
       query: ({ roundId, code, file }) => {
         const formData = new FormData();
-        
+
         // Append Code if provided
         if (code) {
           formData.append("Code", code);
           formData.append("type", "Code"); // Specify submission type
         }
-        
+
         // Append File if provided
         if (file) {
           formData.append("File", file);
@@ -149,18 +149,21 @@ export const autoEvaluationApi = api.injectEndpoints({
       transformResponse: (response) => response.data,
     }),
   }),
-})
-
+});
 export const {
-  useGetTestCaseTemplateQuery,
-  useImportTestCasesCsvMutation,
-  useCreateRoundTestCaseMutation,
-  useGetRoundTestCasesQuery,
-  useUpdateRoundTestCasesMutation,
-  useDeleteRoundTestCaseMutation,
-  useGetAutoTestResultsQuery,
-  useGetTestCaseByIdQuery,
-  useSubmitAutoTestMutation,
-  useGetAutoTestResultQuery,
-  useSubmitFinalAutoTestMutation,
-} = autoEvaluationApi
+  // === Test Cases ===
+  useGetTestCaseTemplateQuery, // getTestCaseTemplate
+  useImportTestCasesCsvMutation, // importTestCasesCsv
+  useCreateRoundTestCaseMutation, // createRoundTestCase
+  useGetRoundTestCasesQuery, // getRoundTestCases
+  useGetTestCaseByIdQuery, // getTestCaseById
+  useUpdateRoundTestCasesMutation, // updateRoundTestCases
+  useDeleteRoundTestCaseMutation, // deleteRoundTestCase
+
+  // === Auto Test Submissions & Results ===
+  useGetAutoTestResultsQuery, // getAutoTestResults
+  useSubmitAutoTestMutation, // submitAutoTest
+  useGetAutoTestResultQuery, // getAutoTestResult
+  useSubmitFinalAutoTestMutation, // submitFinalAutoTest
+} = autoEvaluationApi;
+ 

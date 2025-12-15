@@ -7,6 +7,7 @@ import PublishContestSection from "../../components/organizer/PublishContestSect
 import ContestRelatedSettings from "../../components/organizer/ContestRelatedSettings"
 import RoundsList from "../../components/organizer/RoundList"
 import DeleteContestSection from "../../components/organizer/DeleteContestSection"
+import StartEndContestSection from "../../components/organizer/StartEndContestSection"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
 
 const OrganizerContestDetail = () => {
@@ -63,6 +64,14 @@ const OrganizerContestDetail = () => {
         {/* Contest Info + Publish */}
         <div className="space-y-1">
           <ContestInfo contest={contest} />
+        </div>
+
+        {/* Contest Control */}
+        <div>
+          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+            Contest Control
+          </div>
+          <StartEndContestSection contestId={contestId} />
         </div>
 
         {/* Rounds */}

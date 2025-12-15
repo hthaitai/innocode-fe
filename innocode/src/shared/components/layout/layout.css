@@ -30,6 +30,13 @@
   scroll-behavior: smooth;
 }
 
+/* Keep container constraints when sidebar is hidden */
+.main-content.no-sidebar .page-content {
+  padding-left: calc(var(--spacing) * 5);
+  padding-right: calc(var(--spacing) * 5);
+  padding-bottom: calc(var(--spacing) * 5);
+}
+
 .content-wrapper {
   max-width: 1024px;
   margin: 0 auto;

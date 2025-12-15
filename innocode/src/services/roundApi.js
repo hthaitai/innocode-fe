@@ -76,6 +76,24 @@ export const roundApi = api.injectEndpoints({
         { type: "PublishCheck", id: contestId },
       ],
     }),
+    startRoundNow: builder.mutation({
+      query: (id) => ({
+        url: `rounds/${id}/start-now`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Rounds", id },
+      ],
+    }),
+    endRoundNow: builder.mutation({
+      query: (id) => ({
+        url: `rounds/${id}/end-now`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Rounds", id },
+      ],
+    }),
   }),
 })
 
@@ -85,4 +103,6 @@ export const {
   useCreateRoundMutation,
   useUpdateRoundMutation,
   useDeleteRoundMutation,
+  useStartRoundNowMutation,
+  useEndRoundNowMutation,
 } = roundApi

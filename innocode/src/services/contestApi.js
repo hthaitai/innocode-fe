@@ -76,6 +76,26 @@ export const contestApi = api.injectEndpoints({
         { type: "Contests", id: "LIST" },
       ],
     }),
+    startContestNow: builder.mutation({
+      query: (id) => ({
+        url: `contests/${id}/start-now`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Contests", id },
+        { type: "Contests", id: "LIST" },
+      ],
+    }),
+    endContestNow: builder.mutation({
+      query: (id) => ({
+        url: `contests/${id}/end-now`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Contests", id },
+        { type: "Contests", id: "LIST" },
+      ],
+    }),
   }),
 })
 
@@ -88,4 +108,6 @@ export const {
   useDeleteContestMutation,
   useCheckPublishReadyQuery,
   usePublishContestMutation,
+  useStartContestNowMutation,
+  useEndContestNowMutation,
 } = contestApi
