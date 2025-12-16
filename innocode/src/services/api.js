@@ -21,8 +21,11 @@ export const api = createApi({
     "TestResults",
     "Leaderboard",
     "Appeal",
-
-    "JudgesInvite"
+    "JudgesInvite",
+    "Teams",
+    "Students",
+    "TeamInvites",
+    "ActivityLogs",
   ],
   endpoints: () => ({}),
 })

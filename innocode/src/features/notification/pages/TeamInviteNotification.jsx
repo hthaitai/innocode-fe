@@ -8,7 +8,10 @@ import {
   useGetNotificationsQuery,
   useReadNotificationMutation,
 } from "@/services/notificationApi";
-import { teamInviteApi } from "@/api/teamInviteApi";
+import {
+  useAcceptInviteMutation,
+  useDeclineInviteMutation,
+} from "@/services/teamInviteApi";
 import { toast } from "react-hot-toast";
 
 const TeamInviteNotification = () => {
@@ -30,19 +33,24 @@ const TeamInviteNotification = () => {
   const { 
     data: notificationsListData, 
     isLoading: isLoadingList 
-  } = useGetNotificationsQuery(undefined, {
-    skip: !!notificationByIdData,
-  });
+  } = useGetNotificationsQuery(
+    { pageNumber: 1, pageSize: 50 },
+    {
+      skip: !!notificationByIdData,
+    }
+  );
 
   const [readNotification] = useReadNotificationMutation();
+  const [acceptInvite, { isLoading: isAccepting }] = useAcceptInviteMutation();
+  const [declineInvite, { isLoading: isDeclining }] = useDeclineInviteMutation();
 
   const notificationData = React.useMemo(() => {
     if (notificationByIdData) {
       return notificationByIdData;
     }
     
-    if (notificationsListData?.data?.items) {
-      return notificationsListData.data.items.find(
+    if (notificationsListData?.items) {
+      return notificationsListData.items.find(
         (notif) => notif.notificationId === notificationId
       );
     }
@@ -76,7 +84,7 @@ const TeamInviteNotification = () => {
 
   const handleInviteAction = async (actionType) => {
     const action = parsedPayload?.actions?.[actionType];
-    if (!action || loading) return;
+    if (!action || loading || isAccepting || isDeclining) return;
 
     setLoading(true);
     setStatus("processing");
@@ -90,41 +98,56 @@ const TeamInviteNotification = () => {
         throw new Error("Missing token or email in invitation");
       }
 
-      const response = actionType === "accept" 
-        ? await teamInviteApi.accept(token, email)
-        : await teamInviteApi.decline(token, email);
+      const result = actionType === "accept" 
+        ? await acceptInvite({ token, email }).unwrap()
+        : await declineInvite({ token, email }).unwrap();
 
-      const isSuccess = [200, 201, 204].includes(response.status);
-      
-      if (isSuccess) {
-        const responseData = response.data?.data || response.data;
-        const successMessage =
-          responseData?.message ||
-          response.data?.message ||
-          (actionType === "accept"
-            ? "Invitation accepted successfully. You are now a member of the team."
-            : "Invitation declined successfully.");
+      // Handle success response
+      const responseData = result?.data || result;
+      const successMessage =
+        responseData?.message ||
+        result?.message ||
+        (actionType === "accept"
+          ? "Invitation accepted successfully. You are now a member of the team."
+          : "Invitation declined successfully.");
 
-        setStatus("success");
-        setMessage(successMessage);
-        toast.success(successMessage);
+      setStatus("success");
+      setMessage(successMessage);
+      toast.success(successMessage);
 
-        setTimeout(() => navigate("/notifications"), 2000);
-      } else {
-        throw new Error("Unexpected response status");
-      }
+      setTimeout(() => navigate("/notifications"), 2000);
     } catch (error) {
+      console.error(`❌ ${actionType} invite error:`, error);
+      
       setStatus("error");
-      const errorData = error.response?.data;
-      const errorMessage =
-        errorData?.errorMessage ||
-        errorData?.message ||
-        errorData?.data?.message ||
-        (error.response?.status === 500
-          ? "Server error occurred. Please try again later or contact support."
-          : error.response?.status === 400
-          ? "Invalid request. The invitation may have expired or already been processed."
-          : `Failed to ${actionType} invitation. (${error.response?.status || "Unknown error"})`);
+      
+      // Extract error information
+      const errorData = error?.data || error?.response?.data;
+      const errorCode = errorData?.errorCode;
+      const statusCode = error?.status || error?.response?.status;
+      
+      // Build user-friendly error message
+      let errorMessage = errorData?.errorMessage || 
+                        errorData?.message || 
+                        errorData?.data?.message ||
+                        error?.message;
+
+      // Handle specific error cases
+      if (statusCode === 400 || errorCode === "VALIDATION_ERROR") {
+        errorMessage = "Invalid request. The invitation may have expired or already been processed.";
+      } else if (statusCode === 404 || errorCode === "NOT_FOUND") {
+        errorMessage = "Invitation not found. It may have been cancelled or already processed.";
+      } else if (statusCode === 409 || errorCode === "CONFLICT") {
+        errorMessage = "This invitation has already been processed. Please check your team status.";
+      } else if (statusCode === 403 || errorCode === "FORBIDDEN") {
+        errorMessage = "You don't have permission to perform this action. The invitation may be for a different user.";
+      } else if (statusCode === 500 || errorCode === "INTERNAL_SERVER_ERROR") {
+        errorMessage = "Server error occurred. Please try again later or contact support.";
+      } else if (statusCode === 401 || errorCode === "UNAUTHORIZED") {
+        errorMessage = "Authentication failed. Please try again.";
+      } else if (!errorMessage) {
+        errorMessage = `Failed to ${actionType} invitation. ${statusCode ? `(Error ${statusCode})` : "Please try again."}`;
+      }
 
       setMessage(errorMessage);
       toast.error(errorMessage);
