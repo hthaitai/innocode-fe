@@ -280,7 +280,7 @@ export const BREADCRUMB_PATHS = {
   ],
   TEAM: ["/team"],
   LEADERBOARD: ["/leaderboard"],
-  ANNOUNCEMENTS: ["/announcements"],
+  NOTIFICATIONS: ["/notifications"],
   HELP: ["/help"],
   PROFILE: ["/profile"],
   DASHBOARD: ["/dashboard"],

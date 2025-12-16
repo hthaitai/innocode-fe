@@ -70,9 +70,9 @@ const allMenus = {
     icon: "lucide:calendar-range",
   },
   // Common menus
-  announcements: {
-    path: "/announcements",
-    label: "Announcements",
+  notifications: {
+    path: "/notifications",
+    label: "Notifications",
     icon: "lucide:bell",
   },
   provinceStaff: {
@@ -96,7 +96,7 @@ const menuByRole = {
     "team",
     "leaderboard",
     "certificate",
-    "announcements",
+    "notifications",
   ],
   organizer: [
     "profile",
@@ -110,7 +110,7 @@ const menuByRole = {
     "leaderboard",
     "contests",
     "team",
-    "announcements",
+    "notifications",
     "appeal",
   ],
   staff: [
@@ -120,10 +120,10 @@ const menuByRole = {
     "leaderboard",
     "contests",
     "team",
-    "announcements",
+    "notifications",
   ],
-  judge: ["profile", "dashboard", "manualSubmissions", "announcements", "help"],
-  admin: ["profile", "dashboard", "leaderboard", "announcements", "help"],
+  judge: ["profile", "dashboard", "manualSubmissions", "notifications", "help"],
+  admin: ["profile", "dashboard", "leaderboard", "notifications", "help"],
 };
 
 const Sidebar = () => {

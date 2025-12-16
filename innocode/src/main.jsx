@@ -12,7 +12,8 @@ import Home from "./features/common/pages/Home";
 import About from "./features/common/pages/About";
 import Profile from "./features/common/profile/pages/Profile";
 import Dashboard from "./features/common/pages/Dashboard";
-import Announcements from "./features/common/pages/Announcements";
+import Notifications from "./features/common/pages/Notifications";
+import TeamInviteNotification from "./features/notification/pages/TeamInviteNotification";
 import Unauthorized from "./features/common/pages/Unauthorized";
 // Student pages
 import Contests from "./features/contest/student/Contests";
@@ -251,10 +252,18 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "announcements",
+        path: "notifications",
         element: (
           <ProtectedRoute>
-            <Announcements />
+            <Notifications />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "notifications/team-invite/:notificationId",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
+            <TeamInviteNotification />
           </ProtectedRoute>
         ),
       },

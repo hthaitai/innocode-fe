@@ -28,7 +28,7 @@ const TableFluentScrollable = ({
     state: { expanded },
     onExpandedChange: setExpanded,
     getRowCanExpand: () => true,
-    getRowId: (row) => row.questionId,
+    getRowId: (row) => row.questionId || row.id,
   })
 
   const isClickable = typeof onRowClick === "function"

@@ -1,0 +1,174 @@
+import React, { useMemo } from "react";
+import { Icon } from "@iconify/react";
+import { useNavigate } from "react-router-dom";
+import { useGetNotificationsQuery } from "@/services/notificationApi";
+import { formatDateTime } from "@/shared/utils/dateTime";
+import { useAuth } from "@/context/AuthContext";
+import "./NotificationDropdown.css";
+import {
+  useReadAllNotificationsMutation,
+  useReadNotificationMutation,
+} from "../../../../services/notificationApi";
+
+const NotificationDropdown = ({ onClose }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const {
+    data: notificationsData,
+    isLoading,
+    error,
+  } = useGetNotificationsQuery(undefined, {
+    pollingInterval: 30000,
+  });
+  
+  const [readNotification] = useReadNotificationMutation();
+  const [readAllNotifications] = useReadAllNotificationsMutation();
+
+  const notifications = useMemo(() => {
+    if (!notificationsData?.data?.items) return [];
+
+    return notificationsData.data.items.map((notification) => {
+      let parsedPayload = {};
+      let message = "No message";
+
+      try {
+        parsedPayload =
+          typeof notification.payload === "string"
+            ? JSON.parse(notification.payload)
+            : notification.payload || {};
+        message = parsedPayload.message || notification.payload || "No message";
+      } catch {
+        message = notification.payload || "No message";
+      }
+
+      return {
+        ...notification,
+        parsedPayload,
+        message,
+        isRead: notification.read ?? notification.isRead ?? false,
+      };
+    });
+  }, [notificationsData]);
+
+  const handleNotificationClick = async (notification) => {
+    try {
+      await readNotification(notification.notificationId).unwrap();
+    } catch (error) {
+      console.error("Error reading notification:", error);
+    }
+
+    if (
+      notification.parsedPayload?.targetType === "team_invite" &&
+      user?.role === "student"
+    ) {
+      if (onClose) {
+        onClose();
+      }
+      navigate(`/notifications/team-invite/${notification.notificationId}`);
+    }
+  };
+
+  const handleReadAllNotifications = async () => {
+    try {
+      await readAllNotifications().unwrap();
+    } catch (error) {
+      console.error("Error reading all notifications:", error);
+    }
+  };
+
+  // Limit to first 3 notifications
+  const displayedNotifications = useMemo(() => {
+    return notifications.slice(0, 3);
+  }, [notifications]);
+
+  // Check if there are more notifications
+  const hasMoreNotifications = notifications.length > 3;
+
+  // Handle view all - navigate to notifications page
+  const handleViewAll = () => {
+    if (onClose) {
+      onClose();
+    }
+    navigate("/notifications");
+  };
+
+  return (
+    <div className="notification-dropdown">
+      <div className="notification-dropdown-header">
+        <h3 className="notification-title">Notifications</h3>
+        {notifications.length > 0 && (
+          <span className="notification-count">
+            {notifications.filter((notification) => !notification.isRead).length}{" "}
+            new
+          </span>
+        )}
+      </div>
+
+      <div className="notification-list">
+        {isLoading ? (
+          <div className="notification-loading">
+            <Icon icon="mdi:loading" width="20" className="spinning" />
+            <span>Loading...</span>
+          </div>
+        ) : error ? (
+          <div className="notification-empty">
+            <Icon icon="mdi:alert-circle-outline" width="24" />
+            <span>Error loading notifications</span>
+          </div>
+        ) : notifications.length === 0 ? (
+          <div className="notification-empty">
+            <Icon icon="mdi:bell-off-outline" width="24" />
+            <span>No notifications</span>
+          </div>
+        ) : (
+          displayedNotifications.map((notification) => (
+            <div
+              key={notification.notificationId}
+              className="notification-item"
+              onClick={() => handleNotificationClick(notification)}
+            >
+              <div className="notification-item-icon">
+                <Icon icon="mdi:information-outline" width="20" />
+              </div>
+              <div className="notification-item-content">
+                <div
+                  className={`notification-item-message ${
+                    !notification.isRead ? "font-bold" : ""
+                  }`}
+                >
+                  {notification.message}
+                </div>
+                <div className="notification-item-time">
+                  {formatDateTime(notification.sentAt)}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Footer with actions */}
+      <div className="notification-dropdown-footer">
+        {hasMoreNotifications && (
+          <button
+            className="notification-view-all"
+            onClick={handleViewAll}
+          >
+            <span>View all</span>
+            <Icon icon="mdi:chevron-right" width="16" />
+          </button>
+        )}
+        {notifications.length > 0 && (
+          <button
+            className="notification-mark-all"
+            onClick={handleReadAllNotifications}
+          >
+            Mark all as read
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default NotificationDropdown;

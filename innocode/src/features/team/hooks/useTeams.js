@@ -31,12 +31,7 @@ export const useTeams = () => {
       setLoading(true);
       setError(null);
       const response = await teamApi.getMyTeam();
-      console.log("🔍 getMyTeam API response:", response);
-      console.log(
-        "🔍 getMyTeam message:",
-        response.data?.message || response.message
-      );
-      console.log("🔍 getMyTeam data:", response.data?.data || response.data);
+  
 
       // API returns { data: [], message: "...", statusCode: 200, code: "SUCCESS" }
       // Extract actual team data from response.data.data or response.data
@@ -74,13 +69,11 @@ export const useTeams = () => {
             );
           }
         );
-        console.log("🔍 Filtered by contestId:", contestId, "Found team:", myTeam);
       } else if (teamsArray.length > 0) {
         // If no contestId provided, return first team
         myTeam = teamsArray[0];
       }
 
-      console.log("🔍 Extracted myTeam:", myTeam);
       // Don't update teams state here - myTeam is a single object, not an array
       // Teams state should remain as array for addTeam/updateTeam/deleteTeam to work
       return myTeam;
