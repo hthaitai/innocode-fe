@@ -1,64 +1,91 @@
-import React, { useMemo } from "react"
-import { Icon } from "@iconify/react"
-import { useGetNotificationsQuery } from "@/services/notificationApi"
-import { formatDateTime } from "@/shared/utils/dateTime"
-import "./NotificationDropdown.css"
+import React, { useEffect, useMemo } from "react";
+import { Icon } from "@iconify/react";
+import { useNavigate } from "react-router-dom";
+import { useGetNotificationsQuery } from "@/services/notificationApi";
+import { formatDateTime } from "@/shared/utils/dateTime";
+import "./NotificationDropdown.css";
+import {
+  useReadAllNotificationsMutation,
+  useReadNotificationMutation,
+} from "../../../../services/notificationApi";
 
-const NotificationDropdown = () => {
+const NotificationDropdown = ({ onClose }) => {
+  const navigate = useNavigate();
   const {
     data: notificationsData,
     isLoading,
     error,
   } = useGetNotificationsQuery(undefined, {
     pollingInterval: 30000, // Poll every 30 seconds
-  })
-
+  });
+  
+  const [readNotification] = useReadNotificationMutation();
+  const [readAllNotifications] = useReadAllNotificationsMutation();
+  const handleReadNotification = async (notificationId) => {
+    try {
+      await readNotification(notificationId);
+    } catch (error) {
+      console.error("Error reading notification:", error);
+    }
+  };
+  const handleReadAllNotifications = async () => {
+    try {
+      await readAllNotifications();
+    } catch (error) {
+      console.error("Error reading all notifications:", error);
+    }
+  };
   // Parse notifications and extract message from payload
   const notifications = useMemo(() => {
-    if (!notificationsData?.data?.items) return []
+    if (!notificationsData?.data?.items) return [];
 
     return notificationsData.data.items.map((notification) => {
-      let parsedPayload = {}
-      let message = "No message"
+      let parsedPayload = {};
+      let message = "No message";
 
       try {
         parsedPayload =
           typeof notification.payload === "string"
             ? JSON.parse(notification.payload)
-            : notification.payload || {}
-        message = parsedPayload.message || notification.payload || "No message"
+            : notification.payload || {};
+        message = parsedPayload.message || notification.payload || "No message";
       } catch (e) {
-        message = notification.payload || "No message"
+        message = notification.payload || "No message";
       }
 
       return {
         ...notification,
         parsedPayload,
         message,
-      }
-    })
-  }, [notificationsData])
+      };
+    });
+  }, [notificationsData]);
 
-  // Get notification icon based on type
-  const getNotificationIcon = (type) => {
-    switch (type) {
-      case "team.invitation":
-        return "mdi:account-plus-outline"
-      case "round_opened":
-        return "mdi:play-circle-outline"
-      case "result_published":
-        return "mdi:chart-line"
-      default:
-        return "mdi:information-outline"
+  // Limit to first 3 notifications
+  const displayedNotifications = useMemo(() => {
+    return notifications.slice(0, 3);
+  }, [notifications]);
+
+  // Check if there are more notifications
+  const hasMoreNotifications = notifications.length > 3;
+
+  // Handle view all - navigate to notifications page
+  const handleViewAll = () => {
+    if (onClose) {
+      onClose();
     }
-  }
+    navigate("/notifications");
+  };
 
   return (
     <div className="notification-dropdown">
       <div className="notification-dropdown-header">
         <h3 className="notification-title">Notifications</h3>
         {notifications.length > 0 && (
-          <span className="notification-count">{notifications.length} new</span>
+          <span className="notification-count">
+            {notifications.filter((notification) => !notification.isRead).length}{" "}
+            new
+          </span>
         )}
       </div>
 
@@ -79,19 +106,23 @@ const NotificationDropdown = () => {
             <span>No notifications</span>
           </div>
         ) : (
-          notifications.map((notification) => (
+          displayedNotifications.map((notification) => (
             <div
               key={notification.notificationId}
               className="notification-item"
+              onClick={() =>
+                handleReadNotification(notification.notificationId)
+              }
             >
               <div className="notification-item-icon">
-                <Icon
-                  icon={getNotificationIcon(notification.type)}
-                  width="20"
-                />
+                <Icon icon="mdi:information-outline" width="20" />
               </div>
               <div className="notification-item-content">
-                <div className="notification-item-message">
+                <div
+                  className={`notification-item-message ${
+                    !notification.isRead ? "font-bold" : ""
+                  }`}
+                >
                   {notification.message}
                 </div>
                 <div className="notification-item-time">
@@ -102,8 +133,29 @@ const NotificationDropdown = () => {
           ))
         )}
       </div>
-    </div>
-  )
-}
 
-export default NotificationDropdown
+      {/* Footer with actions */}
+      <div className="notification-dropdown-footer">
+        {hasMoreNotifications && (
+          <button
+            className="notification-view-all"
+            onClick={handleViewAll}
+          >
+            <span>View all</span>
+            <Icon icon="mdi:chevron-right" width="16" />
+          </button>
+        )}
+        {notifications.length > 0 && (
+          <button
+            className="notification-mark-all"
+            onClick={handleReadAllNotifications}
+          >
+            Mark all as read
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default NotificationDropdown;

@@ -21,7 +21,7 @@ const Navbar = () => {
     pollingInterval: 30000,
   });
 
-  const unreadCount = notificationsData?.data?.items?.length || 0;
+  const unreadCount = notificationsData?.data?.items?.filter(notification => !notification.isRead).length || 0;
 
   const handleSignIn = () => {
     navigate("/login");
@@ -144,7 +144,7 @@ const Navbar = () => {
                 {/* Notification Dropdown */}
                 {showNotifications && (
                   <div className="notification-dropdown-wrapper">
-                    <NotificationDropdown />
+                    <NotificationDropdown onClose={() => setShowNotifications(false)} />
                   </div>
                 )}
               </div>

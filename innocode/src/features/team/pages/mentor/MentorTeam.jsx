@@ -60,17 +60,11 @@ const MentorTeam = () => {
         const teamData = await getMyTeam(contestId);
 
         if (teamData) {
-          console.log("🔍 Team data received:", teamData);
-          console.log("🔍 Team members:", teamData.members);
-          if (teamData.members && teamData.members.length > 0) {
-            console.log("🔍 First member structure:", teamData.members[0]);
-          }
           setMyTeam(teamData);
         } else {
           setMyTeam(null);
         }
       } catch (error) {
-        console.error("❌ Error fetching my team:", error);
         setMyTeam(null);
       }
     };
@@ -128,7 +122,6 @@ const MentorTeam = () => {
         setLoadingInvites(true);
         try {
           const response = await teamInviteApi.getByTeam(teamId);
-          console.log("🔍 Pending invites response:", response);
 
           // Extract invites from response
           let invitesData = [];
@@ -160,7 +153,6 @@ const MentorTeam = () => {
             return updated;
           });
         } catch (error) {
-          console.error("❌ Error fetching pending invites:", error);
           setPendingInvites([]);
         } finally {
           setLoadingInvites(false);
@@ -226,7 +218,6 @@ const MentorTeam = () => {
 
           setStudents(availableStudents);
         } catch (error) {
-          console.error("❌ Error fetching students:", error);
           setStudents([]);
         } finally {
           setLoadingStudents(false);
@@ -287,10 +278,7 @@ const MentorTeam = () => {
 
       const teamData = await getMyTeam(contestId);
       if (teamData) {
-        console.log("✅ Team created and fetched:", teamData);
         setMyTeam(teamData);
-      } else {
-        console.warn("⚠️ Team created but could not be fetched");
       }
 
       // Switch to My Team tab after successful creation
@@ -322,7 +310,6 @@ const MentorTeam = () => {
       // Handle different field name formats (camelCase and snake_case)
       const teamId = myTeam?.teamId || myTeam?.team_id || myTeam?.id;
       if (!teamId) {
-        console.error("❌ Team ID not found. myTeam object:", myTeam);
         throw new Error("Team ID not found");
       }
 
@@ -332,8 +319,6 @@ const MentorTeam = () => {
         inviteeEmail: student.userEmail,
         ttlDays: 60,
       });
-
-      console.log("✅ Invite member response:", response);
 
       // Extract data from response
       const inviteData = response.data?.data || {};
@@ -345,8 +330,6 @@ const MentorTeam = () => {
       const studentEmail = student.userEmail;
 
       if (token && studentEmail) {
-        console.log("✅ Invitation token:", token);
-
         // Generate accept and decline URLs
         // Format: /team-invite?token={token}&email={email}&action=accept|decline
         const baseUrl =
@@ -369,23 +352,10 @@ const MentorTeam = () => {
             declineUrl: declineUrl,
           });
 
-          if (emailSent) {
-            console.log(
-              "✅ Invitation email sent successfully to:",
-              studentEmail
-            );
-          } else {
-            console.warn("⚠️ Failed to send invitation email");
-          }
+          // Email sent status is handled silently
         } catch (emailError) {
-          console.error("❌ Error sending invitation email:", emailError);
           // Don't throw error - invitation was created successfully, just email failed
         }
-      } else {
-        console.warn("⚠️ Cannot send email: missing token or student email", {
-          token,
-          studentEmail,
-        });
       }
       // Add student to invited list
       setInvitedStudentIds((prev) => new Set([...prev, student.studentId]));
@@ -416,7 +386,7 @@ const MentorTeam = () => {
           );
           setPendingInvites(pending);
         } catch (error) {
-          console.error("❌ Error refreshing pending invites:", error);
+          // Error refreshing pending invites
         }
       }
 
@@ -425,8 +395,6 @@ const MentorTeam = () => {
         prev.filter((s) => s.studentId !== student.studentId)
       );
     } catch (error) {
-      console.error("❌ Error inviting member:", error);
-
       // Handle different error cases
       let errorMessage = "Failed to send invitation";
 
@@ -464,7 +432,7 @@ const MentorTeam = () => {
               setMyTeam(teamData);
             }
           } catch (refreshError) {
-            console.error("Error refreshing team data:", refreshError);
+            // Error refreshing team data
           }
         }
         // Handle other errors
@@ -481,13 +449,6 @@ const MentorTeam = () => {
       }
 
       setInviteError(errorMessage);
-
-      // Auto clear error after 5 seconds (except for REG_CLOSED which should stay longer)
-      const clearTimeout =
-        error.response?.data?.errorCode === "REG_CLOSED" ? 10000 : 5000;
-      setTimeout(() => {
-        setInviteError("");
-      }, clearTimeout);
     } finally {
       setInvitingStudentId(null);
     }
@@ -755,11 +716,6 @@ const MentorTeam = () => {
                                   ?.toUpperCase() ||
                                 memberName?.charAt(0)?.toUpperCase() ||
                                 "M";
-
-                              // Log member data for debugging only if still missing
-                              if (memberName === "Unknown Member") {
-                                console.warn("⚠️ Member data missing:", member);
-                              }
 
                               return (
                                 <div

@@ -12,7 +12,6 @@ export const teamInviteApi = {
   // POST /api/team-invites/accept?token={token}&email={email}
   // Public endpoint - no authentication required
   accept: (token, email) => {
-    console.log("📤 Accept invite request - token:", token, "email:", email);
     return axiosClient.post("/team-invites/accept", null, {
       params: { token, email }
     });
@@ -21,7 +20,6 @@ export const teamInviteApi = {
   // POST /api/team-invites/decline?token={token}&email={email}
   // Public endpoint - no authentication required
   decline: (token, email) => {
-    console.log("📤 Decline invite request - token:", token, "email:", email);
     return axiosClient.post("/team-invites/decline", null, {
       params: { token, email }
     });

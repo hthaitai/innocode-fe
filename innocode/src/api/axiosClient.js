@@ -45,7 +45,6 @@ axiosClient.interceptors.request.use(
 
     // Log request trong development
     if (import.meta.env.VITE_ENV === "development") {
-      console.log("📤 Request:", config.method?.toUpperCase(), config.url);
     }
 
     return config;
@@ -59,14 +58,9 @@ axiosClient.interceptors.request.use(
 axiosClient.interceptors.response.use(
   (response) => {
     if (import.meta.env.VITE_ENV === "development") {
-      console.log("📥 Response:", response.config.url, response.status);
       // Log response data for debugging
       if (response.status >= 200 && response.status < 300) {
-        console.log(
-          "✅ Success response for:",
-          response.config.url,
-          response.data
-        );
+
       }
     }
     return response;
