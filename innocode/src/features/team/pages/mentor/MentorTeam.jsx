@@ -1,17 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { Users, Mail, UserPlus } from "lucide-react";
 import PageContainer from "@/shared/components/PageContainer";
 import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs";
 import useContestDetail from "@/features/contest/hooks/useContestDetail";
-import useTeams from "@/features/team/hooks/useTeams";
 import { useAuth } from "@/context/AuthContext";
 import useMentors from "../../../../shared/hooks/useMentors";
-import { teamMemberApi } from "@/api/teamMemberApi";
-import { studentApi } from "@/api/studentApi";
-import { teamInviteApi } from "@/api/teamInviteApi";
 import { sendTeamInviteEmail } from "@/shared/services/emailService";
+import {
+  useGetMyTeamQuery,
+  useCreateTeamMutation,
+} from "@/services/teamApi";
+import { useGetStudentsBySchoolIdQuery } from "@/services/studentApi";
+import {
+  useGetTeamInvitesQuery,
+  useInviteStudentMutation,
+} from "@/services/teamInviteApi";
 
 const MentorTeam = () => {
   const { contestId } = useParams();
@@ -21,17 +26,9 @@ const MentorTeam = () => {
   const [schoolId, setSchoolId] = useState(null);
   const [mentorId, setMentorId] = useState(null);
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [students, setStudents] = useState([]);
-  const [allStudents, setAllStudents] = useState([]); // Store all students for lookup
-  const [loadingStudents, setLoadingStudents] = useState(false);
-  const [invitingStudentId, setInvitingStudentId] = useState(null);
   const [inviteError, setInviteError] = useState("");
   const [invitedStudentIds, setInvitedStudentIds] = useState(new Set()); // Track invited students
-  const [pendingInvites, setPendingInvites] = useState([]); // Track pending invitations
-  const [loadingInvites, setLoadingInvites] = useState(false);
   const { contest, loading: contestLoading } = useContestDetail(contestId);
-  const { teams, loading: teamsLoading, addTeam, getMyTeam } = useTeams();
   const {
     mentors,
     loading: mentorLoading,
@@ -44,35 +41,62 @@ const MentorTeam = () => {
     ? createBreadcrumbWithPaths("CONTEST_DETAIL", contest.name || contest.title)
     : { items: BREADCRUMBS.NOT_FOUND, paths: ["/"] };
 
-  // State để lưu myTeam từ API
-  const [myTeam, setMyTeam] = useState(null);
+  // RTK Query hooks
+  const {
+    data: myTeamsData,
+    isLoading: myTeamLoading,
+    refetch: refetchMyTeam,
+  } = useGetMyTeamQuery(undefined, {
+    skip: !user?.id,
+  });
+
+  const [createTeam, { isLoading: creatingTeam }] = useCreateTeamMutation();
+
+  // Filter myTeam by contestId
+  const myTeam = useMemo(() => {
+    if (!myTeamsData || !contestId) return null;
+    return myTeamsData.find((team) => {
+      const teamContestId = team.contestId || team.contest_id;
+      return (
+        String(teamContestId) === String(contestId) ||
+        teamContestId === contestId ||
+        teamContestId === parseInt(contestId)
+      );
+    });
+  }, [myTeamsData, contestId]);
+
+  const teamId = myTeam?.teamId || myTeam?.team_id || myTeam?.id;
+
+  // Fetch team invites
+  const {
+    data: invitesData = [],
+    isLoading: loadingInvites,
+    refetch: refetchInvites,
+  } = useGetTeamInvitesQuery(teamId, {
+    skip: !teamId || activeTab !== "myTeam",
+  });
+
+  // Filter pending invites
+  const pendingInvites = useMemo(() => {
+    if (!Array.isArray(invitesData)) return [];
+    return invitesData.filter((invite) => invite.status === "pending");
+  }, [invitesData]);
+
+  // Fetch students by schoolId
+  const {
+    data: studentsData = [],
+    isLoading: loadingStudents,
+  } = useGetStudentsBySchoolIdQuery(schoolId, {
+    skip: !schoolId || activeTab !== "myTeam" || !myTeam,
+  });
+
+  const [inviteStudent, { isLoading: invitingStudent }] =
+    useInviteStudentMutation();
 
   // Reset invited students when contest changes
   useEffect(() => {
     setInvitedStudentIds(new Set());
   }, [contestId]);
-
-  // Gọi API getMyTeam khi component mount hoặc contestId thay đổi
-  useEffect(() => {
-    const fetchMyTeam = async () => {
-      try {
-        // Pass contestId to getMyTeam to filter correctly
-        const teamData = await getMyTeam(contestId);
-
-        if (teamData) {
-          setMyTeam(teamData);
-        } else {
-          setMyTeam(null);
-        }
-      } catch (error) {
-        setMyTeam(null);
-      }
-    };
-
-    if (contestId && user?.id) {
-      fetchMyTeam();
-    }
-  }, [contestId, getMyTeam, user?.id]);
 
   // Set default tab to 'myTeam' if mentor already has a team
   useEffect(() => {
@@ -112,56 +136,19 @@ const MentorTeam = () => {
     }
   }, [mentors]);
 
-  // Fetch pending invites when myTeam is available
+  // Update invitedStudentIds when pending invites change
   useEffect(() => {
-    const fetchPendingInvites = async () => {
-      if (myTeam && activeTab === "myTeam") {
-        const teamId = myTeam?.teamId || myTeam?.team_id || myTeam?.id;
-        if (!teamId) return;
-
-        setLoadingInvites(true);
-        try {
-          const response = await teamInviteApi.getByTeam(teamId);
-
-          // Extract invites from response
-          let invitesData = [];
-          if (response.data) {
-            if (Array.isArray(response.data)) {
-              invitesData = response.data;
-            } else if (
-              response.data.data &&
-              Array.isArray(response.data.data)
-            ) {
-              invitesData = response.data.data;
-            }
-          }
-
-          // Filter only pending invites
-          const pending = invitesData.filter(
-            (invite) => invite.status === "pending"
-          );
-
-          setPendingInvites(pending);
-
-          // Update invitedStudentIds with pending invite student IDs
-          const pendingStudentIds = new Set(
-            pending.map((invite) => invite.studentId)
-          );
-          setInvitedStudentIds((prev) => {
-            const updated = new Set(prev);
-            pendingStudentIds.forEach((id) => updated.add(id));
-            return updated;
-          });
-        } catch (error) {
-          setPendingInvites([]);
-        } finally {
-          setLoadingInvites(false);
-        }
-      }
-    };
-
-    fetchPendingInvites();
-  }, [myTeam, activeTab]);
+    if (pendingInvites.length > 0) {
+      const pendingStudentIds = new Set(
+        pendingInvites.map((invite) => invite.studentId)
+      );
+      setInvitedStudentIds((prev) => {
+        const updated = new Set(prev);
+        pendingStudentIds.forEach((id) => updated.add(id));
+        return updated;
+      });
+    }
+  }, [pendingInvites]);
 
   // Update invitedStudentIds when myTeam changes (remove students who became members)
   useEffect(() => {
@@ -178,55 +165,31 @@ const MentorTeam = () => {
     }
   }, [myTeam]);
 
-  // Fetch students when in myTeam tab and schoolId is available
-  useEffect(() => {
-    const fetchStudents = async () => {
-      if (activeTab === "myTeam" && schoolId && myTeam) {
-        setLoadingStudents(true);
-        try {
-          const response = await studentApi.getBySchoolId(schoolId);
+  // Filter available students
+  const { students, allStudents } = useMemo(() => {
+    if (!Array.isArray(studentsData)) {
+      return { students: [], allStudents: [] };
+    }
 
-          // Handle different response structures
-          let studentsData = [];
-          if (response.data) {
-            if (Array.isArray(response.data)) {
-              studentsData = response.data;
-            } else if (
-              response.data.data &&
-              Array.isArray(response.data.data)
-            ) {
-              studentsData = response.data.data;
-            }
-          }
+    // Store all students for lookup (e.g., in pending invites)
+    const allStudentsList = studentsData;
 
-          // Store all students for lookup (e.g., in pending invites)
-          setAllStudents(studentsData);
+    // Filter out students who are already members, have been invited, or have pending invites
+    const existingMemberIds = (myTeam?.members || []).map(
+      (m) => m.studentId || m.student_id
+    );
+    const pendingInviteStudentIds = new Set(
+      pendingInvites.map((invite) => invite.studentId)
+    );
+    const availableStudents = allStudentsList.filter(
+      (s) =>
+        !existingMemberIds.includes(s.studentId) &&
+        !invitedStudentIds.has(s.studentId) &&
+        !pendingInviteStudentIds.has(s.studentId)
+    );
 
-          // Filter out students who are already members, have been invited, or have pending invites
-          const existingMemberIds = (myTeam.members || []).map(
-            (m) => m.studentId || m.student_id
-          );
-          const pendingInviteStudentIds = new Set(
-            pendingInvites.map((invite) => invite.studentId)
-          );
-          const availableStudents = studentsData.filter(
-            (s) =>
-              !existingMemberIds.includes(s.studentId) &&
-              !invitedStudentIds.has(s.studentId) &&
-              !pendingInviteStudentIds.has(s.studentId)
-          );
-
-          setStudents(availableStudents);
-        } catch (error) {
-          setStudents([]);
-        } finally {
-          setLoadingStudents(false);
-        }
-      }
-    };
-
-    fetchStudents();
-  }, [activeTab, schoolId, myTeam, invitedStudentIds, pendingInvites]);
+    return { students: availableStudents, allStudents: allStudentsList };
+  }, [studentsData, myTeam, invitedStudentIds, pendingInvites]);
 
   const handleCreateTeam = async () => {
     setErrors({});
@@ -247,10 +210,8 @@ const MentorTeam = () => {
       return;
     }
 
-    setLoading(true);
     try {
       // Get mentor data from response structure
-      let mentorIdValue = mentorId;
       let schoolIdValue = schoolId;
 
       if (mentors && mentors.length > 0) {
@@ -261,7 +222,7 @@ const MentorTeam = () => {
             : null;
 
         if (mentorData) {
-          schoolIdValue = mentorData?.schoolId;
+          schoolIdValue = mentorData?.schoolId || mentorData?.school_id;
         }
       }
 
@@ -270,24 +231,22 @@ const MentorTeam = () => {
         contestId: String(contestId),
         schoolId: String(schoolIdValue),
       };
-      await addTeam(requestBody);
+      
+      await createTeam(requestBody).unwrap();
 
-      // Fetch the newly created team from API to ensure we have complete data including teamId
-      // Wait a bit for the backend to process the creation
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const teamData = await getMyTeam(contestId);
-      if (teamData) {
-        setMyTeam(teamData);
-      }
+      // Refetch my team to get updated data
+      await refetchMyTeam();
 
       // Switch to My Team tab after successful creation
       setActiveTab("myTeam");
       setTeamName("");
     } catch (error) {
-      setErrors({ submit: error.message || "Failed to create team" });
-    } finally {
-      setLoading(false);
+      const errorMessage =
+        error?.data?.errorMessage ||
+        error?.data?.message ||
+        error?.message ||
+        "Failed to create team";
+      setErrors({ submit: errorMessage });
     }
   };
 
@@ -303,27 +262,28 @@ const MentorTeam = () => {
       return;
     }
 
+    if (!teamId) {
+      setInviteError("Team ID not found");
+      return;
+    }
+
     setInviteError("");
-    setInvitingStudentId(student.studentId);
 
     try {
-      // Handle different field name formats (camelCase and snake_case)
-      const teamId = myTeam?.teamId || myTeam?.team_id || myTeam?.id;
-      if (!teamId) {
-        throw new Error("Team ID not found");
-      }
-
-      // Call API to invite member
-      const response = await teamInviteApi.invite(teamId, {
-        studentId: student.studentId,
-        inviteeEmail: student.userEmail,
-        ttlDays: 60,
-      });
+      // Call RTK Query mutation to invite member
+      const response = await inviteStudent({
+        teamId,
+        data: {
+          studentId: student.studentId,
+          inviteeEmail: student.userEmail,
+          ttlDays: 60,
+        },
+      }).unwrap();
 
       // Extract data from response
-      const inviteData = response.data?.data || {};
-      const token = inviteData.token || response.data?.token;
-      const teamName = inviteData.teamName || myTeam?.name || "Team";
+      const inviteData = response?.data || response || {};
+      const token = inviteData.token || response?.token;
+      const teamNameValue = inviteData.teamName || myTeam?.name || "Team";
       const contestName =
         inviteData.contestName || contest?.name || contest?.title || "Contest";
       const mentorName = user?.name || "Mentor";
@@ -343,66 +303,30 @@ const MentorTeam = () => {
 
         // Send invitation email
         try {
-          const emailSent = await sendTeamInviteEmail({
+          await sendTeamInviteEmail({
             toEmail: studentEmail,
-            teamName: teamName,
+            teamName: teamNameValue,
             mentorName: mentorName,
             contestName: contestName,
             acceptUrl: acceptUrl,
             declineUrl: declineUrl,
           });
-
-          // Email sent status is handled silently
         } catch (emailError) {
           // Don't throw error - invitation was created successfully, just email failed
         }
       }
+
       // Add student to invited list
       setInvitedStudentIds((prev) => new Set([...prev, student.studentId]));
 
-      // Refresh myTeam to get updated members list (with contestId filter)
-      const teamData = await getMyTeam(contestId);
-      if (teamData) {
-        setMyTeam(teamData);
-      }
-
-      // Refresh pending invites to show the new invite
-      if (teamId) {
-        try {
-          const invitesResponse = await teamInviteApi.getByTeam(teamId);
-          let invitesData = [];
-          if (invitesResponse.data) {
-            if (Array.isArray(invitesResponse.data)) {
-              invitesData = invitesResponse.data;
-            } else if (
-              invitesResponse.data.data &&
-              Array.isArray(invitesResponse.data.data)
-            ) {
-              invitesData = invitesResponse.data.data;
-            }
-          }
-          const pending = invitesData.filter(
-            (invite) => invite.status === "pending"
-          );
-          setPendingInvites(pending);
-        } catch (error) {
-          // Error refreshing pending invites
-        }
-      }
-
-      // Remove invited student from list immediately
-      setStudents((prev) =>
-        prev.filter((s) => s.studentId !== student.studentId)
-      );
+      // Refetch data to get updated team and invites
+      await Promise.all([refetchMyTeam(), refetchInvites()]);
     } catch (error) {
       // Handle different error cases
       let errorMessage = "Failed to send invitation";
 
-      if (error.response) {
-        const status = error.response.status;
-        const responseData = error.response.data;
-
-        // Check for specific error codes
+      if (error?.data) {
+        const responseData = error.data;
         const errorCode = responseData?.errorCode;
         const errorMsg = responseData?.errorMessage || responseData?.message;
 
@@ -413,44 +337,28 @@ const MentorTeam = () => {
             "Registration window is closed. You cannot invite members at this time.";
         }
         // Handle 409 Conflict - student already invited or is member
-        else if (status === 409) {
+        else if (error?.status === 409 || errorCode === "CONFLICT") {
           errorMessage =
             errorMsg ||
-            responseData?.message ||
             responseData?.error ||
             `${student.userFullname} has already been invited or is already a member of this team.`;
 
-          // Remove student from list if already invited/member
-          setStudents((prev) =>
-            prev.filter((s) => s.studentId !== student.studentId)
-          );
-
-          // Refresh team data to get updated members (with contestId filter)
-          try {
-            const teamData = await getMyTeam(contestId);
-            if (teamData) {
-              setMyTeam(teamData);
-            }
-          } catch (refreshError) {
-            // Error refreshing team data
-          }
+          // Refresh team data to get updated members
+          await refetchMyTeam();
         }
         // Handle other errors
         else {
           errorMessage =
             errorMsg ||
-            responseData?.message ||
             responseData?.error ||
             responseData?.data?.message ||
-            `Error: ${status}`;
+            `Error: ${error?.status || "Unknown"}`;
         }
-      } else if (error.message) {
+      } else if (error?.message) {
         errorMessage = error.message;
       }
 
       setInviteError(errorMessage);
-    } finally {
-      setInvitingStudentId(null);
     }
   };
 
@@ -602,10 +510,10 @@ const MentorTeam = () => {
                     </button>
                     <button
                       onClick={handleCreateTeam}
-                      disabled={loading}
+                      disabled={creatingTeam}
                       className="button-orange flex-1 flex items-center justify-center gap-2"
                     >
-                      {loading ? (
+                      {creatingTeam ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                           Creating...
@@ -922,12 +830,10 @@ const MentorTeam = () => {
                               </div>
                               <button
                                 onClick={() => handleInviteStudent(student)}
-                                disabled={
-                                  invitingStudentId === student.studentId
-                                }
+                                disabled={invitingStudent}
                                 className="flex items-center gap-2 px-4 py-2 bg-[#ff6b35] text-white rounded-[5px] hover:bg-[#ff5722] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                               >
-                                {invitingStudentId === student.studentId ? (
+                                {invitingStudent ? (
                                   <>
                                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                                     Inviting...

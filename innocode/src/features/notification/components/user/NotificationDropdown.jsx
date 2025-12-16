@@ -17,17 +17,20 @@ const NotificationDropdown = ({ onClose }) => {
     data: notificationsData,
     isLoading,
     error,
-  } = useGetNotificationsQuery(undefined, {
-    pollingInterval: 30000,
-  });
+  } = useGetNotificationsQuery(
+    { pageNumber: 1, pageSize: 10 },
+    {
+      pollingInterval: 30000,
+    }
+  );
   
   const [readNotification] = useReadNotificationMutation();
   const [readAllNotifications] = useReadAllNotificationsMutation();
 
   const notifications = useMemo(() => {
-    if (!notificationsData?.data?.items) return [];
+    if (!notificationsData?.items) return [];
 
-    return notificationsData.data.items.map((notification) => {
+    return notificationsData.items.map((notification) => {
       let parsedPayload = {};
       let message = "No message";
 

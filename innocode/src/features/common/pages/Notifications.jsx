@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import PageContainer from "@/shared/components/PageContainer";
@@ -11,25 +11,32 @@ import {
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
+import TablePagination from "@/shared/components/TablePagination";
 
 const Notifications = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [page, setPage] = useState(1);
+  const pageSize = 8;
+
   const {
     data: notificationsData,
     isLoading,
     error,
-  } = useGetNotificationsQuery(undefined, {
-    pollingInterval: 30000,
-  });
+  } = useGetNotificationsQuery(
+    { pageNumber: page, pageSize },
+    {
+      pollingInterval: 30000,
+    }
+  );
 
   const [readNotification] = useReadNotificationMutation();
   const [readAllNotifications] = useReadAllNotificationsMutation();
 
   const notifications = useMemo(() => {
-    if (!notificationsData?.data?.items) return [];
+    if (!notificationsData?.items) return [];
 
-    return notificationsData.data.items.map((notification) => {
+    return notificationsData.items.map((notification) => {
       let parsedPayload = {};
       let message = "No message";
 
@@ -51,6 +58,19 @@ const Notifications = () => {
       };
     });
   }, [notificationsData]);
+
+  // Build pagination object for TablePagination component
+  const pagination = useMemo(() => {
+    if (!notificationsData) return null;
+    return {
+      pageNumber: notificationsData.pageNumber || 1,
+      pageSize: notificationsData.pageSize || pageSize,
+      totalPages: notificationsData.totalPages || 1,
+      totalCount: notificationsData.totalCount || 0,
+      hasPreviousPage: notificationsData.hasPreviousPage || false,
+      hasNextPage: notificationsData.hasNextPage || false,
+    };
+  }, [notificationsData, pageSize]);
 
   const unreadCount = useMemo(
     () => notifications.filter((notif) => !notif.isRead).length,
@@ -138,48 +158,58 @@ const Notifications = () => {
               <span className="text-gray-600">No notifications</span>
             </div>
           ) : (
-            <div className="divide-y divide-[#E5E5E5]">
-              {notifications.map((notification) => (
-                <div
-                  key={notification.notificationId}
-                  className={`px-5 py-4 hover:bg-gray-50 transition-colors cursor-pointer ${
-                    !notification.isRead ? "bg-gray-100 border-l-4 " : ""
-                  }`}
-                  onClick={() => handleNotificationClick(notification)}
-                >
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 mt-1">
-                      <Icon
-                        icon={"mdi:information-outline"}
-                        width={24}
-                        className={`${
-                          !notification.isRead ? "" : "text-gray-400"
-                        }`}
-                      />
+            <>
+              <div className="divide-y divide-[#E5E5E5]">
+                {notifications.map((notification) => (
+                  <div
+                    key={notification.notificationId}
+                    className={`px-5 py-4 hover:bg-gray-50 transition-colors cursor-pointer ${
+                      !notification.isRead ? "bg-gray-100 border-l-4 " : ""
+                    }`}
+                    onClick={() => handleNotificationClick(notification)}
+                  >
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0 mt-1">
+                        <Icon
+                          icon={"mdi:information-outline"}
+                          width={24}
+                          className={`${
+                            !notification.isRead ? "" : "text-gray-400"
+                          }`}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div
+                          className={`text-sm mb-1 ${
+                            !notification.isRead
+                              ? "font-semibold text-gray-900"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {notification.message}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {formatDateTime(notification.sentAt)}
+                        </div>
+                      </div>
+                      {!notification.isRead && (
+                        <div className="flex-shrink-0">
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div
-                        className={`text-sm mb-1 ${
-                          !notification.isRead
-                            ? "font-semibold text-gray-900"
-                            : "text-gray-700"
-                        }`}
-                      >
-                        {notification.message}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {formatDateTime(notification.sentAt)}
-                      </div>
-                    </div>
-                    {!notification.isRead && (
-                      <div className="flex-shrink-0">
-                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                      </div>
-                    )}
                   </div>
+                ))}
+              </div>
+              {pagination && (
+                <div className="px-5 py-4 border-t border-[#E5E5E5]">
+                  <TablePagination
+                    pagination={pagination}
+                    onPageChange={setPage}
+                  />
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
       </div>

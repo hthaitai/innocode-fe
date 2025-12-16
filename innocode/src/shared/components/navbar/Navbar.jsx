@@ -15,13 +15,23 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const notifRef = useRef(null);
 
-  // Fetch notifications count for badge
-  const { data: notificationsData } = useGetNotificationsQuery(undefined, {
-    skip: !isAuthenticated,
-    pollingInterval: 30000,
-  });
+  // Fetch notifications count for badge (get first page to count unread)
+  const { data: notificationsData } = useGetNotificationsQuery(
+    { pageNumber: 1, pageSize: 50 },
+    {
+      skip: !isAuthenticated,
+      pollingInterval: 30000,
+    }
+  );
 
-  const unreadCount = notificationsData?.data?.items?.filter(notification => !notification.isRead).length || 0;
+  // Calculate unread count from transformed response
+  const unreadCount = React.useMemo(() => {
+    if (!notificationsData?.items) return 0;
+    
+    return notificationsData.items.filter(
+      (notification) => !(notification.read ?? notification.isRead ?? false)
+    ).length;
+  }, [notificationsData]);
 
   const handleSignIn = () => {
     navigate("/login");

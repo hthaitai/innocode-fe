@@ -1,0 +1,329 @@
+.activity-log-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.activity-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.activity-log-title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.activity-log-icon {
+  color: #ff6b35;
+}
+
+.activity-log-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.activity-log-count {
+  font-size: 16px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.activity-log-refresh-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #4b5563;
+}
+
+.activity-log-refresh-btn:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.activity-log-refresh-btn:active {
+  transform: scale(0.95);
+}
+
+/* Filters */
+.activity-log-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.activity-log-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.activity-log-filter-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.activity-log-filter-input {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.activity-log-filter-input:focus {
+  outline: none;
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+/* Logs List */
+.activity-log-list {
+  max-height: 600px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.activity-log-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background: #f9fafb;
+  transition: all 0.2s;
+}
+
+.activity-log-item:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.activity-log-icon-wrapper {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+
+.activity-log-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activity-log-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.activity-log-action {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.activity-log-user {
+  font-size: 14px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.activity-log-details {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.activity-log-target-type {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #e0e7ff;
+  color: #4338ca;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.activity-log-target-id {
+  font-size: 13px;
+  color: #6b7280;
+  font-family: monospace;
+}
+
+.activity-log-details-text {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.activity-log-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.activity-log-time,
+.activity-log-ip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.activity-log-time svg,
+.activity-log-ip svg {
+  flex-shrink: 0;
+}
+
+/* Loading, Error, Empty States */
+.activity-log-loading,
+.activity-log-error,
+.activity-log-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 16px;
+  color: #6b7280;
+}
+
+.activity-log-loading svg,
+.activity-log-error svg {
+  color: #9ca3af;
+}
+
+.activity-log-empty svg {
+  color: #d1d5db;
+}
+
+.activity-log-error {
+  flex-direction: row;
+  gap: 12px;
+}
+
+.activity-log-retry-btn {
+  padding: 6px 12px;
+  background: #ff6b35;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.activity-log-retry-btn:hover {
+  background: #e55a2b;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Footer */
+.activity-log-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.activity-log-total-info {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Scrollbar styling */
+.activity-log-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.activity-log-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.activity-log-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.activity-log-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Color variables */
+:root {
+  --color-primary: #ff6b35;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .activity-log-container {
+    padding: 16px;
+  }
+
+  .activity-log-filters {
+    flex-direction: column;
+  }
+
+  .activity-log-filter-group {
+    min-width: 100%;
+  }
+
+  .activity-log-item {
+    padding: 12px;
+  }
+
+  .activity-log-main,
+  .activity-log-details,
+  .activity-log-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
