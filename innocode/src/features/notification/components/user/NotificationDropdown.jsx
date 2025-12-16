@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
 import { useGetNotificationsQuery } from "@/services/notificationApi";
 import { formatDateTime } from "@/shared/utils/dateTime";
+import { useAuth } from "@/context/AuthContext";
 import "./NotificationDropdown.css";
 import {
   useReadAllNotificationsMutation,
@@ -11,31 +12,18 @@ import {
 
 const NotificationDropdown = ({ onClose }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     data: notificationsData,
     isLoading,
     error,
   } = useGetNotificationsQuery(undefined, {
-    pollingInterval: 30000, // Poll every 30 seconds
+    pollingInterval: 30000,
   });
   
   const [readNotification] = useReadNotificationMutation();
   const [readAllNotifications] = useReadAllNotificationsMutation();
-  const handleReadNotification = async (notificationId) => {
-    try {
-      await readNotification(notificationId);
-    } catch (error) {
-      console.error("Error reading notification:", error);
-    }
-  };
-  const handleReadAllNotifications = async () => {
-    try {
-      await readAllNotifications();
-    } catch (error) {
-      console.error("Error reading all notifications:", error);
-    }
-  };
-  // Parse notifications and extract message from payload
+
   const notifications = useMemo(() => {
     if (!notificationsData?.data?.items) return [];
 
@@ -49,7 +37,7 @@ const NotificationDropdown = ({ onClose }) => {
             ? JSON.parse(notification.payload)
             : notification.payload || {};
         message = parsedPayload.message || notification.payload || "No message";
-      } catch (e) {
+      } catch {
         message = notification.payload || "No message";
       }
 
@@ -57,9 +45,36 @@ const NotificationDropdown = ({ onClose }) => {
         ...notification,
         parsedPayload,
         message,
+        isRead: notification.read ?? notification.isRead ?? false,
       };
     });
   }, [notificationsData]);
+
+  const handleNotificationClick = async (notification) => {
+    try {
+      await readNotification(notification.notificationId).unwrap();
+    } catch (error) {
+      console.error("Error reading notification:", error);
+    }
+
+    if (
+      notification.parsedPayload?.targetType === "team_invite" &&
+      user?.role === "student"
+    ) {
+      if (onClose) {
+        onClose();
+      }
+      navigate(`/notifications/team-invite/${notification.notificationId}`);
+    }
+  };
+
+  const handleReadAllNotifications = async () => {
+    try {
+      await readAllNotifications().unwrap();
+    } catch (error) {
+      console.error("Error reading all notifications:", error);
+    }
+  };
 
   // Limit to first 3 notifications
   const displayedNotifications = useMemo(() => {
@@ -110,9 +125,7 @@ const NotificationDropdown = ({ onClose }) => {
             <div
               key={notification.notificationId}
               className="notification-item"
-              onClick={() =>
-                handleReadNotification(notification.notificationId)
-              }
+              onClick={() => handleNotificationClick(notification)}
             >
               <div className="notification-item-icon">
                 <Icon icon="mdi:information-outline" width="20" />
