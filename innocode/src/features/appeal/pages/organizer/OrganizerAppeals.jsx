@@ -16,7 +16,7 @@ export default function OrganizerAppeals() {
   const navigate = useNavigate()
   const { contestId } = useParams()
   const { openModal, modalData, closeModal } = useModal()
-  
+
   const [decisionFilter, setDecisionFilter] = useState("Pending")
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
@@ -52,6 +52,10 @@ export default function OrganizerAppeals() {
   const appeals = appealsData?.data ?? []
   const pagination = appealsData?.additionalData ?? {}
 
+  const handleRowClick = (appeal) => {
+    navigate(`/organizer/contests/${contestId}/appeals/${appeal.appealId}`)
+  }
+
   // Only real handler: open modal
   const handleReview = (appeal) => {
     openModal("reviewAppeal", { appeal })
@@ -71,7 +75,11 @@ export default function OrganizerAppeals() {
         setDecisionFilter={setDecisionFilter}
       />
 
-      <TableFluent data={appeals} columns={appealsColumns} title="Appeals" />
+      <TableFluent
+        data={appeals}
+        columns={appealsColumns}
+        onRowClick={handleRowClick}
+      />
 
       <TablePagination pagination={pagination} onPageChange={setPageNumber} />
 

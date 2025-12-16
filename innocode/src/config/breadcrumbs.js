@@ -234,11 +234,11 @@ export const BREADCRUMBS = {
     contestName,
     "Appeals",
   ],
-  ORGANIZER_APPEAL_DETAIL: (contestName, appealId) => [
+  ORGANIZER_APPEAL_DETAIL: (contestName, studentName) => [
     "Contests",
     contestName,
     "Appeals",
-    `Appeal #${appealId}`,
+    studentName,
   ],
 
   ORGANIZER_ACTIVITY: (contestName) => [

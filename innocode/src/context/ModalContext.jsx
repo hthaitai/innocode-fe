@@ -6,8 +6,6 @@ import ProblemModal from "../features/problem/components/organizer/ProblemModal"
 import ProvinceModal from "../features/province/components/organizer/ProvinceModal"
 import SchoolModal from "../features/school/components/organizer/SchoolModal"
 import TeamModal from "../features/team/components/organizer/TeamModal"
-import AppealStateModal from "../features/appeal/components/organizer/AppealStateModal"
-import AppealDecisionModal from "../features/appeal/components/organizer/AppealDecisionModal"
 import CreateAppealModal from "../features/appeal/components/mentor/CreateAppealModal"
 import IssueCertificateModal from "../features/certificate/components/organizer/IssueCertificateModal"
 import NotificationModal from "../features/notification/components/organizer/NotificationModal"
@@ -56,8 +54,6 @@ export function ModalProvider({ children }) {
     province: ProvinceModal,
     school: SchoolModal,
     team: TeamModal,
-    appealState: AppealStateModal,
-    appealDecision: AppealDecisionModal,
     createAppeal: CreateAppealModal,
     issueCertificate: IssueCertificateModal,
     notification: NotificationModal,
