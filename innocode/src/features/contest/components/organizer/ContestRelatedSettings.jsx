@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { Users, Trophy, Award, ChevronRight, Scale, Mail, UserCheck } from "lucide-react"
+import { Users, Trophy, Award, ChevronRight, Scale, Mail, UserCheck, LayoutTemplate, FileBadge2 } from "lucide-react"
 
 const items = [
   // {
@@ -34,17 +34,23 @@ const items = [
     path: "leaderboard",
   },
   {
-    title: "Certificates",
-    subtitle: "Manage templates and issued certificates",
-    icon: <Award size={20} />,
-    path: "certificates",
+    title: "Template gallery",
+    subtitle: "Browse templates for this contest or upload new ones",
+    icon: <LayoutTemplate size={20} />,
+    path: "certificates/templates",
   },
-  // {
-  //   title: "Appeals",
-  //   subtitle: "Review and resolve team appeals",
-  //   icon: <Scale size={20} />,
-  //   path: "appeals",
-  // },
+  {
+    title: "Issued certificates",
+    subtitle: "View every certificate that has been issued so far",
+    icon: <FileBadge2 size={20} />,
+    path: "certificates/issued",
+  },
+  {
+    title: "Appeals",
+    subtitle: "Review and resolve team appeals",
+    icon: <Scale size={20} />,
+    path: "appeals",
+  },
   // {
   //   title: "Activity Logs",
   //   subtitle: "View contest-related user actions",

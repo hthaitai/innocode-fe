@@ -26,55 +26,53 @@ import Help from "./features/contest/student/Help";
 import MCQTest from "./features/quiz/student/MCQTest";
 import FinishQuiz from "./features/quiz/student/FinishQuiz";
 // Auth
-import ManualRubricPage from "./features/problems/manual/pages/ManualRubricPage";
-import ManualResultsPage from "./features/problems/manual/pages/ManualResultsPage";
-import AutoEvaluationPage from "./features/problems/auto-evaluation/pages/AutoEvaluationPage";
-import AutoTestResultsPage from "./features/problems/auto-evaluation/pages/AutoTestResultsPage";
-import Login from "./features/auth/components/Login";
-import Register from "./features/auth/components/Register";
-import { ModalProvider } from "./context/ModalContext";
-import { AuthProvider, ROLES } from "./context/AuthContext";
-import OrganizerContests from "./features/contest/pages/organizer/OrganizerContests";
-import OrganizerContestDetail from "./features/contest/pages/organizer/OrganizerContestDetail";
-import ContestJudgeInvitesPage from "./features/invite-judge/pages/ContestJudgeInvitesPage";
-import ContestJudgesListPage from "./features/invite-judge/pages/ContestJudgesListPage";
-import OrganizerRoundDetail from "./features/round/pages/organizer/OrganizerRoundDetail";
-import CreateRound from "./features/round/pages/organizer/CreateRound";
-import EditRound from "./features/round/pages/organizer/EditRound";
-import OrganizerProblemDetail from "./features/problem/pages/organizer/OrganizerProblemDetail";
-import OrganizerTeams from "./features/team/pages/organizer/OrganizerTeams";
-import OrganizerTeamDetail from "./features/team/pages/organizer/OrganizerTeamDetail";
-import OrganizerLeaderboard from "./features/leaderboard/pages/organizer/OrganizerLeaderboard";
-import OrganizerCertificateTemplateCreate from "./features/certificate/pages/organizer/OrganizerCertificateTemplateCreate";
-import OrganizerCertificates from "./features/certificate/pages/organizer/OrganizerCertificates";
-import OrganizerCertificateTemplates from "./features/certificate/pages/organizer/OrganizerCertificateTemplates";
-import OrganizerIssuedCertificates from "./features/certificate/pages/organizer/OrganizerIssuedCertificates";
-import OrganizerCertificateIssue from "./features/certificate/pages/organizer/OrganizerCertificateIssue";
-import OrganizerCertificateTeamMembers from "./features/certificate/pages/organizer/OrganizerCertificateTeamMembers";
-import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals";
-import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail";
-import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces";
-import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools";
-import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications";
-import ProtectedRoute from "./shared/components/auth/ProtectedRoute";
-import { Toaster } from "react-hot-toast";
-import PublicRoute from "./shared/components/auth/PublicRoute";
-import OrganizerMcq from "./features/mcq/pages/OrganizerMcq";
-import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate";
-import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts";
-import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail";
-import StudentAutoEvaluation from "./features/problem/pages/student/StudentAutoEvaluation";
-import StudentManualProblem from "./features/problem/pages/student/StudentManualProblem";
-import AutoTestResult from "./features/problem/pages/student/AutoTestResult";
-import CreateContest from "./features/contest/pages/organizer/CreateContest";
-import EditContest from "./features/contest/pages/organizer/EditContest";
-import MentorTeam from "./features/team/pages/mentor/MentorTeam";
-import { initEmailJs } from "./shared/services/emailService";
-import TeamInviteResponse from "./features/team/pages/student/TeamInviteResponse";
-import VerifyEmail from "./features/auth/components/VerifyEmail";
-import ForgotPassword from "./features/auth/components/ForgotPassword";
-import ResetPassword from "./features/auth/components/ResetPassword";
-import MyContest from "./features/contest/student/MyContest";
+import ManualRubricPage from "./features/problems/manual/pages/ManualRubricPage"
+import ManualResultsPage from "./features/problems/manual/pages/ManualResultsPage"
+import AutoEvaluationPage from "./features/problems/auto-evaluation/pages/AutoEvaluationPage"
+import AutoTestResultsPage from "./features/problems/auto-evaluation/pages/AutoTestResultsPage"
+import Login from "./features/auth/components/Login"
+import Register from "./features/auth/components/Register"
+import { ModalProvider } from "./context/ModalContext"
+import { AuthProvider, ROLES } from "./context/AuthContext"
+import OrganizerContests from "./features/contest/pages/organizer/OrganizerContests"
+import OrganizerContestDetail from "./features/contest/pages/organizer/OrganizerContestDetail"
+import ContestJudgeInvitesPage from "./features/invite-judge/pages/ContestJudgeInvitesPage"
+import ContestJudgesListPage from "./features/invite-judge/pages/ContestJudgesListPage"
+import OrganizerRoundDetail from "./features/round/pages/organizer/OrganizerRoundDetail"
+import CreateRound from "./features/round/pages/organizer/CreateRound"
+import EditRound from "./features/round/pages/organizer/EditRound"
+import OrganizerProblemDetail from "./features/problem/pages/organizer/OrganizerProblemDetail"
+import OrganizerTeams from "./features/team/pages/organizer/OrganizerTeams"
+import OrganizerTeamDetail from "./features/team/pages/organizer/OrganizerTeamDetail"
+import OrganizerLeaderboard from "./features/leaderboard/pages/organizer/OrganizerLeaderboard"
+import OrganizerCertificateTemplateCreate from "./features/certificate/pages/organizer/OrganizerCertificateTemplateCreate"
+import OrganizerCertificateTemplateEdit from "./features/certificate/pages/organizer/OrganizerCertificateTemplateEdit"
+import OrganizerCertificateTemplates from "./features/certificate/pages/organizer/OrganizerCertificateTemplates"
+import OrganizerIssuedCertificates from "./features/certificate/pages/organizer/OrganizerIssuedCertificates"
+import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals"
+import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail"
+import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces"
+import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools"
+import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications"
+import ProtectedRoute from "./shared/components/auth/ProtectedRoute"
+import { Toaster } from "react-hot-toast"
+import PublicRoute from "./shared/components/auth/PublicRoute"
+import OrganizerMcq from "./features/mcq/pages/OrganizerMcq"
+import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate"
+import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts"
+import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail"
+import StudentAutoEvaluation from "./features/problem/pages/student/StudentAutoEvaluation"
+import StudentManualProblem from "./features/problem/pages/student/StudentManualProblem"
+import AutoTestResult from "./features/problem/pages/student/AutoTestResult"
+import CreateContest from "./features/contest/pages/organizer/CreateContest"
+import EditContest from "./features/contest/pages/organizer/EditContest"
+import MentorTeam from "./features/team/pages/mentor/MentorTeam"
+import { initEmailJs } from "./shared/services/emailService"
+import TeamInviteResponse from "./features/team/pages/student/TeamInviteResponse"
+import VerifyEmail from "./features/auth/components/VerifyEmail"
+import ForgotPassword from "./features/auth/components/ForgotPassword"
+import ResetPassword from "./features/auth/components/ResetPassword"
+import MyContest from "./features/contest/student/MyContest"
 //Mentor pages
 import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal";
 // Organizer pages
@@ -179,6 +177,15 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
         <StudentAutoEvaluation />
+      </ProtectedRoute>
+    ),
+  },
+  // Full-screen certificate template edit page (outside MainLayout)
+  {
+    path: "organizer/contests/:contestId/certificates/templates/:templateId/edit",
+    element: (
+      <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+        <OrganizerCertificateTemplateEdit />
       </ProtectedRoute>
     ),
   },
@@ -575,34 +582,10 @@ const router = createBrowserRouter([
             path: ":contestId/certificates",
             children: [
               {
-                index: true,
-                element: (
-                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerCertificates />
-                  </ProtectedRoute>
-                ),
-              },
-              {
                 path: "templates",
                 element: (
                   <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                     <OrganizerCertificateTemplates />
-                  </ProtectedRoute>
-                ),
-              },
-              {
-                path: "issue",
-                element: (
-                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerCertificateIssue />
-                  </ProtectedRoute>
-                ),
-              },
-              {
-                path: "issue/teams/:teamId",
-                element: (
-                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerCertificateTeamMembers />
                   </ProtectedRoute>
                 ),
               },
@@ -614,20 +597,12 @@ const router = createBrowserRouter([
                   </ProtectedRoute>
                 ),
               },
-              // {
-              //   path: "templates/new",
-              //   element: (
-              //     <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-              //       <OrganizerCertificateTemplateCreate />
-              //     </ProtectedRoute>
-              //   ),
-              // },
             ],
           },
 
           // Appeals
           {
-            path: ":contestId/rounds/:roundId/appeals",
+            path: ":contestId/appeals",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <OrganizerAppeals />
@@ -635,7 +610,7 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: ":contestId/rounds/:roundId/appeals/:appealId",
+            path: ":contestId/appeals/:appealId",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <OrganizerAppealDetail />

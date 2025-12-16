@@ -7,13 +7,23 @@ import TableFluent from '@/shared/components/TableFluent'
 
 import useTeams from "@/features/team/hooks/useTeams"
 import useSchools from "../../../school/hooks/useSchools"
-import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
 import useMentors from "../../../../shared/hooks/useMentors"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useGetContestByIdQuery } from "@/services/contestApi"
 
 const OrganizerTeams = () => {
   const navigate = useNavigate()
   const { contestId } = useParams()
-  const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_TEAMS")
+
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId)
+
+  const contestName = contest?.name || "Contest"
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEAMS(contestName)
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEAMS(contestId)
   const { teams, loading, error } = useTeams()
   const { schools } = useSchools()
   const { mentors } = useMentors()
@@ -49,8 +59,8 @@ const OrganizerTeams = () => {
 
   return (
     <PageContainer
-      breadcrumb={breadcrumbData.items}
-      breadcrumbPaths={breadcrumbData.paths}
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
       loading={loading}
       error={error}
     >

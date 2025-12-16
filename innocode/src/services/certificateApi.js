@@ -27,6 +27,37 @@ export const certificateApi = api.injectEndpoints({
             ]
           : [{ type: "CertificateTemplates", id: "LIST" }],
     }),
+    getCertificateTemplateById: builder.query({
+      query: (id) => ({
+        url: `certificate-templates/${id}`,
+      }),
+      providesTags: (result, error, id) => [
+        { type: "CertificateTemplates", id },
+      ],
+    }),
+
+    editCertificateTemplate: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `certificate-templates/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "CertificateTemplates", id },
+        { type: "CertificateTemplates", id: "LIST" },
+      ],
+    }),
+
+    deleteCertificateTemplate: builder.mutation({
+      query: (id) => ({
+        url: `certificate-templates/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "CertificateTemplates", id },
+        { type: "CertificateTemplates", id: "LIST" },
+      ],
+    }),
 
     awardCertificates: builder.mutation({
       query: (data) => ({
@@ -93,6 +124,10 @@ export const certificateApi = api.injectEndpoints({
 export const {
   useUploadCertificateTemplateMutation,
   useGetCertificateTemplatesQuery,
+  useGetCertificateTemplateByIdQuery,
+  useEditCertificateTemplateMutation,
+  useDeleteCertificateTemplateMutation,
+
   useAwardCertificatesMutation,
   useGetIssuedCertificatesQuery,
   useGetMyCertificatesQuery,

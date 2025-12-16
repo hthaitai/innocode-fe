@@ -10,11 +10,12 @@ import InfoSection from "../../../../shared/components/InfoSection"
 import DetailTable from "../../../../shared/components/DetailTable"
 import useSchools from "../../../school/hooks/useSchools"
 import useMentors from "../../../../shared/hooks/useMentors"
-import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
 import StatusBadge from "../../../../shared/components/StatusBadge"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useGetContestByIdQuery } from "@/services/contestApi"
 
 const OrganizerTeamDetail = () => {
-  const { teamId: teamIdParam } = useParams()
+  const { teamId: teamIdParam, contestId } = useParams()
   const teamId = Number(teamIdParam)
 
   const navigate = useNavigate()
@@ -26,17 +27,22 @@ const OrganizerTeamDetail = () => {
   const { mentors } = useMentors()
   const { appeals } = useAppeals()
 
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId)
+
   // data relations
   const team = teams.find((t) => t.team_id === teamId)
-  const contest = team && contests.find((c) => c.contest_id === team.contest_id)
   const school = team && schools.find((s) => s.school_id === team.school_id)
   const mentor = team && mentors.find((m) => m.mentor_id === team.mentor_id)
   const appeal = team && appeals.filter((a) => a.team_id === team.team_id)
 
-  const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_TEAM_DETAIL", {
-    contest,
-    teams: team ? [team] : [],
-  })
+  const contestName = contest?.name || "Contest"
+  const teamName = team?.name || "Team"
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEAM_DETAIL(contestName, teamName)
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEAM_DETAIL(contestId, teamId)
 
   // Dummy data placeholders (read-only context)
   const members = [
@@ -105,8 +111,8 @@ const OrganizerTeamDetail = () => {
   if (!team) {
     return (
       <PageContainer
-        breadcrumb={breadcrumbData.items}
-        breadcrumbPaths={breadcrumbData.paths}
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
         loading={loading}
         error={error}
       >

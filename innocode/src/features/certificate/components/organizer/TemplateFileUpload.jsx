@@ -32,6 +32,11 @@ export default function TemplateFileUpload({ formData, setFormData, errors }) {
             {formData.file.name}
           </span>
         )}
+        {!formData.file && formData.fileUrl && (
+          <span className="text-sm leading-5 text-[#7A7574] truncate max-w-[200px]">
+            Current template
+          </span>
+        )}
       </div>
 
       <input

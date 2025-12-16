@@ -1,36 +1,41 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetAppealsQuery } from "../../../../services/appealApi"
-import { useGetRoundByIdQuery } from "@/services/roundApi"
+import { useGetContestByIdQuery } from "@/services/contestApi"
 import { getAppealsColumns } from "../../columns/getAppealsColumns"
 import OrganizerAppealsActions from "../../components/organizer/OrganizerAppealsActions"
 import ReviewAppealModal from "../../components/organizer/ReviewAppealModal"
 import { useModal } from "@/shared/hooks/useModal"
+import TablePagination from "../../../../shared/components/TablePagination"
 
 export default function OrganizerAppeals() {
   const navigate = useNavigate()
-  const { contestId, roundId } = useParams()
+  const { contestId } = useParams()
   const { openModal, modalData, closeModal } = useModal()
-
-  const [stateFilter, setStateFilter] = useState("Opened")
+  
   const [decisionFilter, setDecisionFilter] = useState("Pending")
+  const [pageNumber, setPageNumber] = useState(1)
+  const pageSize = 10
 
-  // Fetch round info
+  // Reset page when filter changes
+  useEffect(() => {
+    setPageNumber(1)
+  }, [decisionFilter])
+
+  // Fetch contest info
   const {
-    data: round,
-    isLoading: roundLoading,
-    isError: roundError,
-  } = useGetRoundByIdQuery(roundId)
+    data: contest,
+    isLoading: contestLoading,
+    isError: contestError,
+  } = useGetContestByIdQuery(contestId)
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_APPEALS(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round"
-  )
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_APPEALS(contestId, roundId)
+  const contestName = contest?.name || "Contest"
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_APPEALS(contestName)
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_APPEALS(contestId)
 
   // Fetch appeals
   const {
@@ -38,45 +43,37 @@ export default function OrganizerAppeals() {
     isLoading: appealsLoading,
     isError: appealsError,
   } = useGetAppealsQuery({
-    roundId,
-    state: stateFilter,
+    contestId,
     decision: decisionFilter,
-    pageNumber: 1,
-    pageSize: 10,
+    pageNumber,
+    pageSize,
   })
 
-  const appeals = appealsData?.data || []
-  const pagination = appealsData?.additionalData || {}
+  const appeals = appealsData?.data ?? []
+  const pagination = appealsData?.additionalData ?? {}
 
   // Only real handler: open modal
   const handleReview = (appeal) => {
     openModal("reviewAppeal", { appeal })
   }
 
-  // Columns: all fake/no-op handlers except review opens modal
   const appealsColumns = getAppealsColumns(handleReview)
 
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={appealsLoading || roundLoading}
-      error={appealsError || roundError}
+      loading={appealsLoading || contestLoading}
+      error={appealsError || contestError}
     >
-      <TableFluent
-        data={appeals}
-        columns={appealsColumns}
-        title="Appeals"
-        pagination={pagination}
-        renderActions={() => (
-          <OrganizerAppealsActions
-            stateFilter={stateFilter}
-            setStateFilter={setStateFilter}
-            decisionFilter={decisionFilter}
-            setDecisionFilter={setDecisionFilter}
-          />
-        )}
+      <OrganizerAppealsActions
+        decisionFilter={decisionFilter}
+        setDecisionFilter={setDecisionFilter}
       />
+
+      <TableFluent data={appeals} columns={appealsColumns} title="Appeals" />
+
+      <TablePagination pagination={pagination} onPageChange={setPageNumber} />
 
       {/* Review Appeal Modal: controlled by useModal */}
       {modalData?.type === "reviewAppeal" && (

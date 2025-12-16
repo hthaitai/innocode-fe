@@ -39,6 +39,16 @@ export default function TextOverlaySettings({ formData, setFormData }) {
       <h4 className="text-xs leading-4 mb-2">Text overlay settings</h4>
 
       <div className="text-sm leading-5 grid grid-cols-[max-content_1fr] gap-x-[28px] gap-y-3 items-start">
+        {/* Text Value */}
+        <Label htmlFor="value">Text Value</Label>
+        <TextFieldFluent
+          id="value"
+          name="value"
+          value={formData.text?.value || ""}
+          onChange={handleTextChange}
+          placeholder="Enter text"
+        />
+
         {/* Font Family Dropdown */}
         <Label htmlFor="fontFamily">Font Family</Label>
         <DropdownFluent

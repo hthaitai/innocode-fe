@@ -16,6 +16,7 @@ const OrganizerCertificateTemplates = () => {
   } = useGetContestByIdQuery(contestId)
 
   const contestName = contest?.name || "Contest"
+
   const breadcrumbItems =
     BREADCRUMBS.ORGANIZER_CERTIFICATE_TEMPLATES(contestName)
   const breadcrumbPaths =
@@ -28,22 +29,7 @@ const OrganizerCertificateTemplates = () => {
       loading={contestLoading}
       error={contestError}
     >
-      <div className="px-4 md:px-0 pb-6">
-        <div className="flex justify-end items-center mb-3">
-          <button
-            className="button-orange"
-            onClick={() =>
-              navigate(
-                `/organizer/contests/${contestId}/certificates/templates/new`
-              )
-            }
-          >
-            New template
-          </button>
-        </div>
-
-        <ExistingTemplates contestId={contestId} />
-      </div>
+      <ExistingTemplates contestId={contestId} />
     </PageContainer>
   )
 }

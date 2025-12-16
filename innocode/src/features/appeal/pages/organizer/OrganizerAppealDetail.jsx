@@ -11,7 +11,8 @@ import InfoSection from "../../../../shared/components/InfoSection"
 import DetailTable from "../../../../shared/components/DetailTable"
 import DetailTableSection from "../../../../shared/components/DetailTableSection"
 import { useModal } from "../../../../shared/hooks/useModal"
-import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useGetContestByIdQuery } from "@/services/contestApi"
 
 const OrganizerAppealDetail = () => {
   const { contestId: contestIdParam, appealId: appealIdParam } = useParams()
@@ -23,9 +24,15 @@ const OrganizerAppealDetail = () => {
   const { users } = useUsers()
   const { openModal } = useModal()
 
-  const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_APPEAL_DETAIL", {
-    contest: contests.find((c) => c.contest_id === contestId),
-  })
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId)
+
+  const contestName = contest?.name || "Contest"
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_APPEAL_DETAIL(contestName, appealId)
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_APPEAL_DETAIL(contestId, appealId)
 
   const appeal = appeals.find((a) => a.appeal_id === appealId)
   const team = teams.find((t) => t.team_id === appeal?.team_id)
@@ -34,8 +41,8 @@ const OrganizerAppealDetail = () => {
   if (!appeal)
     return (
       <PageContainer
-        breadcrumb={breadcrumbData.items}
-        breadcrumbPaths={breadcrumbData.paths}
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
         loading={loading}
         error={error}
       >

@@ -47,9 +47,9 @@ export const appealApi = api.injectEndpoints({
 
     // GET all appeals
     getAppeals: builder.query({
-      query: ({ roundId, state, decision, pageNumber = 1, pageSize = 10 }) => ({
-        url: "appeals",
-        params: { roundId, state, decision, pageNumber, pageSize },
+      query: ({ contestId, state, decision, pageNumber = 1, pageSize = 10 }) => ({
+        url: `/contests/${contestId}/appeals`,
+        params: { state, decision, pageNumber, pageSize },
       }),
       providesTags: (result) =>
         result?.data

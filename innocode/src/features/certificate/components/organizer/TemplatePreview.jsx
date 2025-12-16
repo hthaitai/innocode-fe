@@ -29,20 +29,32 @@ export default function TemplatePreview({ formData, setFormData }) {
 
   // Load image
   useEffect(() => {
-    if (!formData.file) return
-    const url =
-      formData.file.type === "application/pdf"
-        ? "/pdf-placeholder.png"
-        : URL.createObjectURL(formData.file)
+    // Handle file upload (create mode)
+    if (formData.file) {
+      const url =
+        formData.file.type === "application/pdf"
+          ? "/pdf-placeholder.png"
+          : URL.createObjectURL(formData.file)
 
-    const img = new window.Image()
-    img.src = url
-    img.onload = () => setImageObj(img)
+      const img = new window.Image()
+      img.src = url
+      img.onload = () => setImageObj(img)
 
-    return () => {
-      if (formData.file.type !== "application/pdf") URL.revokeObjectURL(url)
+      return () => {
+        if (formData.file.type !== "application/pdf") URL.revokeObjectURL(url)
+      }
     }
-  }, [formData.file])
+    // Handle fileUrl (edit mode)
+    else if (formData.fileUrl) {
+      const img = new window.Image()
+      img.crossOrigin = "anonymous"
+      img.src = formData.fileUrl
+      img.onload = () => setImageObj(img)
+      img.onerror = () => {
+        console.error("Failed to load image from URL")
+      }
+    }
+  }, [formData.file, formData.fileUrl])
 
   // Compute image fit & scale
   const getImageFit = () => {
@@ -108,7 +120,7 @@ export default function TemplatePreview({ formData, setFormData }) {
 
   return (
     <div ref={containerRef} className="relative w-full h-full">
-      {!formData.file && (
+      {!formData.file && !formData.fileUrl && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-[5px] border border-[#E5E5E5]">
           <input
             type="file"

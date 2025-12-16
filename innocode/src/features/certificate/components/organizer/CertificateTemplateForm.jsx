@@ -10,10 +10,12 @@ export default function CertificateTemplateForm({
   errors = {},
   onSubmit,
   submitting,
+  mode = "create",
+  hasChanges = true,
 }) {
   const imgRef = useRef(null)
 
-  const hasImage = !!formData.file // <-- check if an image is uploaded
+  const hasImage = !!formData.file || !!formData.fileUrl // <-- check if an image is uploaded or has URL
 
   useEffect(() => {
     if (formData.file && !formData.text) {
@@ -74,15 +76,23 @@ export default function CertificateTemplateForm({
               <button
                 type="button"
                 onClick={onSubmit}
-                disabled={submitting}
+                disabled={submitting || (mode === "edit" && !hasChanges)}
                 className={`flex items-center justify-center gap-2 ${
-                  submitting ? "button-gray" : "button-orange"
+                  submitting || (mode === "edit" && !hasChanges)
+                    ? "button-gray"
+                    : "button-orange"
                 }`}
               >
                 {submitting && (
                   <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
                 )}
-                {submitting ? "Creating..." : "Create"}
+                {submitting
+                  ? mode === "edit"
+                    ? "Updating..."
+                    : "Creating..."
+                  : mode === "edit"
+                  ? "Update"
+                  : "Create"}
               </button>
             </div>
           </>
