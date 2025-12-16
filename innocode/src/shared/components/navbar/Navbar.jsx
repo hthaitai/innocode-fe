@@ -46,10 +46,12 @@ const Navbar = () => {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      const clickedInProfile = dropdownRef.current?.contains(event.target);
+      const clickedInNotification = notifRef.current?.contains(event.target);
+      
+      // Chỉ đóng dropdowns khi click bên ngoài cả hai
+      if (!clickedInProfile && !clickedInNotification) {
         setShowDropdown(false);
-      }
-      if (notifRef.current && !notifRef.current.contains(event.target)) {
         setShowNotifications(false);
       }
     };
@@ -126,7 +128,11 @@ const Navbar = () => {
             <div className="user-menu" ref={dropdownRef}>
               <button
                 className="user-menu-button"
-                onClick={() => setShowDropdown(!showDropdown)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowNotifications(false); // Tắt notification dropdown khi mở profile
+                  setShowDropdown(!showDropdown);
+                }}
               >
                 <div className="user-avatar">
                   <Icon icon="mdi:account-circle" width="24" />
@@ -142,7 +148,11 @@ const Navbar = () => {
               <div className="notification-container" ref={notifRef}>
                 <button
                   className="notification-bell"
-                  onClick={() => setShowNotifications(!showNotifications)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDropdown(false); // Tắt profile dropdown khi mở notification
+                    setShowNotifications(!showNotifications);
+                  }}
                   aria-label="Notifications"
                 >
                   <Icon icon="mdi:bell-outline" width="24" />
