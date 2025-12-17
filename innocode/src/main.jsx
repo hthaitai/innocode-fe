@@ -33,6 +33,7 @@ import AutoEvaluationPage from "./features/problems/auto-evaluation/pages/AutoEv
 import AutoTestResultsPage from "./features/problems/auto-evaluation/pages/AutoTestResultsPage";
 import Login from "./features/auth/components/Login";
 import Register from "./features/auth/components/Register";
+import RoleRegistration from "./features/auth/components/RoleRegistration";
 import { ModalProvider } from "./context/ModalContext";
 import { AuthProvider, ROLES } from "./context/AuthContext";
 import OrganizerContests from "./features/contest/pages/organizer/OrganizerContests";
@@ -94,6 +95,7 @@ import OrganizerLeaderboardMemberDetail from "./features/leaderboard/pages/organ
 import NotFound from "./pages/NotFound";
 import StaffProvinces from "./features/province/pages/staff/StaffProvinces";
 import StaffSchools from "./features/school/pages/staff/StaffSchools";
+import StaffRoleRegistrations from "./features/role-registration/pages/staff/StaffRoleRegistrations";
 import StudentCertificate from "./features/certificate/pages/student/StudentCertificate";
 import ContestJudgesPage from "./features/invite-judge/pages/ContestJudgesPage";
 import JudgeInviteAccept from "./features/invite-judge/pages/JudgeInviteAccept";
@@ -126,6 +128,14 @@ const router = createBrowserRouter([
         element: (
           <PublicRoute>
             <ForgotPassword />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: "role-registration",
+        element: (
+          <PublicRoute>
+            <RoleRegistration />
           </PublicRoute>
         ),
       },
@@ -307,6 +317,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[ROLES.STAFF]}>
             <StaffSchools />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "role-registrations-staff",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STAFF]}>
+            <StaffRoleRegistrations />
           </ProtectedRoute>
         ),
       },

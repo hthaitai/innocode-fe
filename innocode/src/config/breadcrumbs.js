@@ -283,6 +283,7 @@ export const BREADCRUMBS = {
   //Staff
   STAFF_PROVINCES: ["Provinces"],
   STAFF_SCHOOLS: ["Schools"],
+  ROLE_REGISTRATIONS: ["Role Registrations"],
   // Error pages
   NOT_FOUND: ["Not Found"],
   UNAUTHORIZED: ["Unauthorized"],

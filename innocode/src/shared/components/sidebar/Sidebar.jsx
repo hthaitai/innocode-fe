@@ -84,6 +84,11 @@ const allMenus = {
     path: "/school-staff",
     label: "Schools",
     icon: "lucide:school",
+  },
+  roleRegistrationsStaff: {
+    path: "/role-registrations-staff",
+    label: "Role Registrations",
+    icon: "lucide:user-check",
   }
 };
 
@@ -117,6 +122,7 @@ const menuByRole = {
     "profile",
     "provinceStaff",
     "schoolStaff",
+    "roleRegistrationsStaff",
     "leaderboard",
     "contests",
     "team",

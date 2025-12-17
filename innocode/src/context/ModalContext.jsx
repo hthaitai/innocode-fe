@@ -23,6 +23,7 @@ import OpenCodeModal from "../features/round/components/student/OpenCodeModal"
 import InviteJudgeModal from "../features/invite-judge/components/InviteJudgeModal"
 import CertificateTemplateModal from "../features/certificate/components/organizer/CertificateTemplateModal"
 import ContestFilterModal from "../features/contest/components/organizer/ContestFilterModal"
+import RoleRegistrationDetailsModal from "../features/role-registration/components/RoleRegistrationDetailsModal"
 
 const ModalContext = createContext({
   openModal: () => {}, // no-op default
@@ -73,6 +74,7 @@ export function ModalProvider({ children }) {
     inviteJudge: InviteJudgeModal,
     certificateTemplate: CertificateTemplateModal,
     contestFilter: ContestFilterModal,
+    roleRegistrationDetails: RoleRegistrationDetailsModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null
