@@ -47,6 +47,7 @@ const StudentAutoEvaluation = () => {
     submitError,
     finalSubmitError,
     finalSubmitResult,
+    hasRunCode,
     handleClearCode,
     handleRunCode,
     handleFinalSubmit,
@@ -255,6 +256,7 @@ const StudentAutoEvaluation = () => {
           submitError={submitError}
           finalSubmitError={finalSubmitError}
           finalSubmitResult={finalSubmitResult}
+          hasRunCode={hasRunCode}
           onClearCode={handleClearCode}
           onRunCode={handleRunCode}
           onFinalSubmit={handleFinalSubmit}

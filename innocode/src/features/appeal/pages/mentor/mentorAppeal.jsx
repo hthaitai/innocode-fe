@@ -23,6 +23,7 @@ import { formatDateTime } from "@/shared/utils/dateTime";
 import StatusBadge from "@/shared/components/StatusBadge";
 import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
 import { useGetMyAppealsQuery } from "@/services/appealApi";
+import { useGetRoundsByContestIdQuery } from "@/services/roundApi";
 import useContestDetail from "@/features/contest/hooks/useContestDetail";
 import useContests from "@/features/contest/hooks/useContests";
 import { useAuth } from "@/context/AuthContext";
@@ -40,21 +41,21 @@ function MentorAppeal() {
   // Get available contests (only ongoing - for appeal requests)
   const availableContests = useMemo(() => {
     if (!contests || !Array.isArray(contests)) return [];
-    
+
     return contests.filter((c) => {
       // Filter out Draft contests
-      if (c.status === 'Draft') return false;
-      
-      const status = c.status?.toLowerCase() || '';
+      if (c.status === "Draft") return false;
+
+      const status = c.status?.toLowerCase() || "";
       const now = new Date();
-      
+
       // Check if ongoing - only ongoing contests can have appeals
-      const isOngoing = 
-        status === 'ongoing' || 
-        status === 'registrationopen' || 
-        status === 'registrationclosed' ||
+      const isOngoing =
+        status === "ongoing" ||
+        status === "registrationopen" ||
+        status === "registrationclosed" ||
         (c.start && c.end && now >= new Date(c.start) && now < new Date(c.end));
-      
+
       // Only include ongoing contests
       return isOngoing;
     });
@@ -92,15 +93,29 @@ function MentorAppeal() {
   } = useGetTeamsByContestIdQuery(selectedContestId, {
     skip: !selectedContestId,
   });
-  
+
   // Fetch appeals using RTK Query API
   const {
     data: appealsData,
     isLoading: appealsLoading,
     error: appealsError,
-  } = useGetMyAppealsQuery(undefined, {
-    skip: false, // Always fetch appeals for mentor
+  } = useGetMyAppealsQuery(selectedContestId, {
+    skip: !selectedContestId, // Skip if no contest selected
   });
+
+  // Fetch rounds for the contest
+  const {
+    data: roundsData,
+    isLoading: roundsLoading,
+    error: roundsError,
+  } = useGetRoundsByContestIdQuery(selectedContestId, {
+    skip: !selectedContestId,
+  });
+
+  const rounds = useMemo(() => {
+    if (!roundsData) return [];
+    return roundsData.data || [];
+  }, [roundsData]);
 
   // Extract appeals from API response
   // API /appeals/my-appeal already returns appeals for current mentor, no need to filter
@@ -153,6 +168,35 @@ function MentorAppeal() {
     return leaderboardData?.teamIdList || leaderboardData?.entries || [];
   }, [leaderboardData]);
 
+  // Debug leaderboard data
+  useEffect(() => {
+    console.log("Leaderboard Data:", leaderboardData);
+    console.log("Entries:", entries);
+    if (entries && entries.length > 0) {
+      entries.forEach((entry, idx) => {
+        const members = entry.members || entry.memberList || [];
+        console.log(`Entry ${idx} members:`, members);
+        members.forEach((member, mIdx) => {
+          const roundScores =
+            member.roundScores ||
+            member.round_scores ||
+            member.roundScoresList ||
+            [];
+          console.log(
+            `Member ${mIdx} (${
+              member.memberName || member.member_name || "Unknown"
+            }):`,
+            {
+              roundScores,
+              roundScoresLength: roundScores.length,
+              hasRoundScores: roundScores && roundScores.length > 0,
+            }
+          );
+        });
+      });
+    }
+  }, [leaderboardData, entries]);
+
   // Toggle team expansion
   const toggleTeamExpansion = (teamId) => {
     setExpandedTeamId(expandedTeamId === teamId ? null : teamId);
@@ -175,6 +219,7 @@ function MentorAppeal() {
   // Handle open appeal modal
   const handleOpenAppealModal = (roundId, roundName, teamId, studentId) => {
     openModal("createAppeal", {
+      contestId: selectedContestId,
       roundId,
       roundName,
       teamId,
@@ -247,34 +292,41 @@ function MentorAppeal() {
                   </div>
                 </div>
 
-                {/* Round Scores */}
-                {roundScores && roundScores.length > 0 ? (
+                {/* Round Scores - Show all rounds from contest, with scores if available */}
+                {rounds && rounds.length > 0 ? (
                   <div className="mt-3 pt-3 border-t border-gray-200">
                     <p className="text-xs font-medium text-gray-600 mb-2">
-                      Round Scores:
+                      Rounds:
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                      {roundScores.map((round, roundIdx) => {
+                      {rounds.map((round) => {
                         const roundId = round.roundId || round.round_id;
-                        const roundName =
-                          round.roundName || round.round_name || "Round";
-                        const roundScore = round.score || 0;
-                        const roundType = round.roundType || round.round_type;
-                        const completedAt =
-                          round.completedAt || round.completed_at;
+
+                        // Find score for this round from roundScores if available
+                        const roundScoreData = roundScores?.find(
+                          (rs) => (rs.roundId) === roundId
+                        );
+
+                        // Use data from roundScores if available, otherwise use round data
+                        const roundName = roundScoreData?.roundName || "Round";
+                        const roundType = roundScoreData?.roundType;
+                        const roundScore = roundScoreData?.score || "-";
+                        const completedAt = roundScoreData?.completedAt;
 
                         return (
                           <div
-                            key={roundId || roundIdx}
+                            key={roundId}
                             className="bg-gray-50 rounded px-3 py-2 border border-gray-200"
                           >
                             <div className="flex items-center justify-between mb-1">
                               <p className="text-xs font-medium text-gray-700 truncate">
                                 {roundName}
                               </p>
-                              <span className="text-xs font-bold text-blue-600 ml-2">
-                                {roundScore.toFixed(2) || "0.00"}
-                              </span>
+                              {roundScore > 0 && (
+                                <span className="text-xs font-bold text-blue-600 ml-2">
+                                  {roundScore.toFixed(2)}
+                                </span>
+                              )}
                             </div>
                             <div className="flex items-center gap-1 mt-1">
                               <Icon
@@ -298,22 +350,27 @@ function MentorAppeal() {
                               )}
                             </div>
                             {/* Button Request Appeal cho mỗi round */}
-                            <div className="flex justify-start mt-2">
-                              <button
-                                onClick={() =>
-                                  handleOpenAppealModal(
-                                    roundId,
-                                    roundName,
-                                    teamId,
-                                    memberId
-                                  )
-                                }
-                                className="button-orange font-semibold flex items-center gap-2 px-3 py-1.5 text-xs whitespace-nowrap"
-                              >
-                                <Icon icon="mdi:bullhorn-outline" width={14} />
-                                Request an appeal
-                              </button>
-                            </div>
+                            {roundId && selectedContestId && (
+                              <div className="flex justify-start mt-2">
+                                <button
+                                  onClick={() =>
+                                    handleOpenAppealModal(
+                                      roundId,
+                                      roundName,
+                                      teamId,
+                                      memberId
+                                    )
+                                  }
+                                  className="button-orange font-semibold flex items-center gap-2 px-3 py-1.5 text-xs whitespace-nowrap"
+                                >
+                                  <Icon
+                                    icon="mdi:bullhorn-outline"
+                                    width={14}
+                                  />
+                                  Request an appeal
+                                </button>
+                              </div>
+                            )}
                           </div>
                         );
                       })}
@@ -321,9 +378,7 @@ function MentorAppeal() {
                   </div>
                 ) : (
                   <div className="mt-3 pt-3 border-t border-gray-200">
-                    <p className="text-xs text-gray-500">
-                      No round scores available
-                    </p>
+                    <p className="text-xs text-gray-500">No rounds available</p>
                   </div>
                 )}
               </div>
@@ -430,7 +485,8 @@ function MentorAppeal() {
                       No contests available
                     </p>
                     <p className="text-[#7A7574] text-xs">
-                      There are no ongoing contests to display results for. Appeals can only be requested for ongoing contests.
+                      There are no ongoing contests to display results for.
+                      Appeals can only be requested for ongoing contests.
                     </p>
                   </div>
                 ) : !selectedContestId ? (
@@ -983,11 +1039,13 @@ function MentorAppeal() {
                               </div>
 
                               <div className="font-semibold text-[#2d3748] mb-2">
-                              {appeal.contestName || "No contest provided"}
+                                {appeal.contestName || "No contest provided"}
                               </div>
                               <div className="font-semibold text-[#2d3748] mb-2">
                                 <p>Your Reason:</p>
-                                <p className="text-sm text-[#4a5568]  p-3  ">{appeal.reason || "No reason provided"}</p>
+                                <p className="text-sm text-[#4a5568]  p-3  ">
+                                  {appeal.reason || "No reason provided"}
+                                </p>
                               </div>
 
                               <div className="flex items-center gap-4 flex-wrap mt-3 text-sm">

@@ -53,6 +53,10 @@ export const AuthProvider = ({ children }) => {
           const data = await authService.refreshToken();
           setToken(data.token);
           setUser(data.user);
+          // Mark current user ID in sessionStorage
+          if (data.user?.id) {
+            sessionStorage.setItem('current_user_id', data.user.id);
+          }
 
           // Dispatch event to notify axiosClient and other listeners
           window.dispatchEvent(
@@ -71,6 +75,8 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem("token");
           localStorage.removeItem("refreshToken");
           localStorage.removeItem("user");
+          // Don't clear sessionStorage - allow user to continue after re-login
+          // SessionStorage is marked with user ID and will be cleared if different user logs in
           setToken(null);
           setUser(null);
           window.location.href = "/login";
@@ -110,6 +116,29 @@ export const AuthProvider = ({ children }) => {
           if (storedUser) {
             setToken(storedToken);
             setUser(storedUser);
+            // Mark current user ID in sessionStorage
+            if (storedUser?.id) {
+              const previousUserId = sessionStorage.getItem('current_user_id');
+              // If different user, clear previous user's data
+              if (previousUserId && previousUserId !== storedUser.id) {
+                // Import clearUserSessionData function (we'll need to export it)
+                const sessionKeysToRemove = [];
+                for (let i = 0; i < sessionStorage.length; i++) {
+                  const key = sessionStorage.key(i);
+                  if (key && (
+                    key.startsWith('round_timer_') ||
+                    key.startsWith('openCode_') ||
+                    key.startsWith('mcq_test_') ||
+                    key.startsWith('code_') ||
+                    key.startsWith('testResults_')
+                  )) {
+                    sessionKeysToRemove.push(key);
+                  }
+                }
+                sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+              }
+              sessionStorage.setItem('current_user_id', storedUser.id);
+            }
             // Start automatic token refresh
             startTokenRefreshInterval();
           }
@@ -126,6 +155,10 @@ export const AuthProvider = ({ children }) => {
             const data = await authService.refreshToken();
             setToken(data.token);
             setUser(data.user);
+            // Mark current user ID in sessionStorage
+            if (data.user?.id) {
+              sessionStorage.setItem('current_user_id', data.user.id);
+            }
             // Start automatic token refresh after successful refresh
             startTokenRefreshInterval();
 
@@ -141,6 +174,25 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem("token");
             localStorage.removeItem("refreshToken");
             localStorage.removeItem("user");
+            // Clear sessionStorage for current user only
+            const currentUserId = sessionStorage.getItem('current_user_id');
+            if (currentUserId) {
+              const sessionKeysToRemove = [];
+              for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                if (key && (
+                  key.startsWith('round_timer_') ||
+                  key.startsWith('openCode_') ||
+                  key.startsWith('mcq_test_') ||
+                  key.startsWith('code_') ||
+                  key.startsWith('testResults_')
+                )) {
+                  sessionKeysToRemove.push(key);
+                }
+              }
+              sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+            }
+            sessionStorage.removeItem('current_user_id');
             setToken(null);
             setUser(null);
           }
@@ -156,6 +208,10 @@ export const AuthProvider = ({ children }) => {
             const data = await authService.refreshToken();
             setToken(data.token);
             setUser(data.user);
+            // Mark current user ID in sessionStorage
+            if (data.user?.id) {
+              sessionStorage.setItem('current_user_id', data.user.id);
+            }
             // Start automatic token refresh after successful refresh
             startTokenRefreshInterval();
 
@@ -171,6 +227,8 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem("token");
             localStorage.removeItem("refreshToken");
             localStorage.removeItem("user");
+            // Clear sessionStorage
+            sessionStorage.clear();
             setToken(null);
             setUser(null);
           }
@@ -200,6 +258,10 @@ export const AuthProvider = ({ children }) => {
           if (newUser) {
             setToken(newToken);
             setUser(newUser);
+            // Mark current user ID in sessionStorage
+            if (newUser?.id) {
+              sessionStorage.setItem('current_user_id', newUser.id);
+            }
             if (import.meta.env.VITE_ENV === "development") {
               console.log("🔄 AuthContext updated after token refresh");
             }

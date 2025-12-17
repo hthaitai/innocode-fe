@@ -21,6 +21,7 @@ const CodeEditorSection = ({
   submitError,
   finalSubmitError,
   finalSubmitResult,
+  hasRunCode = false,
   onClearCode,
   onRunCode,
   onFinalSubmit,
@@ -193,10 +194,11 @@ const CodeEditorSection = ({
         </button>
         <button
           onClick={onFinalSubmit}
-          disabled={finalSubmitting || !submissionId || isTimeUp}
+          disabled={finalSubmitting || !submissionId || !hasRunCode || isTimeUp}
           className={`flex-1 button-orange flex items-center justify-center gap-2 ${
-            !submissionId || isTimeUp ? "opacity-50 cursor-not-allowed" : ""
+            !submissionId || !hasRunCode || isTimeUp ? "opacity-50 cursor-not-allowed" : ""
           }`}
+          title={!hasRunCode ? "Please run your code at least once before submitting" : ""}
         >
           {finalSubmitting ? (
             <>

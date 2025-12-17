@@ -38,6 +38,7 @@ export default function OrganizerAppeals() {
     isLoading: appealsLoading,
     isError: appealsError,
   } = useGetAppealsQuery({
+    contestId,
     roundId,
     state: stateFilter,
     decision: decisionFilter,
