@@ -35,6 +35,7 @@ export const api = createApi({
     "TeamInvites",
     "ActivityLogs",
     "RoleRegistrations",
+    "SchoolCreationRequests",
   ],
   endpoints: () => ({}),
 })

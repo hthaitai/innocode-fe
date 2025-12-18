@@ -362,4 +362,5 @@ export const ROLES = {
   JUDGE: "judge",
   STAFF: "staff",
   MENTOR: "mentor",
+  SCHOOL_MANAGER: "schoolmanager",
 };

@@ -32,6 +32,7 @@ const RoleRegistration = () => {
   const roles = [
     { value: "judge", label: "Judge" },
     { value: "organizer", label: "Organizer" },
+    { value: "schoolManager", label: "School Manager" },
     { value: "staff", label: "Staff" },
   ];
 
@@ -154,51 +155,96 @@ const RoleRegistration = () => {
     } catch (err) {
       console.error("Registration error:", err);
 
-      if (err.code === "ECONNABORTED" || err.message.includes("timeout")) {
+      // RTK Query error structure: err.data, err.status, err.originalStatus
+      const errorData = err?.data || err?.response?.data;
+      const status = err?.status || err?.originalStatus || err?.response?.status;
+      
+      // Lấy các thông báo lỗi từ nhiều nguồn khác nhau
+      const errorMessage = errorData?.errorMessage;
+      const message = errorData?.message;
+      const error = errorData?.error;
+      const errors = errorData?.errors;
+
+      // Hiển thị lỗi validation từ server (có thể là object hoặc array)
+      if (errors) {
+        if (typeof errors === "object" && !Array.isArray(errors)) {
+          // Merge với validation errors hiện tại
+          setValidationErrors((prev) => ({ ...prev, ...errors }));
+        } else if (Array.isArray(errors)) {
+          // Nếu là array, chuyển thành object với key là field name
+          const errorsObj = {};
+          errors.forEach((errorItem) => {
+            if (errorItem.field) {
+              errorsObj[errorItem.field] = errorItem.message || errorItem;
+            }
+          });
+          if (Object.keys(errorsObj).length > 0) {
+            setValidationErrors((prev) => ({ ...prev, ...errorsObj }));
+          }
+        }
+      }
+
+      // Xử lý các loại lỗi khác nhau
+      if (err?.code === "ECONNABORTED" || err?.message?.includes("timeout")) {
         setError(
           "Request timeout. Please check your connection and try again."
         );
-      } else if (err.response) {
-        const status = err.response.status;
-        const message = err.response.data?.message;
-        const errorMessage = err.response.data?.errorMessage;
-        const errors = err.response.data?.errors;
-
-        if (errors && typeof errors === "object") {
-          setValidationErrors(errors);
-        }
-
+      } else if (status) {
+        // Ưu tiên hiển thị errorMessage từ API
+        let displayError = errorMessage || message || error;
+        
         switch (status) {
           case 400:
             setError(
-              errorMessage ||
-                message ||
+              displayError ||
                 "Invalid registration data. Please check your input."
             );
             break;
           case 409:
-            setError("Email already exists. Please use a different email.");
+            // Xử lý lỗi email đã tồn tại
+            if (errorData?.errorCode === "EMAIL_EXISTS" || errorMessage) {
+              const emailErrorMsg = errorMessage || "Email already exists. Please use a different email.";
+              setError(emailErrorMsg);
+              // Cũng hiển thị lỗi ở field email
+              setValidationErrors((prev) => ({
+                ...prev,
+                email: emailErrorMsg,
+              }));
+            } else {
+              setError("Email already exists. Please use a different email.");
+            }
             break;
           case 422:
-            setError("Validation failed. Please check your input.");
+            setError(
+              displayError ||
+                "Validation failed. Please check your input fields above."
+            );
             break;
           case 500:
             setError(
-              err.response.data?.error ||
+              displayError ||
                 "Server error. Please try again later."
             );
             break;
           default:
             setError(
-              errorMessage || message || "An error occurred. Please try again."
+              displayError ||
+                "An error occurred. Please try again."
             );
         }
-      } else if (err.request) {
+      } else if (err?.request || err?.message?.includes("Network")) {
         setError(
           "Cannot connect to server. Please check your internet connection."
         );
       } else {
-        setError("An unexpected error occurred. Please try again.");
+        // Hiển thị bất kỳ thông báo lỗi nào có sẵn
+        setError(
+          errorMessage ||
+            message ||
+            error ||
+            err?.message ||
+            "An unexpected error occurred. Please try again."
+        );
       }
     }
   };
@@ -265,9 +311,18 @@ const RoleRegistration = () => {
               <select
                 id="requestedRole"
                 value={requestedRole}
-                onChange={(e) => setRequestedRole(e.target.value)}
+                onChange={(e) => {
+                  setRequestedRole(e.target.value);
+                  if (validationErrors.requestedRole) {
+                    setValidationErrors((prev) => {
+                      const newErrors = { ...prev };
+                      delete newErrors.requestedRole;
+                      return newErrors;
+                    });
+                  }
+                }}
                 className={`form-input ${
-                  validationErrors.requestedRole ? "border-red-500" : ""
+                  validationErrors.requestedRole ? "border-red-500 ring-1 ring-red-200" : ""
                 }`}
                 required
               >
@@ -279,9 +334,12 @@ const RoleRegistration = () => {
                 ))}
               </select>
               {validationErrors.requestedRole && (
-                <p className="text-red-500 text-xs mt-1">
-                  {validationErrors.requestedRole}
-                </p>
+                <div className="flex items-center gap-1 mt-1">
+                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
+                  <p className="text-red-500 text-xs">
+                    {validationErrors.requestedRole}
+                  </p>
+                </div>
               )}
             </div>
 
@@ -294,17 +352,29 @@ const RoleRegistration = () => {
                 type="text"
                 id="fullName"
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                onChange={(e) => {
+                  setFullName(e.target.value);
+                  if (validationErrors.fullName) {
+                    setValidationErrors((prev) => {
+                      const newErrors = { ...prev };
+                      delete newErrors.fullName;
+                      return newErrors;
+                    });
+                  }
+                }}
                 className={`form-input ${
-                  validationErrors.fullName ? "border-red-500" : ""
+                  validationErrors.fullName ? "border-red-500 ring-1 ring-red-200" : ""
                 }`}
                 autoComplete="name"
                 required
               />
               {validationErrors.fullName && (
-                <p className="text-red-500 text-xs mt-1">
-                  {validationErrors.fullName}
-                </p>
+                <div className="flex items-center gap-1 mt-1">
+                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
+                  <p className="text-red-500 text-xs">
+                    {validationErrors.fullName}
+                  </p>
+                </div>
               )}
             </div>
 
@@ -317,17 +387,29 @@ const RoleRegistration = () => {
                 type="email"
                 id="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (validationErrors.email) {
+                    setValidationErrors((prev) => {
+                      const newErrors = { ...prev };
+                      delete newErrors.email;
+                      return newErrors;
+                    });
+                  }
+                }}
                 className={`form-input ${
-                  validationErrors.email ? "border-red-500" : ""
+                  validationErrors.email ? "border-red-500 ring-1 ring-red-200" : ""
                 }`}
                 autoComplete="email"
                 required
               />
               {validationErrors.email && (
-                <p className="text-red-500 text-xs mt-1">
-                  {validationErrors.email}
-                </p>
+                <div className="flex items-center gap-1 mt-1">
+                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
+                  <p className="text-red-500 text-xs">
+                    {validationErrors.email}
+                  </p>
+                </div>
               )}
             </div>
 
@@ -368,17 +450,29 @@ const RoleRegistration = () => {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (validationErrors.password) {
+                    setValidationErrors((prev) => {
+                      const newErrors = { ...prev };
+                      delete newErrors.password;
+                      return newErrors;
+                    });
+                  }
+                }}
                 className={`form-input ${
-                  validationErrors.password ? "border-red-500" : ""
+                  validationErrors.password ? "border-red-500 ring-1 ring-red-200" : ""
                 }`}
                 autoComplete="new-password"
                 required
               />
               {validationErrors.password && (
-                <p className="text-red-500 text-xs mt-1">
-                  {validationErrors.password}
-                </p>
+                <div className="flex items-center gap-1 mt-1">
+                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
+                  <p className="text-red-500 text-xs">
+                    {validationErrors.password}
+                  </p>
+                </div>
               )}
               <p className="text-xs text-gray-500 mt-1">
                 Minimum 8 characters with uppercase, lowercase and number
@@ -407,17 +501,29 @@ const RoleRegistration = () => {
                 type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (validationErrors.confirmPassword) {
+                    setValidationErrors((prev) => {
+                      const newErrors = { ...prev };
+                      delete newErrors.confirmPassword;
+                      return newErrors;
+                    });
+                  }
+                }}
                 className={`form-input ${
-                  validationErrors.confirmPassword ? "border-red-500" : ""
+                  validationErrors.confirmPassword ? "border-red-500 ring-1 ring-red-200" : ""
                 }`}
                 autoComplete="new-password"
                 required
               />
               {validationErrors.confirmPassword && (
-                <p className="text-red-500 text-xs mt-1">
-                  {validationErrors.confirmPassword}
-                </p>
+                <div className="flex items-center gap-1 mt-1">
+                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
+                  <p className="text-red-500 text-xs">
+                    {validationErrors.confirmPassword}
+                  </p>
+                </div>
               )}
             </div>
 
@@ -448,7 +554,7 @@ const RoleRegistration = () => {
                   multiple
                   onChange={handleFileChange}
                   className={`file-input ${
-                    validationErrors.evidenceFiles ? "border-red-500" : ""
+                    validationErrors.evidenceFiles ? "border-red-500 ring-1 ring-red-200" : ""
                   }`}
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   required
@@ -465,9 +571,12 @@ const RoleRegistration = () => {
                 </label>
               </div>
               {validationErrors.evidenceFiles && (
-                <p className="text-red-500 text-xs mt-1">
-                  {validationErrors.evidenceFiles}
-                </p>
+                <div className="flex items-center gap-1 mt-1">
+                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
+                  <p className="text-red-500 text-xs">
+                    {validationErrors.evidenceFiles}
+                  </p>
+                </div>
               )}
               {evidenceFiles.length > 0 && (
                 <div className="file-list mt-2">
@@ -489,8 +598,22 @@ const RoleRegistration = () => {
 
             {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded text-sm mb-4">
-                {error}
+              <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
+                <div className="flex items-start gap-2">
+                  <Icon icon="mdi:alert-circle" className="text-red-600 mt-0.5 flex-shrink-0" width="20" />
+                  <div className="flex-1">
+                    <p className="font-semibold text-red-800 mb-1">Error</p>
+                    <p className="text-red-700">{error}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setError("")}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                    aria-label="Close error"
+                  >
+                    <Icon icon="mdi:close" width="18" />
+                  </button>
+                </div>
               </div>
             )}
 

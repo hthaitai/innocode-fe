@@ -95,11 +95,16 @@ import OrganizerLeaderboardMemberDetail from "./features/leaderboard/pages/organ
 import NotFound from "./pages/NotFound";
 import StaffProvinces from "./features/province/pages/staff/StaffProvinces";
 import StaffSchools from "./features/school/pages/staff/StaffSchools";
+import StaffSchoolCreationRequestDetail from "./features/school/pages/staff/StaffSchoolCreationRequestDetail";
 import StaffRoleRegistrations from "./features/role-registration/pages/staff/StaffRoleRegistrations";
+import StaffRoleRegistrationDetail from "./features/role-registration/pages/staff/StaffRoleRegistrationDetail";
 import StudentCertificate from "./features/certificate/pages/student/StudentCertificate";
 import ContestJudgesPage from "./features/invite-judge/pages/ContestJudgesPage";
 import JudgeInviteAccept from "./features/invite-judge/pages/JudgeInviteAccept";
 import JudgeInviteDecline from "./features/invite-judge/pages/JudgeInviteDecline";
+import SchoolManager from "./features/school/pages/school-manager/SchoolManager";
+import CreateSchoolRequest from "./features/school/pages/school-manager/CreateSchoolRequest";
+import SchoolCreationRequestDetail from "./features/school/pages/school-manager/SchoolCreationRequestDetail";
 
 // Initialize EmailJS when app starts
 initEmailJs();
@@ -317,6 +322,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[ROLES.STAFF]}>
             <StaffSchools />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "school-staff/:id",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STAFF]}>
+            <StaffSchoolCreationRequestDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "role-registrations-staff/:id",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STAFF]}>
+            <StaffRoleRegistrationDetail />
           </ProtectedRoute>
         ),
       },
@@ -743,6 +764,31 @@ const router = createBrowserRouter([
       {
         path: "/quiz/:roundId/finish",
         element: <FinishQuiz />,
+      },
+      //SchoolManager routes
+      {
+        path: "school-manager",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.SCHOOL_MANAGER]}>
+            <SchoolManager />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "school-manager/create",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.SCHOOL_MANAGER]}>
+            <CreateSchoolRequest />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "school-manager/:id",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.SCHOOL_MANAGER]}>
+            <SchoolCreationRequestDetail />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

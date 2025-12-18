@@ -75,9 +75,9 @@ const InfoField = ({
         {label}
       </label>
       <div
-        className={`relative bg-gray-50 border-2 rounded-xl p-2 transition-all duration-200 ${
+        className={`relative bg-gray-50 border-2 rounded-xl px-3 h-11 flex items-center transition-all duration-200 ${
           isEditing
-            ? "border-orange-400 ring-2 ring-orange-100"
+            ? "border-orange-400 ring-2 ring-orange-100 h-auto flex-col items-stretch py-2"
             : "border-gray-200 hover:border-orange-300 group-hover:shadow-md"
         }`}
       >

@@ -1,18 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import BaseModal from "@/shared/components/BaseModal";
 import { useGetRoleRegistrationByIdQuery } from "@/services/roleRegistrationApi";
+import { useModal } from "@/shared/hooks/useModal";
 
-const RoleRegistrationDetailsModal = ({ isOpen, onClose, registrationId }) => {
-  const { data: registration, isLoading } = useGetRoleRegistrationByIdQuery(
-    registrationId,
-    { skip: !registrationId || !isOpen }
-  );
+const RoleRegistrationDetailsModal = ({
+  isOpen,
+  onClose,
+  registrationId,
+  onSuccess,
+}) => {
+  const { closeModal } = useModal();
+  // isOpen is passed from ModalContext, default to true if not provided
+  const modalIsOpen = isOpen !== undefined ? isOpen : true;
+  
+  // Use closeModal from useModal hook, fallback to onClose prop
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      closeModal();
+    }
+  };
+
+  const {
+    data: registration,
+    isLoading,
+    refetch,
+    error: queryError,
+  } = useGetRoleRegistrationByIdQuery(registrationId, {
+    skip: !registrationId || !modalIsOpen,
+  });
 
   if (isLoading) {
     return (
       <BaseModal
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={modalIsOpen}
+        onClose={handleClose}
         title="Role Registration Details"
         size="lg"
       >
@@ -23,11 +46,34 @@ const RoleRegistrationDetailsModal = ({ isOpen, onClose, registrationId }) => {
     );
   }
 
-  if (!registration) {
+  if (queryError) {
     return (
       <BaseModal
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={modalIsOpen}
+        onClose={handleClose}
+        title="Role Registration Details"
+        size="lg"
+      >
+        <div className="text-center py-8">
+          <p className="text-red-500 mb-2">
+            Error loading registration details
+          </p>
+          <p className="text-sm text-gray-500">
+            {queryError?.data?.errorMessage ||
+              queryError?.data?.message ||
+              queryError?.message ||
+              "Please try again later"}
+          </p>
+        </div>
+      </BaseModal>
+    );
+  }
+
+  if (!registration && !isLoading) {
+    return (
+      <BaseModal
+        isOpen={modalIsOpen}
+        onClose={handleClose}
         title="Role Registration Details"
         size="lg"
       >
@@ -67,7 +113,7 @@ const RoleRegistrationDetailsModal = ({ isOpen, onClose, registrationId }) => {
 
   return (
     <BaseModal
-      isOpen={isOpen}
+      isOpen={modalIsOpen}
       onClose={onClose}
       title="Role Registration Details"
       size="lg"
@@ -99,9 +145,8 @@ const RoleRegistrationDetailsModal = ({ isOpen, onClose, registrationId }) => {
               Requested Role
             </label>
             <p className="text-gray-900 capitalize">
-              {registration.requestedRole
-                ?.replace(/([A-Z])/g, " $1")
-                .trim() || "—"}
+              {registration.requestedRole?.replace(/([A-Z])/g, " $1").trim() ||
+                "—"}
             </p>
           </div>
           <div>
@@ -142,7 +187,9 @@ const RoleRegistrationDetailsModal = ({ isOpen, onClose, registrationId }) => {
                   Reviewed By
                 </label>
                 <p className="text-gray-900">
-                  {registration.reviewedByName || registration.reviewedByEmail || "—"}
+                  {registration.reviewedByName ||
+                    registration.reviewedByEmail ||
+                    "—"}
                 </p>
               </div>
               <div>
@@ -181,13 +228,15 @@ const RoleRegistrationDetailsModal = ({ isOpen, onClose, registrationId }) => {
         )}
 
         {(registration.evidences && registration.evidences.length > 0) ||
-        (registration.evidenceFiles && registration.evidenceFiles.length > 0) ? (
+        (registration.evidenceFiles &&
+          registration.evidenceFiles.length > 0) ? (
           <div>
             <label className="text-sm font-medium text-gray-700 block mb-2">
               Evidence Documents
               {registration.evidenceCount !== undefined && (
                 <span className="text-gray-500 font-normal ml-2">
-                  ({registration.evidenceCount} file{registration.evidenceCount !== 1 ? "s" : ""})
+                  ({registration.evidenceCount} file
+                  {registration.evidenceCount !== 1 ? "s" : ""})
                 </span>
               )}
             </label>
@@ -197,7 +246,9 @@ const RoleRegistrationDetailsModal = ({ isOpen, onClose, registrationId }) => {
                   const evidenceUrl = evidence.url || evidence;
                   const evidenceName =
                     evidence.name ||
-                    `Document ${index + 1}${evidence.type ? evidence.type : ""}`;
+                    `Document ${index + 1}${
+                      evidence.type ? evidence.type : ""
+                    }`;
                   const evidenceType = evidence.type || "";
                   const evidenceNote = evidence.note;
                   const evidenceDate = evidence.createdAt;
@@ -237,7 +288,8 @@ const RoleRegistrationDetailsModal = ({ isOpen, onClose, registrationId }) => {
                           )}
                           {evidenceDate && (
                             <span>
-                              Uploaded: {new Date(evidenceDate).toLocaleDateString()}
+                              Uploaded:{" "}
+                              {new Date(evidenceDate).toLocaleDateString()}
                             </span>
                           )}
                         </div>
@@ -269,4 +321,3 @@ const RoleRegistrationDetailsModal = ({ isOpen, onClose, registrationId }) => {
 };
 
 export default RoleRegistrationDetailsModal;
-

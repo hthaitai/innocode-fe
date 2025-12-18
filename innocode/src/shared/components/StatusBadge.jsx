@@ -25,6 +25,7 @@ export const statusColorMap = {
   resolved: "bg-green-500",
 
   rejected: "bg-red-600",
+  denied: "bg-red-600",
   disqualified: "bg-red-700",
   error: "bg-red-500",
   registrationclosed: "bg-red-600",

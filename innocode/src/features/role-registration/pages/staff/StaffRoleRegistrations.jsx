@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { BREADCRUMBS } from "@/config/breadcrumbs";
 import PageContainer from "@/shared/components/PageContainer";
 import TableFluent from "@/shared/components/TableFluent";
-import { UserCheck, CheckCircle2, XCircle, Eye } from "lucide-react";
-import Actions from "@/shared/components/Actions";
-import { useModal } from "@/shared/hooks/useModal";
-import {
-  useGetAllRoleRegistrationsQuery,
-  useApproveRoleRegistrationMutation,
-  useDenyRoleRegistrationMutation,
-} from "@/services/roleRegistrationApi";
-import { toast } from "react-hot-toast";
+import { UserCheck } from "lucide-react";
+import { useGetAllRoleRegistrationsQuery } from "@/services/roleRegistrationApi";
 
 const StaffRoleRegistrations = () => {
-  const { openModal } = useModal();
+  const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState(""); // "pending", "approved", "denied"
+  const [requestedRoleFilter, setRequestedRoleFilter] = useState("");
+  const [emailSearch, setEmailSearch] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [desc, setDesc] = useState(false);
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = 10;
 
   // ----- Fetch Data -----
   const {
@@ -23,47 +23,19 @@ const StaffRoleRegistrations = () => {
     error,
     refetch,
   } = useGetAllRoleRegistrationsQuery({
-    pageNumber: 1,
-    pageSize: 100,
+    pageNumber,
+    pageSize,
     ...(statusFilter && { status: statusFilter }),
+    ...(requestedRoleFilter && { requestedRole: requestedRoleFilter }),
+    ...(emailSearch && { emailContains: emailSearch }),
+    ...(sortBy && { sortBy }),
+    ...(sortBy && { desc }),
   });
 
-  // ----- Mutations -----
-  const [approveRegistration] = useApproveRoleRegistrationMutation();
-  const [denyRegistration] = useDenyRoleRegistrationMutation();
-
   // ----- Handlers -----
-  const handleApprove = async (registration) => {
-    try {
-      const registrationId = registration.registrationId || registration.id;
-      await approveRegistration(registrationId).unwrap();
-      toast.success("Role registration approved successfully");
-      refetch();
-    } catch (err) {
-      console.error("Error approving registration:", err);
-      toast.error(
-        err?.data?.message || "Failed to approve role registration"
-      );
-    }
-  };
-
-  const handleDeny = async (registration) => {
-    try {
-      const registrationId = registration.registrationId || registration.id;
-      await denyRegistration(registrationId).unwrap();
-      toast.success("Role registration denied successfully");
-      refetch();
-    } catch (err) {
-      console.error("Error denying registration:", err);
-      toast.error(err?.data?.message || "Failed to deny role registration");
-    }
-  };
-
-  const handleViewDetails = (registration) => {
+  const handleRowClick = (registration) => {
     const registrationId = registration.registrationId || registration.id;
-    openModal("roleRegistrationDetails", {
-      registrationId: registrationId,
-    });
+    navigate(`/role-registrations-staff/${registrationId}`);
   };
 
   // ----- Status Badge Component -----
@@ -193,49 +165,24 @@ const StaffRoleRegistrations = () => {
       },
       size: 130,
     },
-    {
-      id: "actions",
-      header: "Actions",
-      enableSorting: false,
-      enableHiding: false,
-      cell: ({ row }) => {
-        const registration = row.original;
-        const isPending = registration.status?.toLowerCase() === "pending";
-
-        return (
-          <Actions
-            row={registration}
-            items={[
-              {
-                label: "View Details",
-                icon: Eye,
-                onClick: () => handleViewDetails(registration),
-              },
-              ...(isPending
-                ? [
-                    {
-                      label: "Approve",
-                      icon: CheckCircle2,
-                      className: "text-green-600",
-                      onClick: () => handleApprove(registration),
-                    },
-                    {
-                      label: "Deny",
-                      icon: XCircle,
-                      className: "text-red-600",
-                      onClick: () => handleDeny(registration),
-                    },
-                  ]
-                : []),
-            ]}
-          />
-        );
-      },
-    },
   ];
 
-  // Extract items from response
+  // Extract items and pagination from response
   const registrations = registrationsData?.data || [];
+  const paginationData = registrationsData?.additionalData || registrationsData?.pagination || {};
+  const pagination = {
+    pageNumber: pageNumber,
+    pageSize: pageSize,
+    totalPages: paginationData.totalPages || 1,
+    totalCount: paginationData.totalCount || 0,
+    hasPreviousPage: paginationData.hasPreviousPage || false,
+    hasNextPage: paginationData.hasNextPage || false,
+  };
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setPageNumber(1);
+  }, [statusFilter, requestedRoleFilter, emailSearch, sortBy, desc]);
 
   return (
     <PageContainer
@@ -257,20 +204,85 @@ const StaffRoleRegistrations = () => {
               </p>
             </div>
           </div>
-          <div className="flex gap-2 items-center">
-            <label className="text-sm text-gray-600 font-medium">
-              Filter by Status:
-            </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 cursor-pointer min-w-[150px]"
-            >
-              <option value="">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="denied">Denied</option>
-            </select>
+          <div className="flex flex-wrap gap-3 items-center">
+            <div className="flex gap-2 items-center">
+              <label className="text-sm text-gray-600 font-medium">
+                Status:
+              </label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 cursor-pointer min-w-[150px]"
+              >
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="denied">Denied</option>
+              </select>
+            </div>
+
+            <div className="flex gap-2 items-center">
+              <label className="text-sm text-gray-600 font-medium">
+                Role:
+              </label>
+              <select
+                value={requestedRoleFilter}
+                onChange={(e) => setRequestedRoleFilter(e.target.value)}
+                className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 cursor-pointer min-w-[150px]"
+              >
+                <option value="">All Roles</option>
+                <option value="judge">Judge</option>
+                <option value="organizer">Organizer</option>
+                <option value="school manager">School Manager</option>
+                <option value="staff">Staff</option>
+              </select>
+            </div>
+
+            <div className="flex gap-2 items-center">
+              <label className="text-sm text-gray-600 font-medium">
+                Email:
+              </label>
+              <input
+                type="text"
+                value={emailSearch}
+                onChange={(e) => setEmailSearch(e.target.value)}
+                placeholder="Search email..."
+                className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 min-w-[200px]"
+              />
+            </div>
+
+            <div className="flex gap-2 items-center">
+              <label className="text-sm text-gray-600 font-medium">
+                Sort By:
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 cursor-pointer min-w-[150px]"
+              >
+                <option value="">Default</option>
+                <option value="createdAt">Submitted Date</option>
+                <option value="fullname">Full Name</option>
+                <option value="email">Email</option>
+                <option value="status">Status</option>
+              </select>
+            </div>
+
+            {sortBy && (
+              <div className="flex gap-2 items-center">
+                <label className="text-sm text-gray-600 font-medium">
+                  Order:
+                </label>
+                <select
+                  value={desc ? "desc" : "asc"}
+                  onChange={(e) => setDesc(e.target.value === "desc")}
+                  className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 cursor-pointer min-w-[100px]"
+                >
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </select>
+              </div>
+            )}
           </div>
         </div>
 
@@ -278,6 +290,9 @@ const StaffRoleRegistrations = () => {
           data={registrations}
           columns={registrationsColumns}
           title="Role Registrations"
+          onRowClick={handleRowClick}
+          pagination={pagination}
+          onPageChange={setPageNumber}
         />
       </div>
     </PageContainer>

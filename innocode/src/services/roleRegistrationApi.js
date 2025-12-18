@@ -18,14 +18,31 @@ export const roleRegistrationApi = api.injectEndpoints({
 
     // Get all role registrations
     getAllRoleRegistrations: builder.query({
-      query: ({ pageNumber = 1, pageSize = 10, status } = {}) => ({
-        url: "/role-registrations",
-        params: {
-          pageNumber,
-          pageSize,
-          ...(status && { status }),
-        },
-      }),
+      query: ({
+        pageNumber = 1,
+        pageSize = 10,
+        status,
+        requestedRole,
+        emailContains,
+        sortBy,
+        desc,
+      } = {}) => {
+        const params = {
+          Page: pageNumber,
+          PageSize: pageSize,
+        };
+
+        if (status) params.Status = status;
+        if (requestedRole) params.RequestedRole = requestedRole;
+        if (emailContains) params.EmailContains = emailContains;
+        if (sortBy) params.SortBy = sortBy;
+        if (desc !== undefined) params.Desc = desc;
+
+        return {
+          url: "/role-registrations",
+          params,
+        };
+      },
       providesTags: (result) =>
         result?.data && Array.isArray(result.data)
           ? [
@@ -63,11 +80,12 @@ export const roleRegistrationApi = api.injectEndpoints({
 
     // Deny role registration
     denyRoleRegistration: builder.mutation({
-      query: (id) => ({
+      query: ({ id, reason }) => ({
         url: `/role-registrations/${id}/deny`,
         method: "POST",
+        body: { reason },
       }),
-      invalidatesTags: (result, error, id) => [
+      invalidatesTags: (result, error, { id }) => [
         { type: "RoleRegistrations", id },
         { type: "RoleRegistrations", id: "LIST" },
       ],

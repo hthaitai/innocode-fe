@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BREADCRUMBS } from "@/config/breadcrumbs";
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs";
 import PageContainer from "@/shared/components/PageContainer";
 import TableFluent from "@/shared/components/TableFluent";
 import { School } from "lucide-react";
-import { useGetAllSchoolCreationRequestsQuery } from "@/services/schoolApi";
+import { useGetMySchoolCreationRequestsQuery } from "@/services/schoolApi";
 import StatusBadge from "@/shared/components/StatusBadge";
 
-const StaffSchools = () => {
+const SchoolManager = () => {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,7 +20,7 @@ const StaffSchools = () => {
     isLoading: loading,
     error,
     refetch,
-  } = useGetAllSchoolCreationRequestsQuery({
+  } = useGetMySchoolCreationRequestsQuery({
     Status: statusFilter || undefined,
     Search: searchTerm || undefined,
     Page: pageNumber,
@@ -57,20 +57,12 @@ const StaffSchools = () => {
     {
       accessorKey: "name",
       header: "School Name",
-      cell: ({ row }) => {
-        const name = row.original.name || row.original.Name || "—";
-        return <span className="font-medium">{name}</span>;
-      },
-      size: 200,
+      cell: ({ row }) => row.original.name || "—",
     },
     {
       accessorKey: "provinceName",
       header: "Province",
-      cell: ({ row }) => {
-        const province = row.original.provinceName || row.original.ProvinceName || "—";
-        return <span className="text-gray-700">{province}</span>;
-      },
-      size: 150,
+      cell: ({ row }) => row.original.provinceName || "—",
     },
     {
       accessorKey: "status",
@@ -78,22 +70,11 @@ const StaffSchools = () => {
       cell: ({ row }) => (
         <StatusBadge status={row.original.status || row.original.Status} />
       ),
-      size: 120,
     },
     {
       accessorKey: "createdAt",
       header: "Created Date",
-      cell: ({ row }) => {
-        const date =
-          row.original.createdAt ||
-          row.original.CreatedAt ||
-          row.original.created_at ||
-          "—";
-        return (
-          <span className="text-gray-700 text-sm">{formatDate(date)}</span>
-        );
-      },
-      size: 130,
+      cell: ({ row }) => formatDate(row.original.createdAt),
     },
   ];
 
@@ -112,12 +93,13 @@ const StaffSchools = () => {
   // Handle row click
   const handleRowClick = (request) => {
     const requestId = request.requestId || request.id;
-    navigate(`/school-staff/${requestId}`);
+    navigate(`/school-manager/${requestId}`);
   };
 
   return (
     <PageContainer
-      breadcrumb={BREADCRUMBS.SCHOOLS}
+      breadcrumb={BREADCRUMBS.SCHOOL_MANAGEMENT}
+      breadcrumbPaths={BREADCRUMB_PATHS.SCHOOL_MANAGEMENT}
       loading={loading}
       error={error}
     >
@@ -128,10 +110,10 @@ const StaffSchools = () => {
             <School size={20} className="text-gray-700" />
             <div>
               <p className="text-[14px] leading-[20px] font-semibold text-gray-800">
-                School Creation Requests Management
+                School Management
               </p>
               <p className="text-[12px] leading-[16px] text-[#7A7574] mt-0.5">
-                Review and manage school creation requests
+                Manage your school creation requests
               </p>
             </div>
           </div>
@@ -171,6 +153,14 @@ const StaffSchools = () => {
                 <option value="Denied">Denied</option>
               </select>
             </div>
+
+            {/* Create Button */}
+            <button
+              className="button-orange"
+              onClick={() => navigate("/school-manager/create")}
+            >
+              Create School
+            </button>
           </div>
         </div>
 
@@ -188,4 +178,4 @@ const StaffSchools = () => {
   );
 };
 
-export default StaffSchools;
+export default SchoolManager;

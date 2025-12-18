@@ -24,6 +24,8 @@ import InviteJudgeModal from "../features/invite-judge/components/InviteJudgeMod
 import CertificateTemplateModal from "../features/certificate/components/organizer/CertificateTemplateModal"
 import ContestFilterModal from "../features/contest/components/organizer/ContestFilterModal"
 import RoleRegistrationDetailsModal from "../features/role-registration/components/RoleRegistrationDetailsModal"
+import ApproveRoleRegistrationModal from "../features/role-registration/components/ApproveRoleRegistrationModal"
+import DenyRoleRegistrationModal from "../features/role-registration/components/DenyRoleRegistrationModal"
 
 const ModalContext = createContext({
   openModal: () => {}, // no-op default
@@ -75,6 +77,8 @@ export function ModalProvider({ children }) {
     certificateTemplate: CertificateTemplateModal,
     contestFilter: ContestFilterModal,
     roleRegistrationDetails: RoleRegistrationDetailsModal,
+    approveRoleRegistration: ApproveRoleRegistrationModal,
+    denyRoleRegistration: DenyRoleRegistrationModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null
