@@ -16,6 +16,7 @@ const DropdownFluent = ({
   const dropdownRef = useRef(null)
   const itemRefs = useRef({}) // refs for each item
 
+  const fluentEaseOut = [0.16, 1, 0.3, 1]
   // Memoize selected option label to prevent unnecessary recalculations
   const selectedLabel = useMemo(() => {
     return (
@@ -115,21 +116,16 @@ const DropdownFluent = ({
         {isOpen && (
           <motion.div
             key="dropdown"
-            initial={{ opacity: 0, y: -8, scale: 0.95 }}
+            initial={{ y: -20, opacity: 0 }} // start slightly above
             animate={{
-              opacity: 1,
               y: 0,
-              scale: 1,
-              transition: {
-                duration: 0.2,
-                ease: [0.16, 1, 0.3, 1],
-              },
+              opacity: 1,
+              transition: { duration: 0.5, ease: fluentEaseOut },
             }}
             exit={{
+              y: -10,
               opacity: 0,
-              y: -4,
-              scale: 0.95,
-              transition: { duration: 0.15, ease: "easeInOut" },
+              transition: { duration: 0.25, ease: fluentEaseOut },
             }}
             className="absolute left-0 top-full bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg overflow-hidden w-full z-50 "
             style={{ maxHeight: "200px" }}

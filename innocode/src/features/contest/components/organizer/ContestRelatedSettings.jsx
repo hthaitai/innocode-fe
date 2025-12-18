@@ -2,12 +2,12 @@ import { Link } from "react-router-dom"
 import { Users, Trophy, Award, ChevronRight, Scale, Mail, UserCheck, LayoutTemplate, FileBadge2 } from "lucide-react"
 
 const items = [
-  // {
-  //   title: "Teams",
-  //   subtitle: "Manage registered teams and members",
-  //   icon: <Users size={20} />,
-  //   path: "teams",
-  // },
+  {
+    title: "Teams",
+    subtitle: "Manage registered teams and members",
+    icon: <Users size={20} />,
+    path: "teams",
+  },
   {
     title: "Judges",
     subtitle: "Invite and manage contest judges",
@@ -40,10 +40,16 @@ const items = [
     path: "certificates/templates",
   },
   {
-    title: "Issued certificates",
-    subtitle: "View every certificate that has been issued so far",
+    title: "Issued student certificates",
+    subtitle: "View certificates issued to individual students",
     icon: <FileBadge2 size={20} />,
-    path: "certificates/issued",
+    path: "certificates/issued/students",
+  },
+  {
+    title: "Issued team certificates",
+    subtitle: "View certificates issued to teams",
+    icon: <FileBadge2 size={20} />,
+    path: "certificates/issued/teams",
   },
   {
     title: "Appeals",

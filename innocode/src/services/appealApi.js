@@ -47,7 +47,13 @@ export const appealApi = api.injectEndpoints({
 
     // GET all appeals
     getAppeals: builder.query({
-      query: ({ contestId, state, decision, pageNumber = 1, pageSize = 10 }) => ({
+      query: ({
+        contestId,
+        state,
+        decision,
+        pageNumber = 1,
+        pageSize = 10,
+      }) => ({
         url: `/contests/${contestId}/appeals`,
         params: { state, decision, pageNumber, pageSize },
       }),
@@ -61,6 +67,17 @@ export const appealApi = api.injectEndpoints({
               { type: "Appeal", id: "LIST" },
             ]
           : [{ type: "Appeal", id: "LIST" }],
+    }),
+
+    // GET appeal by id
+    getAppealById: builder.query({
+      query: (appealId) => `/appeals/${appealId}`,
+      transformResponse: (response) => {
+        return response.data
+      },
+      providesTags: (result, error, appealId) => [
+        { type: "Appeal", id: appealId },
+      ],
     }),
 
     // PUT review an appeal
@@ -79,5 +96,6 @@ export const {
   useGetMyAppealsQuery,
   useCreateAppealMutation,
   useGetAppealsQuery,
+  useGetAppealByIdQuery,
   useReviewAppealMutation,
 } = appealApi

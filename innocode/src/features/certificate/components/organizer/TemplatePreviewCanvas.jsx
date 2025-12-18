@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react"
 
-export default function TemplatePreviewCanvas({ template }) {
+export default function TemplatePreviewCanvas({ template, zoom = 1 }) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -13,49 +13,85 @@ export default function TemplatePreviewCanvas({ template }) {
     img.crossOrigin = "anonymous"
     img.src = template.fileUrl
 
+    // Handle image load error
+    img.onerror = () => {
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      // Draw a placeholder
+      ctx.fillStyle = "#f0f0f0"
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      ctx.fillStyle = "#999"
+      ctx.font = "16px Arial"
+      ctx.textAlign = "center"
+      ctx.textBaseline = "middle"
+      ctx.fillText("Image not found", canvas.width / 2, canvas.height / 2)
+    }
+
     img.onload = () => {
-      // Fit the image into the canvas (card size)
       const w = canvas.width
       const h = canvas.height
       ctx.clearRect(0, 0, w, h)
 
-      // Draw the background image cropped to cover
-      const imgRatio = img.width / img.height
-      const canvasRatio = w / h
+      // Scale image to fit width (like Konva)
+      const scale = (w / img.width) * zoom
+      const imgWidth = img.width * scale
+      const imgHeight = img.height * scale
 
-      let drawWidth = w
-      let drawHeight = h
+      ctx.drawImage(img, 0, 0, imgWidth, imgHeight)
 
-      if (imgRatio > canvasRatio) {
-        drawHeight = h
-        drawWidth = img.width * (h / img.height)
-      } else {
-        drawWidth = w
-        drawHeight = img.height * (w / img.width)
-      }
-
-      const offsetX = (w - drawWidth) / 2
-      const offsetY = (h - drawHeight) / 2
-
-      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight)
-
-      // Render sample text
       const t = template.text
-      ctx.font = `${t.fontSize / 3}px ${t.fontFamily}`
-      ctx.fillStyle = t.colorHex
-      ctx.textAlign = t.align
+      if (t) {
+        const fontSizeScaled = (t.fontSize || 48) * scale
+        ctx.font = `${fontSizeScaled}px ${t.fontFamily || "Arial"}`
+        ctx.fillStyle = t.colorHex || "#000"
+        ctx.textBaseline = "top"
 
-      // Scale based on drawn image (cover mode scaling)
-      const scaleX = drawWidth / img.width
-      const scaleY = drawHeight / img.height
+        const textX = (t.x || 0) * scale
+        const textY = (t.y || 0) * scale
+        const maxWidthScaled = (t.maxWidth || img.width) * scale
+        const align = t.align || "left"
 
-      // Convert original coordinates to drawn image position
-      const textX = offsetX + t.x * scaleX
-      const textY = offsetY + t.y * scaleY
+        // Draw multi-line text with wrapping
+        function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, align) {
+          const words = text.split(" ")
+          let line = ""
+          const lines = []
 
-      ctx.fillText("Sample Text", textX, textY)
+          for (let n = 0; n < words.length; n++) {
+            const testLine = line ? line + " " + words[n] : words[n]
+            const metrics = ctx.measureText(testLine)
+            if (metrics.width > maxWidth && line) {
+              lines.push(line)
+              line = words[n]
+            } else {
+              line = testLine
+            }
+          }
+          lines.push(line)
+
+          lines.forEach((lineText, i) => {
+            let drawX = x
+            if (align === "center") drawX = x + maxWidth / 2
+            if (align === "right") drawX = x + maxWidth
+            ctx.textAlign = align
+            ctx.fillText(lineText, drawX, y + i * lineHeight)
+          })
+        }
+
+        drawWrappedText(
+          ctx,
+          t.value || "Nguyen Van A",
+          textX,
+          textY,
+          maxWidthScaled,
+          fontSizeScaled,
+          align
+        )
+      }
     }
-  }, [template])
+  }, [template, zoom])
 
   return (
     <canvas

@@ -11,7 +11,7 @@ import { useAwardCertificatesMutation } from "@/services/certificateApi"
 import { useModal } from "@/shared/hooks/useModal"
 import toast from "react-hot-toast"
 
-const OrganizerLeaderboardDetail = () => {
+const OrganizerLeaderboardTeam = () => {
   const { contestId, teamId } = useParams()
   const { openModal, closeModal } = useModal()
   const [awarding, setAwarding] = useState(false)
@@ -175,4 +175,4 @@ const OrganizerLeaderboardDetail = () => {
   )
 }
 
-export default OrganizerLeaderboardDetail
+export default OrganizerLeaderboardTeam

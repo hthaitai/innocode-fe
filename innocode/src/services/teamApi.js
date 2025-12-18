@@ -5,7 +5,7 @@ export const teamApi = api.injectEndpoints({
     getTeams: builder.query({
       query: ({
         pageNumber = 1,
-        pageSize = 20,
+        pageSize = 10,
         contestId,
         schoolId,
         mentorId,
@@ -13,7 +13,7 @@ export const teamApi = api.injectEndpoints({
         sortBy = "createdAt",
         desc = true,
       }) => ({
-        url: "teams",
+        url: `contests/${contestId}/teams`,
         params: {
           pageNumber,
           pageSize,
@@ -36,21 +36,31 @@ export const teamApi = api.injectEndpoints({
             ]
           : [{ type: "Teams", id: "LIST" }],
     }),
+
+    getTeamById: builder.query({
+      query: (teamId) => `teams/${teamId}`,
+      transformResponse: (response) => response.data,
+      providesTags: (result, error, teamId) => [{ type: "Teams", id: teamId }],
+    }),
+
     getMyTeam: builder.query({
       query: () => "teams/me",
       transformResponse: (response) => {
         // Handle different response structures
-        let teamsArray = [];
+        let teamsArray = []
         if (response.data) {
           if (Array.isArray(response.data)) {
-            teamsArray = response.data;
+            teamsArray = response.data
           } else if (response.data.data && Array.isArray(response.data.data)) {
-            teamsArray = response.data.data;
-          } else if (typeof response.data === "object" && !response.data.message) {
-            teamsArray = [response.data];
+            teamsArray = response.data.data
+          } else if (
+            typeof response.data === "object" &&
+            !response.data.message
+          ) {
+            teamsArray = [response.data]
           }
         }
-        return teamsArray;
+        return teamsArray
       },
       providesTags: (result) =>
         result && Array.isArray(result)
@@ -63,6 +73,7 @@ export const teamApi = api.injectEndpoints({
             ]
           : [{ type: "Teams", id: "MY_TEAM" }],
     }),
+
     createTeam: builder.mutation({
       query: (data) => ({
         url: "teams",
@@ -77,4 +88,9 @@ export const teamApi = api.injectEndpoints({
   }),
 })
 
-export const { useGetTeamsQuery, useGetMyTeamQuery, useCreateTeamMutation } = teamApi
+export const {
+  useGetTeamsQuery,
+  useGetTeamByIdQuery,
+  useGetMyTeamQuery,
+  useCreateTeamMutation,
+} = teamApi

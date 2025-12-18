@@ -1,19 +1,20 @@
-import React from "react"
+import React, { useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { Users } from "lucide-react"
 
-import PageContainer from '@/shared/components/PageContainer'
-import TableFluent from '@/shared/components/TableFluent'
-
-import useTeams from "@/features/team/hooks/useTeams"
-import useSchools from "../../../school/hooks/useSchools"
-import useMentors from "../../../../shared/hooks/useMentors"
+import PageContainer from "@/shared/components/PageContainer"
+import TableFluent from "@/shared/components/TableFluent"
+import TablePagination from "@/shared/components/TablePagination"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetContestByIdQuery } from "@/services/contestApi"
+import { useGetTeamsQuery } from "@/services/teamApi"
+import { getTeamColumns } from "../../columns/teamColumns"
 
 const OrganizerTeams = () => {
-  const navigate = useNavigate()
   const { contestId } = useParams()
+  const [page, setPage] = useState(1)
+  const pageSize = 10
+  const navigate = useNavigate()
 
   const {
     data: contest,
@@ -21,78 +22,50 @@ const OrganizerTeams = () => {
     error: contestError,
   } = useGetContestByIdQuery(contestId)
 
-  const contestName = contest?.name || "Contest"
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEAMS(contestName)
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEAMS(contestId)
-  const { teams, loading, error } = useTeams()
-  const { schools } = useSchools()
-  const { mentors } = useMentors()
+  const {
+    data: teamsResponse,
+    isLoading: teamsLoading,
+    error: teamsError,
+  } = useGetTeamsQuery({
+    contestId,
+    pageNumber: page,
+    pageSize,
+  })
 
-  // ----- Table Columns -----
-  const teamsColumns = [
-    {
-      accessorKey: "name",
-      header: "Team Name",
-      cell: ({ row }) => row.original.name || "—",
-    },
-    {
-      accessorKey: "school_id",
-      header: "School",
-      cell: ({ row }) =>
-        schools.find((s) => s.school_id === row.original.school_id)?.name ||
-        "—",
-    },
-    {
-      accessorKey: "mentor_id",
-      header: "Mentor",
-      cell: ({ row }) =>
-        mentors.find((m) => m.mentor_id === row.original.mentor_id)?.user
-          ?.name || "—",
-    },
-    {
-      accessorKey: "created_at",
-      header: "Created At",
-      cell: ({ row }) =>
-        new Date(row.original.created_at).toLocaleDateString() || "—",
-    },
-  ]
+  const columns = getTeamColumns()
+
+  const teams = teamsResponse?.data || []
+  const pagination = teamsResponse?.additionalData
+
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEAMS(
+    contest?.name || "Contest"
+  )
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEAMS(contestId)
+
+  const handleRowClick = (team) => {
+    navigate(`/organizer/contests/${contestId}/teams/${team.teamId}`)
+  }
 
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={loading}
-      error={error}
+      loading={contestLoading}
+      error={contestError}
     >
-      <div className="space-y-1">
-        {/* Header */}
-        <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-          <div className="flex gap-5 items-center">
-            <Users size={20} />
-            <div>
-              <p className="text-[14px] leading-[20px]">
-                Teams Overview
-              </p>
-              <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                View teams participating in the contest
-              </p>
-            </div>
-          </div>
-        </div>
+      <TableFluent
+        data={teams}
+        columns={columns}
+        loading={teamsLoading}
+        error={teamsError}
+        onRowClick={handleRowClick}
+      />
 
-        {/* Teams Table */}
-        <TableFluent
-          data={teams}
-          columns={teamsColumns}
-          title="Teams"
-          onRowClick={(team) =>
-            navigate(`/organizer/contests/${contestId}/teams/${team.team_id}`)
-          }
-        />
-      </div>
+      {pagination && (
+        <TablePagination pagination={pagination} onPageChange={setPage} />
+      )}
     </PageContainer>
   )
 }
 
 export default OrganizerTeams
-

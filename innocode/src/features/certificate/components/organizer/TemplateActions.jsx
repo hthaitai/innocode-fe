@@ -38,12 +38,9 @@ const TemplateActions = ({ template, onEdit, onDelete }) => {
           e.stopPropagation()
           setOpen((prev) => !prev)
         }}
-        className="p-1 rounded hover:bg-gray-100"
+        className="p-1 rounded hover:bg-[#F5F5F5] cursor-pointer "
       >
-        <MoreHorizontal
-          size={18}
-          className="cursor-pointer text-[#7A7574] hover:text-black transition-colors"
-        />
+        <MoreHorizontal size={20} strokeWidth={1} />
       </button>
 
       {/* Dropdown menu with exact Actions styling */}
@@ -70,7 +67,7 @@ const TemplateActions = ({ template, onEdit, onDelete }) => {
                 setOpen(false)
                 onEdit(template)
               }}
-              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm rounded-[5px] transition-colors hover:bg-[#F0F0F0] active:bg-[#F3F3F3]"
+              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm rounded-[5px] transition-colors hover:bg-[#F0F0F0] cursor-pointer active:bg-[#F3F3F3]"
             >
               <Edit className="w-4 h-4" />
               Edit
@@ -81,7 +78,7 @@ const TemplateActions = ({ template, onEdit, onDelete }) => {
                 setOpen(false)
                 onDelete(template)
               }}
-              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm rounded-[5px] transition-colors hover:bg-[#F0F0F0] active:bg-[#F3F3F3] text-red-500"
+              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm rounded-[5px] transition-colors hover:bg-[#F0F0F0] cursor-pointer active:bg-[#F3F3F3] text-red-500"
             >
               <Trash2 className="w-4 h-4" />
               Delete

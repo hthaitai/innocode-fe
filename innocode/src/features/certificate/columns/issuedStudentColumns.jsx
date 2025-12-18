@@ -1,53 +1,46 @@
 import React from "react"
 import { formatDateTime } from "../../../shared/utils/dateTime"
+import { EyeIcon } from "lucide-react"
 
-export const getIssuedCertificatesColumns = () => [
+export const getStudentIssuedCertificatesColumns = () => [
   {
     accessorKey: "templateName",
-    header: "Template",
-    size: 220,
+    header: "Template name",
+    size: 320,
     cell: ({ row }) => row.original?.templateName || "—",
-    meta: { className: "truncate max-w-[220px]" },
-  },
-  {
-    accessorKey: "teamName",
-    header: "Team",
-    size: 240,
-    cell: ({ row }) => row.original?.teamName || "—",
-    meta: { className: "truncate max-w-[240px]" },
+    meta: { className: "truncate max-w-[320px]" },
   },
   {
     accessorKey: "studentName",
-    header: "Student",
-    size: 220,
+    header: "Student name",
+    size: 320,
     cell: ({ row }) => row.original?.studentName || "—",
-    meta: { className: "truncate max-w-[220px]" },
+    meta: { className: "truncate max-w-[320px]" },
   },
   {
     accessorKey: "issuedAt",
-    header: "Issued At",
-    size: 200,
+    header: "Issued at",
+    size: 180,
     cell: ({ row }) =>
       row.original?.issuedAt ? formatDateTime(row.original.issuedAt) : "—",
-    meta: { className: "truncate max-w-[200px]" },
+    meta: { className: "truncate max-w-[180px]" },
   },
   {
     accessorKey: "fileUrl",
-    header: "File",
-    size: 140,
+    header: "",
+    size: 60,
     cell: ({ row }) =>
       row.original?.fileUrl ? (
         <a
           href={row.original.fileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-orange-600 hover:underline"
         >
-          View
+          <EyeIcon size={16} />
         </a>
       ) : (
         "—"
       ),
-    meta: { className: "truncate max-w-[140px]" },
+    meta: { className: "truncate max-w-[60px] flex items-center justify-end" },
   },
 ]

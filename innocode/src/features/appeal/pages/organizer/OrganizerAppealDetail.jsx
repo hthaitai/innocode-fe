@@ -11,6 +11,7 @@ import { useModal } from "@/shared/hooks/useModal"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import ReviewAppealModal from "../../components/organizer/ReviewAppealModal"
 import AppealInfo from "../../components/organizer/AppealInfo"
+import { useGetAppealByIdQuery } from "../../../../services/appealApi"
 
 const OrganizerAppealDetail = () => {
   const { contestId, appealId } = useParams()
@@ -24,17 +25,7 @@ const OrganizerAppealDetail = () => {
   } = useGetContestByIdQuery(contestId)
 
   // Fetch appeals
-  const {
-    data: appealsData,
-    isLoading: appealsLoading,
-    isError: appealsError,
-  } = useGetAppealsQuery({
-    contestId,
-    pageNumber: 1,
-    pageSize: 100,
-  })
-
-  const appeal = appealsData?.data?.find((a) => a.appealId === appealId)
+  const { data: appeal, isLoading: appealLoading, isError: appealError } = useGetAppealByIdQuery(appealId)
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_APPEAL_DETAIL(
     contest?.name || "Contest",
@@ -50,8 +41,8 @@ const OrganizerAppealDetail = () => {
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
-        loading={appealsLoading || contestLoading}
-        error={appealsError || contestError}
+        loading={appealLoading || contestLoading}
+        error={appealError || contestError}
       >
         <div className="flex items-center justify-center h-[200px] text-gray-500">
           Appeal not found
@@ -69,8 +60,8 @@ const OrganizerAppealDetail = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={appealsLoading || contestLoading}
-      error={appealsError || contestError}
+      loading={appealLoading || contestLoading}
+      error={appealError || contestError}
     >
       <div className="space-y-5">
         {/* Appeal Info */}

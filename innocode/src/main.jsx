@@ -1,31 +1,31 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import MainLayout from "./shared/components/layout/MainLayout";
-import AuthLayout from "./shared/components/layout/AuthLayout";
-import HomeLayout from "./shared/components/layout/HomeLayout";
-import { Provider } from "react-redux";
-import { store } from "./store/store";
+import { StrictMode } from "react"
+import { createRoot } from "react-dom/client"
+import "./index.css"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import MainLayout from "./shared/components/layout/MainLayout"
+import AuthLayout from "./shared/components/layout/AuthLayout"
+import HomeLayout from "./shared/components/layout/HomeLayout"
+import { Provider } from "react-redux"
+import { store } from "./store/store"
 // Common pages
-import Home from "./features/common/pages/Home";
-import About from "./features/common/pages/About";
-import Profile from "./features/common/profile/pages/Profile";
-import Dashboard from "./features/common/pages/Dashboard";
-import Notifications from "./features/common/pages/Notifications";
-import TeamInviteNotification from "./features/notification/pages/TeamInviteNotification";
-import Unauthorized from "./features/common/pages/Unauthorized";
+import Home from "./features/common/pages/Home"
+import About from "./features/common/pages/About"
+import Profile from "./features/common/profile/pages/Profile"
+import Dashboard from "./features/common/pages/Dashboard"
+import Notifications from "./features/common/pages/Notifications"
+import TeamInviteNotification from "./features/notification/pages/TeamInviteNotification"
+import Unauthorized from "./features/common/pages/Unauthorized"
 // Student pages
-import Contests from "./features/contest/student/Contests";
-import ContestDetail from "./features/contest/student/ContestDetail";
-import ContestProcessing from "./features/contest/student/ContestProcessing";
-import Practice from "./features/contest/student/Practice";
-import PracticeDetail from "./features/contest/student/PracticeDetail";
-import PracticeStart from "./features/contest/student/PracticeStart";
-import Team from "./features/contest/student/Team";
-import Help from "./features/contest/student/Help";
-import MCQTest from "./features/quiz/student/MCQTest";
-import FinishQuiz from "./features/quiz/student/FinishQuiz";
+import Contests from "./features/contest/student/Contests"
+import ContestDetail from "./features/contest/student/ContestDetail"
+import ContestProcessing from "./features/contest/student/ContestProcessing"
+import Practice from "./features/contest/student/Practice"
+import PracticeDetail from "./features/contest/student/PracticeDetail"
+import PracticeStart from "./features/contest/student/PracticeStart"
+import Team from "./features/contest/student/Team"
+import Help from "./features/contest/student/Help"
+import MCQTest from "./features/quiz/student/MCQTest"
+import FinishQuiz from "./features/quiz/student/FinishQuiz"
 // Auth
 import ManualRubricPage from "./features/problems/manual/pages/ManualRubricPage"
 import ManualResultsPage from "./features/problems/manual/pages/ManualResultsPage"
@@ -49,7 +49,8 @@ import OrganizerLeaderboard from "./features/leaderboard/pages/organizer/Organiz
 import OrganizerCertificateTemplateCreate from "./features/certificate/pages/organizer/OrganizerCertificateTemplateCreate"
 import OrganizerCertificateTemplateEdit from "./features/certificate/pages/organizer/OrganizerCertificateTemplateEdit"
 import OrganizerCertificateTemplates from "./features/certificate/pages/organizer/OrganizerCertificateTemplates"
-import OrganizerIssuedCertificates from "./features/certificate/pages/organizer/OrganizerIssuedCertificates"
+import OrganizerIssuedStudentCertificates from "./features/certificate/pages/organizer/OrganizerIssuedStudentCertificates"
+import OrganizerIssuedTeamCertificates from "./features/certificate/pages/organizer/OrganizerIssuedTeamCertificates"
 import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals"
 import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail"
 import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces"
@@ -75,30 +76,30 @@ import ForgotPassword from "./features/auth/components/ForgotPassword"
 import ResetPassword from "./features/auth/components/ResetPassword"
 import MyContest from "./features/contest/student/MyContest"
 //Mentor pages
-import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal";
+import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal"
 // Organizer pages
-import AddTestCase from "./features/problems/auto-evaluation/pages/AddTestCase";
-import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage";
+import AddTestCase from "./features/problems/auto-evaluation/pages/AddTestCase"
+import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage"
 
 // Judge pages
-import JudgeManualRubricPage from "./features/submission/pages/judge/JudgeManualRubricPage";
-import JudgeManualResultsPage from "./features/submission/pages/judge/JudgeManualResultsPage";
-import JudgeManualSubmissionsPage from "./features/submission/pages/judge/JudgeManualSubmissionsPage"; // new page for pending submissions list
-import JudgeManualEvaluationsPage from "./features/submission/pages/judge/JudgeManualEvaluationsPage";
+import JudgeManualRubricPage from "./features/submission/pages/judge/JudgeManualRubricPage"
+import JudgeManualResultsPage from "./features/submission/pages/judge/JudgeManualResultsPage"
+import JudgeManualSubmissionsPage from "./features/submission/pages/judge/JudgeManualSubmissionsPage" // new page for pending submissions list
+import JudgeManualEvaluationsPage from "./features/submission/pages/judge/JudgeManualEvaluationsPage"
 
-import Leaderboard from "./features/leaderboard/pages/student/Leaderboard";
-import OrganizerLeaderboardDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardDetail";
-import OrganizerLeaderboardMemberDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardMemberDetail";
-import NotFound from "./pages/NotFound";
-import StaffProvinces from "./features/province/pages/staff/StaffProvinces";
-import StaffSchools from "./features/school/pages/staff/StaffSchools";
-import StudentCertificate from "./features/certificate/pages/student/StudentCertificate";
-import ContestJudgesPage from "./features/invite-judge/pages/ContestJudgesPage";
-import JudgeInviteAccept from "./features/invite-judge/pages/JudgeInviteAccept";
-import JudgeInviteDecline from "./features/invite-judge/pages/JudgeInviteDecline";
+import Leaderboard from "./features/leaderboard/pages/student/Leaderboard"
+import OrganizerLeaderboardTeam from "./features/leaderboard/pages/organizer/OrganizerLeaderboardTeam"
+import OrganizerLeaderboardMember from "./features/leaderboard/pages/organizer/OrganizerLeaderboardMember"
+import NotFound from "./pages/NotFound"
+import StaffProvinces from "./features/province/pages/staff/StaffProvinces"
+import StaffSchools from "./features/school/pages/staff/StaffSchools"
+import StudentCertificate from "./features/certificate/pages/student/StudentCertificate"
+import ContestJudgesPage from "./features/invite-judge/pages/ContestJudgesPage"
+import JudgeInviteAccept from "./features/invite-judge/pages/JudgeInviteAccept"
+import JudgeInviteDecline from "./features/invite-judge/pages/JudgeInviteDecline"
 
 // Initialize EmailJS when app starts
-initEmailJs();
+initEmailJs()
 const router = createBrowserRouter([
   {
     element: <AuthLayout />, // Auth layout wrapper
@@ -561,6 +562,24 @@ const router = createBrowserRouter([
             ),
           },
 
+          // Contest teams
+          {
+            path: ":contestId/teams",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerTeams />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/teams/:teamId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerTeamDetail />
+              </ProtectedRoute>
+            ),
+          },
+
           // Contest leaderboard
           {
             path: ":contestId/leaderboard",
@@ -574,7 +593,7 @@ const router = createBrowserRouter([
             path: ":contestId/leaderboard/teams/:teamId",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <OrganizerLeaderboardDetail />
+                <OrganizerLeaderboardTeam />
               </ProtectedRoute>
             ),
           },
@@ -582,7 +601,7 @@ const router = createBrowserRouter([
             path: ":contestId/leaderboard/teams/:teamId/members/:memberId",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <OrganizerLeaderboardMemberDetail />
+                <OrganizerLeaderboardMember />
               </ProtectedRoute>
             ),
           },
@@ -599,10 +618,18 @@ const router = createBrowserRouter([
                 ),
               },
               {
-                path: "issued",
+                path: "issued/students",
                 element: (
                   <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerIssuedCertificates />
+                    <OrganizerIssuedStudentCertificates />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: "issued/teams",
+                element: (
+                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                    <OrganizerIssuedTeamCertificates />
                   </ProtectedRoute>
                 ),
               },
@@ -706,7 +733,7 @@ const router = createBrowserRouter([
 
   // Not found route
   { path: "*", element: <NotFound /> },
-]);
+])
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -719,4 +746,4 @@ createRoot(document.getElementById("root")).render(
       </AuthProvider>
     </Provider>
   </StrictMode>
-);
+)

@@ -8,6 +8,7 @@ import {
   useGetCertificateTemplateByIdQuery,
 } from "../../../../services/certificateApi"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
+import { validateTemplate } from "../../validators/templateValidator"
 
 export default function OrganizerCertificateTemplateEdit() {
   const { contestId, templateId } = useParams()
@@ -87,9 +88,7 @@ export default function OrganizerCertificateTemplateEdit() {
       return
     }
 
-    const validationErrors = {}
-    if (!formData.name.trim())
-      validationErrors.name = "Template name is required."
+    const validationErrors = validateTemplate(formData)
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
@@ -125,7 +124,7 @@ export default function OrganizerCertificateTemplateEdit() {
       await editTemplate({ id: templateId, body: payload }).unwrap()
 
       toast.success("Certificate template updated successfully!")
-      navigate(`/organizer/contests/${contestId}/certificates`)
+      navigate(`/organizer/contests/${contestId}//templates`)
     } catch (err) {
       console.error(err)
       toast.error(err?.data?.message || "Something went wrong.")
@@ -158,20 +157,6 @@ export default function OrganizerCertificateTemplateEdit() {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="px-5 py-2 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() =>
-            navigate(`/organizer/contests/${contestId}/certificates`)
-          }
-          className="w-10 h-9 rounded-[5px] cursor-pointer hover:bg-[#EAEAEA] transition flex items-center justify-center"
-        >
-          <ArrowLeft size={16} />
-        </button>
-
-        <span className="text-sm leading-5">Back to templates</span>
-      </div>
-
       <div className="flex-1 px-5 pb-5 overflow-hidden">
         <CertificateTemplateForm
           formData={formData}
@@ -186,4 +171,3 @@ export default function OrganizerCertificateTemplateEdit() {
     </div>
   )
 }
-

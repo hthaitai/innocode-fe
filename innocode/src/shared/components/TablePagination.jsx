@@ -50,7 +50,7 @@ const TablePagination = ({ pagination, onPageChange }) => {
     }`
 
   return (
-    <div className="flex justify-between mt-3">
+    <div className="flex justify-between items-center mt-3">
       <div className="text-sm leading-5 text-[#7A7574] mb-2">
         Page {currentPage} of {totalPages} — {pagination.totalCount} items
       </div>

@@ -221,6 +221,16 @@ export const BREADCRUMBS = {
     contestName,
     "Issued certificates",
   ],
+  ORGANIZER_CERTIFICATE_ISSUED_STUDENT: (contestName) => [
+    "Contests",
+    contestName,
+    "Issued student certificates",
+  ],
+  ORGANIZER_CERTIFICATE_ISSUED_TEAM: (contestName) => [
+    "Contests",
+    contestName,
+    "Issued team certificates",
+  ],
   ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestName) => [
     "Contests",
     contestName,
@@ -498,6 +508,16 @@ export const BREADCRUMB_PATHS = {
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/certificates/issued`,
+  ],
+  ORGANIZER_CERTIFICATE_ISSUED_STUDENT: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates/issued/students`,
+  ],
+  ORGANIZER_CERTIFICATE_ISSUED_TEAM: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates/issued/teams`,
   ],
   ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestId) => [
     "/organizer/contests",

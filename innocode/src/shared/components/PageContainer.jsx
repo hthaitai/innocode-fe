@@ -15,7 +15,7 @@ export default function PageContainer({
   const hasState = loading || error
 
   return (
-    <div className={`min-h-screen w-full overflow-x-hidden ${className}`}>
+    <div className={`min-h-screen w-full ${className}`}>
       {/* Breadcrumb header */}
       {breadcrumb && (
         <div className="bg-[#f3f3f3] sticky top-0 z-10 flex items-center justify-between pt-4 pb-6 px-4 md:px-0">

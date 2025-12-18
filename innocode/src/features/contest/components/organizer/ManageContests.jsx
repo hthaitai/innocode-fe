@@ -23,8 +23,6 @@ const ManageContests = () => {
   const pageSize = 10
   const [searchName, setSearchName] = useState("")
 
-  console.log("searchName:", searchName)
-
   // RTK query hooks
   const {
     data: contestsData,

@@ -1,33 +1,35 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Icon } from "@iconify/react";
+import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { Icon } from "@iconify/react"
+import { AnimatePresence, motion } from "framer-motion"
 
 const BreadcrumbTitle = ({ items = [], paths = [], maxVisible = 3 }) => {
-  const navigate = useNavigate();
-  const [showAll, setShowAll] = useState(false);
-
-  if (!items || items.length === 0) return null;
+  const navigate = useNavigate()
+  const [showAll, setShowAll] = useState(false)
+  const fluentEaseOut = [0.16, 1, 0.3, 1]
+  
+  if (!items || items.length === 0) return null
 
   const handleBreadcrumbClick = (index) => {
-    if (index === items.length - 1) return; // Last item = current page
-    if (paths && paths[index]) navigate(paths[index]);
-    else navigate(-1);
-  };
+    if (index === items.length - 1) return // Last item = current page
+    if (paths && paths[index]) navigate(paths[index])
+    else navigate(-1)
+  }
 
-  const isCollapsible = items.length > maxVisible;
+  const isCollapsible = items.length > maxVisible
 
-  let firstItems = [];
-  let lastItems = [];
-  let hiddenItems = [];
+  let firstItems = []
+  let lastItems = []
+  let hiddenItems = []
 
   if (isCollapsible) {
-    firstItems = [items[0]]; // Always show first
-    lastItems = items.slice(items.length - (maxVisible - 1));
-    hiddenItems = items.slice(1, items.length - (maxVisible - 1));
+    firstItems = [items[0]] // Always show first
+    lastItems = items.slice(items.length - (maxVisible - 1))
+    hiddenItems = items.slice(1, items.length - (maxVisible - 1))
   } else {
-    firstItems = items;
-    lastItems = [];
-    hiddenItems = [];
+    firstItems = items
+    lastItems = []
+    hiddenItems = []
   }
 
   return (
@@ -42,13 +44,11 @@ const BreadcrumbTitle = ({ items = [], paths = [], maxVisible = 3 }) => {
             />
           )}
           <span
-            className={
-              `${
-                index === items.length - 1
-                  ? "text-black cursor-default"
-                  : "text-[#7A7574] cursor-pointer hover:text-orange-500 transition-colors duration-200"
-              } truncate max-w-[400px]`
-            }
+            className={`${
+              index === items.length - 1
+                ? "text-black cursor-default"
+                : "text-[#7A7574] cursor-pointer hover:text-orange-500 transition-colors duration-200"
+            } truncate max-w-[400px]`}
             onClick={() => handleBreadcrumbClick(index)}
             title={item}
           >
@@ -67,19 +67,34 @@ const BreadcrumbTitle = ({ items = [], paths = [], maxVisible = 3 }) => {
                 onClick={() => setShowAll(!showAll)}
               >
                 ...
-                {showAll && (
-                  <div className="absolute top-full left-0 mt-1 bg-white shadow-md rounded-md p-2 z-50 flex flex-col gap-1">
-                    {hiddenItems.map((hiddenItem, i) => (
-                      <span
-                        key={`hidden-${i}`}
-                        className="text-[#7A7574] cursor-pointer hover:text-orange-500 transition-colors duration-200"
-                        onClick={() => handleBreadcrumbClick(i + 1)}
-                      >
-                        {hiddenItem}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <AnimatePresence>
+                  {showAll && (
+                    <motion.div
+                      initial={{ y: -20, opacity: 0 }} // start slightly above
+                      animate={{
+                        y: 0,
+                        opacity: 1,
+                        transition: { duration: 0.5, ease: fluentEaseOut },
+                      }}
+                      exit={{
+                        y: -10,
+                        opacity: 0,
+                        transition: { duration: 0.25, ease: fluentEaseOut },
+                      }}
+                      className="p-1 absolute top-full left-0 mt-3 bg-white border border-[#E5E5E5] shadow-lg rounded-[5px] overflow-hidden min-w-max z-50 flex flex-col gap-1"
+                    >
+                      {hiddenItems.map((hiddenItem, i) => (
+                        <span
+                          key={`hidden-${i}`}
+                          className="rounded-[5px] px-3 py-1.5 cursor-pointer text-sm leading-5 text-black hover:bg-[#F0F0F0] transition-colors duration-150"
+                          onClick={() => handleBreadcrumbClick(i + 1)}
+                        >
+                          {hiddenItem}
+                        </span>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </span>
             </>
           )}
@@ -88,7 +103,7 @@ const BreadcrumbTitle = ({ items = [], paths = [], maxVisible = 3 }) => {
 
       {/* Last visible items */}
       {lastItems.map((item, index) => {
-        const realIndex = items.length - lastItems.length + index;
+        const realIndex = items.length - lastItems.length + index
         return (
           <React.Fragment key={`last-${realIndex}`}>
             {firstItems.length > 0 || index !== 0 ? (
@@ -98,23 +113,21 @@ const BreadcrumbTitle = ({ items = [], paths = [], maxVisible = 3 }) => {
               />
             ) : null}
             <span
-              className={
-                `${
-                  realIndex === items.length - 1
-                    ? "text-black cursor-default"
-                    : "text-[#7A7574] cursor-pointer hover:text-orange-500 transition-colors duration-200"
-                } truncate max-w-[400px]`
-              }
+              className={`${
+                realIndex === items.length - 1
+                  ? "text-black cursor-default"
+                  : "text-[#7A7574] cursor-pointer hover:text-orange-500 transition-colors duration-200"
+              } truncate max-w-[400px]`}
               onClick={() => handleBreadcrumbClick(realIndex)}
               title={item}
             >
               {item}
             </span>
           </React.Fragment>
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
-export default BreadcrumbTitle;
+export default BreadcrumbTitle
