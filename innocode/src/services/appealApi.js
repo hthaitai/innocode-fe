@@ -3,7 +3,7 @@ import { api } from "./api"
 export const appealApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMyAppeals: builder.query({
-      query: () => "/appeals/my-appeal",
+      query: (contestId) => `/contests/${contestId}/appeals/my-appeal`,
       transformResponse: (response) => {
         // API returns: { data: [...], additionalData: {...}, message: "...", statusCode: 200, code: "SUCCESS" }
         return {

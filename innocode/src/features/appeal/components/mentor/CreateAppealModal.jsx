@@ -8,6 +8,7 @@ import { Icon } from "@iconify/react";
 export default function CreateAppealModal({
   isOpen,
   onClose,
+  contestId,
   roundId,
   teamId,
   studentId,
@@ -53,11 +54,16 @@ export default function CreateAppealModal({
       onClose();
     } catch (error) {
       console.error("Error creating appeal:", error);
-      toast.error(
-        error?.data?.message ||
-          error?.message ||
-          "Failed to submit appeal. Please try again."
-      );
+      console.error("Error details:", {
+        status: error?.status,
+        data: error?.data,
+        message: error?.message,
+      });
+
+      const errorMessage = error?.data?.errorMessage;
+      toast.dismiss();
+
+      toast.error(errorMessage);
     }
   };
 
@@ -163,4 +169,3 @@ export default function CreateAppealModal({
     </BaseModal>
   );
 }
-

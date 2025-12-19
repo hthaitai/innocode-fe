@@ -80,11 +80,22 @@ const allMenus = {
     label: "Provinces",
     icon: "lucide:map-pin",
   },
-  schoolStaff:{
+  schoolStaff: {
     path: "/school-staff",
     label: "Schools",
     icon: "lucide:school",
-  }
+  },
+  roleRegistrationsStaff: {
+    path: "/role-registrations-staff",
+    label: "Role Registrations",
+    icon: "lucide:user-check",
+  },
+  //SchoolManager menus
+  schoolManager: {
+    path: "/school-manager",
+    label: "School Management",
+    icon: "lucide:school",
+  },
 };
 
 const menuByRole = {
@@ -117,6 +128,7 @@ const menuByRole = {
     "profile",
     "provinceStaff",
     "schoolStaff",
+    "roleRegistrationsStaff",
     "leaderboard",
     "contests",
     "team",
@@ -124,6 +136,14 @@ const menuByRole = {
   ],
   judge: ["profile", "dashboard", "manualSubmissions", "notifications", "help"],
   admin: ["profile", "dashboard", "leaderboard", "notifications", "help"],
+  schoolmanager: [
+    "profile",
+    "schoolManager",
+    "leaderboard",
+    "contests",
+    "team",
+    "notifications",
+  ],
 };
 
 const Sidebar = () => {

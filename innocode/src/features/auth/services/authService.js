@@ -1,11 +1,68 @@
 import { authApi } from '@/api/authApi';
 import { decodeJWT, isTokenExpired } from '@/shared/utils/jwtUtils';
 
+// Helper function to clear sessionStorage data for a specific user
+const clearUserSessionData = (userId) => {
+  if (!userId) {
+    // If no userId provided, clear all timer-related data
+    const sessionKeysToRemove = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (key) {
+        if (
+          key.startsWith('round_timer_') ||
+          key.startsWith('openCode_') ||
+          key.startsWith('mcq_test_') ||
+          key.startsWith('code_') ||
+          key.startsWith('testResults_')
+        ) {
+          sessionKeysToRemove.push(key);
+        }
+      }
+    }
+    sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+    return;
+  }
+
+  // Clear data for specific user
+  const sessionKeysToRemove = [];
+  for (let i = 0; i < sessionStorage.length; i++) {
+    const key = sessionStorage.key(i);
+    if (key) {
+      // Check if key contains user ID or is user-specific
+      if (
+        key.includes(`_${userId}_`) ||
+        key.startsWith(`round_timer_`) ||
+        key.startsWith('openCode_') ||
+        key.startsWith('mcq_test_') ||
+        key.startsWith('code_') ||
+        key.startsWith('testResults_')
+      ) {
+        sessionKeysToRemove.push(key);
+      }
+    }
+  }
+  sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+  
+  // Also remove current user ID marker
+  sessionStorage.removeItem('current_user_id');
+  
+  if (sessionKeysToRemove.length > 0 && import.meta.env.VITE_ENV === "development") {
+    console.log('🧹 Cleared sessionStorage keys for user:', userId, sessionKeysToRemove);
+  }
+};
+
 // Helper function to clear all auth data from localStorage
+// Note: We DON'T clear sessionStorage on logout to allow user to continue after re-login
+// SessionStorage will be cleared when a different user logs in
 const clearAuthData = () => {
+  // Clear localStorage
   localStorage.removeItem('token');
   localStorage.removeItem('refreshToken');
-  localStorage.removeItem('user'); // Remove old user data if exists
+  localStorage.removeItem('user');
+  
+  // Don't clear sessionStorage here - allow user to continue after re-login
+  // The sessionStorage is marked with user ID and will be cleared if different user logs in
 };
 
 export const authService = {
@@ -25,6 +82,21 @@ export const authService = {
 
       // Decode user info from JWT token instead of storing in localStorage
       const user = decodeJWT(apiData.token);
+      
+      // Check if different user is logging in - clear old user's session data
+      const previousUserId = sessionStorage.getItem('current_user_id');
+      if (previousUserId && previousUserId !== user.id) {
+        // Different user - clear previous user's data
+        clearUserSessionData(previousUserId);
+        if (import.meta.env.VITE_ENV === "development") {
+          console.log('🔄 Different user detected, cleared previous user data');
+        }
+      }
+      
+      // Mark current user ID in sessionStorage
+      if (user?.id) {
+        sessionStorage.setItem('current_user_id', user.id);
+      }
       
       // Return format giống cũ để AuthContext hoạt động
       return {
@@ -59,6 +131,17 @@ export const authService = {
 
       // Decode user info from JWT token instead of storing in localStorage
       const user = decodeJWT(apiData.token);
+
+      // Check if different user is registering - clear old user's session data
+      const previousUserId = sessionStorage.getItem('current_user_id');
+      if (previousUserId && previousUserId !== user.id) {
+        clearUserSessionData(previousUserId);
+      }
+      
+      // Mark current user ID in sessionStorage
+      if (user?.id) {
+        sessionStorage.setItem('current_user_id', user.id);
+      }
 
       return {
         token: apiData.token,
@@ -184,7 +267,7 @@ export const authService = {
 
   // Logout without API (fallback)
   logoutLocal() {
-    clearAuthData();
+    clearAuthData(); // This now clears sessionStorage too
     window.location.href = '/login';
   },
 };

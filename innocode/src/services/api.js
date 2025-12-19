@@ -4,10 +4,18 @@ export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://innocode-challenge-api.onrender.com/api",
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token")
-      if (token && token !== "null") {
-        headers.set("Authorization", `Bearer ${token}`)
+    prepareHeaders: (headers, { endpoint, type }) => {
+      // Don't send token for public endpoints (role registration POST)
+      // endpoint is the full URL path like "/role-registrations"
+      const isPublicRoleRegistration = 
+        type === "mutation" && 
+        endpoint === "createRoleRegistration";
+      
+      if (!isPublicRoleRegistration) {
+        const token = localStorage.getItem("token")
+        if (token && token !== "null") {
+          headers.set("Authorization", `Bearer ${token}`)
+        }
       }
       return headers
     },
@@ -26,6 +34,8 @@ export const api = createApi({
     "Students",
     "TeamInvites",
     "ActivityLogs",
+    "RoleRegistrations",
+    "SchoolCreationRequests",
   ],
   endpoints: () => ({}),
 })

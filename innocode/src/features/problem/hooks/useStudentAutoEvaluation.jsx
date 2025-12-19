@@ -19,14 +19,52 @@ const useStudentAutoEvaluation = (contestId, roundId) => {
   const navigate = useNavigate();
   const { openModal } = useModal();
   const STORAGE_KEY = `code_${roundId}`;
+  const TEST_RESULTS_STORAGE_KEY = `testResults_${roundId}`; // Thêm key mới cho test results
 
   // State
   const [code, setCode] = useState(() => {
     const savedCode = localStorage.getItem(STORAGE_KEY);
     return savedCode || "";
   });
-  const [submissionId, setSubmissionId] = useState(null);
-  const [submitResponseCases, setSubmitResponseCases] = useState(null);
+  const [submissionId, setSubmissionId] = useState(() => {
+    // Khôi phục submissionId từ storage nếu có
+    const saved = localStorage.getItem(TEST_RESULTS_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.submissionId || null;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
+  const [submitResponseCases, setSubmitResponseCases] = useState(() => {
+    // Khôi phục submitResponseCases từ storage khi mount
+    const saved = localStorage.getItem(TEST_RESULTS_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.cases || null;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
+  const [hasRunCode, setHasRunCode] = useState(() => {
+    // Khôi phục hasRunCode từ storage - nếu có submissionId thì đã run code rồi
+    const saved = localStorage.getItem(TEST_RESULTS_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return !!parsed.submissionId;
+      } catch (e) {
+        return false;
+      }
+    }
+    return false;
+  });
 
   // RTK Query hooks
   const {
@@ -65,6 +103,17 @@ const useStudentAutoEvaluation = (contestId, roundId) => {
     }
   }, [code, STORAGE_KEY]);
 
+  // Lưu submitResponseCases và submissionId vào localStorage
+  useEffect(() => {
+    if (submitResponseCases || submissionId) {
+      const dataToSave = {
+        cases: submitResponseCases,
+        submissionId: submissionId,
+      };
+      localStorage.setItem(TEST_RESULTS_STORAGE_KEY, JSON.stringify(dataToSave));
+    }
+  }, [submitResponseCases, submissionId, TEST_RESULTS_STORAGE_KEY]);
+
   // Clear submitResponseCases when testResult already has actual/expected
   useEffect(() => {
     if (testResult?.details && submitResponseCases) {
@@ -72,11 +121,12 @@ const useStudentAutoEvaluation = (contestId, roundId) => {
         (detail) => detail.actual !== undefined || detail.expected !== undefined
       );
       if (hasActualExpected) {
-        // testResult already has the values, clear submitResponseCases
+        // testResult already has the values, clear submitResponseCases và storage
         setSubmitResponseCases(null);
+        localStorage.removeItem(TEST_RESULTS_STORAGE_KEY);
       }
     }
-  }, [testResult, submitResponseCases]);
+  }, [testResult, submitResponseCases, TEST_RESULTS_STORAGE_KEY]);
 
   // Handlers
   const handleClearCode = () => {
@@ -85,7 +135,11 @@ const useStudentAutoEvaluation = (contestId, roundId) => {
       description: "Are you sure you want to clear your code? This action cannot be undone.",
       onConfirm: () => {
         setCode("");
+        setSubmitResponseCases(null);
+        setSubmissionId(null);
+        setHasRunCode(false);
         localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(TEST_RESULTS_STORAGE_KEY); // Xóa test results khi clear code
         toast.dismiss();
         toast.success("Code cleared");
       },
@@ -117,10 +171,12 @@ const useStudentAutoEvaluation = (contestId, roundId) => {
       if (cases && Array.isArray(cases)) {
         console.log("📋 Cases from response:", cases);
         setSubmitResponseCases(cases);
+        // Lưu vào localStorage (sẽ được xử lý bởi useEffect ở trên)
       }
 
       if (newSubmissionId) {
         setSubmissionId(newSubmissionId);
+        setHasRunCode(true); // Đánh dấu đã run code
         setTimeout(() => {
           refetchTestResult();
         }, 1000);
@@ -279,6 +335,7 @@ const useStudentAutoEvaluation = (contestId, roundId) => {
     submissionId,
     testCases,
     testResult: mergedTestResult,
+    hasRunCode,
     
     // Loading states
     testCaseLoading,

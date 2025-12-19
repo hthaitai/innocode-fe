@@ -38,8 +38,10 @@ axiosClient.interceptors.request.use(
     const isPublicTeamInviteRequest =
       config.url?.includes("/team-invites/accept") ||
       config.url?.includes("/team-invites/decline");
+    const isRoleRegistrationRequest =
+      config.url?.includes("/role-registrations");
 
-    if (token && !isAuthRequest && !isPublicTeamInviteRequest && token !== "null") {
+    if (token && !isAuthRequest && !isPublicTeamInviteRequest && !isRoleRegistrationRequest && token !== "null") {
       config.headers.Authorization = `Bearer ${token}`;
     }
 

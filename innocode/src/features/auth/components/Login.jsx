@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './Login.css';
-import InnoCodeLogo from '@/assets/InnoCode_Logo.jpg';
-import { useAuth } from '@/context/AuthContext';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./Login.css";
+import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg";
+import { useAuth } from "@/context/AuthContext";
 const Login = () => {
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [typedText, setTypedText] = useState('');
+  const [typedText, setTypedText] = useState("");
 
-  const fullText = 'Welcome to InnoCode Platform';
+  const fullText = "Welcome to InnoCode Platform";
 
   // Typing animation effect
   useEffect(() => {
@@ -35,19 +35,19 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsSubmitting(true);
 
     try {
       await login({ email, password });
-      navigate('/');
+      navigate("/");
     } catch (err) {
-      console.error('Login error:', err);
+      console.error("Login error:", err);
 
       // Xử lý các loại lỗi khác nhau
-      if (err.code === 'ECONNABORTED' || err.message.includes('timeout')) {
+      if (err.code === "ECONNABORTED" || err.message.includes("timeout")) {
         setError(
-          'Request timeout. Please check your connection and try again.'
+          "Request timeout. Please check your connection and try again."
         );
       } else if (err.response) {
         // Lỗi từ server (có response)
@@ -56,34 +56,33 @@ const Login = () => {
 
         switch (status) {
           case 401:
-            setError(message || 'Wrong email or password. Please try again.');
+            setError(message || "Wrong email or password. Please try again.");
             break;
           case 403:
-            setError('Account is disabled or not verified.');
+            setError("Account is disabled or not verified.");
             break;
           case 429:
-            setError('Too many login attempts. Please try again later.');
+            setError("Too many login attempts. Please try again later.");
             break;
           case 500:
-            setError('Server error. Please try again later.');
+            setError("Server error. Please try again later.");
             break;
           default:
-            setError(message || 'An error occurred. Please try again.');
+            setError(message || "An error occurred. Please try again.");
         }
       } else if (err.request) {
         // Request được gửi nhưng không nhận được response
         setError(
-          'Cannot connect to server. Please check your internet connection.'
+          "Cannot connect to server. Please check your internet connection."
         );
       } else {
         // Lỗi khác
-        setError('An unexpected error occurred. Please try again.');
+        setError("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   return (
     <div className="login-container relative">
@@ -124,11 +123,11 @@ const Login = () => {
                   className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? 'Hide' : 'Show'}
+                  {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -139,28 +138,35 @@ const Login = () => {
               <Link
                 to="/forgot-password"
                 className="reset-password-link"
-                style={{ display: 'block', textAlign: 'right' }}
+                style={{ display: "block", textAlign: "right" }}
               >
                 Forgot password?
               </Link>
             </div>
 
             {error && (
-              <div style={{ color: 'red', marginBottom: 8 }}>{error}</div>
+              <div style={{ color: "red", marginBottom: 8 }}>{error}</div>
             )}
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="signin-button"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.5rem",
+                  }}
+                >
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Signing in...</span>
                 </div>
               ) : (
-                'Sign in'
+                "Sign in"
               )}
             </button>
           </form>
@@ -170,18 +176,25 @@ const Login = () => {
           </div>
 
           <div className="signup-link">
-            Don't have an account yet?{' '}
+         <p> Student please sign up using the Sign Up option above. </p> 
             <a href="/register" className="signup-text">
               Sign Up
             </a>
           </div>
 
+          <div className="signup-link" style={{ marginTop: "0.5rem" }}>
+            Register for a role {" "}
+            <Link to="/role-registration" className="signup-text">
+              Sign up here
+            </Link>
+          </div>
+
           <div className="legal-text">
-            By continuing, you agree to the{' '}
+            By continuing, you agree to the{" "}
             <a href="#terms" className="legal-link">
               Terms of use
-            </a>{' '}
-            and{' '}
+            </a>{" "}
+            and{" "}
             <a href="#privacy" className="legal-link">
               Privacy Policy
             </a>

@@ -4,7 +4,10 @@ import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { useNavigate, useParams } from "react-router-dom"
 import { useGetRoundByIdQuery } from "@/services/roundApi"
-import { useGetOpenCodeQuery } from "../../../../services/openCodeApi"
+import {
+  useGetOpenCodeQuery,
+  useGenerateOpenCodeMutation,
+} from "../../../../services/openCodeApi"
 import BaseModal from "@/shared/components/BaseModal"
 import { Icon } from "@iconify/react"
 
@@ -17,6 +20,7 @@ const RoundInfo = () => {
   const [isOpenCodeModalOpen, setIsOpenCodeModalOpen] = useState(false)
   const [shouldFetchCode, setShouldFetchCode] = useState(false)
   const [isReloading, setIsReloading] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
 
   // Fetch open code only when modal is opened
   const {
@@ -28,6 +32,10 @@ const RoundInfo = () => {
   } = useGetOpenCodeQuery(roundId, {
     skip: !shouldFetchCode,
   })
+
+  // Generate open code mutation
+  const [generateOpenCode, { isLoading: isGeneratingCode }] =
+    useGenerateOpenCodeMutation()
 
   const handleEdit = useCallback(() => {
     if (!round) return
@@ -82,6 +90,25 @@ const RoundInfo = () => {
         }, 300)
       })
   }, [shouldFetchCode, refetchOpenCode, roundId])
+
+  // Handle generate open code
+  const handleGenerateCode = useCallback(async () => {
+    try {
+      setIsGenerating(true)
+      // Ensure shouldFetchCode is true to enable fetching after generation
+      if (!shouldFetchCode) {
+        setShouldFetchCode(true)
+      }
+      // Generate new code
+      await generateOpenCode(roundId).unwrap()
+      // After successful generation, refetch to get the new code
+      await refetchOpenCode()
+    } catch (error) {
+      console.error("Failed to generate code:", error)
+    } finally {
+      setIsGenerating(false)
+    }
+  }, [roundId, generateOpenCode, refetchOpenCode, shouldFetchCode])
 
   if (isLoading) return <div>Loading...</div>
   if (isError || !round) return <div>Failed to load round information.</div>
@@ -223,21 +250,44 @@ const RoundInfo = () => {
           <h2 className="text-[20px] leading-[26px] font-semibold">
             Open Code
           </h2>
-          <button
-            onClick={handleReloadCode}
-            disabled={isReloading || codeLoading || codeFetching}
-            className="flex items-center cursor-pointer  gap-2 px-3 py-1.5 text-sm text-[#7A7574] hover:text-[#ff6b35] hover:bg-[#f9fafb] rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Reload code"
-          >
-            <Icon
-              icon="mdi:reload"
-              width="20"
-              className={
-                isReloading || codeLoading || codeFetching ? "animate-spin" : ""
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleGenerateCode}
+              disabled={
+                isGenerating ||
+                isGeneratingCode ||
+                isReloading ||
+                codeLoading ||
+                codeFetching
               }
-            />
-            <span>Reload</span>
-          </button>
+              className="flex items-center cursor-pointer gap-2 px-3 py-1.5 text-sm text-white bg-[#ff6b35] hover:bg-[#e55a2b] rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Generate code immediately"
+            >
+              <Icon
+                icon="mdi:code-braces-box"
+                width="20"
+                className={
+                  isGenerating || isGeneratingCode ? "animate-spin" : ""
+                }
+              />
+              <span>Generate Code</span>
+            </button>
+            <button
+              onClick={handleReloadCode}
+              disabled={isReloading || codeLoading || codeFetching}
+              className="flex items-center cursor-pointer  gap-2 px-3 py-1.5 text-sm text-[#7A7574] hover:text-[#ff6b35] hover:bg-[#f9fafb] rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Reload code"
+            >
+              <Icon
+                icon="mdi:reload"
+                width="20"
+                className={
+                  isReloading || codeLoading || codeFetching ? "animate-spin" : ""
+                }
+              />
+              <span>Reload</span>
+            </button>
+          </div>
         </div>
         {(codeLoading || codeFetching) && !openCode && !isReloading ? (
           <div className="space-y-4">
@@ -339,8 +389,8 @@ const RoundInfo = () => {
           </div>
         ) : (
           <div className="space-y-4 relative">
-            {/* Loading overlay when reloading */}
-            {(isReloading || codeFetching) && (
+            {/* Loading overlay when reloading or generating */}
+            {(isReloading || codeFetching || isGenerating || isGeneratingCode) && (
               <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-[5px]">
                 <div className="text-center">
                   <Icon
@@ -349,14 +399,16 @@ const RoundInfo = () => {
                     className="mx-auto mb-2 text-[#ff6b35] animate-spin"
                   />
                   <p className="text-sm text-[#7A7574] font-medium">
-                    Reloading...
+                    {isGenerating || isGeneratingCode
+                      ? "Generating code..."
+                      : "Reloading..."}
                   </p>
                 </div>
               </div>
             )}
             <div
               className={
-                isReloading || codeFetching
+                isReloading || codeFetching || isGenerating || isGeneratingCode
                   ? "opacity-50 transition-opacity duration-300"
                   : ""
               }
@@ -365,9 +417,29 @@ const RoundInfo = () => {
                 <Icon
                   icon="mdi:code-braces"
                   width="48"
-                  className="mx-auto mb-2 opacity-50"
+                  className="mx-auto mb-4 opacity-50"
                 />
-                <p>No open code available for this round.</p>
+                <p className="mb-4">No open code available for this round.</p>
+                <button
+                  onClick={handleGenerateCode}
+                  disabled={
+                    isGenerating ||
+                    isGeneratingCode ||
+                    isReloading ||
+                    codeLoading ||
+                    codeFetching
+                  }
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-[#ff6b35] hover:bg-[#e55a2b] rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mx-auto"
+                >
+                  <Icon
+                    icon="mdi:code-braces-box"
+                    width="20"
+                    className={
+                      isGenerating || isGeneratingCode ? "animate-spin" : ""
+                    }
+                  />
+                  <span>Generate Code Now</span>
+                </button>
               </div>
             </div>
           </div>
