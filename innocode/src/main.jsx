@@ -105,6 +105,7 @@ import SchoolManager from "./features/school/pages/school-manager/SchoolManager"
 import CreateSchoolRequest from "./features/school/pages/school-manager/CreateSchoolRequest"
 import SchoolCreationRequestDetail from "./features/school/pages/school-manager/SchoolCreationRequestDetail"
 import MyManageSchool from "./features/school/pages/school-manager/MyManageSchool"
+import SchoolDetail from "./features/school/pages/school-manager/SchoolDetail"
 
 // Initialize EmailJS when app starts
 initEmailJs()
@@ -798,6 +799,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[ROLES.SCHOOL_MANAGER]}>
             <SchoolCreationRequestDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "schools/:id",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.SCHOOL_MANAGER]}>
+            <SchoolDetail />
           </ProtectedRoute>
         ),
       },
