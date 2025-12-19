@@ -22,6 +22,7 @@ import ContestFilterModal from "../features/contest/components/organizer/Contest
 import RoleRegistrationDetailsModal from "../features/role-registration/components/RoleRegistrationDetailsModal"
 import ApproveRoleRegistrationModal from "../features/role-registration/components/ApproveRoleRegistrationModal"
 import DenyRoleRegistrationModal from "../features/role-registration/components/DenyRoleRegistrationModal"
+import AddMentorModal from "../features/school/components/AddMentorModal"
 
 const ModalContext = createContext({
   openModal: () => {}, // no-op default
@@ -71,6 +72,7 @@ export function ModalProvider({ children }) {
     roleRegistrationDetails: RoleRegistrationDetailsModal,
     approveRoleRegistration: ApproveRoleRegistrationModal,
     denyRoleRegistration: DenyRoleRegistrationModal,
+    addMentor: AddMentorModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

@@ -43,6 +43,10 @@ const ActivityLog = () => {
   const getActionIcon = (action) => {
     if (!action) return "mdi:information-outline";
     const actionLower = action.toLowerCase();
+    if (actionLower.includes("approve") || actionLower.includes("accept"))
+      return "mdi:check-circle";
+    if (actionLower.includes("reject") || actionLower.includes("deny"))
+      return "mdi:close-circle";
     if (actionLower.includes("create") || actionLower.includes("add"))
       return "mdi:plus-circle";
     if (actionLower.includes("update") || actionLower.includes("edit"))
@@ -60,6 +64,10 @@ const ActivityLog = () => {
   const getActionColor = (action) => {
     if (!action) return "var(--color-info)";
     const actionLower = action.toLowerCase();
+    if (actionLower.includes("approve") || actionLower.includes("accept"))
+      return "var(--color-success)";
+    if (actionLower.includes("reject") || actionLower.includes("deny"))
+      return "var(--color-danger)";
     if (actionLower.includes("create") || actionLower.includes("add"))
       return "var(--color-success)";
     if (actionLower.includes("update") || actionLower.includes("edit"))
@@ -69,6 +77,24 @@ const ActivityLog = () => {
     if (actionLower.includes("login") || actionLower.includes("auth"))
       return "var(--color-primary)";
     return "var(--color-info)";
+  };
+
+  const formatAction = (action) => {
+    if (!action) return "Unknown Action";
+    // Format action like "school_request.approve" to "Approve School Request"
+    const parts = action.split(".");
+    if (parts.length > 1) {
+      const actionPart = parts[parts.length - 1];
+      const entityPart = parts.slice(0, -1).join(" ");
+      const formattedAction = actionPart.charAt(0).toUpperCase() + actionPart.slice(1);
+      const formattedEntity = entityPart
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+      return `${formattedAction} ${formattedEntity}`;
+    }
+    // If no dot, just capitalize first letter
+    return action.charAt(0).toUpperCase() + action.slice(1).replace(/_/g, " ");
   };
 
   return (
@@ -166,22 +192,25 @@ const ActivityLog = () => {
                 </div>
                 <div className="activity-log-content">
                   <div className="activity-log-main">
-                    <span className="activity-log-action">{log.action || "Unknown Action"}</span>
-                    {log.userId && (
+                    <span className="activity-log-action">{formatAction(log.action)}</span>
+                    {(log.userFullname || log.userEmail || log.userId) && (
                       <span className="activity-log-user">
-                        User: {log.userId}
+                        {log.userFullname || log.userEmail || `User: ${log.userId}`}
+                        {log.userEmail && log.userFullname && (
+                          <span className="activity-log-user-email"> ({log.userEmail})</span>
+                        )}
                       </span>
                     )}
                   </div>
                   <div className="activity-log-details">
                     {log.targetType && (
                       <span className="activity-log-target-type">
-                        {log.targetType}
+                        {log.targetType.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                       </span>
                     )}
                     {log.targetId && (
                       <span className="activity-log-target-id">
-                        Target ID: {log.targetId}
+                        ID: {log.targetId}
                       </span>
                     )}
                   </div>

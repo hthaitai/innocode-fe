@@ -2,16 +2,18 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, UserPlus } from "lucide-react";
 import { useGetSchoolCreationRequestByIdQuery } from "@/services/schoolApi";
 import InfoSection from "@/shared/components/InfoSection";
 import DetailTable from "@/shared/components/DetailTable";
 import StatusBadge from "@/shared/components/StatusBadge";
 import { formatDateTime } from "@/shared/utils/dateTime";
+import { useModalContext } from "@/context/ModalContext";
 
 const SchoolCreationRequestDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { openModal } = useModalContext();
 
   const {
     data: request,
@@ -20,7 +22,7 @@ const SchoolCreationRequestDetail = () => {
   } = useGetSchoolCreationRequestByIdQuery(id, {
     skip: !id,
   });
-
+console.log(request);
   if (isLoading) {
     return (
       <PageContainer
@@ -104,14 +106,6 @@ const SchoolCreationRequestDetail = () => {
         ? formatDateTime(request.createdAt || request.CreatedAt)
         : "—",
     },
-    ...(request?.createdSchoolId
-      ? [
-          {
-            label: "Created School ID",
-            value: request.createdSchoolId,
-          },
-        ]
-      : []),
   ];
 
   // Prepare review data
@@ -147,8 +141,12 @@ const SchoolCreationRequestDetail = () => {
 
   // Breadcrumb for detail page
   const schoolName = request?.name || request?.Name || "Request";
-  const breadcrumbItems = ["School Management", schoolName];
-  const breadcrumbPaths = ["/school-manager", `/school-manager/${id}`];
+  const breadcrumbItems = ["School Requests", schoolName];
+  const breadcrumbPaths = ["/school-requests", `/school-requests/${id}`];
+
+  // Check if status is approved
+  const status = request?.status || request?.Status || "";
+
 
   return (
     <PageContainer 
@@ -157,13 +155,16 @@ const SchoolCreationRequestDetail = () => {
     >
       <div className="space-y-5">
         {/* Back Button */}
-        <button
-          onClick={() => navigate("/school-manager")}
-          className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
-        >
-          <ArrowLeft size={16} />
-          <span>Back to School Management</span>
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => navigate("/school-manager")}
+            className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft size={16} />
+            <span>Back to School Management</span>
+          </button>
+        
+        </div>
 
         {/* Request Information */}
         <InfoSection title="School Creation Request Information">

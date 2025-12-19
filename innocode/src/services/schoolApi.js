@@ -175,6 +175,17 @@ export const schoolApi = api.injectEndpoints({
         { type: "SchoolCreationRequests", id: "LIST" },
       ],
     }),
+    addMentorToSchool: builder.mutation({
+      query: ({ schoolId, data }) => ({
+        url: `schools/${schoolId}/mentors`,
+        method: "POST",
+        body: data,
+      }),
+      transformResponse: (response) => response.data || response,
+      invalidatesTags: (result, error, { schoolId }) => [
+        { type: "Schools", id: schoolId },
+      ],
+    }),
   }),
 });
 export const {
@@ -189,4 +200,5 @@ export const {
   useGetSchoolCreationRequestByIdQuery,
   useApproveSchoolCreationRequestMutation,
   useDenySchoolCreationRequestMutation,
+  useAddMentorToSchoolMutation,
 } = schoolApi;

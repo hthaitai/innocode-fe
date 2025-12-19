@@ -20,6 +20,7 @@ export const BREADCRUMBS = {
   APPEAL: ["Appeal"],
   STUDENT_CERTIFICATE: ["Student Certificate"],
   SCHOOL_MANAGEMENT: ["School Management"],
+  MY_SCHOOL_MANAGEMENT: ["My School Management"],
   SCHOOL_CREATE_REQUEST: ["School Management", "Create Request"],
   // Sub-pages
   PROFILE_ABOUT: ["Profile", "Personal Information"],
@@ -301,7 +302,8 @@ export const BREADCRUMB_PATHS = {
   APPEAL: ["/appeal"],
   STUDENT_CERTIFICATE: ["/student-certificate"],
   SCHOOL_MANAGEMENT: ["/school-manager"],
-  SCHOOL_CREATE_REQUEST: ["/school-manager", "/school-manager/create"],
+  SCHOOL_CREATE_REQUEST: ["/school-requests", "/school-requests/create"],
+  MY_SCHOOL_MANAGEMENT: ["/school-manager", "/schools"],
   // Sub-pages
   PROFILE_ABOUT: ["/profile"],
   PROFILE_PASSWORD: ["/profile"],

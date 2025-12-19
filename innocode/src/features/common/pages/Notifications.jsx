@@ -1,21 +1,17 @@
 import React, { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import PageContainer from "@/shared/components/PageContainer";
 import { BREADCRUMBS } from "@/config/breadcrumbs";
 import {
   useGetNotificationsQuery,
-  useReadNotificationMutation,
   useReadAllNotificationsMutation,
 } from "@/services/notificationApi";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { toast } from "react-hot-toast";
-import { useAuth } from "@/context/AuthContext";
 import TablePagination from "@/shared/components/TablePagination";
+import useNotificationNavigation from "@/features/notification/hooks/useNotificationNavigation";
 
 const Notifications = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
   const [page, setPage] = useState(1);
   const pageSize = 8;
 
@@ -30,8 +26,8 @@ const Notifications = () => {
     }
   );
 
-  const [readNotification] = useReadNotificationMutation();
   const [readAllNotifications] = useReadAllNotificationsMutation();
+  const handleNotificationClick = useNotificationNavigation();
 
   const notifications = useMemo(() => {
     if (!notificationsData?.items) return [];
@@ -77,20 +73,6 @@ const Notifications = () => {
     [notifications]
   );
 
-  const handleNotificationClick = async (notification) => {
-    try {
-      await readNotification(notification.notificationId).unwrap();
-    } catch (error) {
-      console.error("Error reading notification:", error);
-    }
-
-    if (
-      notification.parsedPayload?.targetType === "team_invite" &&
-      user?.role === "student"
-    ) {
-      navigate(`/notifications/team-invite/${notification.notificationId}`);
-    }
-  };
 
   const handleReadAllNotifications = async () => {
     try {
