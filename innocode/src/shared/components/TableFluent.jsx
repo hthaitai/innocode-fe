@@ -35,7 +35,7 @@ const TableFluent = ({
     getRowId:
       getRowId ||
       ((row, index) =>
-        row.teamId || row.questionId || row.id || `row-${index}`),
+        row.appealId || row.teamId || row.questionId || row.id || `row-${index}`),
   })
 
   const isClickable = typeof onRowClick === "function"

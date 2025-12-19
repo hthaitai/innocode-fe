@@ -9,6 +9,7 @@ export function FileDropzone({
   accept = { "image/*": [] },
   label,
   selectedFile, // new prop
+  noBorder = false,
 }) {
   const onDrop = useCallback(
     (acceptedFiles) => {
@@ -26,16 +27,21 @@ export function FileDropzone({
   })
 
   return (
-    <div className="w-full">
+    <div>
       <div
         {...getRootProps()}
-        className={`w-full h-[188px] flex flex-col items-center justify-center 
-          border border-dashed rounded-[5px] cursor-pointer transition
-          ${error ? "border-red-500" : "border-[#909090]"}
+        className={`h-[calc(100vh-53px)] flex flex-col items-center justify-center 
+          rounded-[5px] cursor-pointer transition
+          ${!noBorder ? "border border-dashed" : ""}
+          ${!noBorder ? (error ? "border-red-500" : "border-[#909090]") : ""}
           ${
             isDragActive
-              ? "border-orange-400 bg-orange-50"
-              : "hover:border-orange-400"
+              ? !noBorder
+                ? "border-orange-400 bg-orange-50"
+                : "bg-orange-50"
+              : !noBorder
+              ? "hover:border-orange-400"
+              : ""
           }
         `}
       >
@@ -48,7 +54,7 @@ export function FileDropzone({
             {selectedFile.name}
           </p>
         ) : (
-          <p className="mt-2 text-[12px] leading-[16px] text-[#7A7574] text-center">
+          <p className="mt-3 text-sm leading-5 text-[#7A7574] text-center">
             {label || "Drag & drop your file here or click to select"}
           </p>
         )}

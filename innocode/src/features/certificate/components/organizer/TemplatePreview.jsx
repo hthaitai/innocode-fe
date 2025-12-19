@@ -1,173 +1,135 @@
+import { ArrowLeft } from "lucide-react"
 import React, { useRef, useState, useEffect } from "react"
 import {
   Stage,
   Layer,
   Image as KonvaImage,
-  Text as KonvaText,
+  Text,
+  Rect,
+  Group,
 } from "react-konva"
+import useImage from "use-image"
+import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { FileDropzone } from "../../../../shared/components/dropzone/FileDropzone"
 
-export default function TemplatePreview({ formData, setFormData }) {
-  const containerRef = useRef(null)
-  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 })
-  const [imageObj, setImageObj] = useState(null)
-  const [stageScale, setStageScale] = useState(1)
-  const [stagePosition, setStagePosition] = useState({ x: 0, y: 0 })
+export default function TemplatePreview({ formData, setFormData, zoom }) {
+  const fileInputRef = useRef(null)
+  const groupRef = useRef(null)
+  const [imageUrl, setImageUrl] = useState(null)
 
-  // Track container size
+  const textToShow = {
+    value: formData.text?.value || "Nguyen Van A",
+    x: formData.text?.x ?? 0,
+    y: formData.text?.y ?? 0,
+    fontSize: formData.text?.fontSize ?? 64,
+    fontFamily: formData.text?.fontFamily ?? "Arial",
+    colorHex: formData.text?.colorHex ?? "#1F2937",
+    maxWidth: formData.text?.maxWidth ?? 1600,
+    align: formData.text?.align ?? "center",
+  }
+
+  // Handle file / URL changes
   useEffect(() => {
-    const updateSize = () => {
-      if (!containerRef.current) return
-      setContainerSize({
-        width: containerRef.current.clientWidth,
-        height: containerRef.current.clientHeight,
-      })
+    if (!formData.file && !formData.fileUrl) {
+      setImageUrl(null)
+      return
     }
-    updateSize()
-    window.addEventListener("resize", updateSize)
-    return () => window.removeEventListener("resize", updateSize)
-  }, [])
 
-  // Load image
-  useEffect(() => {
-    if (!formData.file) return
-    const url =
-      formData.file.type === "application/pdf"
-        ? "/pdf-placeholder.png"
-        : URL.createObjectURL(formData.file)
-
-    const img = new window.Image()
-    img.src = url
-    img.onload = () => setImageObj(img)
-
-    return () => {
-      if (formData.file.type !== "application/pdf") URL.revokeObjectURL(url)
+    if (formData.file) {
+      if (formData.file.type === "application/pdf") {
+        setImageUrl("/pdf-placeholder.png")
+      } else {
+        const url = URL.createObjectURL(formData.file)
+        setImageUrl(url)
+        return () => URL.revokeObjectURL(url)
+      }
+    } else {
+      setImageUrl(formData.fileUrl)
     }
-  }, [formData.file])
+  }, [formData.file, formData.fileUrl])
 
-  // Compute image fit & scale
-  const getImageFit = () => {
-    if (!imageObj) return { width: 0, height: 0, scaleX: 1, scaleY: 1 }
-    const scaleX = containerSize.width / imageObj.width
-    const scaleY = containerSize.height / imageObj.height
-    const scale = Math.min(scaleX, scaleY) // keep aspect ratio
-    return {
-      width: imageObj.width * scale,
-      height: imageObj.height * scale,
-      scale,
-    }
+  const [image] = useImage(imageUrl, "anonymous")
+
+  // Use image width for base scaling, fallback to 1
+  const baseScale = image ? 1 : 1
+  const scale = baseScale * zoom
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) setFormData((p) => ({ ...p, file }))
   }
 
-  const {
-    width: fitWidth,
-    height: fitHeight,
-    scale: imageScale,
-  } = getImageFit()
-  const imageOffset = {
-    x: (containerSize.width - fitWidth) / 2,
-    y: (containerSize.height - fitHeight) / 2,
-  }
-
-  // Zoom handler
-  const handleWheel = (e) => {
-    e.evt.preventDefault()
-    const scaleBy = 1.1
-    const oldScale = stageScale
-    const pointer = {
-      x: (e.evt.x - stagePosition.x) / oldScale,
-      y: (e.evt.y - stagePosition.y) / oldScale,
-    }
-    const newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy
-    const clamped = Math.max(0.2, Math.min(4, newScale))
-    setStageScale(clamped)
-    setStagePosition({
-      x: e.evt.x - pointer.x * clamped,
-      y: e.evt.y - pointer.y * clamped,
-    })
-  }
-
-  // Text drag handler
-  const handleTextDragEnd = (e) => {
-    const { x, y } = e.target.position()
+  const handleDragEnd = () => {
+    if (!groupRef.current) return
+    const { x, y } = groupRef.current.position()
     setFormData((prev) => ({
       ...prev,
       text: {
         ...prev.text,
-        x: Math.round((x - imageOffset.x) / imageScale), // round to integer
-        y: Math.round((y - imageOffset.y) / imageScale),
+        x: Math.round(x),
+        y: Math.round(y),
       },
     }))
   }
 
-  // Handle file input directly if needed
-  const fileInputRef = useRef(null)
-  const handleFileChange = (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-    setFormData((prev) => ({ ...prev, file }))
+  // TemplatePreview
+  if (!imageUrl) {
+    return (
+      <div>
+        <FileDropzone
+          selectedFile={formData.file}
+          onFileSelected={(file) => setFormData((prev) => ({ ...prev, file }))}
+          label="Drag & drop your template image here or click to select"
+          accept={{ "image/*": [], "application/pdf": [] }}
+          noBorder
+        />
+      </div>
+    )
+  }
+
+  // Show spinner while image is loading
+  if (!image) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-3">
+        <Spinner />
+        <p className="text-sm leading-4">Loading image...</p>
+      </div>
+    )
   }
 
   return (
-    <div ref={containerRef} className="relative w-full h-full">
-      {!formData.file && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-[5px] border border-[#E5E5E5]">
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept=".png,.jpg,.jpeg,.pdf"
-            onChange={handleFileChange}
-          />
-          <button
-            className="button-orange"
-            onClick={() => fileInputRef.current?.click()}
+    <Stage
+      width={image.width * scale}
+      height={image.height * scale}
+      scaleX={scale}
+      scaleY={scale}
+    >
+      <Layer>
+        <KonvaImage image={image} />
+        {textToShow && (
+          <Group
+            ref={groupRef}
+            x={textToShow.x}
+            y={textToShow.y}
+            draggable
+            onDragEnd={handleDragEnd}
           >
-            Upload Template
-          </button>
-          <p className="text-gray-500 mt-2">
-            Upload a template image to start editing.
-          </p>
-        </div>
-      )}
-
-      {imageObj && containerSize.width > 0 && containerSize.height > 0 && (
-        <Stage
-          width={containerSize.width}
-          height={containerSize.height}
-          scaleX={stageScale}
-          scaleY={stageScale}
-          x={stagePosition.x}
-          y={stagePosition.y}
-          draggable
-          onWheel={handleWheel}
-          style={{ background: "#f0f0f0" }}
-          className="rounded-[5px] border border-[#E5E5E5]"
-        >
-          <Layer>
-            <KonvaImage
-              image={imageObj}
-              width={fitWidth}
-              height={fitHeight}
-              x={imageOffset.x}
-              y={imageOffset.y}
+            <Rect
+              width={textToShow.maxWidth}
+              height={textToShow.fontSize}
+              stroke="red"
             />
-
-            {formData.text && (
-              <KonvaText
-                text={formData.text.value}
-                x={imageOffset.x + formData.text.x * imageScale}
-                y={imageOffset.y + formData.text.y * imageScale}
-                fontSize={formData.text.fontSize * imageScale}
-                fontFamily={formData.text.fontFamily}
-                fill={formData.text.colorHex}
-                width={formData.text.maxWidth * imageScale}
-                align={formData.text.align}
-                draggable
-                onDragEnd={handleTextDragEnd}
-              />
-            )}
-          </Layer>
-        </Stage>
-      )}
-    </div>
+            <Text
+              text={textToShow.value}
+              fontSize={textToShow.fontSize}
+              fontFamily={textToShow.fontFamily}
+              fill={textToShow.colorHex}
+              width={textToShow.maxWidth}
+              align={textToShow.align}
+            />
+          </Group>
+        )}
+      </Layer>
+    </Stage>
   )
 }

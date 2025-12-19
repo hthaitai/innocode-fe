@@ -1,12 +1,19 @@
-import React from "react"
+import React, { useState } from "react"
 import { useParams } from "react-router-dom"
-import { Calendar } from "lucide-react"
+import { Calendar, Award } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useAwardCertificatesMutation } from "@/services/certificateApi"
+import { useModal } from "@/shared/hooks/useModal"
+import toast from "react-hot-toast"
 
-const OrganizerLeaderboardMemberDetail = () => {
+const OrganizerLeaderboardMember = () => {
   const { contestId, teamId, memberId } = useParams()
+  const { openModal, closeModal } = useModal()
+  const [awarding, setAwarding] = useState(false)
+
+  const [awardCertificates] = useAwardCertificatesMutation()
 
   const {
     data: leaderboardData,
@@ -37,6 +44,46 @@ const OrganizerLeaderboardMemberDetail = () => {
     memberId
   )
 
+  const handleAward = () => {
+    if (!member) return
+
+    const recipients = [
+      {
+        studentId: member.memberId,
+        displayName: member.memberName,
+      },
+    ]
+
+    openModal("certificateTemplate", {
+      contestId,
+      onAward: async (template) => {
+        const payload = {
+          templateId: template.templateId,
+          recipients,
+          output: "pdf",
+          reissue: true,
+        }
+
+        setAwarding(true)
+        try {
+          await awardCertificates(payload).unwrap()
+          toast.success("Certificate issued successfully.")
+          closeModal()
+        } catch (err) {
+          console.error(err)
+          toast.error(
+            err?.data?.message ||
+              err?.data?.error ||
+              "Unable to issue certificate"
+          )
+        } finally {
+          setAwarding(false)
+        }
+      },
+      awarding: awarding,
+    })
+  }
+
   if (!member && !isLoading) {
     return (
       <PageContainer
@@ -57,6 +104,36 @@ const OrganizerLeaderboardMemberDetail = () => {
       loading={isLoading}
       error={error}
     >
+      {/* Award Member Certificate */}
+      {member && (
+        <div className="mb-1">
+          <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
+            {/* Left: Icon + Text */}
+            <div className="flex items-center gap-5">
+              <Award size={20} />
+              <div>
+                <p className="text-[14px] leading-5">
+                  Award member certificate
+                </p>
+                <p className="text-[12px] leading-4 text-[#7A7574]">
+                  Issue a certificate for this member
+                </p>
+              </div>
+            </div>
+
+            {/* Right: Action Button */}
+            <button
+              type="button"
+              className="button-orange px-3"
+              onClick={handleAward}
+              disabled={awarding}
+            >
+              {awarding ? "Awarding..." : "Award"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-1">
         {(member?.roundScores ?? []).map((round) => (
           <div
@@ -89,4 +166,4 @@ const OrganizerLeaderboardMemberDetail = () => {
   )
 }
 
-export default OrganizerLeaderboardMemberDetail
+export default OrganizerLeaderboardMember

@@ -6,10 +6,7 @@ import ProblemModal from "../features/problem/components/organizer/ProblemModal"
 import ProvinceModal from "../features/province/components/organizer/ProvinceModal"
 import SchoolModal from "../features/school/components/organizer/SchoolModal"
 import TeamModal from "../features/team/components/organizer/TeamModal"
-import AppealStateModal from "../features/appeal/components/organizer/AppealStateModal"
-import AppealDecisionModal from "../features/appeal/components/organizer/AppealDecisionModal"
 import CreateAppealModal from "../features/appeal/components/mentor/CreateAppealModal"
-import IssueCertificateModal from "../features/certificate/components/organizer/IssueCertificateModal"
 import NotificationModal from "../features/notification/components/organizer/NotificationModal"
 import McqWeightModal from "../features/mcq/components/organizer/McqWeightModal"
 import RubricModal from "../features/problems/manual/components/RubricModal"
@@ -17,7 +14,6 @@ import RubricCsvModal from "../features/problems/manual/components/RubricCsvModa
 import TestCaseCsvModal from "../features/problems/auto-evaluation/components/TestCaseCsvModal"
 import McqCsvModal from "../features/mcq/components/organizer/McqCsvModal"
 import McqBankModal from "../features/mcq/components/organizer/McqBankModal"
-import TemplateModal from "../features/leaderboard/components/TemplateModal"
 import ReviewAppealModal from "../features/appeal/components/organizer/ReviewAppealModal"
 import OpenCodeModal from "../features/round/components/student/OpenCodeModal"
 import InviteJudgeModal from "../features/invite-judge/components/InviteJudgeModal"
@@ -59,10 +55,7 @@ export function ModalProvider({ children }) {
     province: ProvinceModal,
     school: SchoolModal,
     team: TeamModal,
-    appealState: AppealStateModal,
-    appealDecision: AppealDecisionModal,
     createAppeal: CreateAppealModal,
-    issueCertificate: IssueCertificateModal,
     notification: NotificationModal,
     mcqWeight: McqWeightModal,
     rubric: RubricModal,
@@ -70,7 +63,6 @@ export function ModalProvider({ children }) {
     testCaseCsv: TestCaseCsvModal,
     mcqCsv: McqCsvModal,
     mcqBank: McqBankModal,
-    template: TemplateModal,
     reviewAppeal: ReviewAppealModal,
     openCode: OpenCodeModal,
     inviteJudge: InviteJudgeModal,

@@ -68,13 +68,6 @@ const RoundRelatedSettings = ({ contestId, round }) => {
     )
   }
 
-  items.push({
-    title: "Appeals",
-    subtitle: "Review and resolve team appeals for this round",
-    path: `/organizer/contests/${contestId}/rounds/${round.roundId}/appeals`,
-    icon: Scale,
-  })
-
   return (
     <div className="flex flex-col gap-1">
       {items.map((item) => {

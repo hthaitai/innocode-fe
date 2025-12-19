@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom"
-import { Users, Trophy, Award, ChevronRight, Scale, Mail, UserCheck } from "lucide-react"
+import { Users, Trophy, Award, ChevronRight, Scale, Mail, UserCheck, LayoutTemplate, FileBadge2 } from "lucide-react"
 
 const items = [
-  // {
-  //   title: "Teams",
-  //   subtitle: "Manage registered teams and members",
-  //   icon: <Users size={20} />,
-  //   path: "teams",
-  // },
+  {
+    title: "Teams",
+    subtitle: "Manage registered teams and members",
+    icon: <Users size={20} />,
+    path: "teams",
+  },
   {
     title: "Judges",
     subtitle: "Invite and manage contest judges",
@@ -34,17 +34,29 @@ const items = [
     path: "leaderboard",
   },
   {
-    title: "Certificates",
-    subtitle: "Manage templates and issued certificates",
-    icon: <Award size={20} />,
-    path: "certificates",
+    title: "Template gallery",
+    subtitle: "Browse templates for this contest or upload new ones",
+    icon: <LayoutTemplate size={20} />,
+    path: "certificates/templates",
   },
-  // {
-  //   title: "Appeals",
-  //   subtitle: "Review and resolve team appeals",
-  //   icon: <Scale size={20} />,
-  //   path: "appeals",
-  // },
+  {
+    title: "Issued student certificates",
+    subtitle: "View certificates issued to individual students",
+    icon: <FileBadge2 size={20} />,
+    path: "certificates/issued/students",
+  },
+  {
+    title: "Issued team certificates",
+    subtitle: "View certificates issued to teams",
+    icon: <FileBadge2 size={20} />,
+    path: "certificates/issued/teams",
+  },
+  {
+    title: "Appeals",
+    subtitle: "Review and resolve team appeals",
+    icon: <Scale size={20} />,
+    path: "appeals",
+  },
   // {
   //   title: "Activity Logs",
   //   subtitle: "View contest-related user actions",

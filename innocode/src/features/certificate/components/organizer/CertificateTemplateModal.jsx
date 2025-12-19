@@ -3,6 +3,8 @@ import BaseModal from "@/shared/components/BaseModal"
 import { useGetCertificateTemplatesQuery } from "@/services/certificateApi"
 import { Check } from "lucide-react"
 import { Spinner } from "@/shared/components/SpinnerFluent"
+import TemplatePreviewCanvas from "./TemplatePreviewCanvas"
+import TablePagination from "../../../../shared/components/TablePagination"
 
 const CertificateTemplateModal = ({
   isOpen,
@@ -12,9 +14,11 @@ const CertificateTemplateModal = ({
   awarding = false,
 }) => {
   const [selectedTemplate, setSelectedTemplate] = useState(null)
+  const [page, setPage] = useState(1)
+  const pageSize = 8
 
   const {
-    data: templateRes,
+    data: templatesData,
     isLoading,
     isError,
   } = useGetCertificateTemplatesQuery(
@@ -26,7 +30,8 @@ const CertificateTemplateModal = ({
     { skip: !contestId || !isOpen }
   )
 
-  const templates = templateRes?.data || []
+  const templates = templatesData?.data ?? []
+  const pagination = templatesData?.additionalData
 
   useEffect(() => {
     if (!isOpen) {
@@ -54,7 +59,7 @@ const CertificateTemplateModal = ({
       isOpen={isOpen}
       onClose={handleClose}
       title="Choose a certificate template"
-      size="lg"
+      size="full"
       footer={
         <div className="flex justify-end gap-2">
           <button
@@ -89,43 +94,46 @@ const CertificateTemplateModal = ({
           </p>
         )}
 
-        <div className="flex flex-col gap-1">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
           {!isLoading &&
             !isError &&
             templates.map((template) => {
               const isSelected =
                 selectedTemplate?.templateId === template.templateId
+
               return (
                 <div
                   key={template.templateId}
-                  className={`flex justify-between items-center min-h-[70px] px-5 rounded-[5px] cursor-pointer transition-colors ${
-                    isSelected ? "bg-[#F6F6F6] border border-orange-500" : "hover:bg-[#F6F6F6]"
-                  }`}
                   onClick={() => handleSelectTemplate(template)}
+                  className={`relative cursor-pointer border border-[#E5E5E5] rounded-[5px] transition-all ${
+                    isSelected ? "border-[#E2601A]" : ""
+                  }`}
                 >
-                  <div className="flex gap-5 items-center">
-                    {isSelected && (
-                      <Check size={20} className="text-[#E05307]" />
-                    )}
-                    <div className="flex flex-col">
-                      <span className={isSelected ? "font-medium" : ""}>
-                        {template.name || template.templateName || `Template #${template.templateId}`}
-                      </span>
-                      {template.createdAt && (
-                        <span className="text-xs leading-4 text-[#7A7574]">
-                          {new Date(template.createdAt).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
+                  <div className="relative w-full aspect-video overflow-hidden">
+                    <TemplatePreviewCanvas template={template} />
+                  </div>
+
+                  <div className="p-3 flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      readOnly
+                      size={20}
+                      className="accent-[#E05307] rounded-[5px]"
+                    />
+                    <span className="text-sm leading-5 font-medium line-clamp-2">
+                      {template.name || "Untitled Template"}
+                    </span>
                   </div>
                 </div>
               )
             })}
         </div>
+
+        <TablePagination pagination={pagination} onPageChange={setPage} />
       </div>
     </BaseModal>
   )
 }
 
 export default CertificateTemplateModal
-

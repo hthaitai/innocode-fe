@@ -61,9 +61,11 @@ const OrganizerContestDetail = () => {
           )}
         </div>
 
-        {/* Contest Info + Publish */}
+        {/* Contest Info*/}
         <div className="space-y-1">
           <ContestInfo contest={contest} />
+
+          <PublishContestSection contest={contest} />
         </div>
 
         {/* Contest Control */}
@@ -88,14 +90,6 @@ const OrganizerContestDetail = () => {
             Related settings
           </div>
           <ContestRelatedSettings contestId={contestId} />
-        </div>
-
-        {/* Publish */}
-        <div>
-          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-            Publish contest
-          </div>
-          <PublishContestSection contest={contest} />
         </div>
 
         {/* Delete */}

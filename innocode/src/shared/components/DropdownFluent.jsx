@@ -16,15 +16,20 @@ const DropdownFluent = ({
   const dropdownRef = useRef(null)
   const itemRefs = useRef({}) // refs for each item
 
+  const fluentEaseOut = [0.16, 1, 0.3, 1]
   // Memoize selected option label to prevent unnecessary recalculations
   const selectedLabel = useMemo(() => {
-    return options.find((opt) => opt.value === value)?.label || placeholder || "Select..."
+    return (
+      options.find((opt) => opt.value === value)?.label ||
+      placeholder ||
+      "Select..."
+    )
   }, [options, value, placeholder])
 
   // Close dropdown on outside click
   useEffect(() => {
     if (!isOpen) return
-    
+
     const handleClick = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsOpen(false)
@@ -39,22 +44,25 @@ const DropdownFluent = ({
     if (isOpen && value !== undefined && itemRefs.current[value]) {
       // Use requestAnimationFrame for better performance
       requestAnimationFrame(() => {
-        itemRefs.current[value]?.scrollIntoView({ 
+        itemRefs.current[value]?.scrollIntoView({
           block: "nearest",
-          behavior: "smooth"
+          behavior: "smooth",
         })
       })
     }
   }, [isOpen, value])
 
-  const handleSelect = useCallback((val) => {
-    onChange?.(val)
-    setIsOpen(false)
-  }, [onChange])
+  const handleSelect = useCallback(
+    (val) => {
+      onChange?.(val)
+      setIsOpen(false)
+    },
+    [onChange]
+  )
 
   const toggleDropdown = useCallback(() => {
     if (!disabled) {
-      setIsOpen(prev => !prev)
+      setIsOpen((prev) => !prev)
     }
   }, [disabled])
 
@@ -68,13 +76,15 @@ const DropdownFluent = ({
 
       <div
         onClick={toggleDropdown}
-        className={`text-sm leading-5 flex gap-3 justify-between items-center cursor-pointer border rounded-[5px] px-3 min-h-[40px] bg-white transition-colors duration-150 ${borderClass} ${
-          disabled ? "opacity-60 cursor-not-allowed" : isOpen ? "border-[#7A7574]" : ""
+        className={`text-sm leading-5 flex gap-3 justify-between items-center cursor-pointer border rounded-[5px] px-3 min-h-[32px] bg-white transition-colors duration-150 ${borderClass} ${
+          disabled
+            ? "opacity-60 cursor-not-allowed"
+            : isOpen
+            ? "border-[#7A7574]"
+            : ""
         }`}
       >
-        <span className="capitalize text-[#333] truncate">
-          {selectedLabel}
-        </span>
+        <span className="capitalize text-[#333] truncate">{selectedLabel}</span>
         <ChevronDown
           size={16}
           className={`text-[#7A7574] transition-transform duration-200 flex-shrink-0 ${
@@ -106,26 +116,21 @@ const DropdownFluent = ({
         {isOpen && (
           <motion.div
             key="dropdown"
-            initial={{ opacity: 0, y: -8, scale: 0.95 }}
+            initial={{ y: -20, opacity: 0 }} // start slightly above
             animate={{
+              y: 0,
               opacity: 1,
-              y: 4,
-              scale: 1,
-              transition: { 
-                duration: 0.2, 
-                ease: [0.16, 1, 0.3, 1] 
-              },
+              transition: { duration: 0.5, ease: fluentEaseOut },
             }}
             exit={{
+              y: -10,
               opacity: 0,
-              y: -4,
-              scale: 0.95,
-              transition: { duration: 0.15, ease: "easeInOut" },
+              transition: { duration: 0.25, ease: fluentEaseOut },
             }}
-            className="absolute left-0 top-full mt-1 bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg overflow-hidden w-full z-50"
+            className="absolute left-0 top-full bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg overflow-hidden w-full z-50 "
             style={{ maxHeight: "200px" }}
           >
-            <div className="overflow-y-auto max-h-[200px] overscroll-contain">
+            <div className="overflow-y-auto max-h-[200px] overscroll-contain p-1 flex flex-col gap-1">
               {options.length === 0 ? (
                 <div className="px-3 py-2 text-sm text-[#7A7574] text-center">
                   No options available
@@ -138,14 +143,20 @@ const DropdownFluent = ({
                       if (el) itemRefs.current[option.value] = el
                     }}
                     onClick={() => handleSelect(option.value)}
-                    className={`flex items-center gap-2 text-sm leading-5 px-3 py-2.5 cursor-pointer transition-colors duration-100 ${
-                      value === option.value 
-                        ? "bg-[#F5F5F5] text-[#333] font-medium" 
-                        : "hover:bg-[#F9F9F9] text-[#333]"
+                    className={`flex items-center gap-2 text-sm leading-5 py-1.5 px-3 cursor-pointer transition-colors duration-100 rounded-[5px] relative ${
+                      value === option.value
+                        ? "bg-[#F0F0F0]"
+                        : "hover:bg-[#F0F0F0]"
                     }`}
                   >
+                    {value === option.value && (
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[3px] bg-[#E05307] rounded-[5px]"></span>
+                    )}
+
                     {option.icon && (
-                      <span className="text-[#7A7574] flex-shrink-0">{option.icon}</span>
+                      <span className="text-[#7A7574] flex-shrink-0">
+                        {option.icon}
+                      </span>
                     )}
                     <span className="truncate">{option.label}</span>
                   </div>

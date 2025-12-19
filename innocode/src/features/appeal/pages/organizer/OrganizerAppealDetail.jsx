@@ -1,160 +1,123 @@
 import React from "react"
 import { useParams } from "react-router-dom"
-import { Paperclip } from "lucide-react"
-import PageContainer from '@/shared/components/PageContainer'
-import TableFluent from '@/shared/components/TableFluent'
-import { formatDateTime } from '@/shared/utils/dateTime'
-import useAppeals from "@/features/appeal/hooks/useAppeals"
-import useTeams from "@/features/team/hooks/useTeams"
-import useUsers from "@/shared/hooks/useUsers"
-import InfoSection from "../../../../shared/components/InfoSection"
-import DetailTable from "../../../../shared/components/DetailTable"
-import DetailTableSection from "../../../../shared/components/DetailTableSection"
-import { useModal } from "../../../../shared/hooks/useModal"
-import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
+import { FileText, Scale } from "lucide-react"
+import PageContainer from "@/shared/components/PageContainer"
+import InfoSection from "@/shared/components/InfoSection"
+import DetailTable from "@/shared/components/DetailTable"
+import { formatDateTime } from "@/shared/utils/dateTime"
+import { useGetAppealsQuery } from "@/services/appealApi"
+import { useGetContestByIdQuery } from "@/services/contestApi"
+import { useModal } from "@/shared/hooks/useModal"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import ReviewAppealModal from "../../components/organizer/ReviewAppealModal"
+import AppealInfo from "../../components/organizer/AppealInfo"
+import { useGetAppealByIdQuery } from "../../../../services/appealApi"
 
 const OrganizerAppealDetail = () => {
-  const { contestId: contestIdParam, appealId: appealIdParam } = useParams()
-  const contestId = Number(contestIdParam)
-  const appealId = Number(appealIdParam)
+  const { contestId, appealId } = useParams()
+  const { openModal, modalData, closeModal } = useModal()
 
-  const { appeals, loading, error, updateAppeal } = useAppeals()
-  const { teams } = useTeams()
-  const { users } = useUsers()
-  const { openModal } = useModal()
+  // Fetch contest info
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    isError: contestError,
+  } = useGetContestByIdQuery(contestId)
 
-  const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_APPEAL_DETAIL", {
-    contest: contests.find((c) => c.contest_id === contestId),
-  })
+  // Fetch appeals
+  const { data: appeal, isLoading: appealLoading, isError: appealError } = useGetAppealByIdQuery(appealId)
 
-  const appeal = appeals.find((a) => a.appeal_id === appealId)
-  const team = teams.find((t) => t.team_id === appeal?.team_id)
-  const owner = users.find((u) => u.user_id === appeal?.owner_id)
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_APPEAL_DETAIL(
+    contest?.name || "Contest",
+    appeal?.ownerName
+  )
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_APPEAL_DETAIL(
+    contestId,
+    appealId
+  )
 
-  if (!appeal)
+  if (!appeal) {
     return (
       <PageContainer
-        breadcrumb={breadcrumbData.items}
-        breadcrumbPaths={breadcrumbData.paths}
-        loading={loading}
-        error={error}
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+        loading={appealLoading || contestLoading}
+        error={appealError || contestError}
       >
         <div className="flex items-center justify-center h-[200px] text-gray-500">
           Appeal not found
         </div>
       </PageContainer>
     )
-
-  const handleAppealModal = (field) => {
-    if (field === "state") {
-      openModal("appealState", {
-        initialState: appeal.state,
-        onSubmit: (data) => updateAppeal(appeal.appeal_id, data),
-      })
-    } else {
-      openModal("appealDecision", {
-        initialDecision: appeal.decision,
-        onSubmit: (data) => updateAppeal(appeal.appeal_id, data),
-      })
-    }
   }
 
-  const evidenceColumns = [
-    {
-      accessorKey: "url",
-      header: "Evidence Link",
-      cell: ({ row }) => (
-        <a
-          href={row.original.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 underline"
-        >
-          View Evidence
-        </a>
-      ),
-    },
-    { accessorKey: "note", header: "Note" },
-    {
-      accessorKey: "created_at",
-      header: "Uploaded At",
-      cell: ({ row }) => formatDateTime(row.original.created_at),
-    },
-  ]
-
-  // Dummy evidence list (replace with API later)
-  const evidenceList = [
-    {
-      evidence_id: 1,
-      url: "https://example.com/evidence1.png",
-      note: "Screenshot of incorrect output",
-      created_at: "2025-10-25T11:00:00Z",
-    },
-  ]
+  // Correct modal handler
+  const handleReviewModal = () => {
+    openModal("reviewAppeal", { appeal })
+  }
 
   return (
     <PageContainer
-      breadcrumb={breadcrumbData.items}
-      breadcrumbPaths={breadcrumbData.paths}
-      loading={loading}
-      error={error}
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
+      loading={appealLoading || contestLoading}
+      error={appealError || contestError}
     >
       <div className="space-y-5">
-        {/* Appeal info */}
-        <div className="info-group">
-          <InfoSection title="Appeal Information">
-            <DetailTable
-              data={[
-                { label: "Appeal ID", value: appeal.appeal_id },
-                { label: "Team", value: team?.name || "—" },
-                { label: "Owner", value: owner?.fullname || "—" },
-                { label: "Target Type", value: appeal.target_type },
-                { label: "Target ID", value: appeal.target_id },
-                { label: "Reason", value: appeal.reason },
-                {
-                  label: "Created At",
-                  value: formatDateTime(appeal.created_at),
-                },
-              ]}
-            />
-          </InfoSection>
+        {/* Appeal Info */}
+        <AppealInfo appeal={appeal} />
 
-          {/* Manage state/decision */}
-          <DetailTableSection
-            rows={[
-              {
-                label: "State",
-                value: appeal.state || "—",
-                onAction: () => handleAppealModal("state"),
-                align: "center", // center vertically for short content (like badge)
-              },
-              {
-                label: "Decision",
-                value: appeal.decision || "—",
-                onAction: () => handleAppealModal("decision"),
-                align: "top", // top-align if text can be multiline
-              },
-            ]}
-          />
+        {/* Evidences */}
+        <div>
+          <div className="text-sm font-semibold pt-3 pb-2">Evidences</div>
+          <div className="flex flex-col gap-1">
+            {appeal.evidences?.map((evidence) => (
+              <div
+                key={evidence.evidenceId}
+                className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]"
+              >
+                <div className="flex items-center gap-5">
+                  <FileText size={20} />
+                  <div className="flex flex-col justify-center">
+                    <p className="text-[14px] leading-[20px]">
+                      {evidence.note}
+                    </p>
+                    <p className="text-[12px] leading-[16px] text-[#7A7574]">
+                      {formatDateTime(evidence.createdAt)}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  className="button-white"
+                  onClick={() =>
+                    window.open(evidence.url, "_blank", "noopener,noreferrer")
+                  }
+                >
+                  Download
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Evidence */}
+        {/* Actions */}
         <div>
-          <div className="text-sm font-semibold pt-3 pb-2">Evidence</div>
-          <div className="space-y-1">
-            <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-              <div className="flex gap-5 items-center">
-                <Paperclip size={20} />
-                <div>
-                  <p className="text-[14px] leading-[20px]">Appeal Evidence</p>
-                  <p className="text-[12px] text-[#7A7574]">
-                    Uploaded evidence supporting this appeal
-                  </p>
-                </div>
+          <div className="text-sm font-semibold pt-3 pb-2">Actions</div>
+          <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors">
+            <div className="flex items-center gap-5">
+              <Scale size={20} />
+              <div className="flex flex-col justify-center">
+                <p className="text-[14px] leading-[20px]">Review appeal</p>
+                <p className="text-[12px] leading-[16px] text-[#7A7574]">
+                  Open a modal to approve or reject thís appeal and provide a
+                  reason
+                </p>
               </div>
             </div>
-
-            <TableFluent data={evidenceList} columns={evidenceColumns} />
+            <button className="button-orange" onClick={handleReviewModal}>
+              Review
+            </button>
           </div>
         </div>
       </div>

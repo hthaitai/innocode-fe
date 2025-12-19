@@ -48,11 +48,10 @@ import OrganizerTeams from "./features/team/pages/organizer/OrganizerTeams"
 import OrganizerTeamDetail from "./features/team/pages/organizer/OrganizerTeamDetail"
 import OrganizerLeaderboard from "./features/leaderboard/pages/organizer/OrganizerLeaderboard"
 import OrganizerCertificateTemplateCreate from "./features/certificate/pages/organizer/OrganizerCertificateTemplateCreate"
-import OrganizerCertificates from "./features/certificate/pages/organizer/OrganizerCertificates"
+import OrganizerCertificateTemplateEdit from "./features/certificate/pages/organizer/OrganizerCertificateTemplateEdit"
 import OrganizerCertificateTemplates from "./features/certificate/pages/organizer/OrganizerCertificateTemplates"
-import OrganizerIssuedCertificates from "./features/certificate/pages/organizer/OrganizerIssuedCertificates"
-import OrganizerCertificateIssue from "./features/certificate/pages/organizer/OrganizerCertificateIssue"
-import OrganizerCertificateTeamMembers from "./features/certificate/pages/organizer/OrganizerCertificateTeamMembers"
+import OrganizerIssuedStudentCertificates from "./features/certificate/pages/organizer/OrganizerIssuedStudentCertificates"
+import OrganizerIssuedTeamCertificates from "./features/certificate/pages/organizer/OrganizerIssuedTeamCertificates"
 import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals"
 import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail"
 import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces"
@@ -90,8 +89,8 @@ import JudgeManualSubmissionsPage from "./features/submission/pages/judge/JudgeM
 import JudgeManualEvaluationsPage from "./features/submission/pages/judge/JudgeManualEvaluationsPage"
 
 import Leaderboard from "./features/leaderboard/pages/student/Leaderboard"
-import OrganizerLeaderboardDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardDetail"
-import OrganizerLeaderboardMemberDetail from "./features/leaderboard/pages/organizer/OrganizerLeaderboardMemberDetail"
+import OrganizerLeaderboardTeam from "./features/leaderboard/pages/organizer/OrganizerLeaderboardTeam"
+import OrganizerLeaderboardMember from "./features/leaderboard/pages/organizer/OrganizerLeaderboardMember"
 import NotFound from "./pages/NotFound"
 import StaffProvinces from "./features/province/pages/staff/StaffProvinces"
 import StaffSchools from "./features/school/pages/staff/StaffSchools"
@@ -195,6 +194,15 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
         <StudentAutoEvaluation />
+      </ProtectedRoute>
+    ),
+  },
+  // Full-screen certificate template edit page (outside MainLayout)
+  {
+    path: "organizer/contests/:contestId/certificates/templates/:templateId/edit",
+    element: (
+      <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+        <OrganizerCertificateTemplateEdit />
       </ProtectedRoute>
     ),
   },
@@ -593,6 +601,24 @@ const router = createBrowserRouter([
             ),
           },
 
+          // Contest teams
+          {
+            path: ":contestId/teams",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerTeams />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/teams/:teamId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerTeamDetail />
+              </ProtectedRoute>
+            ),
+          },
+
           // Contest leaderboard
           {
             path: ":contestId/leaderboard",
@@ -606,7 +632,7 @@ const router = createBrowserRouter([
             path: ":contestId/leaderboard/teams/:teamId",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <OrganizerLeaderboardDetail />
+                <OrganizerLeaderboardTeam />
               </ProtectedRoute>
             ),
           },
@@ -614,7 +640,7 @@ const router = createBrowserRouter([
             path: ":contestId/leaderboard/teams/:teamId/members/:memberId",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <OrganizerLeaderboardMemberDetail />
+                <OrganizerLeaderboardMember />
               </ProtectedRoute>
             ),
           },
@@ -622,14 +648,6 @@ const router = createBrowserRouter([
           {
             path: ":contestId/certificates",
             children: [
-              {
-                index: true,
-                element: (
-                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerCertificates />
-                  </ProtectedRoute>
-                ),
-              },
               {
                 path: "templates",
                 element: (
@@ -639,43 +657,27 @@ const router = createBrowserRouter([
                 ),
               },
               {
-                path: "issue",
+                path: "issued/students",
                 element: (
                   <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerCertificateIssue />
+                    <OrganizerIssuedStudentCertificates />
                   </ProtectedRoute>
                 ),
               },
               {
-                path: "issue/teams/:teamId",
+                path: "issued/teams",
                 element: (
                   <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerCertificateTeamMembers />
+                    <OrganizerIssuedTeamCertificates />
                   </ProtectedRoute>
                 ),
               },
-              {
-                path: "issued",
-                element: (
-                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                    <OrganizerIssuedCertificates />
-                  </ProtectedRoute>
-                ),
-              },
-              // {
-              //   path: "templates/new",
-              //   element: (
-              //     <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-              //       <OrganizerCertificateTemplateCreate />
-              //     </ProtectedRoute>
-              //   ),
-              // },
             ],
           },
 
           // Appeals
           {
-            path: ":contestId/rounds/:roundId/appeals",
+            path: ":contestId/appeals",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <OrganizerAppeals />
@@ -683,7 +685,7 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: ":contestId/rounds/:roundId/appeals/:appealId",
+            path: ":contestId/appeals/:appealId",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <OrganizerAppealDetail />

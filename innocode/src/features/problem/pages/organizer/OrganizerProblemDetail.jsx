@@ -9,8 +9,9 @@ import { formatDateTime } from "@/shared/utils/dateTime"
 import InfoSection from "../../../../shared/components/InfoSection"
 import DetailTable from "../../../../shared/components/DetailTable"
 import Actions from "../../../../shared/components/Actions"
-import { useOrganizerBreadcrumb } from "../../../../shared/hooks/useOrganizerBreadcrumb"
 import { useModal } from "../../../../shared/hooks/useModal"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useGetContestByIdQuery } from "@/services/contestApi"
 
 const OrganizerProblemDetail = () => {
   const {
@@ -24,7 +25,16 @@ const OrganizerProblemDetail = () => {
 
   const navigate = useNavigate()
   const { openModal } = useModal()
-  const { breadcrumbData } = useOrganizerBreadcrumb("ORGANIZER_PROBLEM_DETAIL")
+
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId)
+
+  const contestName = contest?.name || "Contest"
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_PROBLEM_DETAIL(contestName, "Round", "Problem")
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_PROBLEM_DETAIL(contestId, roundId, problemId)
 
   // --- Hooks ---
   const {
@@ -127,8 +137,8 @@ const OrganizerProblemDetail = () => {
 
   return (
     <PageContainer
-      breadcrumb={breadcrumbData.items}
-      breadcrumbPaths={breadcrumbData.paths}
+      breadcrumb={breadcrumbItems}
+      breadcrumbPaths={breadcrumbPaths}
       loading={problemsLoading || testCaseLoading}
       error={problemsError || testCaseError}
     >

@@ -42,20 +42,22 @@ const PublishContestSection = ({ contest }) => {
       description: `Are you sure you want to publish "${contest.name}"?`,
       onConfirm: async (onClose) => {
         let hasShownToast = false // Prevent duplicate toasts
-        
+
         try {
           const result = await publishContest(contest.contestId).unwrap()
           console.log("✅ Publish contest result:", result)
-          
+
           // If we get here, the request was successful
           // Check the actual response data to determine if publish succeeded
           const responseData = result?.data || result
-          
+
           // Check if publish was actually successful
-          if (responseData?.code === "SUCCESS" || 
-              responseData?.status === "Published" || 
-              result?.code === "SUCCESS" ||
-              !responseData?.Message) {
+          if (
+            responseData?.code === "SUCCESS" ||
+            responseData?.status === "Published" ||
+            result?.code === "SUCCESS" ||
+            !responseData?.Message
+          ) {
             if (!hasShownToast) {
               toast.success("Contest published successfully!")
               hasShownToast = true
@@ -63,9 +65,15 @@ const PublishContestSection = ({ contest }) => {
             onClose()
           } else {
             // Response indicates failure even though request succeeded
-            const missingFromError = responseData?.AdditionalData?.missing ?? responseData?.data?.missing ?? []
-            const errorMessage = responseData?.Message || responseData?.message || "Failed to publish contest"
-            
+            const missingFromError =
+              responseData?.AdditionalData?.missing ??
+              responseData?.data?.missing ??
+              []
+            const errorMessage =
+              responseData?.Message ||
+              responseData?.message ||
+              "Failed to publish contest"
+
             if (!hasShownToast) {
               if (missingFromError.length > 0) {
                 toast.error(
@@ -83,20 +91,30 @@ const PublishContestSection = ({ contest }) => {
           }
         } catch (err) {
           console.error("❌ Publish contest error:", err)
-          
+
           // Only show error if we haven't shown a toast yet
           if (!hasShownToast) {
             const errorData = err?.data || err
-            const missingFromError = errorData?.AdditionalData?.missing ?? errorData?.data?.missing ?? []
-            const errorMessage = errorData?.Message || errorData?.message || errorData?.errorMessage || "Failed to publish contest"
-            
+            const missingFromError =
+              errorData?.AdditionalData?.missing ??
+              errorData?.data?.missing ??
+              []
+            const errorMessage =
+              errorData?.Message ||
+              errorData?.message ||
+              errorData?.errorMessage ||
+              "Failed to publish contest"
+
             // Double check: sometimes error response might actually indicate success
-            if (errorData?.code === "SUCCESS" || errorData?.status === "Published") {
+            if (
+              errorData?.code === "SUCCESS" ||
+              errorData?.status === "Published"
+            ) {
               toast.success("Contest published successfully!")
               onClose()
               return
             }
-            
+
             // Show actual error
             if (missingFromError.length > 0) {
               toast.error(
@@ -154,19 +172,21 @@ const PublishContestSection = ({ contest }) => {
         </button>
       </div>
 
-      {/* Detailed Missing Items */}
+      {/* Missing requirements */}
       {!isReady && missingItems.length > 0 && (
-        <div className="text-sm leading-5 bg-white rounded-b-[5px] border-t border-[#E5E5E5]">
-          <div className="pl-[60px] p-5">
-            <DetailTable
-              data={missingItems.map((item, idx) => ({
-                label: `Requirement ${idx + 1}`,
-                value: item,
-              }))}
-              labelWidth="114px"
-            />
-          </div>
-        </div>
+        <ul>
+          {missingItems.map((item, idx) => (
+            <li
+              key={idx}
+              className="border-t border-[#E5E5E5] px-5 py-3 text-sm leading-5 flex justify-between"
+            >
+              <div>{item}</div>
+              <div className="text-[#7A7574]">
+                Required
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   )

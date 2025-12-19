@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from "react"
+import React, { useState } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetContestByIdQuery } from "@/services/contestApi"
 import { useGetIssuedCertificatesQuery } from "@/services/certificateApi"
-import { getIssuedCertificatesColumns } from "../../columns/issuedCertificatesColumns"
+import { getTeamIssuedCertificatesColumns } from "../../columns/issuedTeamColumns"
 
-const OrganizerIssuedCertificates = () => {
+const OrganizerIssuedTeamCertificates = () => {
   const { contestId } = useParams()
   const [page, setPage] = useState(1)
   const pageSize = 10
@@ -24,19 +24,21 @@ const OrganizerIssuedCertificates = () => {
     error: issuedError,
   } = useGetIssuedCertificatesQuery({
     // contestId,
-    page: page,
+    page,
     pageSize,
   })
 
-  const certificates = issuedData?.data || []
-  const pagination = issuedData?.additionalData || {}
+  const certificates =
+    issuedData?.data?.filter((c) => c.certificateType === "Team") ?? []
+  const pagination = issuedData?.additionalData
 
   const contestName = contest?.name || "Contest"
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CERTIFICATE_ISSUED(contestName)
+  const breadcrumbItems =
+    BREADCRUMBS.ORGANIZER_CERTIFICATE_ISSUED_TEAM(contestName)
   const breadcrumbPaths =
-    BREADCRUMB_PATHS.ORGANIZER_CERTIFICATE_ISSUED(contestId)
+    BREADCRUMB_PATHS.ORGANIZER_CERTIFICATE_ISSUED_TEAM(contestId)
 
-  const columns = getIssuedCertificatesColumns()
+  const columns = getTeamIssuedCertificatesColumns()
 
   return (
     <PageContainer
@@ -52,21 +54,9 @@ const OrganizerIssuedCertificates = () => {
         error={issuedError}
         pagination={pagination}
         onPageChange={setPage}
-        getRowId={(row) =>
-          row.certificateId || row.id || row.templateId || `cert-${row}`
-        }
-        renderActions={() => (
-          <div className="flex items-center justify-between px-5 min-h-[70px]">
-            <div>
-              <p className="text-sm leading-5 font-semibold">
-                Issued certificates
-              </p>
-            </div>
-          </div>
-        )}
       />
     </PageContainer>
   )
 }
 
-export default OrganizerIssuedCertificates
+export default OrganizerIssuedTeamCertificates

@@ -213,35 +213,25 @@ export const BREADCRUMBS = {
     memberName,
   ],
 
-  ORGANIZER_CERTIFICATES: (contestName) => [
-    "Contests",
-    contestName,
-    "Certificates",
-  ],
   ORGANIZER_CERTIFICATE_TEMPLATES: (contestName) => [
     "Contests",
     contestName,
-    "Certificates",
-    "Templates",
-  ],
-  ORGANIZER_CERTIFICATE_ISSUE: (contestName) => [
-    "Contests",
-    contestName,
-    "Certificates",
-    "Issue Certificate",
-  ],
-  ORGANIZER_CERTIFICATE_TEAM_MEMBERS: (contestName, teamName) => [
-    "Contests",
-    contestName,
-    "Certificates",
-    "Issue Certificate",
-    teamName,
+    "Certificate templates",
   ],
   ORGANIZER_CERTIFICATE_ISSUED: (contestName) => [
     "Contests",
     contestName,
-    "Certificates",
-    "Issued",
+    "Issued certificates",
+  ],
+  ORGANIZER_CERTIFICATE_ISSUED_STUDENT: (contestName) => [
+    "Contests",
+    contestName,
+    "Issued student certificates",
+  ],
+  ORGANIZER_CERTIFICATE_ISSUED_TEAM: (contestName) => [
+    "Contests",
+    contestName,
+    "Issued team certificates",
   ],
   ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestName) => [
     "Contests",
@@ -251,18 +241,16 @@ export const BREADCRUMBS = {
   ],
 
   // Organizer appeals
-  ORGANIZER_APPEALS: (contestName, roundName) => [
+  ORGANIZER_APPEALS: (contestName) => [
     "Contests",
     contestName,
-    roundName,
     "Appeals",
   ],
-  ORGANIZER_APPEAL_DETAIL: (contestName, roundName, appealId) => [
+  ORGANIZER_APPEAL_DETAIL: (contestName, studentName) => [
     "Contests",
     contestName,
-    roundName,
     "Appeals",
-    `Appeal #${appealId}`,
+    studentName,
   ],
 
   ORGANIZER_ACTIVITY: (contestName) => [
@@ -516,35 +504,25 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/leaderboard/teams/${teamId}/members/${memberId}`,
   ],
 
-  ORGANIZER_CERTIFICATES: (contestId) => [
-    "/organizer/contests",
-    `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/certificates`,
-  ],
   ORGANIZER_CERTIFICATE_TEMPLATES: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/certificates`,
     `/organizer/contests/${contestId}/certificates/templates`,
-  ],
-  ORGANIZER_CERTIFICATE_ISSUE: (contestId) => [
-    "/organizer/contests",
-    `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/certificates`,
-    `/organizer/contests/${contestId}/certificates/issue`,
-  ],
-  ORGANIZER_CERTIFICATE_TEAM_MEMBERS: (contestId, teamId) => [
-    "/organizer/contests",
-    `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/certificates`,
-    `/organizer/contests/${contestId}/certificates/issue`,
-    `/organizer/contests/${contestId}/certificates/issue/teams/${teamId}`,
   ],
   ORGANIZER_CERTIFICATE_ISSUED: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/certificates`,
     `/organizer/contests/${contestId}/certificates/issued`,
+  ],
+  ORGANIZER_CERTIFICATE_ISSUED_STUDENT: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates/issued/students`,
+  ],
+  ORGANIZER_CERTIFICATE_ISSUED_TEAM: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates/issued/teams`,
   ],
   ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestId) => [
     "/organizer/contests",
@@ -553,17 +531,16 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/certificates/templates/new`,
   ],
 
-  ORGANIZER_APPEALS: (contestId, roundId) => [
+  ORGANIZER_APPEALS: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds/${roundId}`,
-    `/organizer/contests/${contestId}/rounds/${roundId}/appeals`,
+    `/organizer/contests/${contestId}/appeals`,
   ],
-  ORGANIZER_APPEAL_DETAIL: (contestId, roundId, appealId) => [
+  ORGANIZER_APPEAL_DETAIL: (contestId, appealId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
-    `/organizer/contests/${contestId}/rounds/${roundId}/appeals`,
-    `/organizer/contests/${contestId}/rounds/${roundId}/appeals/${appealId}`,
+    `/organizer/contests/${contestId}/appeals`,
+    `/organizer/contests/${contestId}/appeals/${appealId}`,
   ],
 
   ORGANIZER_ACTIVITY: (contestId) => [

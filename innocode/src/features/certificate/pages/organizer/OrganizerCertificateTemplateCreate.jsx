@@ -7,11 +7,22 @@ import CertificateTemplateForm from "../../components/organizer/CertificateTempl
 
 import { useUploadCertificateTemplateMutation } from "../../../../services/certificateApi"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
-import ExistingTemplates from "../../components/organizer/ExistingTemplates"
+import { validateTemplate } from "../../validators/templateValidator"
+import { Spinner } from "../../../../shared/components/SpinnerFluent"
 
 const EMPTY_TEMPLATE = {
   name: "",
-  file: null,
+  fileUrl: null,
+  text: {
+    value: "Nguyen Van A",
+    x: 0,
+    y: 0,
+    fontSize: 64,
+    fontFamily: "Arial",
+    colorHex: "#1F2937",
+    maxWidth: 1600,
+    align: "center",
+  },
 }
 
 export default function OrganizerCertificateTemplateCreate() {
@@ -32,10 +43,7 @@ export default function OrganizerCertificateTemplateCreate() {
   const handleSubmit = async () => {
     if (submitting) return
 
-    const validationErrors = {}
-    if (!formData.name.trim())
-      validationErrors.name = "Template name is required."
-    if (!formData.file) validationErrors.file = "Template file is required."
+    const validationErrors = validateTemplate(formData)
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
@@ -68,13 +76,13 @@ export default function OrganizerCertificateTemplateCreate() {
         text: { ...formData.text },
       }
 
-      const response = await uploadTemplate(payload).unwrap()
+      await uploadTemplate(payload).unwrap()
 
       toast.success("Certificate template created successfully!")
-      navigate(`/organizer/contests/${contestId}/certificates`)
+      navigate(`/organizer/contests/${contestId}/certificates/templates`)
     } catch (err) {
       console.error(err)
-      toast.error(err?.data?.message || "Something went wrong.")
+      toast.error("Something went wrong.")
     } finally {
       setSubmitting(false)
     }
@@ -82,43 +90,34 @@ export default function OrganizerCertificateTemplateCreate() {
 
   if (contestLoading)
     return (
-      <div className="h-screen flex items-center justify-center">
-        Loading contest...
+      <div className="h-screen flex items-center justify-center flex-col gap-3">
+        <Spinner />
+        <p className="text-sm leading-5">Loading...</p>
       </div>
     )
 
-  if (contestError)
+  if (contestError || !contest) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        Error loading contest.
+      <div className="h-screen flex flex-col items-center justify-center gap-3">
+        <p className="text-red-500 text-sm leading-5">
+          Error: Contest not found or failed to load.
+        </p>
+        <button onClick={() => navigate("/")} className="button-orange">
+          Back to Home
+        </button>
       </div>
     )
+  }
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="px-5 py-2 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() =>
-            navigate(`/organizer/contests/${contestId}/certificates`)
-          }
-          className="w-10 h-9 rounded-[5px] cursor-pointer hover:bg-[#EAEAEA] transition flex items-center justify-center"
-        >
-          <ArrowLeft size={16} />
-        </button>
-
-        <span className="text-sm leading-5">Back to templates</span>
-      </div>
-
-      <div className="flex-1 px-5 pb-5 overflow-hidden">
-        <CertificateTemplateForm
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-          onSubmit={handleSubmit}
-          submitting={submitting}
-        />
-      </div>
+    <div className="flex flex-col h-screen overflow-hidden">
+      <CertificateTemplateForm
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}
+        onSubmit={handleSubmit}
+        submitting={submitting}
+      />
     </div>
   )
 }
