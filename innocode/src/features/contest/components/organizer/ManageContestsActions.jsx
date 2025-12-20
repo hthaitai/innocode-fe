@@ -39,13 +39,13 @@ const ManageContestsActions = ({ onSearch, onFilter }) => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleSearchKeyDown}
-            startIcon={<Search className="text-gray-400 w-4 h-4" />}
+            startIcon={<Search className="text-[#7A7574] w-4 h-4" />}
             endButton={
               search && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
-                  className="text-gray-600 p-1"
+                  className="text-[#7A7574] p-1"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -54,13 +54,13 @@ const ManageContestsActions = ({ onSearch, onFilter }) => {
           />
         </div>
 
-        <button
+        {/* <button
           type="button"
           className="button-white"
           onClick={handleFilterClick}
         >
           Filter
-        </button>
+        </button> */}
       </div>
 
       {/* Right section: add contest */}

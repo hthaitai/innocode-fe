@@ -75,7 +75,7 @@ export default function TemplatePreview({ formData, setFormData, zoom }) {
   // TemplatePreview
   if (!imageUrl) {
     return (
-      <div>
+      <div className="h-full flex flex-col">
         <FileDropzone
           selectedFile={formData.file}
           onFileSelected={(file) => setFormData((prev) => ({ ...prev, file }))}

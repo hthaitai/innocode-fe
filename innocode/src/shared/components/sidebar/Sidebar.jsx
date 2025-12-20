@@ -114,7 +114,7 @@ const menuByRole = {
     "organizerContests",
     "organizerProvinces",
     "organizerSchools",
-    "organizerNotifications",
+    "notifications",
   ],
   mentor: [
     "profile",
@@ -172,13 +172,14 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       {/* User Profile Section */}
-      <div className="user-profile">
-        <div className="avatar">
+      <div className="flex items-center gap-5 mb-5">
+        <div className="w-[60px] h-[60px]">
           <div className="avatar-gradient"></div>
         </div>
-        <div className="user-info">
-          <div className="user-name">{user?.name || "User"}</div>
-          <div className="user-role">
+        
+        <div>
+          <div className="text-sm leading-5 font-bold">{user?.name || "User"}</div>
+          <div className="text-xs leading-4">
             {role.charAt(0).toUpperCase() + role.slice(1)} account
           </div>
         </div>

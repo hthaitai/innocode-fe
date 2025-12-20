@@ -2,37 +2,36 @@ import React from "react"
 import { toast } from "react-hot-toast"
 import { Icon } from "@iconify/react"
 import {
-  useStartContestNowMutation,
-  useEndContestNowMutation,
-} from "../../../../services/contestApi"
+  useStartRoundNowMutation,
+  useEndRoundNowMutation,
+} from "../../../../services/roundApi"
 
-const StartEndContestSection = ({ contestId }) => {
-  const [startContestNow, { isLoading: isStarting }] =
-    useStartContestNowMutation()
-  const [endContestNow, { isLoading: isEnding }] = useEndContestNowMutation()
+const StartEndRoundSection = ({ roundId }) => {
+  const [startRoundNow, { isLoading: isStarting }] = useStartRoundNowMutation()
+  const [endRoundNow, { isLoading: isEnding }] = useEndRoundNowMutation()
 
   const handleStartNow = async () => {
     try {
-      await startContestNow(contestId).unwrap()
-      toast.success("Contest started successfully")
+      await startRoundNow(roundId).unwrap()
+      toast.success("Round started successfully")
     } catch (error) {
       const errorMessage =
         error?.data?.message ||
         error?.data?.errorMessage ||
-        "Failed to start contest"
+        "Failed to start round"
       toast.error(errorMessage)
     }
   }
 
   const handleEndNow = async () => {
     try {
-      await endContestNow(contestId).unwrap()
-      toast.success("Contest ended successfully")
+      await endRoundNow(roundId).unwrap()
+      toast.success("Round ended successfully")
     } catch (error) {
       const errorMessage =
         error?.data?.message ||
         error?.data?.errorMessage ||
-        "Failed to end contest"
+        "Failed to end round"
       toast.error(errorMessage)
     }
   }
@@ -42,9 +41,9 @@ const StartEndContestSection = ({ contestId }) => {
       <div className="flex gap-5 items-center">
         <Icon icon="mdi:play-pause" fontSize={20} />
         <div>
-          <p className="text-[14px] leading-[20px]">Contest control</p>
+          <p className="text-[14px] leading-[20px]">Round control</p>
           <p className="text-[12px] leading-[16px] text-[#7A7574]">
-            Start or end the contest immediately
+            Start or end the round immediately
           </p>
         </div>
       </div>
@@ -94,4 +93,4 @@ const StartEndContestSection = ({ contestId }) => {
   )
 }
 
-export default StartEndContestSection
+export default StartEndRoundSection

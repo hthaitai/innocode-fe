@@ -18,7 +18,7 @@ export default function PageContainer({
     <div className={`min-h-screen w-full ${className}`}>
       {/* Breadcrumb header */}
       {breadcrumb && (
-        <div className="bg-[#f3f3f3] sticky top-0 z-10 flex items-center justify-between pt-4 pb-6 px-4 md:px-0">
+        <div className="bg-[#f3f3f3] sticky top-0 z-10 flex items-center justify-between pt-4 pb-5 px-4 md:px-0">
           <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2 w-max max-w-full">
               <BreadcrumbTitle items={breadcrumb} paths={breadcrumbPaths} />
@@ -30,7 +30,7 @@ export default function PageContainer({
 
       {/* State handling */}
       {hasState ? (
-        <div className="flex items-center justify-center h-[300px]">
+        <div className="flex items-center justify-center min-h-[70px]">
           {loading && <Spinner />}
           {error && (
             <div className="text-red-500 text-center px-4">

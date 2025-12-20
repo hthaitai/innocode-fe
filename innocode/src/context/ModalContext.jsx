@@ -16,6 +16,7 @@ import McqCsvModal from "../features/mcq/components/organizer/McqCsvModal"
 import McqBankModal from "../features/mcq/components/organizer/McqBankModal"
 import ReviewAppealModal from "../features/appeal/components/organizer/ReviewAppealModal"
 import OpenCodeModal from "../features/round/components/student/OpenCodeModal"
+import OrganizerOpenCodeModal from "../features/round/components/organizer/OrganizerOpenCodeModal"
 import InviteJudgeModal from "../features/invite-judge/components/InviteJudgeModal"
 import CertificateTemplateModal from "../features/certificate/components/organizer/CertificateTemplateModal"
 import ContestFilterModal from "../features/contest/components/organizer/ContestFilterModal"
@@ -65,6 +66,7 @@ export function ModalProvider({ children }) {
     mcqBank: McqBankModal,
     reviewAppeal: ReviewAppealModal,
     openCode: OpenCodeModal,
+    organizerOpenCode: OrganizerOpenCodeModal,
     inviteJudge: InviteJudgeModal,
     certificateTemplate: CertificateTemplateModal,
     contestFilter: ContestFilterModal,
