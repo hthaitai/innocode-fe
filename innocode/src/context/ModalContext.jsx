@@ -16,12 +16,14 @@ import McqCsvModal from "../features/mcq/components/organizer/McqCsvModal"
 import McqBankModal from "../features/mcq/components/organizer/McqBankModal"
 import ReviewAppealModal from "../features/appeal/components/organizer/ReviewAppealModal"
 import OpenCodeModal from "../features/round/components/student/OpenCodeModal"
+import OrganizerOpenCodeModal from "../features/round/components/organizer/OrganizerOpenCodeModal"
 import InviteJudgeModal from "../features/invite-judge/components/InviteJudgeModal"
 import CertificateTemplateModal from "../features/certificate/components/organizer/CertificateTemplateModal"
 import ContestFilterModal from "../features/contest/components/organizer/ContestFilterModal"
 import RoleRegistrationDetailsModal from "../features/role-registration/components/RoleRegistrationDetailsModal"
 import ApproveRoleRegistrationModal from "../features/role-registration/components/ApproveRoleRegistrationModal"
 import DenyRoleRegistrationModal from "../features/role-registration/components/DenyRoleRegistrationModal"
+import AddMentorModal from "../features/school/components/AddMentorModal"
 
 const ModalContext = createContext({
   openModal: () => {}, // no-op default
@@ -65,12 +67,14 @@ export function ModalProvider({ children }) {
     mcqBank: McqBankModal,
     reviewAppeal: ReviewAppealModal,
     openCode: OpenCodeModal,
+    organizerOpenCode: OrganizerOpenCodeModal,
     inviteJudge: InviteJudgeModal,
     certificateTemplate: CertificateTemplateModal,
     contestFilter: ContestFilterModal,
     roleRegistrationDetails: RoleRegistrationDetailsModal,
     approveRoleRegistration: ApproveRoleRegistrationModal,
     denyRoleRegistration: DenyRoleRegistrationModal,
+    addMentor: AddMentorModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

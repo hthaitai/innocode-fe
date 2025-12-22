@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
-import { Users, Trophy, Award, ChevronRight, Scale, Mail, UserCheck, LayoutTemplate, FileBadge2 } from "lucide-react"
+import { Users, Trophy, Award, ChevronRight, Scale, Mail, UserCheck, LayoutTemplate, FileBadge2, UsersRound, GraduationCap, Gavel } from "lucide-react"
+import { Icon } from "@iconify/react"
 
 const items = [
   {
@@ -11,17 +12,17 @@ const items = [
   {
     title: "Judges",
     subtitle: "Invite and manage contest judges",
-    icon: <Users size={20} />,
+    icon: <Gavel size={20} />,
     path: "judges",
   },
   {
-    title: "Judge Invites",
+    title: "Judge invites",
     subtitle: "View invitations sent to judges",
     icon: <Mail size={20} />,
     path: "judges/invites",
   },
   {
-    title: "Active Judges",
+    title: "Active judges",
     subtitle: "Judges currently assigned to this contest",
     icon: <UserCheck size={20} />,
     path: "judges/active",
@@ -41,14 +42,20 @@ const items = [
   },
   {
     title: "Issued student certificates",
-    subtitle: "View certificates issued to individual students",
-    icon: <FileBadge2 size={20} />,
+    subtitle: "Certificates issued to individual students",
+    icon: <GraduationCap size={20} />,
     path: "certificates/issued/students",
   },
   {
     title: "Issued team certificates",
-    subtitle: "View certificates issued to teams",
-    icon: <FileBadge2 size={20} />,
+    subtitle: "Certificates issued to teams",
+    icon: (
+      <Icon
+        icon="mdi:certificate-outline"
+        width={20}
+        height={20}
+      />
+    ),
     path: "certificates/issued/teams",
   },
   {

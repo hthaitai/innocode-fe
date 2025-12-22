@@ -47,7 +47,7 @@ export const contestJudgeApi = api.injectEndpoints({
 
     getContestJudges: builder.query({
       query: (contestId) => ({
-        url: `/contest-judges/${contestId}/judges`,
+        url: `/contests/${contestId}/judges`,
         method: "GET",
       }),
       providesTags: ["JudgesInvite"],

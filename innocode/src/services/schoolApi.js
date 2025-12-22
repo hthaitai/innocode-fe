@@ -17,8 +17,8 @@ export const schoolApi = api.injectEndpoints({
           : [{ type: "Schools", id: "LIST" }],
     }),
     getSchoolById: builder.query({
-      query: (id) => `schools/${id},`,
-      transformResponse: (response) => response.data,
+      query: (id) => `schools/${id}`,
+      transformResponse: (response) => response.data || response,
       providesTags: (result, error, id) => [{ type: "Schools", id }],
     }),
     addSchool: builder.mutation({
@@ -175,6 +175,77 @@ export const schoolApi = api.injectEndpoints({
         { type: "SchoolCreationRequests", id: "LIST" },
       ],
     }),
+    addMentorToSchool: builder.mutation({
+      query: ({ schoolId, data }) => ({
+        url: `schools/${schoolId}/mentors`,
+        method: "POST",
+        body: data,
+      }),
+      transformResponse: (response) => response.data || response,
+      invalidatesTags: (result, error, { schoolId }) => [
+        { type: "Schools", id: schoolId },
+        { type: "Mentors", id: "LIST" },
+        { type: "Mentors", id: schoolId },
+      ],
+    }),
+    getMentorsBySchoolId: builder.query({
+      query: (schoolId) => ({
+        url: "mentors",
+        params: { schoolId },
+      }),
+      transformResponse: (response) => {
+        // Handle different response structures
+        if (Array.isArray(response.data)) {
+          return response.data;
+        }
+        if (Array.isArray(response)) {
+          return response;
+        }
+        return response.data?.items || response.data || [];
+      },
+      providesTags: (result, error, schoolId) =>
+        result
+          ? [
+              ...result.map((mentor) => ({
+                type: "Mentors",
+                id: mentor.mentorId || mentor.id || mentor.mentor_id,
+              })),
+              { type: "Mentors", id: schoolId },
+              { type: "Mentors", id: "LIST" },
+            ]
+          : [{ type: "Mentors", id: schoolId }],
+    }),
+    getMyManageSchool: builder.query({
+      query: ({ Page = 1, PageSize = 20 } = {}) => ({
+        url: "/schools/my-managed",
+        params: { Page, PageSize },
+      }),
+      transformResponse: (response) => {
+        const schools = response.data || [];
+        const pagination = response.additionalData || {};
+        return {
+          schools,
+          pagination: {
+            pageNumber: pagination.pageNumber || 1,
+            pageSize: pagination.pageSize || 20,
+            totalPages: pagination.totalPages || 1,
+            totalCount: pagination.totalCount || schools.length,
+            hasPreviousPage: pagination.hasPreviousPage || false,
+            hasNextPage: pagination.hasNextPage || false,
+          },
+        };
+      },
+      providesTags: (result) =>
+        result?.schools && Array.isArray(result.schools)
+          ? [
+              ...result.schools.map((school) => ({
+                type: "Schools",
+                id: school.schoolId,
+              })),
+              { type: "Schools", id: "MY_MANAGED_LIST" },
+            ]
+          : [{ type: "Schools", id: "MY_MANAGED_LIST" }],
+    })
   }),
 });
 export const {
@@ -189,4 +260,7 @@ export const {
   useGetSchoolCreationRequestByIdQuery,
   useApproveSchoolCreationRequestMutation,
   useDenySchoolCreationRequestMutation,
+  useAddMentorToSchoolMutation,
+  useGetMentorsBySchoolIdQuery,
+  useGetMyManageSchoolQuery,
 } = schoolApi;

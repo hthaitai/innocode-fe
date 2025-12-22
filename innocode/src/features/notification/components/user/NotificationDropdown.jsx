@@ -1,18 +1,16 @@
-import React, { useMemo } from "react";
-import { Icon } from "@iconify/react";
-import { useNavigate } from "react-router-dom";
-import { useGetNotificationsQuery } from "@/services/notificationApi";
-import { formatDateTime } from "@/shared/utils/dateTime";
-import { useAuth } from "@/context/AuthContext";
-import "./NotificationDropdown.css";
+import React, { useMemo } from "react"
+import { Icon } from "@iconify/react"
+import { useNavigate } from "react-router-dom"
+import { useGetNotificationsQuery } from "@/services/notificationApi"
+import { formatDateTime } from "@/shared/utils/dateTime"
+import "./NotificationDropdown.css"
 import {
   useReadAllNotificationsMutation,
-  useReadNotificationMutation,
-} from "../../../../services/notificationApi";
+} from "../../../../services/notificationApi"
+import useNotificationNavigation from "../../hooks/useNotificationNavigation"
 
 const NotificationDropdown = ({ onClose }) => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
+  const navigate = useNavigate()
   const {
     data: notificationsData,
     isLoading,
@@ -22,26 +20,26 @@ const NotificationDropdown = ({ onClose }) => {
     {
       pollingInterval: 30000,
     }
-  );
-  
-  const [readNotification] = useReadNotificationMutation();
-  const [readAllNotifications] = useReadAllNotificationsMutation();
+  )
+
+  const [readAllNotifications] = useReadAllNotificationsMutation()
+  const handleNotificationClick = useNotificationNavigation(onClose)
 
   const notifications = useMemo(() => {
-    if (!notificationsData?.items) return [];
+    if (!notificationsData?.items) return []
 
     return notificationsData.items.map((notification) => {
-      let parsedPayload = {};
-      let message = "No message";
+      let parsedPayload = {}
+      let message = "No message"
 
       try {
         parsedPayload =
           typeof notification.payload === "string"
             ? JSON.parse(notification.payload)
-            : notification.payload || {};
-        message = parsedPayload.message || notification.payload || "No message";
+            : notification.payload || {}
+        message = parsedPayload.message || notification.payload || "No message"
       } catch {
-        message = notification.payload || "No message";
+        message = notification.payload || "No message"
       }
 
       return {
@@ -49,51 +47,34 @@ const NotificationDropdown = ({ onClose }) => {
         parsedPayload,
         message,
         isRead: notification.read ?? notification.isRead ?? false,
-      };
-    });
-  }, [notificationsData]);
-
-  const handleNotificationClick = async (notification) => {
-    try {
-      await readNotification(notification.notificationId).unwrap();
-    } catch (error) {
-      console.error("Error reading notification:", error);
-    }
-
-    if (
-      notification.parsedPayload?.targetType === "team_invite" &&
-      user?.role === "student"
-    ) {
-      if (onClose) {
-        onClose();
       }
-      navigate(`/notifications/team-invite/${notification.notificationId}`);
-    }
-  };
+    })
+  }, [notificationsData])
+
 
   const handleReadAllNotifications = async () => {
     try {
-      await readAllNotifications().unwrap();
+      await readAllNotifications().unwrap()
     } catch (error) {
-      console.error("Error reading all notifications:", error);
+      console.error("Error reading all notifications:", error)
     }
-  };
+  }
 
   // Limit to first 3 notifications
   const displayedNotifications = useMemo(() => {
-    return notifications.slice(0, 3);
-  }, [notifications]);
+    return notifications.slice(0, 3)
+  }, [notifications])
 
   // Check if there are more notifications
-  const hasMoreNotifications = notifications.length > 3;
+  const hasMoreNotifications = notifications.length > 3
 
   // Handle view all - navigate to notifications page
   const handleViewAll = () => {
     if (onClose) {
-      onClose();
+      onClose()
     }
-    navigate("/notifications");
-  };
+    navigate("/notifications")
+  }
 
   return (
     <div className="notification-dropdown">
@@ -101,7 +82,10 @@ const NotificationDropdown = ({ onClose }) => {
         <h3 className="notification-title">Notifications</h3>
         {notifications.length > 0 && (
           <span className="notification-count">
-            {notifications.filter((notification) => !notification.isRead).length}{" "}
+            {
+              notifications.filter((notification) => !notification.isRead)
+                .length
+            }{" "}
             new
           </span>
         )}
@@ -153,10 +137,7 @@ const NotificationDropdown = ({ onClose }) => {
       {/* Footer with actions */}
       <div className="notification-dropdown-footer">
         {hasMoreNotifications && (
-          <button
-            className="notification-view-all"
-            onClick={handleViewAll}
-          >
+          <button className="notification-view-all" onClick={handleViewAll}>
             <span>View all</span>
             <Icon icon="mdi:chevron-right" width="16" />
           </button>
@@ -171,7 +152,7 @@ const NotificationDropdown = ({ onClose }) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default NotificationDropdown;
+export default NotificationDropdown

@@ -38,7 +38,7 @@ const ContestForm = ({
 
   return (
     <>
-      <div className="mb-4 flex w-[335px] h-[188px] rounded-[5px] overflow-hidden">
+      <div className="mb-4 flex w-[335px] h-[188px] rounded-[5px]">
         {formData.imgFile ? (
           <img
             src={URL.createObjectURL(formData.imgFile)}
@@ -57,7 +57,6 @@ const ContestForm = ({
               setFormData((prev) => ({ ...prev, imgFile: file }))
             }
             error={!!errors.imgFile}
-            helperText={errors.imgFile}
           />
         )}
       </div>

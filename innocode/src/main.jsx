@@ -104,6 +104,8 @@ import JudgeInviteDecline from "./features/invite-judge/pages/JudgeInviteDecline
 import SchoolManager from "./features/school/pages/school-manager/SchoolManager"
 import CreateSchoolRequest from "./features/school/pages/school-manager/CreateSchoolRequest"
 import SchoolCreationRequestDetail from "./features/school/pages/school-manager/SchoolCreationRequestDetail"
+import MyManageSchool from "./features/school/pages/school-manager/MyManageSchool"
+import SchoolDetail from "./features/school/pages/school-manager/SchoolDetail"
 
 // Initialize EmailJS when app starts
 initEmailJs()
@@ -769,7 +771,7 @@ const router = createBrowserRouter([
       },
       //SchoolManager routes
       {
-        path: "school-manager",
+        path: "school-requests",
         element: (
           <ProtectedRoute allowedRoles={[ROLES.SCHOOL_MANAGER]}>
             <SchoolManager />
@@ -777,7 +779,15 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "school-manager/create",
+        path: "school-manager",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.SCHOOL_MANAGER]}>
+            <MyManageSchool />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "school-requests/create",
         element: (
           <ProtectedRoute allowedRoles={[ROLES.SCHOOL_MANAGER]}>
             <CreateSchoolRequest />
@@ -785,10 +795,18 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "school-manager/:id",
+        path: "school-requests/:id",
         element: (
           <ProtectedRoute allowedRoles={[ROLES.SCHOOL_MANAGER]}>
             <SchoolCreationRequestDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "schools/:id",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.SCHOOL_MANAGER]}>
+            <SchoolDetail />
           </ProtectedRoute>
         ),
       },

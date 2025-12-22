@@ -66,13 +66,7 @@ const OrganizerContestDetail = () => {
           <ContestInfo contest={contest} />
 
           <PublishContestSection contest={contest} />
-        </div>
 
-        {/* Contest Control */}
-        <div>
-          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-            Contest Control
-          </div>
           <StartEndContestSection contestId={contestId} />
         </div>
 

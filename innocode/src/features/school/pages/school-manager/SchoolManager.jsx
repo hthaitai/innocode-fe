@@ -93,7 +93,7 @@ const SchoolManager = () => {
   // Handle row click
   const handleRowClick = (request) => {
     const requestId = request.requestId || request.id;
-    navigate(`/school-manager/${requestId}`);
+    navigate(`/school-requests/${requestId}`);
   };
 
   return (
@@ -157,7 +157,7 @@ const SchoolManager = () => {
             {/* Create Button */}
             <button
               className="button-orange"
-              onClick={() => navigate("/school-manager/create")}
+              onClick={() => navigate("/school-requests/create")}
             >
               Create School
             </button>

@@ -393,7 +393,7 @@ body {
 .breadcrumb-fixed {
   width: full;
   position: fixed;
-  top: 84px; /* dưới navbar */
+  top: 64px; /* dưới navbar */
   left: 450px; /* bên phải sidebar */
   right: 0;
   z-index: 40;

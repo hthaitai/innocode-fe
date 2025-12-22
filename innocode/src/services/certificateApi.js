@@ -27,7 +27,7 @@ export const certificateApi = api.injectEndpoints({
             ]
           : [{ type: "CertificateTemplates", id: "LIST" }],
     }),
-    
+
     getCertificateTemplateById: builder.query({
       query: (id) => ({
         url: `certificate-templates/${id}`,
@@ -91,7 +91,7 @@ export const certificateApi = api.injectEndpoints({
         templateId,
         teamId,
         studentId,
-        certificateType,
+        types,
         page = 1,
         pageSize = 20,
         sortBy = "issuedAt",
@@ -103,7 +103,7 @@ export const certificateApi = api.injectEndpoints({
           templateId,
           teamId,
           studentId,
-          certificateType,
+          types,
           page,
           pageSize,
           sortBy,

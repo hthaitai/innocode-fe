@@ -26,10 +26,10 @@ const OrganizerIssuedStudentCertificates = () => {
     // contestId,
     page,
     pageSize,
+    types: "Student",
   })
 
-  const certificates =
-    issuedData?.data?.filter((c) => c.certificateType === "Student") ?? []
+  const certificates = issuedData?.data ?? []
   const pagination = issuedData?.additionalData
 
   const contestName = contest?.name || "Contest"

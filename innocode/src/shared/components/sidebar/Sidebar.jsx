@@ -1,8 +1,8 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Icon } from "@iconify/react";
-import "./Sidebar.css";
-import { useAuth } from "@/context/AuthContext";
+import React from "react"
+import { Link, useLocation } from "react-router-dom"
+import { Icon } from "@iconify/react"
+import "./Sidebar.css"
+import { useAuth } from "@/context/AuthContext"
 
 const allMenus = {
   profile: { path: "/profile", label: "Profile", icon: "lucide:user" },
@@ -91,12 +91,17 @@ const allMenus = {
     icon: "lucide:user-check",
   },
   //SchoolManager menus
+  schoolManagerRequests: {
+    path: "/school-requests",
+    label: "School Creation Requests",
+    icon: "lucide:notepad-text",
+  },
   schoolManager: {
     path: "/school-manager",
-    label: "School Management",
+    label: "Schools Management",
     icon: "lucide:school",
   },
-};
+}
 
 const menuByRole = {
   student: [
@@ -114,7 +119,7 @@ const menuByRole = {
     "organizerContests",
     "organizerProvinces",
     "organizerSchools",
-    "organizerNotifications",
+    "notifications",
   ],
   mentor: [
     "profile",
@@ -139,46 +144,48 @@ const menuByRole = {
   schoolmanager: [
     "profile",
     "schoolManager",
+    "schoolManagerRequests",
     "leaderboard",
     "contests",
     "team",
     "notifications",
   ],
-};
+}
 
 const Sidebar = () => {
-  const location = useLocation();
-  const { user } = useAuth();
-  const role = user?.role || "student"; // Get role from AuthContext instead of localStorage
-  const menuKeys = menuByRole[role] || menuByRole.student;
+  const location = useLocation()
+  const { user } = useAuth()
+  const role = user?.role || "student" // Get role from AuthContext instead of localStorage
+  const menuKeys = menuByRole[role] || menuByRole.student
   const menuItems = menuKeys
     .map((key) => {
-      const menu = allMenus[key];
+      const menu = allMenus[key]
       // Override team path for mentor
       if (key === "team" && role === "mentor") {
-        return { ...menu, path: "/team" }; // Keep same path, but Team.jsx will handle it
+        return { ...menu, path: "/team" } // Keep same path, but Team.jsx will handle it
       }
-      return menu;
+      return menu
     })
-    .filter(Boolean);
+    .filter(Boolean)
 
   const isActive = (path) => {
     if (path === "/") {
-      return location.pathname === "/";
+      return location.pathname === "/"
     }
-    return location.pathname.startsWith(path);
-  };
+    return location.pathname.startsWith(path)
+  }
 
   return (
     <div className="sidebar">
       {/* User Profile Section */}
-      <div className="user-profile">
-        <div className="avatar">
+      <div className="flex items-center gap-5 mb-5">
+        <div className="w-[60px] h-[60px]">
           <div className="avatar-gradient"></div>
         </div>
-        <div className="user-info">
-          <div className="user-name">{user?.name || "User"}</div>
-          <div className="user-role">
+        
+        <div>
+          <div className="text-sm leading-5 font-bold">{user?.name || "User"}</div>
+          <div className="text-xs leading-4">
             {role.charAt(0).toUpperCase() + role.slice(1)} account
           </div>
         </div>
@@ -199,7 +206,7 @@ const Sidebar = () => {
         ))}
       </nav>
     </div>
-  );
-};
+  )
+}
 
-export default Sidebar;
+export default Sidebar

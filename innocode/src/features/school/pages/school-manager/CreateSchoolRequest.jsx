@@ -1,94 +1,91 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import PageContainer from "@/shared/components/PageContainer";
-import { BREADCRUMBS, BREADCRUMB_PATHS } from '../../../../config/breadcrumbs';
-import TextFieldFluent from "@/shared/components/TextFieldFluent";
-import DropdownFluent from "@/shared/components/DropdownFluent";
-import Label from "@/shared/components/form/Label";
-import { useCreateSchoolCreationRequestMutation } from "@/services/schoolApi";
-import { useGetAllProvincesQuery } from "@/services/provinceApi";
-import { toast } from "react-hot-toast";
-import { Icon } from "@iconify/react";
+import React, { useState, useMemo } from "react"
+import { useNavigate } from "react-router-dom"
+import PageContainer from "@/shared/components/PageContainer"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "../../../../config/breadcrumbs"
+import TextFieldFluent from "@/shared/components/TextFieldFluent"
+import DropdownFluent from "@/shared/components/DropdownFluent"
+import Label from "@/shared/components/form/Label"
+import { useCreateSchoolCreationRequestMutation } from "@/services/schoolApi"
+import { useGetAllProvincesQuery } from "@/services/provinceApi"
+import { toast } from "react-hot-toast"
+import { Icon } from "@iconify/react"
 
 const CreateSchoolRequest = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     Name: "",
     Address: "",
     ProvinceId: "",
     Contact: "",
     Evidences: [],
-  });
-  const [errors, setErrors] = useState({});
+  })
+  const [errors, setErrors] = useState({})
 
   // RTK Query hooks
-  const [createSchoolRequest, { isLoading }] = useCreateSchoolCreationRequestMutation();
-  const { data: provincesData, isLoading: isLoadingProvinces } = useGetAllProvincesQuery({ 
-    pageNumber: 1, 
-    pageSize: 100 
-  });
+  const [createSchoolRequest, { isLoading }] =
+    useCreateSchoolCreationRequestMutation()
+  const { data: provincesData, isLoading: isLoadingProvinces } =
+    useGetAllProvincesQuery({
+      pageNumber: 1,
+      pageSize: 100,
+    })
 
   // Transform provinces data for dropdown
   const provinceOptions = useMemo(() => {
-    if (!provincesData?.data) return [];
+    if (!provincesData?.data) return []
     return provincesData.data.map((province) => ({
       value: province.provinceId,
       label: province.provinceName || province.name,
-    }));
-  }, [provincesData]);
+    }))
+  }, [provincesData])
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({ ...prev, [name]: "" }))
     }
-  };
+  }
 
   const handleProvinceSelect = (value) => {
-    setFormData((prev) => ({ ...prev, ProvinceId: value }));
+    setFormData((prev) => ({ ...prev, ProvinceId: value }))
     if (errors.ProvinceId) {
-      setErrors((prev) => ({ ...prev, ProvinceId: "" }));
+      setErrors((prev) => ({ ...prev, ProvinceId: "" }))
     }
-  };
+  }
 
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setFormData((prev) => ({ ...prev, Evidences: files }));
+    const files = Array.from(e.target.files)
+    setFormData((prev) => ({ ...prev, Evidences: files }))
     if (errors.Evidences) {
-      setErrors((prev) => ({ ...prev, Evidences: "" }));
+      setErrors((prev) => ({ ...prev, Evidences: "" }))
     }
-  };
+  }
 
   const removeFile = (index) => {
     setFormData((prev) => ({
       ...prev,
       Evidences: prev.Evidences.filter((_, i) => i !== index),
-    }));
-  };
+    }))
+  }
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors = {}
 
     if (!formData.Name.trim()) {
-      newErrors.Name = "School name is required";
+      newErrors.Name = "School name is required"
     }
 
     if (!formData.ProvinceId) {
-      newErrors.ProvinceId = "Province is required";
+      newErrors.ProvinceId = "Province is required"
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      toast.error("Please fix the errors in the form");
-      return;
-    }
+    e.preventDefault()
 
     try {
       await createSchoolRequest({
@@ -96,24 +93,27 @@ const CreateSchoolRequest = () => {
         ProvinceId: formData.ProvinceId,
         Address: formData.Address.trim() || undefined,
         Contact: formData.Contact.trim() || undefined,
-        Evidences: formData.Evidences.length > 0 ? formData.Evidences : undefined,
-      }).unwrap();
+        Evidences:
+          formData.Evidences.length > 0 ? formData.Evidences : undefined,
+      }).unwrap()
 
-      toast.success("School creation request submitted successfully!");
-      
+      toast.success("School creation request submitted successfully!")
+
       // Navigate back to list page
-      navigate("/school-manager");
+      navigate("/school-manager")
     } catch (error) {
-      console.error("Error creating school request:", error);
-      const errorMessage = error?.data?.errorMessage || error?.data?.message || "Failed to submit school creation request";
-      toast.error(errorMessage);
+      console.error("Error creating school request:", error)
+      const errorMessage =
+        error?.data?.errorMessage ||
+        error?.data?.message ||
+        "Failed to submit school creation request"
     }
-  };
+  }
 
-  const disabled = isLoading || isLoadingProvinces;
+  const disabled = isLoading || isLoadingProvinces
 
   return (
-    <PageContainer 
+    <PageContainer
       breadcrumb={BREADCRUMBS.SCHOOL_CREATE_REQUEST}
       breadcrumbPaths={BREADCRUMB_PATHS.SCHOOL_CREATE_REQUEST}
     >
@@ -132,7 +132,6 @@ const CreateSchoolRequest = () => {
             error={!!errors.Name}
             helperText={errors.Name}
           />
-
           {/* Province Dropdown */}
           <Label htmlFor="ProvinceId" required>
             Province
@@ -142,16 +141,15 @@ const CreateSchoolRequest = () => {
             options={provinceOptions}
             value={formData.ProvinceId}
             onChange={handleProvinceSelect}
-            placeholder={isLoadingProvinces ? "Loading provinces..." : "Select a province"}
+            placeholder={
+              isLoadingProvinces ? "Loading provinces..." : "Select a province"
+            }
             error={!!errors.ProvinceId}
             helperText={errors.ProvinceId}
             disabled={isLoadingProvinces}
           />
-
           {/* Address */}
-          <Label htmlFor="Address">
-            Address
-          </Label>
+          <Label htmlFor="Address">Address</Label>
           <TextFieldFluent
             id="Address"
             name="Address"
@@ -161,11 +159,8 @@ const CreateSchoolRequest = () => {
             error={!!errors.Address}
             helperText={errors.Address}
           />
-
           {/* Contact */}
-          <Label htmlFor="Contact">
-            Contact
-          </Label>
+          <Label htmlFor="Contact">Contact</Label>
           <TextFieldFluent
             id="Contact"
             name="Contact"
@@ -175,11 +170,8 @@ const CreateSchoolRequest = () => {
             error={!!errors.Contact}
             helperText={errors.Contact}
           />
-
           {/* Evidence Files */}
-          <Label htmlFor="evidence-upload">
-            Evidence files
-          </Label>
+          <Label htmlFor="evidence-upload">Evidence files</Label>
           <div className="flex flex-col w-full">
             <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-4">
               <input
@@ -208,8 +200,14 @@ const CreateSchoolRequest = () => {
                       key={idx}
                       className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200"
                     >
-                      <Icon icon="mdi:file" width={16} className="text-gray-600" />
-                      <span className="text-sm text-gray-700 flex-1 truncate">{file.name}</span>
+                      <Icon
+                        icon="mdi:file"
+                        width={16}
+                        className="text-gray-600"
+                      />
+                      <span className="text-sm text-gray-700 flex-1 truncate">
+                        {file.name}
+                      </span>
                       <button
                         type="button"
                         onClick={() => removeFile(idx)}
@@ -229,7 +227,6 @@ const CreateSchoolRequest = () => {
               <p className="text-xs text-red-500 mt-1">{errors.Evidences}</p>
             )}
           </div>
-
           {/* Submit Button */}
           <div></div> {/* Empty cell to align the button */}
           <div className="flex justify-start gap-2 mt-4">
@@ -243,8 +240,8 @@ const CreateSchoolRequest = () => {
                   ProvinceId: "",
                   Contact: "",
                   Evidences: [],
-                });
-                setErrors({});
+                })
+                setErrors({})
               }}
               disabled={disabled}
             >
@@ -266,8 +263,7 @@ const CreateSchoolRequest = () => {
         </div>
       </form>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default CreateSchoolRequest;
-
+export default CreateSchoolRequest

@@ -7,8 +7,15 @@ export const validateRound = (
   const errors = {}
   const now = new Date()
 
+  // ---- Retake Round Validation ----
+  if (data.isRetakeRound) {
+    if (!data.mainRoundId) {
+      errors.mainRoundId = "Please select a round to retake"
+    }
+  }
+
   // ---- Round Name ----
-  if (!data.name?.trim()) {
+  if (!data.isRetakeRound && !data.name?.trim()) {
     errors.name = "Round name is required"
   }
 
@@ -29,7 +36,7 @@ export const validateRound = (
   }
 
   // ---- Problem Type ----
-  if (!data.problemType) {
+  if (!data.isRetakeRound && !data.problemType) {
     errors.problemType = "Problem type is required"
   }
 
@@ -39,7 +46,7 @@ export const validateRound = (
     data.problemConfig &&
     ["Manual", "AutoEvaluation"].includes(data.problemType)
 
-  if (!hasMcqConfig && !hasProblemConfig) {
+  if (!data.isRetakeRound && !hasMcqConfig && !hasProblemConfig) {
     errors.problemType = "Please configure the selected problem type"
   }
 

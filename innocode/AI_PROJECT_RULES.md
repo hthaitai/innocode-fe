@@ -172,9 +172,9 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif
 
 #### Main Layout
 
-- **Navbar**: Fixed top, height 84px, white background
+- **Navbar**: Fixed top, height 64px, white background
 - **Sidebar**: Fixed left, width 280px, starts below navbar
-- **Main Content**: Margin-left 280px, margin-top 84px
+- **Main Content**: Margin-left 280px, margin-top 64px
 - **Page Content**: Max-width 1200px, centered with 200px margins
 
 #### Responsive Breakpoints
