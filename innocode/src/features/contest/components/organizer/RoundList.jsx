@@ -16,7 +16,7 @@ const RoundsList = ({ contestId }) => {
     error,
   } = useGetRoundsByContestIdQuery(contestId)
 
-  const rounds = roundsData?.data || []
+  const rounds = roundsData?.data ?? []
 
   const handleAddRound = useCallback(() => {
     // Navigate to dedicated add round page instead of opening modal
