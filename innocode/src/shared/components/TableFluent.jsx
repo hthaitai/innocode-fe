@@ -4,9 +4,11 @@ import {
   getCoreRowModel,
   flexRender,
   getExpandedRowModel,
+  getSortedRowModel,
 } from "@tanstack/react-table"
 import { Spinner } from "./SpinnerFluent"
 import TablePagination from "./TablePagination"
+import { Icon } from "@iconify/react"
 
 const TableFluent = ({
   data = [],
@@ -21,21 +23,30 @@ const TableFluent = ({
   expandAt = null,
   renderActions = null,
   getRowId,
+  enableSorting = true,
 }) => {
   const [expanded, setExpanded] = React.useState({})
+  const [sorting, setSorting] = React.useState([])
 
   const table = useReactTable({
     data: data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    state: { expanded },
+    getSortedRowModel: getSortedRowModel(),
+    enableSorting,
+    state: { expanded, sorting },
     onExpandedChange: setExpanded,
+    onSortingChange: setSorting,
     getRowCanExpand: () => true,
     getRowId:
       getRowId ||
       ((row, index) =>
-        row.appealId || row.teamId || row.questionId || row.id || `row-${index}`),
+        row.appealId ||
+        row.teamId ||
+        row.questionId ||
+        row.id ||
+        `row-${index}`),
   })
 
   const isClickable = typeof onRowClick === "function"
@@ -55,16 +66,54 @@ const TableFluent = ({
                 return (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header, index) => {
+                      const canSort = header.column.getCanSort()
+                      const sortDirection = header.column.getIsSorted()
+                      const isSorted = sortDirection !== false
+
                       return (
                         <th
                           key={header.id}
-                          className="p-2 px-5 text-[12px] leading-[16px] font-normal text-[#7A7574] border-b border-[#E5E5E5] text-left"
+                          className={`p-2 px-5 text-[12px] leading-[16px] font-normal text-[#7A7574] border-b border-[#E5E5E5] text-left ${
+                            canSort
+                              ? "cursor-pointer hover:bg-gray-50 select-none"
+                              : ""
+                          } ${isSorted ? "bg-gray-50" : ""}`}
                           style={{ width: header.column.getSize() }}
+                          onClick={
+                            canSort
+                              ? header.column.getToggleSortingHandler()
+                              : undefined
+                          }
                         >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          <div className="flex items-center gap-2">
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {canSort && (
+                              <span className="flex flex-col">
+                                {sortDirection === "asc" ? (
+                                  <Icon
+                                    icon="mdi:chevron-up"
+                                    className="text-[#E05307]"
+                                    width={16}
+                                  />
+                                ) : sortDirection === "desc" ? (
+                                  <Icon
+                                    icon="mdi:chevron-down"
+                                    className="text-[#E05307]"
+                                    width={16}
+                                  />
+                                ) : (
+                                  <Icon
+                                    icon="mdi:unfold-more-horizontal"
+                                    className="text-gray-400 opacity-50"
+                                    width={16}
+                                  />
+                                )}
+                              </span>
+                            )}
+                          </div>
                         </th>
                       )
                     })}

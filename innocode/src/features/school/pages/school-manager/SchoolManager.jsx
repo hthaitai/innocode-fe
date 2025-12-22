@@ -6,6 +6,7 @@ import TableFluent from "@/shared/components/TableFluent";
 import { School } from "lucide-react";
 import { useGetMySchoolCreationRequestsQuery } from "@/services/schoolApi";
 import StatusBadge from "@/shared/components/StatusBadge";
+import DropdownFluent from "@/shared/components/DropdownFluent";
 
 const SchoolManager = () => {
   const navigate = useNavigate();
@@ -142,16 +143,19 @@ const SchoolManager = () => {
               <label className="text-sm text-gray-600 font-medium">
                 Status:
               </label>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 cursor-pointer min-w-[150px]"
-              >
-                <option value="">All Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Denied">Denied</option>
-              </select>
+              <div className="min-w-[150px]">
+                <DropdownFluent
+                  value={statusFilter}
+                  onChange={setStatusFilter}
+                  options={[
+                    { value: "", label: "All Status" },
+                    { value: "Pending", label: "Pending" },
+                    { value: "Approved", label: "Approved" },
+                    { value: "Denied", label: "Denied" },
+                  ]}
+                  placeholder="All Status"
+                />
+              </div>
             </div>
 
             {/* Create Button */}

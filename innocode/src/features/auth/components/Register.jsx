@@ -10,6 +10,7 @@ import {
   initEmailJs,
 } from "@/shared/services/emailService";
 import { Icon } from "@iconify/react";
+import DropdownFluent from "@/shared/components/DropdownFluent";
 
 const Register = () => {
   const { register, clearAuth } = useAuth(); // Dùng clearAuth thay vì logout
@@ -343,34 +344,19 @@ const Register = () => {
               <label htmlFor="school" className="form-label">
                 School
               </label>
-              <select
+              <DropdownFluent
                 id="school"
                 value={schoolId}
-                onChange={(e) => setSchoolId(e.target.value)}
-                className={`form-input ${
-                  validationErrors.schoolId ? "border-red-500" : ""
-                }`}
-                required
+                onChange={setSchoolId}
+                options={schools.map((school) => ({
+                  value: school.id || school.schoolId || school.school_id,
+                  label: school.name,
+                }))}
+                placeholder={loadingSchools ? "Loading schools..." : "Select a school"}
                 disabled={loadingSchools}
-              >
-                <option value="">Select a school</option>
-                {schools.map((school) => (
-                  <option
-                    key={school.id || school.schoolId || school.school_id}
-                    value={school.id || school.schoolId || school.school_id}
-                  >
-                    {school.name}
-                  </option>
-                ))}
-              </select>
-              {validationErrors.schoolId && (
-                <p className="text-red-500 text-xs mt-1">
-                  {validationErrors.schoolId}
-                </p>
-              )}
-              {loadingSchools && (
-                <p className="text-xs text-gray-500 mt-1">Loading schools...</p>
-              )}
+                error={!!validationErrors.schoolId}
+                helperText={validationErrors.schoolId}
+              />
             </div>
 
             {/* Grade */}

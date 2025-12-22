@@ -5,6 +5,7 @@ import "./RoleRegistration.css";
 import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg";
 import { useCreateRoleRegistrationMutation } from "@/services/roleRegistrationApi";
 import { Icon } from "@iconify/react";
+import DropdownFluent from "@/shared/components/DropdownFluent";
 
 const RoleRegistration = () => {
   const navigate = useNavigate();
@@ -308,11 +309,11 @@ const RoleRegistration = () => {
               <label htmlFor="requestedRole" className="form-label">
                 Role <span style={{ color: "red" }}>*</span>
               </label>
-              <select
+              <DropdownFluent
                 id="requestedRole"
                 value={requestedRole}
-                onChange={(e) => {
-                  setRequestedRole(e.target.value);
+                onChange={(value) => {
+                  setRequestedRole(value);
                   if (validationErrors.requestedRole) {
                     setValidationErrors((prev) => {
                       const newErrors = { ...prev };
@@ -321,26 +322,11 @@ const RoleRegistration = () => {
                     });
                   }
                 }}
-                className={`form-input ${
-                  validationErrors.requestedRole ? "border-red-500 ring-1 ring-red-200" : ""
-                }`}
-                required
-              >
-                <option value="">Select a role</option>
-                {roles.map((role) => (
-                  <option key={role.value} value={role.value}>
-                    {role.label}
-                  </option>
-                ))}
-              </select>
-              {validationErrors.requestedRole && (
-                <div className="flex items-center gap-1 mt-1">
-                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
-                  <p className="text-red-500 text-xs">
-                    {validationErrors.requestedRole}
-                  </p>
-                </div>
-              )}
+                options={roles}
+                placeholder="Select a role"
+                error={!!validationErrors.requestedRole}
+                helperText={validationErrors.requestedRole}
+              />
             </div>
 
             {/* Full Name */}
