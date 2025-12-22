@@ -27,10 +27,10 @@ export function FileDropzone({
   })
 
   return (
-    <div>
+    <div className="w-full h-full">
       <div
         {...getRootProps()}
-        className={`h-[calc(100vh-53px)] flex flex-col items-center justify-center 
+        className={`h-full flex flex-col items-center justify-center 
           rounded-[5px] cursor-pointer transition
           ${!noBorder ? "border border-dashed" : ""}
           ${!noBorder ? (error ? "border-red-500" : "border-[#909090]") : ""}

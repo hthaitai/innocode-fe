@@ -6,29 +6,29 @@ import { formatDateTime } from "@/shared/utils/dateTime"
 export const getContestColumns = (handleEdit, handleDelete) => [
   {
     accessorKey: "name",
-    header: "Name",
-    size: 200,
+    header: "Contest name",
+    size: 360,
     cell: ({ row }) => row.original?.name || "—",
-    meta: { className: "truncate max-w-[200px]" }, // ← truncate with max width
+    meta: { className: "truncate max-w-[360px]" }, 
   },
   {
     accessorKey: "year",
     header: "Year",
     size: 80,
     cell: ({ row }) => row.original?.year || "—",
-    meta: { className: "truncate max-w-[90px]" },
+    meta: { className: "truncate max-w-[80px]" },
   },
   {
     accessorKey: "status",
     header: "Status",
     size: 180,
     cell: ({ row }) => <StatusBadge status={row.original?.status || "Draft"} />,
-    meta: { className: "truncate max-w-[120px]" },
+    meta: { className: "truncate max-w-[180px]" },
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
-    size: 180,
+    header: "Created at",
+    size: 160,
     cell: ({ row }) => formatDateTime(row.original?.createdAt),
     meta: { className: "truncate max-w-[160px]" },
   },
@@ -56,6 +56,6 @@ export const getContestColumns = (handleEdit, handleDelete) => [
         ]}
       />
     ),
-    meta: { className: "text-right w-[60px]" }, // no truncate needed here
+    meta: { className: "text-right w-[60px]" }, 
   },
 ]

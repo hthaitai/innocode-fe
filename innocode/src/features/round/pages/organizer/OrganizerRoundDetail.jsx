@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import RoundInfo from "../../components/organizer/RoundInfo"
+import RoundOpenCodeSection from "../../components/organizer/RoundOpenCodeSection"
+import StartEndRoundSection from "../../components/organizer/StartEndRoundSection"
 import RoundRelatedSettings from "../../components/organizer/RoundRelatedSettings"
 import DeleteRoundSection from "../../components/organizer/DeleteRoundSection"
 import { useGetRoundByIdQuery } from "../../../../services/roundApi"
@@ -49,7 +51,11 @@ const OrganizerRoundDetail = () => {
       error={error}
     >
       <div className="space-y-5">
-        <RoundInfo round={round} />
+        <div className="space-y-1">
+          <RoundInfo round={round} />
+          <RoundOpenCodeSection roundId={roundId} />
+          <StartEndRoundSection roundId={roundId} />
+        </div>
 
         <div>
           <div className="text-sm font-semibold pt-3 pb-2">

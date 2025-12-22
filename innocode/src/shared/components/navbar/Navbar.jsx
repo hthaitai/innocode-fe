@@ -1,19 +1,20 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./Navbar.css";
-import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg";
-import { useAuth } from "@/context/AuthContext";
-import { Icon } from "@iconify/react";
-import NotificationDropdown from "@/features/notification/components/user/NotificationDropdown";
-import { useGetNotificationsQuery } from "@/services/notificationApi";
+import React, { useState, useRef, useEffect } from "react"
+import { Link, NavLink, useNavigate } from "react-router-dom"
+import "./Navbar.css"
+import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg"
+import { useAuth } from "@/context/AuthContext"
+import { Icon } from "@iconify/react"
+import NotificationDropdown from "@/features/notification/components/user/NotificationDropdown"
+import { useGetNotificationsQuery } from "@/services/notificationApi"
 
 const Navbar = () => {
-  const navigate = useNavigate();
-  const { user, logout, isAuthenticated } = useAuth();
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const dropdownRef = useRef(null);
-  const notifRef = useRef(null);
+  const navigate = useNavigate()
+  const { user, logout, isAuthenticated } = useAuth()
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const dropdownRef = useRef(null)
+  const notifRef = useRef(null)
+  const rolesToHideNav = [""] // hide nav links for students
 
   // Fetch notifications count for badge (get first page to count unread)
   const { data: notificationsData } = useGetNotificationsQuery(
@@ -22,207 +23,215 @@ const Navbar = () => {
       skip: !isAuthenticated,
       pollingInterval: 30000,
     }
-  );
+  )
 
   // Calculate unread count from transformed response
   const unreadCount = React.useMemo(() => {
-    if (!notificationsData?.items) return 0;
-    
+    if (!notificationsData?.items) return 0
+
     return notificationsData.items.filter(
       (notification) => !(notification.read ?? notification.isRead ?? false)
-    ).length;
-  }, [notificationsData]);
+    ).length
+  }, [notificationsData])
 
   const handleSignIn = () => {
-    navigate("/login");
-  };
+    navigate("/login")
+  }
 
   const handleLogout = () => {
-    setShowDropdown(false);
-    setShowNotifications(false);
-    logout();
-  };
+    setShowDropdown(false)
+    setShowNotifications(false)
+    logout()
+  }
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const clickedInProfile = dropdownRef.current?.contains(event.target);
-      const clickedInNotification = notifRef.current?.contains(event.target);
-      
+      const clickedInProfile = dropdownRef.current?.contains(event.target)
+      const clickedInNotification = notifRef.current?.contains(event.target)
+
       // Chỉ đóng dropdowns khi click bên ngoài cả hai
       if (!clickedInProfile && !clickedInNotification) {
-        setShowDropdown(false);
-        setShowNotifications(false);
+        setShowDropdown(false)
+        setShowNotifications(false)
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   // Xác định link Contests dựa theo role
   const getContestsLink = () => {
-    if (!isAuthenticated || !user) return "/contests";
+    if (!isAuthenticated || !user) return "/contests"
 
     switch (user.role) {
       case "organizer":
-        return "/organizer/contests";
+        return "/organizer/contests"
       case "student":
       case "judge":
       case "admin":
       default:
-        return "/contests";
+        return "/contests"
     }
-  };
+  }
 
   // Get user display name
   const getUserDisplayName = () => {
-    if (!user) return "";
-    return user.name || user.email?.split("@")[0] || "User";
-  };
+    if (!user) return ""
+    return user.name || user.email?.split("@")[0] || "User"
+  }
 
   // Get role badge color
   const getRoleBadgeClass = (role) => {
     switch (role) {
       case "admin":
-        return "role-badge-admin";
+        return "role-badge-admin"
       case "organizer":
-        return "role-badge-organizer";
+        return "role-badge-organizer"
       case "student":
-        return "role-badge-student";
+        return "role-badge-student"
       case "judge":
-        return "role-badge-judge";
+        return "role-badge-judge"
       default:
-        return "role-badge-default";
+        return "role-badge-default"
     }
-  };
+  }
+
+  const navLinks = [
+    { name: "Home", to: "/" },
+    { name: "Contests", to: getContestsLink() },
+    { name: "Leaderboard", to: "/leaderboard" },
+    { name: "About", to: "/about" },
+  ]
 
   return (
-    <nav className="navbar">
-      <div className="navbar-container">
-        {/* Logo */}
-        <div className="navbar-logo ">
-          <Link to="/" className="logo-link">
-            <img src={InnoCodeLogo} alt="InnoCode" className="logo-image" />
-          </Link>
-        </div>
+    <nav className="h-[64px] top-0 bg-white fixed z-20 w-full flex items-center justify-between px-5">
+      {/* Logo */}
+      <div className="flex-shrink-0">
+        <Link to="/">
+          <img
+            src={InnoCodeLogo}
+            alt="InnoCode"
+            className="w-[50px] h-[50px] object-contain"
+          />
+        </Link>
+      </div>
 
-        {/* Navigation Menu */}
-        <div className="ml-10 navbar-menu">
-          <Link to="/" className="navbar-link">
-            Home
-          </Link>
-          <Link to={getContestsLink()} className="navbar-link">
-            Contests
-          </Link>
-          <Link to="/leaderboard" className="navbar-link">
-            Leaderboard
-          </Link>
-          <Link to="/about" className="navbar-link">
-            About
-          </Link>
+      {/* Navigation Menu */}
+      {!rolesToHideNav.includes(user?.role) && (
+        <div className="flex">
+          {navLinks.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              className={({ isActive }) =>
+                `px-4 py-2 text-sm leading-5 font-medium text-gray-700 hover:text-orange-600 ${
+                  isActive ? "text-orange-600 font-semibold" : ""
+                }`
+              }
+            >
+              {link.name}
+            </NavLink>
+          ))}
         </div>
+      )}
 
-        {/* Auth Button / User Menu */}
-        <div className="navbar-auth">
-          {isAuthenticated ? (
-            <div className="user-menu" ref={dropdownRef}>
+      {/* Auth Button / User Menu */}
+      <div className="navbar-auth">
+        {isAuthenticated ? (
+          <div className="user-menu" ref={dropdownRef}>
+            {/* Notification Bell */}
+            <div className="notification-container flex" ref={notifRef}>
               <button
-                className="user-menu-button"
+                className="hover:bg-[#F3f3f3] cursor-pointer p-1 border border-[#E5E5E5] rounded-[5px] bg-white"
                 onClick={(e) => {
-                  e.stopPropagation();
-                  setShowNotifications(false); // Tắt notification dropdown khi mở profile
-                  setShowDropdown(!showDropdown);
+                  e.stopPropagation()
+                  setShowDropdown(false) // Tắt profile dropdown khi mở notification
+                  setShowNotifications(!showNotifications)
                 }}
+                aria-label="Notifications"
               >
-                <div className="user-avatar">
-                  <Icon icon="mdi:account-circle" width="24" />
-                </div>
-                <span className="user-name">{getUserDisplayName()}</span>
-                <Icon
-                  icon={showDropdown ? "mdi:chevron-up" : "mdi:chevron-down"}
-                  width="20"
-                />
+                <Icon icon="mdi:bell-outline" width="20" />
+                {unreadCount > 0 && (
+                  <span className="notification-badge">{unreadCount}</span>
+                )}
               </button>
 
-              {/* Notification Bell */}
-              <div className="notification-container" ref={notifRef}>
-                <button
-                  className="notification-bell"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowDropdown(false); // Tắt profile dropdown khi mở notification
-                    setShowNotifications(!showNotifications);
-                  }}
-                  aria-label="Notifications"
-                >
-                  <Icon icon="mdi:bell-outline" width="24" />
-                  {unreadCount > 0 && (
-                    <span className="notification-badge">{unreadCount}</span>
-                  )}
-                </button>
-
-                {/* Notification Dropdown */}
-                {showNotifications && (
-                  <div className="notification-dropdown-wrapper">
-                    <NotificationDropdown onClose={() => setShowNotifications(false)} />
-                  </div>
-                )}
-              </div>
-
-              {showDropdown && (
-                <div className="user-dropdown">
-                  <div className="user-dropdown-header">
-                    <div className="user-info">
-                      <div className="user-info-name">
-                        {getUserDisplayName()}
-                      </div>
-                      <div className="user-info-email">{user.email}</div>
-                      <span
-                        className={`role-badge ${getRoleBadgeClass(user.role)}`}
-                      >
-                        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="user-dropdown-divider"></div>
-
-                  <div className="user-dropdown-menu">
-                    <button
-                      className="dropdown-item"
-                      onClick={() => {
-                        navigate("/profile");
-                        setShowDropdown(false);
-                      }}
-                    >
-                      <Icon icon="mdi:account" width="18" />
-                      <span>Profile</span>
-                    </button>
-                  </div>
-
-                  <div className="user-dropdown-divider"></div>
-
-                  <div className="user-dropdown-menu">
-                    <button
-                      className="dropdown-item logout-item"
-                      onClick={handleLogout}
-                    >
-                      <Icon icon="mdi:logout" width="18" />
-                      <span>Logout</span>
-                    </button>
-                  </div>
+              {/* Notification Dropdown */}
+              {showNotifications && (
+                <div className="notification-dropdown-wrapper">
+                  <NotificationDropdown
+                    onClose={() => setShowNotifications(false)}
+                  />
                 </div>
               )}
             </div>
-          ) : (
-            <button className="signin-btn" onClick={handleSignIn}>
-              Sign in
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowNotifications(false) // Tắt notification dropdown khi mở profile
+                setShowDropdown(!showDropdown)
+              }}
+            >
+              <Icon
+                icon="mdi:account-circle"
+                width="32"
+                className="cursor-pointer"
+              />
             </button>
-          )}
-        </div>
+
+            {showDropdown && (
+              <div className="user-dropdown">
+                <div className="user-dropdown-header">
+                  <div className="user-info">
+                    <div className="user-info-name">{getUserDisplayName()}</div>
+                    <div className="user-info-email">{user.email}</div>
+                    <span
+                      className={`role-badge ${getRoleBadgeClass(user.role)}`}
+                    >
+                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="user-dropdown-divider"></div>
+
+                <div className="user-dropdown-menu">
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      navigate("/profile")
+                      setShowDropdown(false)
+                    }}
+                  >
+                    <Icon icon="mdi:account" width="18" />
+                    <span>Profile</span>
+                  </button>
+                </div>
+
+                <div className="user-dropdown-divider"></div>
+
+                <div className="user-dropdown-menu">
+                  <button
+                    className="dropdown-item logout-item"
+                    onClick={handleLogout}
+                  >
+                    <Icon icon="mdi:logout" width="18" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <button className="signin-btn" onClick={handleSignIn}>
+            Sign in
+          </button>
+        )}
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

@@ -18,6 +18,8 @@ import { useGetRoundsByContestIdQuery } from "@/services/roundApi"
 import ExistingRoundsPanel from "../../components/organizer/ExistingRoundsPanel"
 
 const EMPTY = {
+  isRetakeRound: false,
+  mainRoundId: "",
   name: "",
   start: "",
   end: "",
@@ -69,7 +71,12 @@ const CreateRound = () => {
     try {
       const formPayload = new FormData()
 
-      // append all fields
+      // append all
+      formPayload.append("IsRetakeRound", form.isRetakeRound)
+      if (form.isRetakeRound) {
+        formPayload.append("MainRoundId", form.mainRoundId)
+      }
+
       formPayload.append("Name", form.name)
       formPayload.append("Start", fromDatetimeLocal(form.start))
       formPayload.append("End", fromDatetimeLocal(form.end))
@@ -78,14 +85,8 @@ const CreateRound = () => {
 
       // Append MCQ config when problem type is McqTest
       if (form.problemType === "McqTest") {
-        formPayload.append(
-          "McqTestConfig.Name",
-          form.mcqTestConfig.name
-        )
-        formPayload.append(
-          "McqTestConfig.Config",
-          form.mcqTestConfig.config
-        )
+        formPayload.append("McqTestConfig.Name", form.mcqTestConfig.name)
+        formPayload.append("McqTestConfig.Config", form.mcqTestConfig.config)
       }
 
       // Append problem config for non-MCQ problem types
@@ -106,6 +107,14 @@ const CreateRound = () => {
         if (form.TemplateFile) {
           formPayload.append("ProblemConfig.TemplateFile", form.TemplateFile)
         }
+      }
+
+      if (form.isRetakeRound && form.mainRoundId) {
+        const mainRound = rounds.find(
+          (r) => String(r.roundId) === String(form.mainRoundId)
+        )
+        const mainRoundName = mainRound?.roundName || ""
+        formPayload.append("MainRoundName", mainRoundName)
       }
 
       await createRound({ contestId, data: formPayload }).unwrap()
@@ -142,6 +151,7 @@ const CreateRound = () => {
             Create a round
           </div>
           <RoundForm
+            contestId={contestId}
             formData={form}
             setFormData={setForm}
             errors={errors}
