@@ -8,12 +8,14 @@ const Search = ({
   className = "",
   value,
   onChange,
+  onClear,
   filterType = "all",
   ...props
 }) => {
   // Use controlled value if provided, otherwise use internal state
   const [internalValue, setInternalValue] = useState("");
   const searchValue = value !== undefined ? value : internalValue;
+  const hasValue = searchValue?.length > 0;
 
   const handleInputChange = (e) => {
     const newValue = e.target.value;
@@ -39,6 +41,16 @@ const Search = ({
     }
   };
 
+  const handleClear = () => {
+    if (value === undefined) {
+      setInternalValue("");
+    }
+    // Let parent know to reset its state/search results
+    if (onClear) {
+      onClear();
+    }
+  };
+
   return (
     <div className={`search-container ${className}`}>
       <div className="search-bar">
@@ -56,6 +68,16 @@ const Search = ({
           className="search-input"
           {...props}
         />
+        {hasValue && (
+          <button
+            type="button"
+            className="clear-button"
+            onClick={handleClear}
+            aria-label="Clear search"
+          >
+            <Icon icon="mdi:close" />
+          </button>
+        )}
       </div>
     </div>
   );

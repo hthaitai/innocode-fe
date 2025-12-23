@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageContainer from '@/shared/components/PageContainer';
 import Search from '@/shared/components/search/Search';
-import Filter from '@/shared/components/search/Filter';
 import ContestCard from '@/shared/components/contest/ContestCard';
 import TablePagination from '@/shared/components/TablePagination';
 import { BREADCRUMBS } from '@/config/breadcrumbs';
@@ -10,7 +9,6 @@ import useContests from '../hooks/useContests';
 import { Icon } from '@iconify/react';
 
 const Contests = () => {
-  const [hasFilter, setHasFilter] = useState(true);
   const navigate = useNavigate();
   const { contests, loading, error, searchTerm, searchContests, pagination, onPageChange, isAutoSkipping } = useContests();
   const [inputValue, setInputValue] = useState(''); // Input value (can change while typing)
@@ -60,11 +58,10 @@ const Contests = () => {
     // Update input value without triggering search
     setInputValue(e.target.value);
   };
-  
-  const handleFilterRemove = () => {
-    setHasFilter(false);
+
+  const handleClearSearch = () => {
     setInputValue('');
-    searchContests(''); // Clear search
+    searchContests(''); // Clear search results
   };
 
   const handleContestClick = (contest) => {
@@ -122,14 +119,8 @@ const Contests = () => {
             onSearch={handleSearch}
             value={inputValue}
             onChange={handleInputChange}
+            onClear={handleClearSearch}
           />
-          {hasFilter && (
-            <Filter
-              selectedFilter={hasFilter}
-              onFilterRemove={handleFilterRemove}
-              label="All Contests"
-            />
-          )}
         </div>
 
           <div className="flex items-center justify-center min-h-[400px]">
@@ -168,14 +159,8 @@ const Contests = () => {
             onSearch={handleSearch}
             value={inputValue}
             onChange={handleInputChange}
+            onClear={handleClearSearch}
           />
-          {hasFilter && (
-            <Filter
-              selectedFilter={hasFilter}
-              onFilterRemove={handleFilterRemove}
-              label="All Contests"
-            />
-          )}
         </div>
         {/* Ongoing Contests */}
         {ongoingContests.length > 0 && (

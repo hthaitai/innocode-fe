@@ -14,7 +14,7 @@
   background-color: white;
   border: 1px solid #9ca3af;
   border-radius: 24px;
-  padding: 0 16px;
+  padding: 0 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
 }
@@ -56,11 +56,27 @@
   outline: none;
 }
 
+.clear-button {
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 8px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.clear-button:hover {
+  color: #111827;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .search-bar {
     height: 44px;
-    padding: 0 12px;
+    padding: 0 10px;
   }
   
   .search-icon {
