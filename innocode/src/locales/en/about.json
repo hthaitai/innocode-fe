@@ -1,0 +1,41 @@
+{
+  "hero": {
+    "title1": "We build the stage.",
+    "title2": "You write the future.",
+    "description": "InnoCode is the premier arena for developers to test their skills, compete in high-stakes algorithms, and push the boundaries of what's possible in software."
+  },
+  "stats": {
+    "activeDevelopers": "Active Developers",
+    "challengesSolved": "Challenges Solved",
+    "contestsHosted": "Contests Hosted",
+    "countries": "Countries"
+  },
+  "mission": {
+    "title": "Bridging the gap between",
+    "titleHighlight": "potential and mastery",
+    "description1": "We started InnoCode with a simple mission: to create a platform where coding isn't just about syntax, but about problem-solving, creativity, and performance.",
+    "description2": "Whether you are a student just starting out or a senior engineer looking to stay sharp, our contests provide the perfect environment to challenge yourself."
+  },
+  "features": {
+    "title": "Built for Competitors",
+    "subtitle": "Everything you need to focus on the code.",
+    "realTimeExecution": {
+      "title": "Real-time Execution",
+      "description": "Experience ultra-low latency code execution in isolated sandboxes supporting 40+ languages."
+    },
+    "globalLeaderboards": {
+      "title": "Global Leaderboards",
+      "description": "Compete against the best developers worldwide and climb the ranks in our dynamic ELO system."
+    },
+    "instantFeedback": {
+      "title": "Instant Feedback",
+      "description": "Get immediate insights on time complexity, memory usage, and edge case failures."
+    }
+  },
+  "cta": {
+    "title": "Ready to join the leaderboard?",
+    "description": "Join thousands of developers solving challenges today. It's free to get started.",
+    "button": "Start Coding Now"
+  }
+}
+

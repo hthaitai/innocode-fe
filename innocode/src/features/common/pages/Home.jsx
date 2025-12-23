@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import bannerImage from "../../../assets/banner.jpg";
 import ContestCard from "../../../shared/components/contest/ContestCard";
@@ -9,6 +10,7 @@ import { Trophy, Medal, Award, Users, ArrowRight, Headset } from "lucide-react";
 import { Icon } from "@iconify/react";
 
 const Home = () => {
+  const { t } = useTranslation("home");
   const navigate = useNavigate();
   const { contests, loading: contestsLoading } = useContests();
 
@@ -132,21 +134,18 @@ const Home = () => {
               className="max-w-3xl text-white"
             >
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                Programming Contest Platform
-                <span className="block text-[#ff6b35]">InnoCode</span>
+                {t("title")}
+                <span className="block text-[#ff6b35]">{t("subtitle")}</span>
               </h1>
               <p className="text-lg md:text-xl mb-8 text-gray-200 leading-relaxed">
-                Digital platform for high school programming contests with
-                automated judging system, multi-round contests, and real-time
-                leaderboards - designed for students, teachers, and
-                organizations.
+                {t("description")}
               </p>
               <div className="flex flex-wrap gap-4">
                 <button
                   onClick={handleViewAllContests}
                   className="px-6 py-3 bg-[#ff6b35] hover:bg-[#ff8c5a] text-white font-semibold rounded-lg transition-colors duration-200 flex items-center gap-2"
                 >
-                  View Contests
+                  {t("viewContests")}
                   <ArrowRight className="w-5 h-5" />
                 </button>
                 <button
@@ -154,7 +153,7 @@ const Home = () => {
                   className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-colors duration-200 backdrop-blur-sm flex items-center gap-2"
                 >
                   <Trophy className="w-5 h-5" />
-                  Leaderboard
+                  {t("leaderboard")}
                 </button>
               </div>
             </motion.div>
@@ -174,15 +173,15 @@ const Home = () => {
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3">
                       <div className="w-1 h-8 bg-[#ff6b35] rounded-full"></div>
-                      Ongoing Contests
+                      {t("ongoingContests")}
                     </h2>
-                    <p className="text-gray-600">Join active contests now</p>
+                    <p className="text-gray-600">{t("joinNow")}</p>
                   </div>
                   <button
                     onClick={handleViewAllContests}
                     className="text-[#ff6b35] hover:text-[#ff8c5a] font-semibold flex items-center gap-2 transition-colors text-sm"
                   >
-                    View all
+                    {t("viewAll")}
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -218,15 +217,15 @@ const Home = () => {
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3">
                       <div className="w-1 h-8 bg-amber-500 rounded-full"></div>
-                      Upcoming Contests
+                      {t("upcomingContests")}
                     </h2>
-                    <p className="text-gray-600">Contests starting soon</p>
+                    <p className="text-gray-600">{t("upcomingContests")}</p>
                   </div>
                   <button
                     onClick={handleViewAllContests}
                     className="text-[#ff6b35] hover:text-[#ff8c5a] font-semibold flex items-center gap-2 transition-colors text-sm"
                   >
-                    View all
+                    {t("viewAll")}
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -262,17 +261,17 @@ const Home = () => {
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3">
                       <div className="w-1 h-8 bg-green-500 rounded-full"></div>
-                      Completed Contests
+                      {t("completedContests")}
                     </h2>
                     <p className="text-gray-600">
-                      View results of finished contests
+                      {t("viewAll")}
                     </p>
                   </div>
                   <button
                     onClick={handleViewAllContests}
                     className="text-[#ff6b35] hover:text-[#ff8c5a] font-semibold flex items-center gap-2 transition-colors text-sm"
                   >
-                    View all
+                    {t("viewAll")}
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -337,13 +336,13 @@ const Home = () => {
                         <thead className="bg-gray-50 border-b border-gray-200">
                           <tr>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                              Rank
+                              {t("rank")}
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                              Team
+                              {t("team")}
                             </th>
                             <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                              Score
+                              {t("score")}
                             </th>
                           </tr>
                         </thead>
@@ -401,7 +400,7 @@ const Home = () => {
                   <div className="bg-white rounded-xl shadow-sm p-8 text-center">
                     <Trophy className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                     <p className="text-gray-600 text-sm">
-                      No leaderboard data available
+                      {t("noLeaderboardData")}
                     </p>
                   </div>
                 )}

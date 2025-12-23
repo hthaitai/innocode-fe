@@ -29,6 +29,7 @@ export const BREADCRUMBS = {
   CONTEST_EDIT: (contestTitle) => ["Contests", contestTitle, "Edit"],
   TEAM_CREATE: ["Team", "Create Team"],
   TEAM_DETAIL: (teamName) => ["Team", teamName],
+  POLICY: ["Policy and Rules"],
   CONTEST_PROCESSING: (contestTitle) => [
     "Contests",
     contestTitle,
@@ -304,6 +305,7 @@ export const BREADCRUMB_PATHS = {
   SCHOOL_MANAGEMENT: ["/school-manager"],
   SCHOOL_CREATE_REQUEST: ["/school-requests", "/school-requests/create"],
   MY_SCHOOL_MANAGEMENT: ["/school-manager", "/schools"],
+  POLICY: ["/policy"],
   // Sub-pages
   PROFILE_ABOUT: ["/profile"],
   PROFILE_PASSWORD: ["/profile"],
@@ -571,7 +573,7 @@ export const BREADCRUMB_PATHS = {
   //Staff
   STAFF_PROVINCES: ["/province-staff"],
   STAFF_SCHOOLS: ["/school-staff"],
-
+  POLICY: ["/policy"],
   // Error pages
   NOT_FOUND: ["/"],
   UNAUTHORIZED: ["/"],

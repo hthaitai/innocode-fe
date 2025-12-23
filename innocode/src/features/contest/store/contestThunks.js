@@ -1,13 +1,17 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import contestApi from "@/api/contestApi"
+import { api } from "@/services/api"
 import { handleThunkError } from "../../../shared/utils/handleThunkError"
 
 export const fetchAllContests = createAsyncThunk(
   "contests/fetchAll",
   async ({ pageNumber = 1, pageSize = 10 } = {}, { rejectWithValue }) => {
     try {
-      const res = await contestApi.getAll({ pageNumber, pageSize })
-      return res.data
+      const result = await api.endpoints.getAllContests.initiate({
+        pageNumber,
+        pageSize,
+      })
+      const data = await result.unwrap()
+      return data
     } catch (err) {
       return rejectWithValue(handleThunkError(err))
     }
@@ -18,11 +22,12 @@ export const fetchOrganizerContests = createAsyncThunk(
   "contests/fetchOrganizer",
   async ({ pageNumber = 1, pageSize = 10 } = {}, { rejectWithValue }) => {
     try {
-      const res = await contestApi.getOrganizerContests({
+      const result = await api.endpoints.getOrganizerContests.initiate({
         pageNumber,
         pageSize,
       })
-      return res.data
+      const data = await result.unwrap()
+      return data
     } catch (err) {
       return rejectWithValue(handleThunkError(err))
     }
@@ -33,8 +38,10 @@ export const fetchContestById = createAsyncThunk(
   "contests/fetchById",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await contestApi.getById(id)
-      const contestData = res.data.data[0] ?? null
+      const result = await api.endpoints.getContestById.initiate(id)
+      const data = await result.unwrap()
+      // Handle array response
+      const contestData = Array.isArray(data) ? data[0] : (data?.data?.[0] ?? data ?? null)
       return contestData
     } catch (err) {
       return rejectWithValue(handleThunkError(err))
@@ -46,8 +53,9 @@ export const addContest = createAsyncThunk(
   "contests/add",
   async (data, { rejectWithValue }) => {
     try {
-      const res = await contestApi.create(data)
-      return res.data.data
+      const result = await api.endpoints.addContest.initiate(data)
+      const response = await result.unwrap()
+      return response?.data || response
     } catch (err) {
       return rejectWithValue(handleThunkError(err))
     }
@@ -58,8 +66,8 @@ export const updateContest = createAsyncThunk(
   "contests/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const res = await contestApi.update(id, data)
-      return res.data
+      const result = await api.endpoints.updateContest.initiate({ id, data })
+      return await result.unwrap()
     } catch (err) {
       return rejectWithValue(handleThunkError(err))
     }
@@ -70,7 +78,7 @@ export const deleteContest = createAsyncThunk(
   "contests/delete",
   async ({ contestId }, { rejectWithValue }) => {
     try {
-      await contestApi.delete(contestId)
+      await api.endpoints.deleteContest.initiate({ id: contestId }).unwrap()
       return contestId
     } catch (err) {
       return rejectWithValue(handleThunkError(err))
@@ -82,8 +90,8 @@ export const checkPublishReady = createAsyncThunk(
   "contests/checkPublishReady",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await contestApi.checkPublishReady(id)
-      return res.data
+      const result = await api.endpoints.checkPublishReady.initiate(id)
+      return await result.unwrap()
     } catch (err) {
       return rejectWithValue(handleThunkError(err))
     }
@@ -94,8 +102,8 @@ export const publishContest = createAsyncThunk(
   "contests/publish",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await contestApi.publishContest(id)
-      return res.data
+      const result = await api.endpoints.publishContest.initiate(id)
+      return await result.unwrap()
     } catch (err) {
       return rejectWithValue(handleThunkError(err))
     }

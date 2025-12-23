@@ -1,0 +1,41 @@
+{
+  "common": {
+    "notFound": "Không tìm thấy tài nguyên",
+    "unauthorized": "Yêu cầu xác thực. Vui lòng đăng nhập lại",
+    "forbidden": "Bạn không có quyền thực hiện hành động này",
+    "serverError": "Lỗi máy chủ. Vui lòng thử lại sau",
+    "networkError": "Lỗi kết nối. Vui lòng kiểm tra kết nối mạng",
+    "timeout": "Hết thời gian chờ. Vui lòng thử lại",
+    "unexpectedError": "Đã xảy ra lỗi không mong muốn",
+    "validationError": "Vui lòng kiểm tra thông tin nhập và thử lại"
+  },
+  "auth": {
+    "invalidCredentials": "Email hoặc mật khẩu không đúng",
+    "accountDisabled": "Tài khoản bị vô hiệu hóa hoặc chưa được xác minh",
+    "tooManyAttempts": "Quá nhiều lần đăng nhập. Vui lòng thử lại sau",
+    "emailExists": "Email đã tồn tại",
+    "weakPassword": "Mật khẩu quá yếu",
+    "tokenExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại"
+  },
+  "contest": {
+    "duplicate": "Đã tồn tại cuộc thi với tên này",
+    "notFound": "Không tìm thấy cuộc thi",
+    "alreadyStarted": "Cuộc thi đã bắt đầu",
+    "registrationClosed": "Đăng ký cho cuộc thi này đã đóng",
+    "alreadyRegistered": "Bạn đã đăng ký cuộc thi này rồi"
+  },
+  "team": {
+    "notFound": "Không tìm thấy đội",
+    "alreadyMember": "Bạn đã là thành viên của đội này",
+    "teamFull": "Đội đã đầy",
+    "inviteExpired": "Lời mời tham gia đội đã hết hạn",
+    "inviteNotFound": "Không tìm thấy lời mời tham gia đội",
+    "alreadyProcessed": "Lời mời này đã được xử lý"
+  },
+  "submission": {
+    "notFound": "Không tìm thấy bài nộp",
+    "deadlinePassed": "Đã hết hạn nộp bài",
+    "invalidFormat": "Định dạng bài nộp không hợp lệ"
+  }
+}
+

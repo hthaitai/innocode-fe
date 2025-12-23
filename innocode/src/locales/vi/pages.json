@@ -1,0 +1,34 @@
+{
+  "unauthorized": {
+    "title": "403 - Bị cấm",
+    "message": "Bạn không có quyền xem trang này.",
+    "backToHome": "Quay về Trang chủ"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Ồ! Trang bạn đang tìm không tồn tại.",
+    "backToHome": "Quay về Trang chủ",
+    "subtitle": "Lạc trong hư không..."
+  },
+  "register": {
+    "title": "Đăng ký",
+    "fullName": "Họ và tên",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "school": "Trường học",
+    "grade": "Khối lớp",
+    "selectSchool": "Chọn trường học",
+    "selectGrade": "Chọn khối lớp",
+    "show": "Hiện",
+    "hide": "Ẩn",
+    "alreadyHaveAccount": "Đã có tài khoản?",
+    "signIn": "Đăng nhập",
+    "submit": "Đăng ký",
+    "signingUp": "Đang đăng ký...",
+    "success": "Đăng ký thành công!",
+    "successMessage": "Vui lòng kiểm tra email để xác minh tài khoản của bạn.",
+    "failedToLoadSchools": "Không thể tải danh sách trường học. Vui lòng làm mới trang."
+  }
+}
+

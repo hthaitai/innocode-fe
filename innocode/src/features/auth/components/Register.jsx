@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import translateApiError from "@/shared/utils/translateApiError";
 import "./Login.css";
 import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg";
 import { useAuth } from "@/context/AuthContext";
@@ -13,6 +15,7 @@ import { Icon } from "@iconify/react";
 import DropdownFluent from "@/shared/components/DropdownFluent";
 
 const Register = () => {
+  const { t } = useTranslation(["pages", "common", "validation"]);
   const { register, clearAuth } = useAuth(); // Dùng clearAuth thay vì logout
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -31,7 +34,7 @@ const Register = () => {
   const [typedText, setTypedText] = useState("");
   const [successMessage, setSuccessMessage] = useState(''); 
 
-  const fullText = "Join InnoCode Platform";
+  const fullText = t("pages:register.title");
 
   useEffect(() => {
     const fetchSchools = async () => {
@@ -47,7 +50,7 @@ const Register = () => {
         setSchools(schoolsData);
       } catch (error) {
         console.error("Error fetching schools:", error);
-        setError("Failed to load schools. Please refresh the page.");
+        setError(t("pages:register.failedToLoadSchools"));
       } finally {
         setLoadingSchools(false);
       }
@@ -171,7 +174,7 @@ const Register = () => {
         });
         console.log("✅ Verification email sent successfully");
 
-        setSuccessMessage("Account registration successful! Please check your email to activate your account before signing in.");
+        setSuccessMessage(t("pages:register.successMessage"));
         // Reset form
         setFullName("");
         setEmail("");
@@ -183,73 +186,19 @@ const Register = () => {
         console.error("❌ Error sending verification email:", emailError);
         setError("Registration successful! However, we couldn't send verification email. Please contact support or try to resend verification email.");
       }
-    } catch (err) {
+      } catch (err) {
       console.error("Registration error:", err);
-      console.error("❌ Full error object:", {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.response?.data?.message,
-        errorMessage: err.response?.data?.errorMessage,
-        errorCode: err.response?.data?.errorCode,
-        errors: err.response?.data?.errors,
-      });
-
-      if (err.code === "ECONNABORTED" || err.message.includes("timeout")) {
-        setError(
-          "Request timeout. Please check your connection and try again."
-        );
-      } else if (err.response) {
-        const status = err.response.status;
-        const message = err.response.data?.message;
-        const errorMessage = err.response.data?.errorMessage; // Backend format
-        const errorCode = err.response.data?.errorCode;
-        const errors = err.response.data?.errors;
-
-        // Handle validation errors from backend
-        if (errors && typeof errors === "object") {
-          setValidationErrors(errors);
-        }
-
-        // Handle specific error codes
-        if (errorCode === "EMAIL_EXISTS") {
-          setError(
-            "Email already exists. Please use a different email or login."
-          );
-          return;
-        }
-
-        switch (status) {
-          case 400:
-            setError(
-              errorMessage ||
-                message ||
-                "Invalid registration data. Please check your input."
-            );
-            break;
-          case 409:
-            setError("Email already exists. Please use a different email.");
-            break;
-          case 422:
-            setError("Validation failed. Please check your input.");
-            break;
-          case 500:
-            // Extract error message from backend
-            const serverError =
-              err.response.data?.error ||
-              "Server error. Please try again later.";
-            setError(serverError);
-            break;
-          default:
-            setError(
-              errorMessage || message || "An error occurred. Please try again."
-            );
-        }
-      } else if (err.request) {
-        setError(
-          "Cannot connect to server. Please check your internet connection."
-        );
-      } else {
-        setError("An unexpected error occurred. Please try again.");
+      // Use translateApiError to handle all error cases
+      const translatedError = translateApiError(err, 'errors')
+      setError(translatedError)
+      
+      // Handle validation errors from backend
+      if (err.response?.data?.errors && typeof err.response.data.errors === "object") {
+        const translatedErrors = {}
+        Object.keys(err.response.data.errors).forEach(key => {
+          translatedErrors[key] = translateApiError(err.response.data.errors[key], 'errors')
+        })
+        setValidationErrors(translatedErrors)
       }
     } finally {
       setIsSubmitting(false);
@@ -267,7 +216,7 @@ const Register = () => {
           />
         </Link>
         <div className="login-form">
-          <h1 className="login-title">Create Account</h1>
+          <h1 className="login-title">{t("pages:register.title")}</h1>
 
           {/* Success Message - Hiển thị ở đây nếu thành công */}
           {successMessage && (
@@ -285,7 +234,7 @@ const Register = () => {
                   />
                 </svg>
                 <div>
-                  <p className="font-semibold text-green-800">Registration Successful!</p>
+                  <p className="font-semibold text-green-800">{t("pages:register.success")}</p>
                   <p className="text-green-700 mt-1">{successMessage}</p>
                 </div>
               </div>
@@ -296,7 +245,7 @@ const Register = () => {
             {/* Full Name */}
             <div className="form-group">
               <label htmlFor="fullName" className="form-label">
-                Full Name
+                {t("pages:register.fullName")}
               </label>
               <input
                 type="text"
@@ -319,7 +268,7 @@ const Register = () => {
             {/* Email */}
             <div className="form-group">
               <label htmlFor="email" className="form-label">
-                Email
+                {t("pages:register.email")}
               </label>
               <input
                 type="email"
@@ -342,7 +291,7 @@ const Register = () => {
             {/* School Dropdown */}
             <div className="form-group">
               <label htmlFor="school" className="form-label">
-                School
+                {t("pages:register.school")}
               </label>
               <DropdownFluent
                 id="school"
@@ -352,7 +301,7 @@ const Register = () => {
                   value: school.id || school.schoolId || school.school_id,
                   label: school.name,
                 }))}
-                placeholder={loadingSchools ? "Loading schools..." : "Select a school"}
+                placeholder={loadingSchools ? t("common:common.loading") : t("pages:register.selectSchool")}
                 disabled={loadingSchools}
                 error={!!validationErrors.schoolId}
                 helperText={validationErrors.schoolId}
@@ -362,7 +311,7 @@ const Register = () => {
             {/* Grade */}
             <div className="form-group">
               <label htmlFor="grade" className="form-label">
-                Grade
+                {t("pages:register.grade")}
               </label>
               <select
                 id="grade"
@@ -373,7 +322,7 @@ const Register = () => {
                 }`}
                 required
               >
-                <option value="">Select a grade</option>
+                <option value="">{t("pages:register.selectGrade")}</option>
                 <option value="10">10</option>
                 <option value="11">11</option>
                 <option value="12">12</option>
@@ -389,7 +338,7 @@ const Register = () => {
             <div className="form-group">
               <div className="password-header">
                 <label htmlFor="password" className="form-label">
-                  Password
+                  {t("pages:register.password")}
                 </label>
                 <button
                   type="button"
@@ -428,7 +377,7 @@ const Register = () => {
             <div className="form-group">
               <div className="password-header">
                 <label htmlFor="confirmPassword" className="form-label">
-                  Confirm Password
+                  {t("pages:register.confirmPassword")}
                 </label>
                 <button
                   type="button"
@@ -472,7 +421,7 @@ const Register = () => {
               className="signin-button"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Creating account..." : "Sign up"}
+              {isSubmitting ? t("pages:register.signingUp") : t("pages:register.submit")}
             </button>
           </form>
 
@@ -480,9 +429,9 @@ const Register = () => {
             <span className="divider-text">OR</span>
           </div>
           <div className="signup-link">
-            Already have an account?{" "}
+            {t("pages:register.alreadyHaveAccount")}{" "}
             <Link to="/login" className="signup-text">
-              Sign In
+              {t("pages:register.signIn")}
             </Link>
           </div>
 

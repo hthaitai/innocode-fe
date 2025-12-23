@@ -1,38 +1,36 @@
 import React from "react"
-
+import { useTranslation } from "react-i18next"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
-import { Terminal, Trophy, Users, Globe, Code2, Zap } from "lucide-react" // Assuming you use lucide-react or similar
-
-// --- Data Constants (Scalable configuration) ---
-const STATS = [
-  { label: "Active Developers", value: "150k+", icon: Users },
-  { label: "Challenges Solved", value: "2.5M", icon: Code2 },
-  { label: "Contests Hosted", value: "500+", icon: Trophy },
-  { label: "Countries", value: "80+", icon: Globe },
-]
-
-const FEATURES = [
-  {
-    title: "Real-time Execution",
-    description:
-      "Experience ultra-low latency code execution in isolated sandboxes supporting 40+ languages.",
-    icon: Terminal,
-  },
-  {
-    title: "Global Leaderboards",
-    description:
-      "Compete against the best developers worldwide and climb the ranks in our dynamic ELO system.",
-    icon: Globe,
-  },
-  {
-    title: "Instant Feedback",
-    description:
-      "Get immediate insights on time complexity, memory usage, and edge case failures.",
-    icon: Zap,
-  },
-]
+import { Terminal, Trophy, Users, Globe, Code2, Zap } from "lucide-react"
 
 const About = () => {
+  const { t } = useTranslation("about")
+
+  // --- Data Constants (Scalable configuration) ---
+  const STATS = [
+    { label: t("stats.activeDevelopers"), value: "150k+", icon: Users },
+    { label: t("stats.challengesSolved"), value: "2.5M", icon: Code2 },
+    { label: t("stats.contestsHosted"), value: "500+", icon: Trophy },
+    { label: t("stats.countries"), value: "80+", icon: Globe },
+  ]
+
+  const FEATURES = [
+    {
+      title: t("features.realTimeExecution.title"),
+      description: t("features.realTimeExecution.description"),
+      icon: Terminal,
+    },
+    {
+      title: t("features.globalLeaderboards.title"),
+      description: t("features.globalLeaderboards.description"),
+      icon: Globe,
+    },
+    {
+      title: t("features.instantFeedback.title"),
+      description: t("features.instantFeedback.description"),
+      icon: Zap,
+    },
+  ]
   return (
     <>
       <div className="space-y-20 pb-16">
@@ -44,14 +42,12 @@ const About = () => {
           </div>
 
           <h1 className="relative text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900 mb-6">
-            We build the stage.
+            {t("hero.title1")}
             <br />
-            <span className="text-[#E05307]">You write the future.</span>
+            <span className="text-[#E05307]">{t("hero.title2")}</span>
           </h1>
           <p className="relative text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            InnoCode is the premier arena for developers to test their skills,
-            compete in high-stakes algorithms, and push the boundaries of what's
-            possible in software.
+            {t("hero.description")}
           </p>
         </section>
 
@@ -89,21 +85,17 @@ const About = () => {
           <div className="relative grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                Bridging the gap between <br />
+                {t("mission.title")} <br />
                 <span className="text-[#E05307] decoration-4 underline decoration-orange-200 underline-offset-4">
-                  potential and mastery
+                  {t("mission.titleHighlight")}
                 </span>
                 .
               </h2>
               <p className="text-gray-600 mb-6 text-lg leading-relaxed">
-                We started InnoCode with a simple mission: to create a platform
-                where coding isn't just about syntax, but about problem-solving,
-                creativity, and performance.
+                {t("mission.description1")}
               </p>
               <p className="text-gray-600 text-lg leading-relaxed">
-                Whether you are a student just starting out or a senior engineer
-                looking to stay sharp, our contests provide the perfect
-                environment to challenge yourself.
+                {t("mission.description2")}
               </p>
             </div>
             {/* Visual Element representing Code/Tech */}
@@ -143,10 +135,10 @@ const About = () => {
         <section className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900">
-              Built for Competitors
+              {t("features.title")}
             </h2>
             <p className="text-gray-500 mt-2">
-              Everything you need to focus on the code.
+              {t("features.subtitle")}
             </p>
           </div>
 
@@ -176,14 +168,13 @@ const About = () => {
             <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
 
             <h2 className="relative text-3xl md:text-4xl font-bold mb-6">
-              Ready to join the leaderboard?
+              {t("cta.title")}
             </h2>
             <p className="relative text-orange-100 mb-8 text-lg max-w-xl mx-auto">
-              Join thousands of developers solving challenges today. It's free
-              to get started.
+              {t("cta.description")}
             </p>
             <button className="relative bg-white text-[#E05307] px-8 py-3.5 rounded-full font-bold hover:bg-orange-50 transition-colors shadow-lg active:scale-95">
-              Start Coding Now
+              {t("cta.button")}
             </button>
           </div>
         </section>

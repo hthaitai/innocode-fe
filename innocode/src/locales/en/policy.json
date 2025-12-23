@@ -1,0 +1,75 @@
+{
+  "title": "General Rules for InnoCode Challenge",
+  "description": "This page explains the basic rules that apply to most contests on the system. Each contest may have additional specific rules (e.g., number of team members, contest rules, appeal deadlines...), but they must not conflict with the general principles below.",
+  "sections": {
+    "teamParticipation": {
+      "title": "Team Participation",
+      "description": "Each student can only join one team in the same contest. Teams are the unit for management and ranking. The team leader manages the team and represents the team in communication with the Organizing Committee.",
+      "details": [
+        "Each student can only join one team in the same contest",
+        "Teams are the unit for management and ranking (contests are scored by team)",
+        "The team leader manages the team and represents the team in communication with the Organizing Committee when issues arise (e.g., appeals, technical errors)"
+      ]
+    },
+    "contestTime": {
+      "title": "Contest Time",
+      "description": "You can only work on and submit solutions during the active contest round period. After the deadline, the system will stop accepting submissions.",
+      "details": [
+        "You can only work on and submit solutions during the active contest round period",
+        "After the deadline, the system will stop accepting submissions (submissions after the deadline will not be counted)"
+      ]
+    },
+    "submissionAndScoring": {
+      "title": "Submission and Scoring by Round Type",
+      "description": "Different round types have different submission rules. Auto-evaluation rounds allow multiple submissions with immediate feedback. Manual evaluation rounds send only the final submission to judges. MCQ rounds allow only one submission.",
+      "details": [
+        "A) Auto-Evaluation Rounds: You can submit multiple times during the round period. Each submission receives immediate results. Only the final submission (the one you choose to lock) is used for official scoring. Auto-evaluation contests apply score deduction based on the number of submissions",
+        "B) Manual Evaluation Rounds: You can submit multiple times during the round period. Only the final submission is sent to judges for evaluation. Scoring is based on the problem criteria and scoring rubric defined by the contest",
+        "C) Multiple Choice Question (MCQ) Rounds: Submit once and receive results immediately. Resubmission is not allowed"
+      ]
+    },
+    "teamScoring": {
+      "title": "Team Scoring and Ranking",
+      "description": "All contests are scored by team: team score equals the average score of all team members. Members without valid submissions receive 0 points. Tiebreakers prioritize teams that completed earlier.",
+      "details": [
+        "All contests are scored by team: team score = average score of all team members",
+        "Members without valid submissions in a round will receive 0 points for that round",
+        "In case of ties, the system will use tiebreaker criteria as defined by the contest (most commonly prioritizing teams that completed earlier based on submission time)"
+      ]
+    },
+    "leaderboard": {
+      "title": "Leaderboard",
+      "description": "The leaderboard displays continuous updates during the contest, allowing participants to track their position and progress in real-time.",
+      "details": [
+        "The leaderboard displays continuous updates during the contest"
+      ]
+    },
+    "appeals": {
+      "title": "Appeals, Re-evaluation, and Retakes",
+      "description": "Team leaders can submit appeals to the Organizing Committee within the allowed timeframe. When accepted, the committee may re-evaluate submissions or allow retakes. Note: scores may increase, decrease, or remain the same after re-evaluation.",
+      "details": [
+        "The team leader is responsible for submitting appeals to the Organizing Committee within the contest's allowed timeframe (evidence/documentation must be included)",
+        "When an appeal is accepted, the Organizing Committee may: Re-evaluate the submission (by a different judge), or Allow a retake according to the contest's regulations",
+        "Important note: After re-evaluation, the score may increase, decrease, or remain the same"
+      ]
+    },
+    "fairness": {
+      "title": "Fairness and Anti-Cheating",
+      "description": "Copying solutions, sharing answers, or using prohibited methods is not allowed. The system detects unusually similar submissions. Violations result in 0 points, removal from rankings, or disqualification depending on severity.",
+      "details": [
+        "Copying solutions, sharing answers, or using prohibited methods to achieve scores is not allowed",
+        "The system may detect unusually similar submissions and flag them for review. The review will be conducted by the organizing committee to avoid incorrect conclusions",
+        "If the Organizing Committee concludes a violation: The submission will be scored as 0 points and/or removed from rankings depending on severity and contest regulations. The Organizing Committee reserves the right to cancel results or disqualify from the contest if serious violations are detected"
+      ]
+    },
+    "finalizing": {
+      "title": "Finalizing Results",
+      "description": "After the contest ends and all necessary matters are resolved (scoring, appeals, violation checks), results will be finalized. Once finalized, results are considered final and cannot be modified.",
+      "details": [
+        "After the contest ends and all necessary matters are resolved (scoring, appeals, violation checks), results will be finalized",
+        "Once finalized, results are considered final and cannot be modified"
+      ]
+    }
+  }
+}
+

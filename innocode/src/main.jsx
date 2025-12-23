@@ -1,6 +1,7 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import "./index.css"
+import "./i18n/config" // Initialize i18n
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import MainLayout from "./shared/components/layout/MainLayout"
 import AuthLayout from "./shared/components/layout/AuthLayout"
@@ -10,6 +11,7 @@ import { store } from "./store/store"
 // Common pages
 import Home from "./features/common/pages/Home"
 import About from "./features/common/pages/About"
+import Policy from "./features/common/pages/Policy"
 import Profile from "./features/common/profile/pages/Profile"
 import Dashboard from "./features/common/pages/Dashboard"
 import Notifications from "./features/common/pages/Notifications"
@@ -217,6 +219,7 @@ const router = createBrowserRouter([
     element: <MainLayout />, // layout wrapper
     children: [
       { path: "about", element: <About /> },
+      { path: "policy", element: <Policy /> },
       {
         path: "contests",
         element: <Contests />,

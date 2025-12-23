@@ -1,0 +1,41 @@
+{
+  "hero": {
+    "title1": "Chúng tôi xây dựng sân khấu.",
+    "title2": "Bạn viết nên tương lai.",
+    "description": "InnoCode là đấu trường hàng đầu cho các nhà phát triển để kiểm tra kỹ năng, cạnh tranh trong các thuật toán quan trọng và đẩy xa ranh giới của những gì có thể trong phần mềm."
+  },
+  "stats": {
+    "activeDevelopers": "Nhà phát triển đang hoạt động",
+    "challengesSolved": "Thử thách đã giải",
+    "contestsHosted": "Cuộc thi đã tổ chức",
+    "countries": "Quốc gia"
+  },
+  "mission": {
+    "title": "Kết nối khoảng cách giữa",
+    "titleHighlight": "tiềm năng và thành thạo",
+    "description1": "Chúng tôi bắt đầu InnoCode với một sứ mệnh đơn giản: tạo ra một nền tảng nơi lập trình không chỉ là về cú pháp, mà còn về giải quyết vấn đề, sáng tạo và hiệu suất.",
+    "description2": "Dù bạn là học sinh mới bắt đầu hay kỹ sư cao cấp muốn giữ sự sắc bén, các cuộc thi của chúng tôi cung cấp môi trường hoàn hảo để thử thách bản thân."
+  },
+  "features": {
+    "title": "Được xây dựng cho các đối thủ",
+    "subtitle": "Mọi thứ bạn cần để tập trung vào code.",
+    "realTimeExecution": {
+      "title": "Thực thi thời gian thực",
+      "description": "Trải nghiệm thực thi code độ trễ cực thấp trong các sandbox biệt lập hỗ trợ hơn 40 ngôn ngữ."
+    },
+    "globalLeaderboards": {
+      "title": "Bảng xếp hạng toàn cầu",
+      "description": "Cạnh tranh với các nhà phát triển giỏi nhất trên toàn thế giới và leo lên các bậc trong hệ thống ELO động của chúng tôi."
+    },
+    "instantFeedback": {
+      "title": "Phản hồi tức thì",
+      "description": "Nhận thông tin chi tiết ngay lập tức về độ phức tạp thời gian, sử dụng bộ nhớ và các lỗi trường hợp biên."
+    }
+  },
+  "cta": {
+    "title": "Sẵn sàng tham gia bảng xếp hạng?",
+    "description": "Tham gia cùng hàng nghìn nhà phát triển giải quyết thử thách ngay hôm nay. Hoàn toàn miễn phí để bắt đầu.",
+    "button": "Bắt đầu Lập trình Ngay"
+  }
+}
+
