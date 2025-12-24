@@ -10,6 +10,7 @@ import { toast } from "react-hot-toast";
 import {
   useSaveManualSubmissionMutation,
   useFinishRoundMutation,
+  useSubmitNullSubmissionMutation,
 } from "@/services/manualProblemApi";
 import { useModal } from "@/shared/hooks/useModal";
 
@@ -25,6 +26,7 @@ const StudentManualProblem = () => {
   const [saveManualSubmission, { isLoading: saving }] =
     useSaveManualSubmissionMutation();
   const [finishRound, { isLoading: finishing }] = useFinishRoundMutation();
+  const [submitNullSubmission] = useSubmitNullSubmissionMutation();
 
   // ✅ Fetch contest data to get round information
   const { contest, loading, error } = useContestDetail(contestId);
@@ -38,13 +40,20 @@ const StudentManualProblem = () => {
   const handleAutoSubmit = useCallback(async () => {
     if (!finishing) {
       try {
-        await finishRound(roundId).unwrap();
+        // Nếu không có saved submission, gọi null-submission API
+        if (!savedSubmissionId) {
+          await submitNullSubmission(roundId).unwrap();
+          console.log("✅ Null submission submitted for manual round");
+        } else {
+          // Nếu có saved submission, finish round như bình thường
+          await finishRound(roundId).unwrap();
+        }
       } catch (err) {
         // Silent error handling - no UI feedback
         console.error("Auto-submit failed:", err);
       }
     }
-  }, [finishing, finishRound, roundId, contestId, navigate]);
+  }, [finishing, finishRound, roundId, savedSubmissionId, submitNullSubmission]);
 
   // Timer for round
   const { timeRemaining, formatTime, isExpired } = useRoundTimer(

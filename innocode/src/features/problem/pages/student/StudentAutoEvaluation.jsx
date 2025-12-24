@@ -8,6 +8,7 @@ import useStudentAutoEvaluation from "../../hooks/useStudentAutoEvaluation";
 import {
   useSubmitFinalAutoTestMutation,
   useSubmitAutoTestMutation,
+  useSubmitNullSubmissionMutation,
 } from "@/services/autoEvaluationApi";
 import { toast } from "react-hot-toast";
 import { useRoundTimer } from "../../hooks/useRoundTimer";
@@ -56,6 +57,7 @@ const StudentAutoEvaluation = () => {
   // Direct submit mutation for auto-submit
   const [submitFinalAutoTest] = useSubmitFinalAutoTestMutation();
   const [submitAutoTest] = useSubmitAutoTestMutation();
+  const [submitNullSubmission] = useSubmitNullSubmissionMutation();
 
   // Extract round and problem data
   const round = contest?.rounds?.find((r) => r.roundId === roundId);
@@ -74,7 +76,30 @@ const StudentAutoEvaluation = () => {
 
       let finalSubmissionId = submissionId;
 
-      // Nếu chưa có submissionId, submit code hiện tại (hoặc code trống) trước
+      // Nếu chưa có submissionId và không có code, gọi null-submission API
+      if (!finalSubmissionId && (!code || code.trim() === "")) {
+        try {
+          await submitNullSubmission(roundId).unwrap();
+          toast.dismiss();
+          toast.success(
+            "Null submission submitted! Your score has been added to the leaderboard."
+          );
+          console.log("✅ Null submission submitted for auto evaluation round");
+          return;
+        } catch (error) {
+          console.error("❌ Failed to submit null submission:", error);
+          toast.dismiss();
+          toast.error(
+            `Failed to submit. ${error?.data?.errorMessage || error?.message || "Unknown error"}`,
+            {
+              duration: 3000,
+            }
+          );
+          return;
+        }
+      }
+
+      // Nếu chưa có submissionId nhưng có code, submit code hiện tại trước
       if (!finalSubmissionId) {
         try {
           const result = await submitAutoTest({
@@ -127,6 +152,7 @@ const StudentAutoEvaluation = () => {
     navigate,
     roundId,
     code,
+    submitNullSubmission,
   ]);
 
   // Timer for round

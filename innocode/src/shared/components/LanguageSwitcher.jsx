@@ -8,8 +8,8 @@ const LanguageSwitcher = () => {
   const dropdownRef = useRef(null)
 
   const languages = [
-    { code: "en", name: "English", flag: "🇺🇸" },
-    { code: "vi", name: "Tiếng Việt", flag: "🇻🇳" },
+    { code: "en", name: "English", icon: 'flag:us-4x3'  },
+    { code: "vi", name: "Tiếng Việt",  icon: "flag:vn-4x3" },
   ]
 
   const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0]
@@ -18,7 +18,6 @@ const LanguageSwitcher = () => {
     i18n.changeLanguage(langCode)
     setIsOpen(false)
   }
-
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -32,12 +31,13 @@ const LanguageSwitcher = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
+      
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors"
         aria-label="Change language"
       >
-        <span className="text-lg">{currentLanguage.flag}</span>
+        <Icon icon={currentLanguage.icon} width="20" />
         <span className="hidden sm:inline">{currentLanguage.name}</span>
         <Icon
           icon="mdi:chevron-down"
@@ -56,7 +56,8 @@ const LanguageSwitcher = () => {
                 i18n.language === lang.code ? "bg-orange-50 text-orange-600" : "text-gray-700"
               }`}
             >
-              <span className="text-lg">{lang.flag}</span>
+              <Icon icon={lang.icon} width="20" />
+
               <span>{lang.name}</span>
               {i18n.language === lang.code && (
                 <Icon icon="mdi:check" className="ml-auto" width="16" />

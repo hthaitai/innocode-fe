@@ -4,6 +4,7 @@ import { TextField } from "@mui/material";
 import { useCreateAppealMutation } from "@/services/appealApi";
 import { toast } from "react-hot-toast";
 import { Icon } from "@iconify/react";
+import DropdownFluent from "@/shared/components/DropdownFluent";
 
 export default function CreateAppealModal({
   isOpen,
@@ -13,17 +14,25 @@ export default function CreateAppealModal({
   teamId,
   studentId,
   roundName,
+  roundType,
 }) {
   const [reason, setReason] = useState("");
   const [evidences, setEvidences] = useState([]);
+  const [appealResolution, setAppealResolution] = useState("retake");
   const [createAppeal, { isLoading }] = useCreateAppealMutation();
 
   useEffect(() => {
     if (isOpen) {
       setReason("");
       setEvidences([]);
+      // Set default appealResolution based on roundType
+      if (roundType === "McqTest" || roundType === "AutoEvaluation") {
+        setAppealResolution("retake");
+      } else if (roundType === "Manual") {
+        setAppealResolution("retake"); // Default to retake, but user can change
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, roundType]);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -48,6 +57,7 @@ export default function CreateAppealModal({
         StudentId: studentId,
         Reason: reason,
         Evidences: evidences.length > 0 ? evidences : undefined,
+        AppealResolution: appealResolution,
       }).unwrap();
 
       toast.success("Appeal submitted successfully!");
@@ -92,10 +102,28 @@ export default function CreateAppealModal({
     >
       <div className="space-y-4">
         {/* Round Info */}
-        {roundName && (
+        {(roundName || roundType) && (
           <div className="bg-gray-50 rounded px-3 py-2 border border-gray-200">
-            <p className="text-xs text-gray-600 mb-1">Round:</p>
-            <p className="text-sm font-medium text-gray-900">{roundName}</p>
+            {roundName && (
+              <>
+                <p className="text-xs text-gray-600 mb-1">Round:</p>
+                <p className="text-sm font-medium text-gray-900">{roundName}</p>
+              </>
+            )}
+            {roundType && (
+              <>
+                <p className="text-xs text-gray-600 mb-1 mt-2">Round Type:</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {roundType === "McqTest"
+                    ? "MCQ Test"
+                    : roundType === "Manual"
+                    ? "Manual Problem"
+                    : roundType === "AutoEvaluation"
+                    ? "Auto Evaluation"
+                    : roundType}
+                </p>
+              </>
+            )}
           </div>
         )}
 
@@ -113,6 +141,35 @@ export default function CreateAppealModal({
             helperText="Explain why you are requesting an appeal for this round"
           />
         </div>
+
+        {/* Appeal Resolution Field */}
+        {roundType === "Manual" ? (
+          <div>
+            <DropdownFluent
+              label="Appeal Resolution *"
+              value={appealResolution}
+              onChange={setAppealResolution}
+              options={[
+                { value: "retake", label: "Retake" },
+                { value: "rescore", label: "Rescore" },
+              ]}
+              placeholder="Select appeal resolution"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Choose whether to retake the round or request a rescore
+            </p>
+          </div>
+        ) : (
+          <div className="bg-gray-50 rounded px-3 py-2 border border-gray-200">
+            <p className="text-xs text-gray-600 mb-1">Appeal Resolution:</p>
+            <p className="text-sm font-medium text-gray-900 capitalize">
+              {appealResolution}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              Default resolution for {roundType === "McqTest" ? "MCQ" : roundType === "AutoEvaluation" ? "Auto Evaluation" : "this round"} rounds
+            </p>
+          </div>
+        )}
 
         {/* Evidence Upload */}
         <div>
