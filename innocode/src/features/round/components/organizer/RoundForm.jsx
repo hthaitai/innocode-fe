@@ -24,6 +24,10 @@ export default function RoundForm({
 }) {
   const { data: roundsData } = useGetRoundsByContestIdQuery(contestId)
   const rounds = roundsData?.data ?? []
+  const nonRetakeRounds = React.useMemo(
+    () => rounds.filter((r) => r.isRetakeRound === false),
+    [rounds]
+  )
 
   const fileInputRef = React.useRef(null)
 
@@ -93,7 +97,7 @@ export default function RoundForm({
     const formatted = {
       mainRoundId,
       isRetakeRound: true,
-      name: mainRound.roundName,
+      name: `${mainRound.roundName} (Retake)`,
       start: mainRound.start ? toDatetimeLocal(mainRound.start) : "",
       end: mainRound.end ? toDatetimeLocal(mainRound.end) : "",
       problemType: mainRound.problemType,
@@ -124,35 +128,48 @@ export default function RoundForm({
   }
 
   const disabled = !!isSubmitting || (mode === "edit" && !hasChanges)
+  const isEditMode = mode === "edit"
+  const isRetakeRound = formData?.isRetakeRound
+  const isEditingRetakeRound = isEditMode && isRetakeRound
+
+  console.log({
+    mode,
+    isRetakeRound: formData?.isRetakeRound,
+    isEditingRetakeRound,
+  })
 
   return (
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
       <div className="grid grid-cols-[150px_1fr] gap-x-4 gap-y-5 items-start">
-        <RoundTypeSection
-          formData={formData}
-          setFormData={setFormData}
-          rounds={rounds}
-          errors={errors}
-          handleMainRoundSelect={handleMainRoundSelect}
-        />
+        {!isEditMode && (
+          <RoundTypeSection
+            formData={formData}
+            setFormData={setFormData}
+            rounds={nonRetakeRounds}
+            errors={errors}
+            handleMainRoundSelect={handleMainRoundSelect}
+          />
+        )}
 
         <BasicInfoSection
           formData={formData}
           errors={errors}
           onChange={handleChange}
+          isEditingRetakeRound={isEditingRetakeRound}
         />
 
-        <ProblemConfigurationSection
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-          setErrors={setErrors}
-          handleNestedChange={handleNestedChange}
-          handleFileChange={handleFileChange}
-          fileInputRef={fileInputRef}
-        />
+        {!isEditingRetakeRound && (
+          <ProblemConfigurationSection
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+            setErrors={setErrors}
+            handleNestedChange={handleNestedChange}
+            handleFileChange={handleFileChange}
+            fileInputRef={fileInputRef}
+          />
+        )}
 
-        {/* Submit Button */}
         {onSubmit && (
           <>
             <div></div>

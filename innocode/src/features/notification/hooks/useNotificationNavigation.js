@@ -45,6 +45,28 @@ const useNotificationNavigation = (onClose) => {
       navigate(`/school-requests/${notification.parsedPayload?.requestId}`)
       return
     }
+
+    // Judge invite for judges
+    if (targetType === "judge_invite" && userRole === "judge") {
+      if (onClose) onClose()
+      const inviteCode = notification.parsedPayload?.inviteCode
+      const contestId = notification.parsedPayload?.contestId
+      const email = notification.parsedPayload?.email || user?.email
+      
+      if (inviteCode) {
+        const params = new URLSearchParams({ inviteCode })
+        if (contestId) {
+          params.append("contestId", contestId)
+        }
+        if (email) {
+          params.append("email", email)
+        }
+        navigate(`/judge/invite?${params.toString()}`)
+      } else {
+        console.warn("Judge invite notification missing inviteCode")
+      }
+      return
+    }
   }
 
   return handleNotificationClick

@@ -46,6 +46,8 @@ const EditRound = () => {
     if (!round) return
 
     const formatted = {
+      isRetakeRound: round.isRetakeRound,
+      mainRoundName: round.mainRoundName,
       name: round.roundName,
       start: toDatetimeLocal(round.start),
       end: toDatetimeLocal(round.end),
@@ -99,10 +101,7 @@ const EditRound = () => {
 
       // Append MCQ config when editing MCQ rounds
       if (formData.problemType === "McqTest") {
-        formPayload.append(
-          "McqTestConfig.Name",
-          formData.mcqTestConfig.name
-        )
+        formPayload.append("McqTestConfig.Name", formData.mcqTestConfig.name)
         formPayload.append(
           "McqTestConfig.Config",
           formData.mcqTestConfig.config

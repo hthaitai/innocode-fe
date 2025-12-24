@@ -2,10 +2,15 @@ import Label from "@/shared/components/form/Label"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import DateTimeFieldFluent from "@/shared/components/datetimefieldfluent/DateTimeFieldFluent"
 
-export default function BasicInfoSection({ formData, errors, onChange }) {
+export default function BasicInfoSection({
+  formData,
+  errors,
+  onChange,
+  isEditingRetakeRound,
+}) {
   return (
     <>
-      {!formData.isRetakeRound && (
+      {!isEditingRetakeRound && (
         <>
           <Label required>Round name</Label>
           <TextFieldFluent
@@ -38,15 +43,19 @@ export default function BasicInfoSection({ formData, errors, onChange }) {
         helperText={errors.end}
       />
 
-      <Label>Time limit (seconds)</Label>
-      <TextFieldFluent
-        name="timeLimitSeconds"
-        type="number"
-        value={formData.timeLimitSeconds ?? ""}
-        onChange={onChange}
-        error={!!errors.timeLimitSeconds}
-        helperText={errors.timeLimitSeconds}
-      />
+      {!isEditingRetakeRound && (
+        <>
+          <Label>Time limit (seconds)</Label>
+          <TextFieldFluent
+            name="timeLimitSeconds"
+            type="number"
+            value={formData.timeLimitSeconds ?? ""}
+            onChange={onChange}
+            error={!!errors.timeLimitSeconds}
+            helperText={errors.timeLimitSeconds}
+          />
+        </>
+      )}
     </>
   )
 }

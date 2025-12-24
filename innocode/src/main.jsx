@@ -101,6 +101,7 @@ import StudentCertificate from "./features/certificate/pages/student/StudentCert
 import ContestJudgesPage from "./features/invite-judge/pages/ContestJudgesPage"
 import JudgeInviteAccept from "./features/invite-judge/pages/JudgeInviteAccept"
 import JudgeInviteDecline from "./features/invite-judge/pages/JudgeInviteDecline"
+import JudgeInviteResponse from "./features/invite-judge/pages/JudgeInviteResponse"
 import SchoolManager from "./features/school/pages/school-manager/SchoolManager"
 import CreateSchoolRequest from "./features/school/pages/school-manager/CreateSchoolRequest"
 import SchoolCreationRequestDetail from "./features/school/pages/school-manager/SchoolCreationRequestDetail"
@@ -148,6 +149,14 @@ const router = createBrowserRouter([
     ],
   },
 
+  {
+    path: "judge/invite",
+    element: (
+      <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+        <JudgeInviteResponse />
+      </ProtectedRoute>
+    ),
+  },
   {
     path: "judge/accept",
     element: (

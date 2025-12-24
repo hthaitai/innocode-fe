@@ -54,19 +54,19 @@ export const contestJudgeApi = api.injectEndpoints({
     }),
 
     acceptJudgeInvite: builder.mutation({
-      query: (inviteCode) => ({
+      query: ({ inviteCode, email }) => ({
         url: "judge-invites/accept",
         method: "POST",
-        params: { inviteCode },
+        params: { inviteCode, email },
       }),
       invalidatesTags: ["JudgesInvite"],
     }),
 
     declineJudgeInvite: builder.mutation({
-      query: (inviteCode) => ({
+      query: ({ inviteCode, email }) => ({
         url: "judge-invites/decline",
         method: "POST",
-        params: { inviteCode },
+        params: { inviteCode, email },
       }),
       invalidatesTags: ["JudgesInvite"],
     }),

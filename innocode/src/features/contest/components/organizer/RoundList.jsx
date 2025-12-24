@@ -57,16 +57,14 @@ const RoundsList = ({ contestId }) => {
           rounds.map((round) => (
             <div
               key={round.roundId}
-              className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors"
+              className="cursor-pointer border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors"
+              onClick={() =>
+                navigate(
+                  `/organizer/contests/${contestId}/rounds/${round.roundId}`
+                )
+              }
             >
-              <div
-                className="flex gap-5 items-center flex-1 cursor-pointer"
-                onClick={() =>
-                  navigate(
-                    `/organizer/contests/${contestId}/rounds/${round.roundId}`
-                  )
-                }
-              >
+              <div className="flex gap-5 items-center flex-1">
                 <Calendar size={20} />
                 <div>
                   <p className="text-[14px] leading-[20px]">
@@ -79,16 +77,26 @@ const RoundsList = ({ contestId }) => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <ChevronRight
-                  size={20}
-                  className="text-[#7A7574] cursor-pointer"
-                  onClick={() =>
-                    navigate(
-                      `/organizer/contests/${contestId}/rounds/${round.roundId}`
-                    )
-                  }
-                />
+              <div className="flex items-center gap-3">
+                <div>
+                  {round.isRetakeRound && (
+                    <span className="text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-700">
+                      Retake
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <ChevronRight
+                    size={20}
+                    className="text-[#7A7574] cursor-pointer"
+                    onClick={() =>
+                      navigate(
+                        `/organizer/contests/${contestId}/rounds/${round.roundId}`
+                      )
+                    }
+                  />
+                </div>
               </div>
             </div>
           ))
