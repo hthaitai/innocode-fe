@@ -1,13 +1,32 @@
+import translateApiError from './translateApiError'
+
 export const handleThunkError = (err) => {
   const res = err?.response?.data
 
+  // Translate error message
+  const translatedMessage = translateApiError(err, 'errors')
+
   // Generic 404
   if (err?.response?.status === 404) {
-    return { Message: res?.Message || "Not found." }
+    return { Message: translatedMessage }
   }
 
-  if (res?.Code || res?.Message) return res // backend-structured error
-  if (res?.message) return { Message: res.message }
-  if (err?.message) return { Message: err.message }
-  return { Message: "An unexpected error occurred." }
+  // Return translated error with original structure
+  if (res?.Code || res?.Message) {
+    return {
+      ...res,
+      Message: translatedMessage,
+      errorMessage: translatedMessage, // Also add errorMessage for consistency
+    }
+  }
+  
+  if (res?.message) {
+    return { Message: translatedMessage, message: translatedMessage }
+  }
+  
+  if (err?.message) {
+    return { Message: translatedMessage }
+  }
+  
+  return { Message: translatedMessage }
 }

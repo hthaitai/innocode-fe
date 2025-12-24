@@ -1,0 +1,75 @@
+{
+  "title": "Quy định chung khi tham gia InnoCode Challenge",
+  "description": "Trang này giải thích những quy tắc cơ bản áp dụng cho hầu hết các cuộc thi trên hệ thống. Mỗi cuộc thi có thể có thêm quy định riêng (ví dụ: số thành viên mỗi đội, luật thi, thời hạn khiếu nại…), nhưng không được trái với các nguyên tắc chung bên dưới.",
+  "sections": {
+    "teamParticipation": {
+      "title": "Tham gia đội",
+      "description": "Mỗi học sinh chỉ được tham gia 01 đội trong cùng 01 cuộc thi. Đội là đơn vị để quản lý và xếp hạng. Người dẫn đội là người quản lý đội và là người đại diện trao đổi với Ban Tổ Chức khi có vấn đề.",
+      "details": [
+        "Mỗi học sinh chỉ được tham gia 01 đội trong cùng 01 cuộc thi",
+        "Đội là đơn vị để quản lý và xếp hạng (cuộc thi tính điểm theo đội)",
+        "Người dẫn đội là người quản lý đội và là người đại diện trao đổi với Ban Tổ Chức khi có vấn đề (ví dụ: khiếu nại, lỗi kỹ thuật)"
+      ]
+    },
+    "contestTime": {
+      "title": "Thời gian làm bài",
+      "description": "Bạn chỉ được làm bài và nộp bài trong thời gian vòng thi đang diễn ra. Hết giờ, hệ thống sẽ dừng nhận bài.",
+      "details": [
+        "Bạn chỉ được làm bài và nộp bài trong thời gian vòng thi đang diễn ra",
+        "Hết giờ, hệ thống sẽ dừng nhận bài (bài nộp sau thời gian sẽ không được tính)"
+      ]
+    },
+    "submissionAndScoring": {
+      "title": "Nộp bài và tính điểm theo từng loại vòng thi",
+      "description": "Các loại vòng thi khác nhau có quy tắc nộp bài khác nhau. Vòng thi chấm tự động cho phép nộp nhiều lần với phản hồi ngay lập tức. Vòng thi chấm tay chỉ gửi bài nộp cuối cùng cho giám khảo. Vòng thi trắc nghiệm chỉ cho phép nộp một lần.",
+      "details": [
+        "A) Vòng thi chấm tự động: Bạn có thể nộp nhiều lần trong thời gian vòng thi. Mỗi lần nộp, hệ thống trả kết quả ngay. Chỉ bài nộp cuối cùng (bài bạn chọn để chốt) được dùng để tính điểm chính thức. Cuộc thi chấm tự động có áp dụng trừ điểm theo số lần nộp",
+        "B) Vòng thi chấm tay: Bạn có thể nộp nhiều lần trong thời gian vòng thi. Chỉ bài nộp cuối cùng được gửi cho giám khảo để chấm. Điểm được chấm dựa trên tiêu chí của đề và thang điểm do cuộc thi quy định",
+        "C) Vòng thi trắc nghiệm: Nộp 01 lần và có kết quả ngay. Không cho phép nộp lại"
+      ]
+    },
+    "teamScoring": {
+      "title": "Tính điểm đội và xếp hạng",
+      "description": "Tất cả cuộc thi đều được tính điểm theo đội: điểm của đội bằng trung bình điểm của các thành viên trong đội. Thành viên không có bài nộp hợp lệ nhận 0 điểm. Tiêu chí phụ ưu tiên các đội hoàn thành sớm hơn.",
+      "details": [
+        "Tất cả cuộc thi đều được tính điểm theo đội: điểm của đội = trung bình điểm của các thành viên trong đội",
+        "Thành viên không có bài nộp hợp lệ trong vòng thi sẽ được tính 0 điểm cho vòng thi đó",
+        "Khi bằng điểm, hệ thống sẽ dùng tiêu chí phụ để xếp hạng theo quy định của cuộc thi (thường nhất là ưu tiên bên hoàn thành sớm hơn tính theo thời gian nộp bài)"
+      ]
+    },
+    "leaderboard": {
+      "title": "Bảng xếp hạng",
+      "description": "Bảng xếp hạng hiển thị cập nhật liên tục trong lúc thi, cho phép người tham gia theo dõi vị trí và tiến độ của họ theo thời gian thực.",
+      "details": [
+        "Bảng xếp hạng hiển thị cập nhật liên tục trong lúc thi"
+      ]
+    },
+    "appeals": {
+      "title": "Khiếu nại, chấm lại, làm lại",
+      "description": "Người dẫn đội có thể gửi khiếu nại đến Ban Tổ Chức trong thời hạn cho phép. Khi được chấp nhận, ban tổ chức có thể chấm lại bài hoặc cho phép làm lại. Lưu ý: điểm có thể tăng, giảm hoặc giữ nguyên sau khi chấm lại.",
+      "details": [
+        "Người dẫn đội là người gửi khiếu nại đến Ban Tổ Chức trong thời hạn cho phép của cuộc thi (cần kèm bằng chứng/tài liệu)",
+        "Khi khiếu nại được chấp nhận, Ban Tổ Chức có thể: Chấm lại bài (do giám khảo khác chấm), hoặc Cho làm lại theo quy định của cuộc thi",
+        "Lưu ý quan trọng: sau khi chấm lại, điểm có thể tăng, giảm hoặc giữ nguyên"
+      ]
+    },
+    "fairness": {
+      "title": "Công bằng và chống gian lận",
+      "description": "Không được sao chép bài, trao đổi đáp án, hoặc dùng cách làm sai quy định để đạt điểm. Hệ thống có thể phát hiện bài giống nhau bất thường. Vi phạm dẫn đến 0 điểm, loại khỏi xếp hạng, hoặc bị loại tùy theo mức độ nghiêm trọng.",
+      "details": [
+        "Không được sao chép bài, trao đổi đáp án, hoặc dùng cách làm sai quy định để đạt điểm",
+        "Hệ thống có thể phát hiện bài giống nhau bất thường và đưa vào diện kiểm tra. Việc kiểm tra sẽ có ban tổ chức xem xét để tránh kết luận sai",
+        "Nếu Ban Tổ Chức kết luận vi phạm: Bài thi sẽ bị xem là 0 điểm và/hoặc bị loại khỏi xếp hạng tùy mức độ và quy định của cuộc thi. Ban Tổ Chức có quyền hủy kết quả hoặc loại khỏi cuộc thi nếu phát hiện vi phạm nghiêm trọng"
+      ]
+    },
+    "finalizing": {
+      "title": "Chốt kết quả",
+      "description": "Sau khi kết thúc cuộc thi và xử lý xong các vấn đề cần thiết (chấm điểm, khiếu nại, kiểm tra vi phạm), kết quả sẽ được chốt. Khi đã chốt, kết quả được xem là cuối cùng và không thể chỉnh sửa.",
+      "details": [
+        "Sau khi kết thúc cuộc thi và xử lý xong các vấn đề cần thiết (chấm điểm, khiếu nại, kiểm tra vi phạm), kết quả sẽ được chốt",
+        "Khi đã chốt, kết quả được xem là cuối cùng và không thể chỉnh sửa"
+      ]
+    }
+  }
+}
+

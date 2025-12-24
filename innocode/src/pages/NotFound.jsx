@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export default function NotFound() {
+  const { t } = useTranslation("pages");
+  
   return (
     <div className="flex flex-col items-center justify-center h-screen text-center px-4 bg-white">
       {/* Floating 404 */}
@@ -11,7 +14,7 @@ export default function NotFound() {
         transition={{ type: "spring", stiffness: 80 }}
         className="text-7xl font-extrabold mb-4 text-gray-800"
       >
-        404
+        {t("notFound.title")}
       </motion.h1>
 
       {/* Wiggle animation */}
@@ -21,7 +24,7 @@ export default function NotFound() {
         transition={{ delay: 0.3 }}
         className="text-lg text-gray-500 mb-6"
       >
-        Oops! The page you're looking for doesn't exist.
+        {t("notFound.message")}
       </motion.p>
 
       {/* Bouncing button */}
@@ -34,7 +37,7 @@ export default function NotFound() {
           to="/"
           className="button-orange px-4 py-2 flex items-center justify-center rounded-full text-white shadow-lg"
         >
-          Go back home
+          {t("notFound.backToHome")}
         </Link>
       </motion.div>
 
@@ -44,7 +47,7 @@ export default function NotFound() {
         animate={{ y: [0, -8, 0] }}
         transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
       >
-        ✨ Lost in the void...
+        ✨ {t("notFound.subtitle")}
       </motion.div>
     </div>
   );

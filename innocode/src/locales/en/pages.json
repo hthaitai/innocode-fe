@@ -1,0 +1,34 @@
+{
+  "unauthorized": {
+    "title": "403 - Forbidden",
+    "message": "You do not have permission to view this page.",
+    "backToHome": "Return to Home"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Oops! The page you're looking for doesn't exist.",
+    "backToHome": "Go back home",
+    "subtitle": "Lost in the void..."
+  },
+  "register": {
+    "title": "Sign Up",
+    "fullName": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "school": "School",
+    "grade": "Grade",
+    "selectSchool": "Select a school",
+    "selectGrade": "Select grade",
+    "show": "Show",
+    "hide": "Hide",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign In",
+    "submit": "Sign Up",
+    "signingUp": "Signing up...",
+    "success": "Registration successful!",
+    "successMessage": "Please check your email to verify your account.",
+    "failedToLoadSchools": "Failed to load schools. Please refresh the page."
+  }
+}
+

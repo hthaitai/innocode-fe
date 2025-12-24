@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import translateApiError from "@/shared/utils/translateApiError";
 import "./Login.css";
 import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg";
 import { useAuth } from "@/context/AuthContext";
 const Login = () => {
+  const { t } = useTranslation(["auth", "common"]);
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +16,7 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [typedText, setTypedText] = useState("");
 
-  const fullText = "Welcome to InnoCode Platform";
+  const fullText = t("common:home.welcome");
 
   // Typing animation effect
   useEffect(() => {
@@ -45,40 +48,9 @@ const Login = () => {
       console.error("Login error:", err);
 
       // Xử lý các loại lỗi khác nhau
-      if (err.code === "ECONNABORTED" || err.message.includes("timeout")) {
-        setError(
-          "Request timeout. Please check your connection and try again."
-        );
-      } else if (err.response) {
-        // Lỗi từ server (có response)
-        const status = err.response.status;
-        const message = err.response.data?.message;
-
-        switch (status) {
-          case 401:
-            setError(message || "Wrong email or password. Please try again.");
-            break;
-          case 403:
-            setError("Account is disabled or not verified.");
-            break;
-          case 429:
-            setError("Too many login attempts. Please try again later.");
-            break;
-          case 500:
-            setError("Server error. Please try again later.");
-            break;
-          default:
-            setError(message || "An error occurred. Please try again.");
-        }
-      } else if (err.request) {
-        // Request được gửi nhưng không nhận được response
-        setError(
-          "Cannot connect to server. Please check your internet connection."
-        );
-      } else {
-        // Lỗi khác
-        setError("An unexpected error occurred. Please try again.");
-      }
+      // Use translateApiError to handle all error cases
+      const translatedError = translateApiError(err, 'errors')
+      setError(translatedError)
     } finally {
       setIsSubmitting(false);
     }
@@ -95,12 +67,12 @@ const Login = () => {
           />
         </Link>
         <div className="login-form">
-          <h1 className="login-title">Sign in</h1>
+          <h1 className="login-title">{t("auth:signIn")}</h1>
 
           <form onSubmit={handleSubmit} className="login-form-content">
             <div className="form-group">
               <label htmlFor="email" className="form-label">
-                Email
+                {t("auth:email")}
               </label>
               <input
                 type="email"
@@ -109,6 +81,7 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 className="form-input"
                 autoComplete="email"
+                placeholder={t("common:auth.emailPlaceholder")}
                 required
               />
             </div>
@@ -116,14 +89,14 @@ const Login = () => {
             <div className="form-group">
               <div className="password-header">
                 <label htmlFor="password" className="form-label">
-                  Password
+                  {t("auth:password")}
                 </label>
                 <button
                   type="button"
                   className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? "Hide" : "Show"}
+                  {showPassword ? t("auth:hide") : t("auth:show")}
                 </button>
               </div>
               <input
@@ -133,6 +106,7 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 className="form-input"
                 autoComplete="current-password"
+                placeholder={t("common:auth.passwordPlaceholder")}
                 required
               />
               <Link
@@ -140,7 +114,7 @@ const Login = () => {
                 className="reset-password-link"
                 style={{ display: "block", textAlign: "right" }}
               >
-                Forgot password?
+                {t("auth:forgotPassword")}
               </Link>
             </div>
 
@@ -163,10 +137,10 @@ const Login = () => {
                   }}
                 >
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Signing in...</span>
+                  <span>{t("common:common.loading")}</span>
                 </div>
               ) : (
-                "Sign in"
+                t("auth:signIn")
               )}
             </button>
           </form>

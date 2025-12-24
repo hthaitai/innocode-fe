@@ -45,6 +45,10 @@ axiosClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Add Accept-Language header for i18n support
+    const currentLanguage = localStorage.getItem('i18nextLng') || 'en';
+    config.headers['Accept-Language'] = currentLanguage;
+
     // Log request trong development
     if (import.meta.env.VITE_ENV === "development") {
     }

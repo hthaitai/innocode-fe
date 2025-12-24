@@ -1,4 +1,5 @@
 import React from "react"
+import { useTranslation } from "react-i18next"
 import { BreadcrumbTitle } from "./breadcrumb"
 import { Spinner } from "./SpinnerFluent"
 
@@ -12,6 +13,7 @@ export default function PageContainer({
   loading = false,
   error = null,
 }) {
+  const { t } = useTranslation("common")
   const hasState = loading || error
 
   return (
@@ -34,7 +36,7 @@ export default function PageContainer({
           {loading && <Spinner />}
           {error && (
             <div className="text-red-500 text-center px-4">
-              <p className="font-medium">Something went wrong</p>
+              <p className="font-medium">{t("common.somethingWentWrong")}</p>
 
               <p className="text-sm opacity-80 mt-1">
                 {typeof error === "string"
@@ -43,7 +45,7 @@ export default function PageContainer({
                   ? error.data.errorMessage
                   : error?.message
                   ? error.message
-                  : "Please try again later."}
+                  : t("common.pleaseTryAgain")}
               </p>
 
               {error?.errorCode && (

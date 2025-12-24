@@ -1,0 +1,19 @@
+{
+  "title": "Nền tảng Cuộc thi Lập trình",
+  "subtitle": "InnoCode",
+  "description": "Nền tảng số cho các cuộc thi lập trình cấp trung học với hệ thống chấm tự động, cuộc thi nhiều vòng và bảng xếp hạng thời gian thực - được thiết kế cho học sinh, giáo viên và tổ chức.",
+  "viewContests": "Xem Cuộc thi",
+  "ongoingContests": "Cuộc thi đang diễn ra",
+  "upcomingContests": "Cuộc thi sắp tới",
+  "completedContests": "Cuộc thi đã kết thúc",
+  "viewAll": "Xem tất cả",
+  "joinNow": "Tham gia các cuộc thi đang diễn ra ngay",
+  "leaderboard": "Bảng xếp hạng",
+  "topTeams": "Top Đội",
+  "rank": "Hạng",
+  "team": "Đội",
+  "score": "Điểm",
+  "viewFullLeaderboard": "Xem Bảng xếp hạng đầy đủ",
+  "noLeaderboardData": "Không có dữ liệu bảng xếp hạng"
+}
+

@@ -4,6 +4,7 @@ import PageContainer from '@/shared/components/PageContainer';
 import Search from '@/shared/components/search/Search';
 import Filter from '@/shared/components/search/Filter';
 import ContestCard from '@/shared/components/contest/ContestCard';
+import TablePagination from '@/shared/components/TablePagination';
 import { BREADCRUMBS } from '@/config/breadcrumbs';
 import useContests from '../hooks/useContests';
 import { Icon } from '@iconify/react';
@@ -11,7 +12,7 @@ import { Icon } from '@iconify/react';
 const Contests = () => {
   const [hasFilter, setHasFilter] = useState(true);
   const navigate = useNavigate();
-  const { contests, loading, error, searchTerm, searchContests } = useContests();
+  const { contests, loading, error, searchTerm, searchContests, pagination, onPageChange, isAutoSkipping } = useContests();
   const [inputValue, setInputValue] = useState(''); // Input value (can change while typing)
   
   // Filter only by status since search is now handled by backend
@@ -108,7 +109,10 @@ const Contests = () => {
   }
 
   // Empty state (no contests or all filtered out)
-  if (filteredContests.length === 0) {
+  // Only show empty state if not loading and not auto-skipping pages
+  if (filteredContests.length === 0 && !loading && !isAutoSkipping) {
+    const hasMorePages = pagination?.hasNextPage;
+    
     return (
       <PageContainer breadcrumb={BREADCRUMBS.CONTESTS} bg={false}>
       <div className="w-full flex flex-col gap-[14px]">
@@ -137,11 +141,18 @@ const Contests = () => {
               <h3 className="text-xl font-semibold text-gray-700 mb-2">
                 {searchTerm ? 'No contests found' : 'No contests available'}
               </h3>
-              <p className="text-gray-500">
+              <p className="text-gray-500 mb-4">
                 {searchTerm
                   ? 'Try adjusting your search terms'
+                  : hasMorePages
+                  ? 'This page contains only draft contests. Use pagination to view other pages.'
                   : 'Check back later for upcoming contests!'}
               </p>
+              {hasMorePages && pagination && (
+                <div className="mt-4">
+                  <TablePagination pagination={pagination} onPageChange={onPageChange} />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -232,6 +243,11 @@ const Contests = () => {
               ))}
             </div>
           </div>
+        )}
+        
+        {/* Pagination */}
+        {pagination && (
+          <TablePagination pagination={pagination} onPageChange={onPageChange} />
         )}
       </div>
     </PageContainer>

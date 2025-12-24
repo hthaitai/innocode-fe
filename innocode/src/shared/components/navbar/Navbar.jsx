@@ -1,14 +1,17 @@
 import React, { useState, useRef, useEffect } from "react"
 import { Link, NavLink, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import "./Navbar.css"
 import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg"
 import { useAuth } from "@/context/AuthContext"
 import { Icon } from "@iconify/react"
 import NotificationDropdown from "@/features/notification/components/user/NotificationDropdown"
 import { useGetNotificationsQuery } from "@/services/notificationApi"
+import LanguageSwitcher from "@/shared/components/LanguageSwitcher"
 
 const Navbar = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation("common")
   const { user, logout, isAuthenticated } = useAuth()
   const [showDropdown, setShowDropdown] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
@@ -98,23 +101,27 @@ const Navbar = () => {
   }
 
   const navLinks = [
-    { name: "Home", to: "/" },
-    { name: "Contests", to: getContestsLink() },
-    { name: "Leaderboard", to: "/leaderboard" },
-    { name: "About", to: "/about" },
+    { name: t("navbar.home"), key: "home", to: "/" },
+    { name: t("navbar.contests"), key: "contests", to: getContestsLink() },
+    { name: t("navbar.leaderboard"), key: "leaderboard", to: "/leaderboard" },
+    { name: t("navbar.about"), key: "about", to: "/about" },
+    { name: t("navbar.policy"), key: "policy", to: "/policy" },
   ]
 
   return (
     <nav className="h-[64px] top-0 bg-white fixed z-20 w-full flex items-center justify-between px-5">
-      {/* Logo */}
-      <div className="flex-shrink-0">
-        <Link to="/">
-          <img
-            src={InnoCodeLogo}
-            alt="InnoCode"
-            className="w-[50px] h-[50px] object-contain"
-          />
-        </Link>
+      {/* Left side: Logo */}
+      <div className="flex items-center gap-4">
+        <div className="flex-shrink-0">
+          <Link to="/">
+            <img
+              src={InnoCodeLogo}
+              alt="InnoCode"
+              className="w-[50px] h-[50px] object-contain"
+            />
+          </Link>
+        </div>
+        <LanguageSwitcher />
       </div>
 
       {/* Navigation Menu */}
@@ -190,7 +197,7 @@ const Navbar = () => {
                     <span
                       className={`role-badge ${getRoleBadgeClass(user.role)}`}
                     >
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                      {t(`roles.${user.role}`)}
                     </span>
                   </div>
                 </div>
@@ -206,7 +213,7 @@ const Navbar = () => {
                     }}
                   >
                     <Icon icon="mdi:account" width="18" />
-                    <span>Profile</span>
+                    <span>{t("navbar.profile")}</span>
                   </button>
                 </div>
 
@@ -218,7 +225,7 @@ const Navbar = () => {
                     onClick={handleLogout}
                   >
                     <Icon icon="mdi:logout" width="18" />
-                    <span>Logout</span>
+                    <span>{t("navbar.logout")}</span>
                   </button>
                 </div>
               </div>
@@ -226,7 +233,7 @@ const Navbar = () => {
           </div>
         ) : (
           <button className="signin-btn" onClick={handleSignIn}>
-            Sign in
+            {t("navbar.signIn")}
           </button>
         )}
       </div>

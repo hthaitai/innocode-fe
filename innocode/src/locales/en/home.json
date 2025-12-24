@@ -1,0 +1,19 @@
+{
+  "title": "Programming Contest Platform",
+  "subtitle": "InnoCode",
+  "description": "Digital platform for high school programming contests with automated judging system, multi-round contests, and real-time leaderboards - designed for students, teachers, and organizations.",
+  "viewContests": "View Contests",
+  "ongoingContests": "Ongoing Contests",
+  "upcomingContests": "Upcoming Contests",
+  "completedContests": "Completed Contests",
+  "viewAll": "View All",
+  "joinNow": "Join active contests now",
+  "leaderboard": "Leaderboard",
+  "topTeams": "Top Teams",
+  "rank": "Rank",
+  "team": "Team",
+  "score": "Score",
+  "viewFullLeaderboard": "View Full Leaderboard",
+  "noLeaderboardData": "No leaderboard data available"
+}
+

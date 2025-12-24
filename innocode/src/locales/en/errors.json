@@ -1,0 +1,41 @@
+{
+  "common": {
+    "notFound": "Resource not found",
+    "unauthorized": "Authentication required. Please login again",
+    "forbidden": "You don't have permission to perform this action",
+    "serverError": "Server error. Please try again later",
+    "networkError": "Network error. Please check your connection",
+    "timeout": "Request timeout. Please try again",
+    "unexpectedError": "An unexpected error occurred",
+    "validationError": "Please check your input and try again"
+  },
+  "auth": {
+    "invalidCredentials": "Invalid email or password",
+    "accountDisabled": "Account is disabled or not verified",
+    "tooManyAttempts": "Too many login attempts. Please try again later",
+    "emailExists": "Email already exists",
+    "weakPassword": "Password is too weak",
+    "tokenExpired": "Session expired. Please login again"
+  },
+  "contest": {
+    "duplicate": "A contest with this name already exists",
+    "notFound": "Contest not found",
+    "alreadyStarted": "Contest has already started",
+    "registrationClosed": "Registration for this contest is closed",
+    "alreadyRegistered": "You are already registered for this contest"
+  },
+  "team": {
+    "notFound": "Team not found",
+    "alreadyMember": "You are already a member of this team",
+    "teamFull": "Team is full",
+    "inviteExpired": "Team invitation has expired",
+    "inviteNotFound": "Team invitation not found",
+    "alreadyProcessed": "This invitation has already been processed"
+  },
+  "submission": {
+    "notFound": "Submission not found",
+    "deadlinePassed": "Submission deadline has passed",
+    "invalidFormat": "Invalid submission format"
+  }
+}
+
