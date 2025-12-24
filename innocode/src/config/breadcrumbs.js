@@ -255,6 +255,19 @@ export const BREADCRUMBS = {
     studentName,
   ],
 
+  // Organizer plagiarism
+  ORGANIZER_PLAGIARISM: (contestName) => [
+    "Contests",
+    contestName,
+    "Plagiarism",
+  ],
+  ORGANIZER_PLAGIARISM_DETAIL: (contestName, studentName) => [
+    "Contests",
+    contestName,
+    "Plagiarism",
+    studentName,
+  ],
+
   ORGANIZER_ACTIVITY: (contestName) => [
     "Contests",
     contestName,
@@ -545,6 +558,18 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/appeals`,
     `/organizer/contests/${contestId}/appeals/${appealId}`,
+  ],
+
+  ORGANIZER_PLAGIARISM: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/plagiarism`,
+  ],
+  ORGANIZER_PLAGIARISM_DETAIL: (contestId, submissionId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/plagiarism`,
+    `/organizer/contests/${contestId}/plagiarism/${submissionId}`,
   ],
 
   ORGANIZER_ACTIVITY: (contestId) => [

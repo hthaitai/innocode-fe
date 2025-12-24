@@ -17,6 +17,7 @@ const TableFluentScrollable = ({
   expandAt = null,
   maxHeight = 400, // default scrollable height
   renderActions = null,
+  getRowId,
 }) => {
   const [expanded, setExpanded] = React.useState({})
 
@@ -28,7 +29,15 @@ const TableFluentScrollable = ({
     state: { expanded },
     onExpandedChange: setExpanded,
     getRowCanExpand: () => true,
-    getRowId: (row) => row.questionId || row.id,
+    getRowId:
+      getRowId ||
+      ((row, index) =>
+        row.submissionId ||
+        row.appealId ||
+        row.teamId ||
+        row.questionId ||
+        row.id ||
+        `row-${index}`),
   })
 
   const isClickable = typeof onRowClick === "function"

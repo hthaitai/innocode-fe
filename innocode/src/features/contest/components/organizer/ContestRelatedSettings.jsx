@@ -64,6 +64,12 @@ const items = [
     icon: <Scale size={20} />,
     path: "appeals",
   },
+  {
+    title: "Plagiarism",
+    subtitle: "Review and resolve plagiarism cases",
+    icon: <FileBadge2 size={20} />,
+    path: "plagiarism",
+  },
   // {
   //   title: "Activity Logs",
   //   subtitle: "View contest-related user actions",

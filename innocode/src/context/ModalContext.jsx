@@ -24,6 +24,7 @@ import RoleRegistrationDetailsModal from "../features/role-registration/componen
 import ApproveRoleRegistrationModal from "../features/role-registration/components/ApproveRoleRegistrationModal"
 import DenyRoleRegistrationModal from "../features/role-registration/components/DenyRoleRegistrationModal"
 import AddMentorModal from "../features/school/components/AddMentorModal"
+import ResolvePlagiarismModal from "../features/plagiarism/components/organizer/ResolvePlagiarismModal"
 
 const ModalContext = createContext({
   openModal: () => {}, // no-op default
@@ -75,6 +76,7 @@ export function ModalProvider({ children }) {
     approveRoleRegistration: ApproveRoleRegistrationModal,
     denyRoleRegistration: DenyRoleRegistrationModal,
     addMentor: AddMentorModal,
+    resolvePlagiarism: ResolvePlagiarismModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

@@ -56,6 +56,8 @@ import OrganizerIssuedStudentCertificates from "./features/certificate/pages/org
 import OrganizerIssuedTeamCertificates from "./features/certificate/pages/organizer/OrganizerIssuedTeamCertificates"
 import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals"
 import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail"
+import OrganizerPlagiarismQueue from "./features/plagiarism/pages/organizer/OrganizerPlagiarismQueue"
+import OrganizerPlagiarismDetail from "./features/plagiarism/pages/organizer/OrganizerPlagiarismDetail"
 import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces"
 import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools"
 import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications"
@@ -703,6 +705,24 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <OrganizerAppealDetail />
+              </ProtectedRoute>
+            ),
+          },
+
+          // Plagiarism
+          {
+            path: ":contestId/plagiarism",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerPlagiarismQueue />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/plagiarism/:submissionId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerPlagiarismDetail />
               </ProtectedRoute>
             ),
           },
