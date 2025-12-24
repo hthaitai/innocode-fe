@@ -149,6 +149,19 @@ export const manualProblemApi = api.injectEndpoints({
       ],
       transformResponse: (response) => response.data,
     }),
+
+    // Submit null submission for manual round
+    submitNullSubmission: builder.mutation({
+      query: (roundId) => ({
+        url: `rounds/${roundId}/manual/null-submission`,
+        method: "POST",
+      }),
+      invalidatesTags: (result, error, roundId) => [
+        { type: "Results", id: roundId },
+        { type: "ManualSubmission", id: roundId },
+      ],
+      transformResponse: (response) => response.data,
+    }),
   }),
 })
 
@@ -163,4 +176,5 @@ export const {
   useFetchOrganizerManualResultsQuery,
   useSaveManualSubmissionMutation,
   useFinishRoundMutation,
+  useSubmitNullSubmissionMutation,
 } = manualProblemApi

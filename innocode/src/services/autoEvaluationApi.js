@@ -148,6 +148,16 @@ export const autoEvaluationApi = api.injectEndpoints({
       invalidatesTags: ["TestResults"],
       transformResponse: (response) => response.data,
     }),
+
+    // Submit null submission for auto evaluation round
+    submitNullSubmission: builder.mutation({
+      query: (roundId) => ({
+        url: `/rounds/${roundId}/auto-evaluation/null-submission`,
+        method: "POST",
+      }),
+      invalidatesTags: ["TestResults"],
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 export const {
@@ -165,5 +175,6 @@ export const {
   useSubmitAutoTestMutation, // submitAutoTest
   useGetAutoTestResultQuery, // getAutoTestResult
   useSubmitFinalAutoTestMutation, // submitFinalAutoTest
+  useSubmitNullSubmissionMutation, // submitNullSubmission
 } = autoEvaluationApi;
  

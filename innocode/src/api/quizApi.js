@@ -24,6 +24,9 @@ const quizApi = {
   //Get current answer
   getCurrentAnswer: (roundId, key) =>
     axiosClient.get(`/rounds/${roundId}/mcq-test/current-answer?key=${key}`),
+  //Submit null submission for MCQ round
+  submitNullSubmission: (roundId) =>
+    axiosClient.post(`/rounds/${roundId}/mcq-test/null-submission`),
 };
 
 export default quizApi;

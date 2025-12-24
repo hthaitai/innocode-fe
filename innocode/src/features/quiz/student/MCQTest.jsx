@@ -6,6 +6,7 @@ import useQuiz from '../hooks/useQuiz';
 import useQuizSubmit from '../hooks/useQuizSubmit';
 import useMCQTestFlow from '../hooks/useMCQTestFlow';
 import { useModal } from '@/shared/hooks/useModal';
+import quizApi from '@/api/quizApi';
 
 const MCQTest = () => {
   const { roundId, contestId } = useParams();
@@ -228,8 +229,41 @@ const MCQTest = () => {
   };
 
   const handleAutoSubmit = async () => {
-    alert('Time is up! Submitting your answers...');
-    await handleSubmitQuiz();
+    // Kiểm tra nếu không có answers, gọi null-submission API
+    const answersArray = Object.entries(answers).map(
+      ([questionId, selectedOptionId]) => ({
+        questionId,
+        selectedOptionId,
+      })
+    );
+
+    if (answersArray.length === 0) {
+      // Không có answers, gọi null-submission API
+      try {
+        console.log('📝 No answers found, submitting null submission for MCQ round');
+        await quizApi.submitNullSubmission(roundId);
+        
+        // Clear sessionStorage after successful submit
+        sessionStorage.removeItem(`mcq_test_key_${roundId}`);
+        sessionStorage.removeItem(`mcq_test_startTime_${roundId}`);
+        sessionStorage.removeItem(`mcq_test_timeLimit_${roundId}`);
+        
+        // Navigate to finish page
+        navigate(`/quiz/${roundId}/finish`, {
+          state: { 
+            contestId,
+            resultData: null // Null submission không có result data
+          },
+        });
+      } catch (error) {
+        console.error('❌ Failed to submit null submission:', error);
+        alert(`Failed to submit: ${error?.response?.data?.message || error?.message || 'Unknown error'}`);
+      }
+    } else {
+      // Có answers, submit như bình thường
+      alert('Time is up! Submitting your answers...');
+      await handleSubmitQuiz();
+    }
   };
 
   const handleSubmit = () => {

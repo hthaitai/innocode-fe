@@ -217,13 +217,14 @@ function MentorAppeal() {
   };
 
   // Handle open appeal modal
-  const handleOpenAppealModal = (roundId, roundName, teamId, studentId) => {
+  const handleOpenAppealModal = (roundId, roundName, teamId, studentId, roundType) => {
     openModal("createAppeal", {
       contestId: selectedContestId,
       roundId,
       roundName,
       teamId,
       studentId,
+      roundType,
     });
   };
 
@@ -358,7 +359,8 @@ function MentorAppeal() {
                                       roundId,
                                       roundName,
                                       teamId,
-                                      memberId
+                                      memberId,
+                                      roundType
                                     )
                                   }
                                   className="button-orange font-semibold flex items-center gap-2 px-3 py-1.5 text-xs whitespace-nowrap"

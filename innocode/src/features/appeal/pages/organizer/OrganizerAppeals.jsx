@@ -16,7 +16,6 @@ export default function OrganizerAppeals() {
   const navigate = useNavigate()
   const { contestId } = useParams()
   const { openModal, modalData, closeModal } = useModal()
-
   const [decisionFilter, setDecisionFilter] = useState("Pending")
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
@@ -44,8 +43,6 @@ export default function OrganizerAppeals() {
     isError: appealsError,
   } = useGetAppealsQuery({
     contestId,
-    roundId,
-    state: stateFilter,
     decision: decisionFilter,
     pageNumber,
     pageSize,
