@@ -14,7 +14,7 @@ export const appealApi = api.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Appeal", id }],
     }),
     createAppeal: builder.mutation({
-      query: ({ RoundId, TeamId, StudentId, Reason, Evidences }) => {
+      query: ({ RoundId, TeamId, StudentId, Reason, Evidences, AppealResolution }) => {
         const formData = new FormData()
 
         // Append required fields
@@ -23,11 +23,29 @@ export const appealApi = api.injectEndpoints({
         formData.append("StudentId", StudentId)
         formData.append("Reason", Reason)
 
-        // Append Evidences array (files) if provided
+        // Append AppealResolution as array
+        if (AppealResolution && Array.isArray(AppealResolution)) {
+          AppealResolution.forEach((resolution) => {
+            formData.append("AppealResolution", resolution)
+          })
+        } else if (AppealResolution) {
+          // Fallback: if it's a single value, still append it
+          formData.append("AppealResolution", AppealResolution)
+        }
+
+        // Append Evidences array (files) and EvidenceNotes if provided
         if (Evidences && Array.isArray(Evidences)) {
-          Evidences.forEach((file, index) => {
-            if (file instanceof File || file instanceof Blob) {
-              formData.append("Evidences", file)
+          Evidences.forEach((evidence, index) => {
+            // Check if evidence is an object with file and note, or just a file
+            if (evidence && typeof evidence === "object" && evidence.file) {
+              // New format: { file, note }
+              formData.append("Evidences", evidence.file)
+              // Append note (empty string if no note provided)
+              formData.append(`EvidenceNotes`, evidence.note || "")
+            } else if (evidence instanceof File || evidence instanceof Blob) {
+              // Old format: just a file
+              formData.append("Evidences", evidence)
+              formData.append(`EvidenceNotes`, "")
             }
           })
         }
