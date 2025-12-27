@@ -4,6 +4,7 @@ import { ChevronDown } from "lucide-react"
 import dayjs from "dayjs"
 import CalendarPicker from "./CalendarPicker"
 import TimeDropdown from "./TimeDropdown"
+import { EASING } from "../ui/easing"
 
 const DateTimeFieldFluent = ({
   label,
@@ -76,7 +77,7 @@ const DateTimeFieldFluent = ({
   }
 
   // Display the saved value (from value prop) or selectedDate if picker is open
-  const displayDate = showPicker ? selectedDate : (value ? dayjs(value) : null)
+  const displayDate = showPicker ? selectedDate : value ? dayjs(value) : null
 
   return (
     <div className="flex flex-col w-full relative" ref={containerRef}>
@@ -84,83 +85,85 @@ const DateTimeFieldFluent = ({
         <div className="text-xs leading-4 mb-2 capitalize">{label}</div>
       )}
 
-      <div
-        className={`inline-flex items-center justify-between gap-3 rounded-[5px] bg-white transition-all duration-200 px-3 min-h-[32px] ${
-          error
-            ? "border border-[#D32F2F]"
-            : focused
-            ? "border border-[#ECECEC] border-b-[#E05307]"
-            : "border border-[#ECECEC] border-b-[#D3D3D3]"
-        } cursor-pointer w-max`}
-        onClick={() => {
-          const willOpen = !showPicker
-          if (willOpen) {
-            // When opening, save current value as initial
-            const currentValue = value ? dayjs(value) : null
-            setInitialDate(currentValue)
-            setSelectedDate(currentValue)
-          }
-          setShowPicker(willOpen)
-        }}
-      >
-        <span className="text-sm text-gray-700">
-          {displayDate
-            ? displayDate.format("DD/MM/YYYY hh:mm A")
-            : "Select date and time"}
-        </span>
-        <ChevronDown
-          size={16}
-          className={`text-gray-400 transition-transform duration-300 ${
-            showPicker ? "rotate-180" : ""
-          }`}
-        />
-      </div>
+      <div className="relative inline-block w-max">
+        <div
+          className={`inline-flex items-center justify-between gap-3 rounded-[5px] bg-white transition-all duration-200 px-3 min-h-[32px] ${
+            error
+              ? "border border-[#D32F2F]"
+              : focused
+              ? "border border-[#ECECEC] border-b-[#E05307]"
+              : "border border-[#ECECEC] border-b-[#D3D3D3]"
+          } cursor-pointer w-max`}
+          onClick={() => {
+            const willOpen = !showPicker
+            if (willOpen) {
+              // When opening, save current value as initial
+              const currentValue = value ? dayjs(value) : null
+              setInitialDate(currentValue)
+              setSelectedDate(currentValue)
+            }
+            setShowPicker(willOpen)
+          }}
+        >
+          <span className="text-sm text-gray-700">
+            {displayDate
+              ? displayDate.format("DD/MM/YYYY hh:mm A")
+              : "Select date and time"}
+          </span>
+          <ChevronDown
+            size={16}
+            className={`text-gray-400 transition-transform duration-300 ${
+              showPicker ? "rotate-180" : ""
+            }`}
+          />
+        </div>
 
-      <AnimatePresence>
-        {showPicker && (
-          <motion.div
-            key="picker"
-            initial={{ opacity: 0, y: -6, scaleY: 0.98 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              scaleY: 1,
-              transition: { duration: 0.32, ease: [0.16, 1, 0.3, 1] },
-            }}
-            exit={{
-              opacity: 0,
-              y: -4,
-              scaleY: 0.98,
-              transition: { duration: 0.2, ease: "easeInOut" },
-            }}
-            className="absolute top-full bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg p-5 z-50"
-          >
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-5">
-                <CalendarPicker
-                  selectedDate={selectedDate}
-                  setSelectedDate={handleDateChange} // <-- use wrapped handler
-                />
-                <TimeDropdown
-                  selectedDate={selectedDate}
-                  setSelectedDate={handleDateChange} // <-- use wrapped handler
-                />
+        <AnimatePresence>
+          {showPicker && (
+            <motion.div
+              key="picker"
+              initial={{ y: -20, opacity: 0 }} // start slightly above
+              animate={{
+                y: 0,
+                opacity: 1,
+                transition: { duration: 0.5, ease: EASING.fluentOut },
+              }}
+              exit={{
+                y: -10,
+                opacity: 0,
+                transition: { duration: 0.25, ease: EASING.fluentOut },
+              }}
+              className="min-w-[420px] absolute top-full bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg p-5 z-50"
+            >
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-5">
+                  <div className="flex-shrink-0 w-fit">
+                    <CalendarPicker
+                      selectedDate={selectedDate}
+                      setSelectedDate={handleDateChange} // <-- use wrapped handler
+                    />
+                  </div>
+                  <TimeDropdown
+                    selectedDate={selectedDate}
+                    setSelectedDate={handleDateChange} // <-- use wrapped handler
+                  />
+                </div>
+
+                {/* Save Button */}
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    className="button-orange"
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
-              
-              {/* Save Button */}
-              <div className="flex justify-end pt-2  ">
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  className="button-orange px-4 py-2 text-sm"
-                >
-                  Save
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {helperText && (
         <AnimatePresence>

@@ -9,7 +9,7 @@ export const getMcqAttemptDetailColumns = () => [
   {
     header: "Question",
     accessorKey: "questionText",
-    size: 500, // wider for question text
+    size: 500, 
     cell: ({ row }) => (
       <div className="truncate max-w-[500px]" title={row.original.questionText}>
         {row.original.questionText}
@@ -18,7 +18,7 @@ export const getMcqAttemptDetailColumns = () => [
     meta: { className: "truncate max-w-[500px]" },
   },
   {
-    header: "Selected Answer",
+    header: "Selected answer",
     accessorKey: "selectedOptionText",
     size: 200,
     cell: ({ row }) => row.original.selectedOptionText ?? "—",

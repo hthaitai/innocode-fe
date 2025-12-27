@@ -17,6 +17,7 @@ const TableFluentScrollable = ({
   expandAt = null,
   maxHeight = 400, // default scrollable height
   renderActions = null,
+  getRowId,
 }) => {
   const [expanded, setExpanded] = React.useState({})
 
@@ -28,7 +29,15 @@ const TableFluentScrollable = ({
     state: { expanded },
     onExpandedChange: setExpanded,
     getRowCanExpand: () => true,
-    getRowId: (row) => row.questionId || row.id,
+    getRowId:
+      getRowId ||
+      ((row, index) =>
+        row.submissionId ||
+        row.appealId ||
+        row.teamId ||
+        row.questionId ||
+        row.id ||
+        `row-${index}`),
   })
 
   const isClickable = typeof onRowClick === "function"
@@ -45,13 +54,13 @@ const TableFluentScrollable = ({
         style={{ maxHeight: `${maxHeight}px`, overflowY: "auto" }}
       >
         <table className="table-fixed w-full border-collapse">
-          <thead className="sticky top-0 bg-white z-20">
+          <thead className="sticky top-0 bg-white z-10 border-b border-[#E5E5E5]">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="p-2 px-5 text-[12px] leading-[16px] font-normal text-[#7A7574] border-b border-[#E5E5E5] text-left whitespace-nowrap"
+                    className="p-2 px-5 text-[12px] leading-[16px] font-normal text-[#7A7574]  text-left whitespace-nowrap"
                     style={{ width: header.column.getSize() }}
                   >
                     {!header.isPlaceholder &&
@@ -116,10 +125,7 @@ const TableFluentScrollable = ({
 
                       {row.getIsExpanded() && renderSubComponent && (
                         <tr>
-                          <td
-                            colSpan={visibleCells.length}
-                            className="px-5 py-2"
-                          >
+                          <td colSpan={visibleCells.length}>
                             {renderSubComponent(row.original)}
                           </td>
                         </tr>

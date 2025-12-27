@@ -2,6 +2,10 @@ export const validateContest = (data, { isEdit = false } = {}) => {
   const errors = {}
   const now = new Date()
 
+  if (!data.imgFile && !data.imgUrl) {
+    errors.imgFile = "Contest image is required"
+  }
+
   // ---- Year ----
   const yearValue = data.year != null ? String(data.year).trim() : ""
   if (!yearValue) {

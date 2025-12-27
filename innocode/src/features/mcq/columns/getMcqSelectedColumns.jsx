@@ -1,9 +1,10 @@
 import { ExpandColumn } from "../../../shared/components/ExpandColumn"
 import { ChevronRight, Trash2 } from "lucide-react"
+import { formatDateTime } from "../../../shared/utils/dateTime"
 
 export const getMcqSelectedColumns = (deselectQuestion) => [
   {
-    header: "Question Text",
+    header: "Question text",
     accessorKey: "text",
     cell: ({ row, getValue }) => {
       const isExpanded = row.getIsExpanded()
@@ -30,6 +31,7 @@ export const getMcqSelectedColumns = (deselectQuestion) => [
         </div>
       )
     },
+    size: 600,
   },
   {
     header: "Options",
@@ -38,11 +40,10 @@ export const getMcqSelectedColumns = (deselectQuestion) => [
     size: 100,
   },
   {
-    header: "Created At",
+    header: "Created at",
     accessorKey: "createdAt",
-    cell: (info) =>
-      info.getValue() ? new Date(info.getValue()).toLocaleDateString() : "-",
-    size: 120,
+    cell: ({ row }) => formatDateTime(row.original?.createdAt),
+    size: 180,
   },
   {
     id: "deselect",

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { useFetchManualResultsQuery } from "@/services/manualProblemApi"
-import ResultsTable from "../../../problems/manual/components/ResultsTable"
+import ManageManualResults from "../../../problems/manual/components/ManageManualResults"
 
 const JudgeManualResultsPage = () => {
   const { submissionId } = useParams()
@@ -42,7 +42,7 @@ const JudgeManualResultsPage = () => {
           Results for submission ID: <strong>{submissionId}</strong>
         </p>
 
-        <ResultsTable
+        <ManageManualResults
           results={resultsData?.results || []}
           loading={resultsLoading}
           pagination={

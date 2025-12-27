@@ -15,12 +15,12 @@ const items = [
     icon: <Gavel size={20} />,
     path: "judges",
   },
-  {
-    title: "Judge invites",
-    subtitle: "View invitations sent to judges",
-    icon: <Mail size={20} />,
-    path: "judges/invites",
-  },
+  // {
+  //   title: "Judge invites",
+  //   subtitle: "View invitations sent to judges",
+  //   icon: <Mail size={20} />,
+  //   path: "judges/invites",
+  // },
   {
     title: "Active judges",
     subtitle: "Judges currently assigned to this contest",
@@ -63,6 +63,12 @@ const items = [
     subtitle: "Review and resolve team appeals",
     icon: <Scale size={20} />,
     path: "appeals",
+  },
+  {
+    title: "Plagiarism",
+    subtitle: "Review and resolve plagiarism cases",
+    icon: <FileBadge2 size={20} />,
+    path: "plagiarism",
   },
   // {
   //   title: "Activity Logs",

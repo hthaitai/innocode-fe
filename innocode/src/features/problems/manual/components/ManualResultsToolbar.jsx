@@ -4,29 +4,18 @@ import { Search, X } from "lucide-react"
 import TextFieldFluent from "../../../../shared/components/TextFieldFluent"
 import { useModal } from "../../../../shared/hooks/useModal"
 
-const ManageContestsActions = ({ onSearch, onFilter }) => {
-  const navigate = useNavigate()
-  const { openModal } = useModal()
+const ManualResultsToolbar = ({ onSearch }) => {
   const [search, setSearch] = useState("")
-
-  const handleAddContest = () => {
-    navigate("/organizer/contests/add")
-  }
 
   const handleSearchKeyDown = (e) => {
     if (e.key === "Enter") {
-      if (onSearch) onSearch(search) // Trigger search only on Enter
+      if (onSearch) onSearch({ studentName: search, teamName: search })
     }
   }
 
   const handleClearSearch = () => {
     setSearch("")
-    if (onSearch) onSearch("")
-  }
-
-  const handleFilterClick = () => {
-    openModal("contestFilter")
-    if (onFilter) onFilter()
+    if (onSearch) onSearch({ studentName: "", teamName: "" })
   }
 
   return (
@@ -35,7 +24,7 @@ const ManageContestsActions = ({ onSearch, onFilter }) => {
       <div className="flex items-center space-x-2">
         <div className="w-[280px]">
           <TextFieldFluent
-            placeholder="Search contests..."
+            placeholder="Search student name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleSearchKeyDown}
@@ -53,22 +42,9 @@ const ManageContestsActions = ({ onSearch, onFilter }) => {
             }
           />
         </div>
-
-        {/* <button
-          type="button"
-          className="button-white"
-          onClick={handleFilterClick}
-        >
-          Filter
-        </button> */}
       </div>
-
-      {/* Right section: add contest */}
-      <button className="button-orange" onClick={handleAddContest}>
-        Add contest
-      </button>
     </div>
   )
 }
 
-export default ManageContestsActions
+export default ManualResultsToolbar

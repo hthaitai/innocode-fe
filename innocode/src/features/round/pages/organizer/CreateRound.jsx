@@ -15,44 +15,25 @@ import {
   toDatetimeLocal,
 } from "../../../../shared/utils/dateTime"
 import { useGetRoundsByContestIdQuery } from "@/services/roundApi"
-import ExistingRoundsPanel from "../../components/organizer/ExistingRoundsPanel"
-
-const EMPTY = {
-  isRetakeRound: false,
-  mainRoundId: "",
-  name: "",
-  start: "",
-  end: "",
-  timeLimitSeconds: 0,
-  problemType: "",
-  mcqTestConfig: {
-    name: "",
-    config: "",
-  },
-  problemConfig: {
-    type: "",
-    description: "",
-    language: "Python 3",
-    penaltyRate: 0.1,
-    codeTemplate: "",
-    templateUrl: "",
-  },
-  TemplateFile: null,
-}
+import RoundsList from "../../components/organizer/RoundsList"
+import { EMPTY_ROUND } from "../../constants/roundConstants"
+import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 const CreateRound = () => {
   const { contestId } = useParams()
   const navigate = useNavigate()
   const [createRound, { isLoading }] = useCreateRoundMutation()
 
-  const [form, setForm] = useState(EMPTY)
+  const [form, setForm] = useState(EMPTY_ROUND)
   const [errors, setErrors] = useState({})
 
   const { data: contest, isLoading: contestLoading } =
     useGetContestByIdQuery(contestId)
   const { data: roundsData, isLoading: roundsLoading } =
     useGetRoundsByContestIdQuery(contestId)
-  const rounds = roundsData?.data || []
+
+  const rounds = roundsData?.data ?? []
 
   // Breadcrumbs
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_CREATE(
@@ -71,10 +52,22 @@ const CreateRound = () => {
     try {
       const formPayload = new FormData()
 
-      // append all
-      formPayload.append("IsRetakeRound", form.isRetakeRound)
+      // Append retake round info if applicable
       if (form.isRetakeRound) {
-        formPayload.append("MainRoundId", form.mainRoundId)
+        formPayload.append("IsRetakeRound", "true")
+
+        if (form.mainRoundId) {
+          formPayload.append("MainRoundId", form.mainRoundId)
+
+          const mainRound = rounds.find(
+            (r) => String(r.roundId) === String(form.mainRoundId)
+          )
+          const mainRoundName = mainRound?.roundName || ""
+          formPayload.append("MainRoundName", mainRoundName)
+        }
+      } else {
+        // For normal rounds, just indicate it's not a retake
+        formPayload.append("IsRetakeRound", "false")
       }
 
       formPayload.append("Name", form.name)
@@ -109,14 +102,6 @@ const CreateRound = () => {
         }
       }
 
-      if (form.isRetakeRound && form.mainRoundId) {
-        const mainRound = rounds.find(
-          (r) => String(r.roundId) === String(form.mainRoundId)
-        )
-        const mainRoundName = mainRound?.roundName || ""
-        formPayload.append("MainRoundName", mainRoundName)
-      }
-
       await createRound({ contestId, data: formPayload }).unwrap()
       toast.success("Round created")
       navigate(`/organizer/contests/${contestId}`)
@@ -126,42 +111,56 @@ const CreateRound = () => {
     }
   }
 
+  if (contestLoading || roundsLoading) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <div className="min-h-[70px] flex items-center justify-center">
+          <Spinner />
+        </div>
+      </PageContainer>
+    )
+  }
+
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={contestLoading}
     >
-      {contest && <RoundDateInfo contest={contest} />}
+      <AnimatedSection>
+        {contest && <RoundDateInfo contest={contest} />}
 
-      <div className="space-y-5">
-        <div>
-          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-            Active rounds
+        <div className="space-y-5">
+          <div>
+            <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+              Active rounds
+            </div>
+            <RoundsList
+              rounds={rounds}
+              selectedStart={form.start}
+              selectedEnd={form.end}
+            />
           </div>
-          <ExistingRoundsPanel
-            rounds={rounds}
-            selectedStart={form.start}
-            selectedEnd={form.end}
-          />
-        </div>
 
-        <div>
-          <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-            Create a round
+          <div>
+            <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+              Create a round
+            </div>
+            <RoundForm
+              contestId={contestId}
+              formData={form}
+              setFormData={setForm}
+              errors={errors}
+              setErrors={setErrors}
+              onSubmit={handleSubmit}
+              isSubmitting={isLoading}
+              mode="create"
+            />
           </div>
-          <RoundForm
-            contestId={contestId}
-            formData={form}
-            setFormData={setForm}
-            errors={errors}
-            setErrors={setErrors}
-            onSubmit={handleSubmit}
-            isSubmitting={isLoading}
-            mode="create"
-          />
         </div>
-      </div>
+      </AnimatedSection>
     </PageContainer>
   )
 }

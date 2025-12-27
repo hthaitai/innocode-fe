@@ -1,0 +1,67 @@
+import React from "react"
+import { Calendar, ChevronRight } from "lucide-react"
+import { formatDateTime, toDatetimeLocal } from "@/shared/utils/dateTime"
+import { useNavigate } from "react-router-dom"
+
+const RoundsList = ({ contestId, rounds }) => {
+  const navigate = useNavigate()
+
+  if (!rounds || rounds.length === 0) {
+    return (
+      <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
+        No rounds created yet.
+      </div>
+    )
+  }
+
+  return (
+    <ul className="space-y-1">
+      {rounds.map((round) => (
+        <div
+          key={round.roundId}
+          className="cursor-pointer border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors"
+          onClick={() =>
+            navigate(`/organizer/contests/${contestId}/rounds/${round.roundId}`)
+          }
+        >
+          <div className="flex gap-5 items-center flex-1">
+            <Calendar size={20} />
+            <div>
+              <p className="text-[14px] leading-[20px]">
+                {round.name ?? "Untitled Round"}
+              </p>
+              <p className="text-[12px] leading-[16px] text-[#7A7574]">
+                {formatDateTime(round.start)} - {formatDateTime(round.end)} |{" "}
+                {round.problemType || "—"}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div>
+              {round.isRetakeRound && (
+                <span className="text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-700">
+                  Retake
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <ChevronRight
+                size={20}
+                className="text-[#7A7574] cursor-pointer"
+                onClick={() =>
+                  navigate(
+                    `/organizer/contests/${contestId}/rounds/${round.roundId}`
+                  )
+                }
+              />
+            </div>
+          </div>
+        </div>
+      ))}
+    </ul>
+  )
+}
+
+export default RoundsList

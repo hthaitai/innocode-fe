@@ -89,14 +89,15 @@ export const manualProblemApi = api.injectEndpoints({
     }),
 
     fetchOrganizerManualResults: builder.query({
-      query: ({ roundId, search, pageNumber = 1, pageSize = 10 }) => ({
+      query: ({
+        roundId,
+        studentNameSearch = "",
+        teamNameSearch = "",
+        pageNumber = 1,
+        pageSize = 10,
+      }) => ({
         url: `rounds/${roundId}/manual-test/results`,
-        params: { pageNumber, pageSize, ...search },
-      }),
-      transformResponse: (response) => ({
-        results: response.data,
-        pagination: response.additionalData,
-        message: response.message,
+        params: { pageNumber, pageSize, studentNameSearch, teamNameSearch },
       }),
       providesTags: (result, error, { roundId }) => [
         { type: "Results", id: roundId },

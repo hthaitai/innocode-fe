@@ -29,10 +29,10 @@ const RoundInfo = () => {
 
   // Core Round Info
   details.push(
-    { label: "Round Name", value: safe(round.roundName) },
-    { label: "Contest Name", value: safe(round.contestName) },
+    { label: "Round name", value: safe(round.roundName) },
+    { label: "Contest name", value: safe(round.contestName) },
     {
-      label: "Problem Type",
+      label: "Problem type",
       value:
         round.problemType === "McqTest"
           ? "Multiple Choice Questions (MCQ)"
@@ -47,58 +47,28 @@ const RoundInfo = () => {
 
   // Timing
   details.push(
-    { label: "Start Time", value: safe(formatDateTime(round.start)) },
-    { label: "End Time", value: safe(formatDateTime(round.end)) },
-    { label: "Time Limit (seconds)", value: safe(round.timeLimitSeconds) },
+    { label: "Start date", value: safe(formatDateTime(round.start)) },
+    { label: "End date", value: safe(formatDateTime(round.end)) },
+    { label: "Time limit (seconds)", value: safe(round.timeLimitSeconds) },
     { spacer: true }
   )
 
   // MCQ Test Info (simplified, remove config)
   if (round.mcqTest) {
-    details.push({ label: "MCQ Test Name", value: safe(round.mcqTest.name) })
+    details.push({ label: "MCQ test name", value: safe(round.mcqTest.name) })
   }
 
-  // // MCQ Test Info
-  // if (round.mcqTest) {
-  //   details.push({ label: "MCQ Test Name", value: safe(round.mcqTest.name) })
-
-  //   try {
-  //     const parsedConfig = JSON.parse(round.mcqTest.config || "{}")
-  //     if (Object.keys(parsedConfig).length > 0) {
-  //       Object.entries(parsedConfig).forEach(([key, value]) => {
-  //         details.push({
-  //           label: `MCQ Config – ${key.replace(/_/g, " ")}`,
-  //           value:
-  //             value === true
-  //               ? "Yes"
-  //               : value === false
-  //               ? "No"
-  //               : value?.toString?.() ?? "—",
-  //         })
-  //       })
-  //     } else {
-  //       details.push({ label: "MCQ Config", value: "—" })
-  //     }
-  //   } catch {
-  //     details.push({
-  //       label: "MCQ Config (Raw String)",
-  //       value: safe(round.mcqTest.config),
-  //     })
-  //   }
-  // }
-
-  // Problem Info (AutoEval / Manual)
   if (round.problem) {
     details.push(
-      { label: "Problem Language", value: safe(round.problem.language) },
+      { label: "Problem language", value: safe(round.problem.language) },
       {
-        label: "Penalty Rate",
+        label: "Penalty rate",
         value: formatPenaltyRate(round.problem.penaltyRate),
       },
-      { label: "Problem Description", value: safe(round.problem.description) }
+      { label: "Problem description", value: safe(round.problem.description) }
     )
   } else if (!round.mcqTest) {
-    details.push({ label: "Problem Configuration", value: "—" })
+    details.push({ label: "Problem configuration", value: "—" })
   }
 
   const filteredDetails = details.filter(
@@ -106,7 +76,7 @@ const RoundInfo = () => {
   )
 
   return (
-    <InfoSection title="Round Information" onEdit={handleEdit}>
+    <InfoSection title="Round information" onEdit={handleEdit}>
       <DetailTable data={filteredDetails} labelWidth="180px" />
     </InfoSection>
   )

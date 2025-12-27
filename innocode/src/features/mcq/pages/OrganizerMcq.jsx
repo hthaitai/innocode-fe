@@ -4,9 +4,10 @@ import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 
-import McqTable from "../components/organizer/McqTable"
+import ManageMcqs from "../components/organizer/ManageMcqs"
 
 import { useGetRoundByIdQuery } from "../../../services/roundApi"
+import { Spinner } from "../../../shared/components/SpinnerFluent"
 
 const OrganizerMcq = () => {
   const { roundId } = useParams()
@@ -21,6 +22,19 @@ const OrganizerMcq = () => {
     round?.contestId,
     roundId
   )
+
+  if (isLoading) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <div className="min-h-[70px] flex items-center justify-center">
+          <Spinner />
+        </div>
+      </PageContainer>
+    )
+  }
 
   if (!round && !isLoading) {
     return (
@@ -39,10 +53,9 @@ const OrganizerMcq = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={isLoading}
       error={isError}
     >
-      <McqTable />
+      <ManageMcqs />
     </PageContainer>
   )
 }

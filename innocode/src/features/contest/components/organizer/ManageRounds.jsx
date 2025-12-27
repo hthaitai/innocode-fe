@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom"
 import { Calendar, ChevronRight, ListPlus } from "lucide-react"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { Spinner } from "@/shared/components/SpinnerFluent"
-// no modal here; navigation to dedicated pages
 import { useGetRoundsByContestIdQuery } from "@/services/roundApi"
 import { toDatetimeLocal } from "../../../../shared/utils/dateTime"
+import RoundsList from "../../../round/components/organizer/RoundsList"
 
-const RoundsList = ({ contestId }) => {
+const ManageRounds = ({ contestId }) => {
   const navigate = useNavigate()
 
   const {
@@ -54,48 +54,11 @@ const RoundsList = ({ contestId }) => {
             No rounds created yet.
           </div>
         ) : (
-          rounds.map((round) => (
-            <div
-              key={round.roundId}
-              className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors"
-            >
-              <div
-                className="flex gap-5 items-center flex-1 cursor-pointer"
-                onClick={() =>
-                  navigate(
-                    `/organizer/contests/${contestId}/rounds/${round.roundId}`
-                  )
-                }
-              >
-                <Calendar size={20} />
-                <div>
-                  <p className="text-[14px] leading-[20px]">
-                    {round.name ?? "Untitled Round"}
-                  </p>
-                  <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                    {formatDateTime(round.start)} - {formatDateTime(round.end)}{" "}
-                    | {round.problemType || "—"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <ChevronRight
-                  size={20}
-                  className="text-[#7A7574] cursor-pointer"
-                  onClick={() =>
-                    navigate(
-                      `/organizer/contests/${contestId}/rounds/${round.roundId}`
-                    )
-                  }
-                />
-              </div>
-            </div>
-          ))
+          <RoundsList rounds={rounds} contestId={contestId}/>
         )}
       </div>
     </div>
   )
 }
 
-export default RoundsList
+export default ManageRounds

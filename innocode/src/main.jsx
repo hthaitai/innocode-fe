@@ -33,6 +33,7 @@ import ManualRubricPage from "./features/problems/manual/pages/ManualRubricPage"
 import ManualResultsPage from "./features/problems/manual/pages/ManualResultsPage"
 import AutoEvaluationPage from "./features/problems/auto-evaluation/pages/AutoEvaluationPage"
 import AutoTestResultsPage from "./features/problems/auto-evaluation/pages/AutoTestResultsPage"
+import AutoResultDetailPage from "./features/problems/auto-evaluation/pages/AutoResultDetailPage"
 import Login from "./features/auth/components/Login"
 import Register from "./features/auth/components/Register"
 import RoleRegistration from "./features/auth/components/RoleRegistration"
@@ -56,6 +57,8 @@ import OrganizerIssuedStudentCertificates from "./features/certificate/pages/org
 import OrganizerIssuedTeamCertificates from "./features/certificate/pages/organizer/OrganizerIssuedTeamCertificates"
 import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals"
 import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail"
+import OrganizerPlagiarismQueue from "./features/plagiarism/pages/organizer/OrganizerPlagiarismQueue"
+import OrganizerPlagiarismDetail from "./features/plagiarism/pages/organizer/OrganizerPlagiarismDetail"
 import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces"
 import OrganizerSchools from "./features/school/pages/organizer/OrganizerSchools"
 import OrganizerNotifications from "./features/notification/pages/organizer/OrganizerNotifications"
@@ -82,7 +85,7 @@ import MyContest from "./features/contest/student/MyContest"
 import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal"
 // Organizer pages
 import AddTestCase from "./features/problems/auto-evaluation/pages/AddTestCase"
-import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage"
+import EditTestCase from "./features/problems/auto-evaluation/pages/EditTestCase"
 
 // Judge pages
 import JudgeManualRubricPage from "./features/submission/pages/judge/JudgeManualRubricPage"
@@ -103,6 +106,7 @@ import StudentCertificate from "./features/certificate/pages/student/StudentCert
 import ContestJudgesPage from "./features/invite-judge/pages/ContestJudgesPage"
 import JudgeInviteAccept from "./features/invite-judge/pages/JudgeInviteAccept"
 import JudgeInviteDecline from "./features/invite-judge/pages/JudgeInviteDecline"
+import JudgeInviteResponse from "./features/invite-judge/pages/JudgeInviteResponse"
 import SchoolManager from "./features/school/pages/school-manager/SchoolManager"
 import CreateSchoolRequest from "./features/school/pages/school-manager/CreateSchoolRequest"
 import SchoolCreationRequestDetail from "./features/school/pages/school-manager/SchoolCreationRequestDetail"
@@ -150,6 +154,14 @@ const router = createBrowserRouter([
     ],
   },
 
+  {
+    path: "judge/invite",
+    element: (
+      <ProtectedRoute allowedRoles={[ROLES.JUDGE]}>
+        <JudgeInviteResponse />
+      </ProtectedRoute>
+    ),
+  },
   {
     path: "judge/accept",
     element: (
@@ -567,7 +579,7 @@ const router = createBrowserRouter([
             path: ":contestId/rounds/:roundId/auto-evaluation/:testCaseId/edit",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <EditTestCasePage />
+                <EditTestCase />
               </ProtectedRoute>
             ),
           },
@@ -576,6 +588,14 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <AutoTestResultsPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/auto-evaluation/results/:submissionId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <AutoResultDetailPage />
               </ProtectedRoute>
             ),
           },
@@ -694,6 +714,24 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <OrganizerAppealDetail />
+              </ProtectedRoute>
+            ),
+          },
+
+          // Plagiarism
+          {
+            path: ":contestId/plagiarism",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerPlagiarismQueue />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/plagiarism/:submissionId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerPlagiarismDetail />
               </ProtectedRoute>
             ),
           },

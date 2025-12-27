@@ -1,14 +1,10 @@
 import React from "react"
-import TextFieldFluent from "@/shared/components/TextFieldFluent"
-import DateTimeFieldFluent from "@/shared/components/datetimefieldfluent/DateTimeFieldFluent"
-import DropdownFluent from "../../../../shared/components/DropdownFluent"
-import Label from "@/shared/components/form/Label"
-import { AnimatePresence, motion } from "framer-motion"
 import { useGetRoundsByContestIdQuery } from "@/services/roundApi"
 import BasicInfoSection from "./BasicInfoSection"
 import RoundTypeSection from "./RoundTypeSection"
 import ProblemConfigurationSection from "./ProblemConfigurationSection"
 import { toDatetimeLocal } from "../../../../shared/utils/dateTime"
+import { EMPTY_ROUND } from "../../constants/roundConstants"
 
 export default function RoundForm({
   contestId,
@@ -16,7 +12,6 @@ export default function RoundForm({
   setFormData,
   errors = {},
   setErrors,
-  showTypeSelector = true,
   onSubmit,
   isSubmitting,
   mode = "create",
@@ -24,6 +19,10 @@ export default function RoundForm({
 }) {
   const { data: roundsData } = useGetRoundsByContestIdQuery(contestId)
   const rounds = roundsData?.data ?? []
+  const nonRetakeRounds = React.useMemo(
+    () => rounds.filter((r) => r.isRetakeRound === false),
+    [rounds]
+  )
 
   const fileInputRef = React.useRef(null)
 
@@ -68,20 +67,7 @@ export default function RoundForm({
   // Inside RoundForm, after handleNestedChange
   const handleMainRoundSelect = (mainRoundId) => {
     if (!mainRoundId) {
-      setFormData((prev) => ({
-        ...prev,
-        mainRoundId,
-        isRetakeRound: true, // explicitly set
-        problemType: "",
-        problemConfig: {
-          description: "",
-          language: "Python 3",
-          penaltyRate: 0.1,
-          type: "",
-          templateUrl: "",
-        },
-        mcqTestConfig: { name: "", config: "" },
-      }))
+      setFormData(EMPTY_ROUND)
       return
     }
 
@@ -90,10 +76,10 @@ export default function RoundForm({
     )
     if (!mainRound) return
 
-    const formatted = {
+    const prefill = {
       mainRoundId,
       isRetakeRound: true,
-      name: mainRound.roundName,
+      name: `${mainRound.roundName} (Retake)`,
       start: mainRound.start ? toDatetimeLocal(mainRound.start) : "",
       end: mainRound.end ? toDatetimeLocal(mainRound.end) : "",
       problemType: mainRound.problemType,
@@ -120,68 +106,69 @@ export default function RoundForm({
       TemplateFile: null,
     }
 
-    setFormData(formatted)
+    setFormData(prefill)
   }
 
   const disabled = !!isSubmitting || (mode === "edit" && !hasChanges)
+  const isEditMode = mode === "edit"
+  const isRetakeRound = formData?.isRetakeRound
+  const isEditingRetakeRound = isEditMode && isRetakeRound
 
   return (
-    <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
-      <div className="grid grid-cols-[150px_1fr] gap-x-4 gap-y-5 items-start">
-        <RoundTypeSection
-          formData={formData}
-          setFormData={setFormData}
-          rounds={rounds}
-          errors={errors}
-          handleMainRoundSelect={handleMainRoundSelect}
-        />
+    <div>
+      <div className="space-y-1">
+        {!isEditMode && (
+          <RoundTypeSection
+            formData={formData}
+            setFormData={setFormData}
+            rounds={nonRetakeRounds}
+            errors={errors}
+            handleMainRoundSelect={handleMainRoundSelect}
+          />
+        )}
 
         <BasicInfoSection
           formData={formData}
           errors={errors}
           onChange={handleChange}
+          isEditingRetakeRound={isEditingRetakeRound}
+          isRetakeRound={isRetakeRound}
         />
 
-        <ProblemConfigurationSection
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-          setErrors={setErrors}
-          handleNestedChange={handleNestedChange}
-          handleFileChange={handleFileChange}
-          fileInputRef={fileInputRef}
-        />
-
-        {/* Submit Button */}
-        {onSubmit && (
-          <>
-            <div></div>
-            <div className="flex justify-start mt-4">
-              <button
-                type="button"
-                onClick={onSubmit}
-                disabled={disabled}
-                className={`flex items-center justify-center gap-2 ${
-                  disabled ? "button-gray" : "button-orange"
-                }`}
-              >
-                {/* Spinner */}
-                {isSubmitting && (
-                  <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
-                )}
-
-                {/* Button text */}
-                {isSubmitting
-                  ? mode === "edit"
-                    ? "Saving..."
-                    : "Creating..."
-                  : mode === "edit"
-                  ? "Save"
-                  : "Create"}
-              </button>
-            </div>
-          </>
+        {!isRetakeRound && (
+          <ProblemConfigurationSection
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+            setErrors={setErrors}
+            handleNestedChange={handleNestedChange}
+            handleFileChange={handleFileChange}
+            fileInputRef={fileInputRef}
+          />
         )}
+      </div>
+
+      <div className="flex justify-start mt-3">
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={disabled}
+          className={`flex items-center justify-center gap-2 ${
+            disabled ? "button-gray" : "button-orange"
+          }`}
+        >
+          {isSubmitting && (
+            <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
+          )}
+
+          {isSubmitting
+            ? mode === "edit"
+              ? "Saving..."
+              : "Creating..."
+            : mode === "edit"
+            ? "Save"
+            : "Create"}
+        </button>
       </div>
     </div>
   )

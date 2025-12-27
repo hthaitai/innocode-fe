@@ -5,7 +5,7 @@ export const getMcqColumns = (handleEditWeight) => [
   {
     header: "Question",
     accessorKey: "text",
-    size: 40,
+    size: 700,
     cell: ({ row, getValue }) => {
       const isExpanded = row.getIsExpanded()
       return (
@@ -31,7 +31,7 @@ export const getMcqColumns = (handleEditWeight) => [
   {
     header: "Weight",
     accessorKey: "weight",
-    size: 80,
+    size: 120,
     cell: (info) => info.getValue() ?? "-",
     meta: { className: "truncate max-w-[80px]" },
   },
@@ -53,9 +53,9 @@ export const getMcqColumns = (handleEditWeight) => [
             },
           },
         ]}
-        onClick={(e) => e.stopPropagation()} // prevent expand when clicking menu
+        onClick={(e) => e.stopPropagation()} 
       />
     ),
-    meta: { className: "text-right w-[60px]" }, // no truncate needed
+    meta: { className: "text-right w-[60px]" },
   },
 ]

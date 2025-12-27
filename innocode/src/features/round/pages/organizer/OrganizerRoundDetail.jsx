@@ -8,16 +8,14 @@ import StartEndRoundSection from "../../components/organizer/StartEndRoundSectio
 import RoundRelatedSettings from "../../components/organizer/RoundRelatedSettings"
 import DeleteRoundSection from "../../components/organizer/DeleteRoundSection"
 import { useGetRoundByIdQuery } from "../../../../services/roundApi"
+import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
 
   // RTK Query hook to fetch the round
-  const {
-    data: round,
-    isLoading: loading,
-    isError: error,
-  } = useGetRoundByIdQuery(roundId)
+  const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId)
 
   // Breadcrumbs
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
@@ -30,7 +28,20 @@ const OrganizerRoundDetail = () => {
     roundId
   )
 
-  if (!round && !loading) {
+  if (isLoading) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <div className="min-h-[70px] flex items-center justify-center">
+          <Spinner />
+        </div>
+      </PageContainer>
+    )
+  }
+
+  if (!round && !isLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -47,28 +58,31 @@ const OrganizerRoundDetail = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={loading}
-      error={error}
+      error={isError}
     >
-      <div className="space-y-5">
-        <div className="space-y-1">
-          <RoundInfo round={round} />
-          <RoundOpenCodeSection roundId={roundId} />
-          <StartEndRoundSection roundId={roundId} />
-        </div>
-
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">
-            Related settings
+      <AnimatedSection>
+        <div className="space-y-5">
+          <div className="space-y-1">
+            <RoundInfo round={round} />
+            <RoundOpenCodeSection roundId={roundId} />
+            <StartEndRoundSection roundId={roundId} />
           </div>
-          <RoundRelatedSettings contestId={contestId} round={round} />
-        </div>
 
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
-          {round && <DeleteRoundSection round={round} contestId={contestId} />}
+          <div>
+            <div className="text-sm font-semibold pt-3 pb-2">
+              Related settings
+            </div>
+            <RoundRelatedSettings contestId={contestId} round={round} />
+          </div>
+
+          <div>
+            <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
+            {round && (
+              <DeleteRoundSection round={round} contestId={contestId} />
+            )}
+          </div>
         </div>
-      </div>
+      </AnimatedSection>
     </PageContainer>
   )
 }

@@ -11,6 +11,7 @@ import { Spinner } from "../../../shared/components/SpinnerFluent"
 import { useGetAttemptDetailQuery } from "@/services/mcqApi"
 import { useGetRoundByIdQuery } from "@/services/roundApi"
 import TableFluentScrollable from "../../../shared/components/table/TableFluentScrollable"
+import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
 
 const OrganizerMcqAttemptDetail = () => {
   const { contestId, roundId, attemptId } = useParams()
@@ -25,13 +26,11 @@ const OrganizerMcqAttemptDetail = () => {
     isError,
   } = useGetAttemptDetailQuery(attemptId)
 
-  const pageLoading = isLoading || loadingRound
-
   // Breadcrumb setup
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
-    round?.contestName || "Contest",
-    round?.roundName || "Round",
-    attemptDetail?.studentName || "Student name"
+    round?.contestName ?? "Contest",
+    round?.roundName ?? "Round",
+    attemptDetail?.studentName ?? "Student name"
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
     contestId,
@@ -39,17 +38,18 @@ const OrganizerMcqAttemptDetail = () => {
     attemptId
   )
 
-  if (pageLoading) {
+  if (isLoading || loadingRound) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
-        loading={pageLoading}
-        error={isError}
-      ></PageContainer>
+      >
+        <div className="min-h-[70px] flex items-center justify-center">
+          <Spinner />
+        </div>
+      </PageContainer>
     )
   }
-
   if (!attemptDetail) {
     return (
       <PageContainer
@@ -70,36 +70,35 @@ const OrganizerMcqAttemptDetail = () => {
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
     >
-      <div className="space-y-5">
-        <AttemptStatsRow
-          totalQuestions={totalQuestions}
-          correctAnswers={correctAnswers}
-          score={score}
-        />
-
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">Information</div>
-          <AttemptInfo attemptDetail={attemptDetail} />
-        </div>
-
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">Attempt review</div>
-          <TableFluentScrollable
-            data={answerResults?.map((q, idx) => ({ ...q, index: idx })) || []}
-            columns={getMcqAttemptDetailColumns()}
-            loading={isLoading}
-            error={isError}
-            maxHeight={400}
-            renderActions={() => (
-              <div className="min-h-[70px] px-5 flex items-center">
-                <p className="text-[14px] leading-[20px] font-medium">
-                  Student's submitted answers
-                </p>
-              </div>
-            )}
+      <AnimatedSection>
+        <div className="space-y-5">
+          <AttemptStatsRow
+            totalQuestions={totalQuestions}
+            correctAnswers={correctAnswers}
+            score={score}
           />
+
+          <div>
+            <div className="text-sm font-semibold pt-3 pb-2">Information</div>
+            <AttemptInfo attemptDetail={attemptDetail} />
+          </div>
+
+          <div>
+            <div className="text-sm font-semibold pt-3 pb-2">
+              Attempt review
+            </div>
+            <TableFluentScrollable
+              data={
+                answerResults?.map((q, idx) => ({ ...q, index: idx })) || []
+              }
+              columns={getMcqAttemptDetailColumns()}
+              loading={isLoading}
+              error={isError}
+              maxHeight={400}
+            />
+          </div>
         </div>
-      </div>
+      </AnimatedSection>
     </PageContainer>
   )
 }

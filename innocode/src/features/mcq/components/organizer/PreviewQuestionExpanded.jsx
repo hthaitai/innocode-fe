@@ -1,26 +1,22 @@
-import { AnimatePresence, motion } from "framer-motion"
-
 const PreviewQuestionExpanded = ({ question }) => {
   const options = question?.options || []
 
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       {options.map((opt, i) => {
         const label = String.fromCharCode(65 + i)
+        const text = opt.text || "No text"
+        const isCorrect = opt.isCorrect
+
         return (
           <div
             key={opt.optionId || i}
-            className="flex flex-nowrap items-center gap-3 py-[6px] text-sm leading-5 whitespace-nowrap"
+            className={`flex items-center gap-2 text-sm leading-5 px-5 pl-24.5 py-1 ${
+              isCorrect ? "bg-green-50" : ""
+            }`}
           >
             <span className="font-medium">{label}.</span>
-            <span className="whitespace-nowrap">{opt.text}</span>
-            {opt.isCorrect ? (
-              <span className="text-green-600 font-medium whitespace-nowrap">
-                Correct
-              </span>
-            ) : (
-              <span className="text-gray-400 whitespace-nowrap">Incorrect</span>
-            )}
+            <span>{text}</span>
           </div>
         )
       })}

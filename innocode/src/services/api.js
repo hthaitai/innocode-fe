@@ -36,6 +36,7 @@ export const api = createApi({
     "ActivityLogs",
     "RoleRegistrations",
     "SchoolCreationRequests",
+    "Plagiarism",
   ],
   endpoints: () => ({}),
 })

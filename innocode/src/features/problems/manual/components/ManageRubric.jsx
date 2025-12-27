@@ -7,16 +7,16 @@ import {
 } from "../../../../services/manualProblemApi"
 import { useModal } from "@/shared/hooks/useModal"
 import toast from "react-hot-toast"
-import RubricActions from "./RubricActions"
+import RubricToolbar from "./RubricToolbar"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import { Spinner } from "../../../../shared/components/SpinnerFluent"
 
-const RubricTable = ({ roundId, contestId }) => {
-  const { data, isLoading: loadingRubric } = useFetchRubricQuery(roundId)
+const ManageRubric = ({ roundId, contestId }) => {
+  const { data, isLoading, isError } = useFetchRubricQuery(roundId)
   const criteria = data?.data?.criteria ?? []
 
   const [deleteCriterion] = useDeleteCriterionMutation()
   const { openModal } = useModal()
-
-  const savingRubric = false // Only needed if you want to disable "Add Criterion" button during some action
 
   const handleEdit = (criterion) => {
     openModal("rubric", {
@@ -53,28 +53,33 @@ const RubricTable = ({ roundId, contestId }) => {
   const columns = getRubricColumns(handleEdit, handleDelete)
   const totalMaxScore = criteria.reduce((a, c) => a + c.maxScore, 0)
 
+  if (isLoading) {
+    return (
+      <div className="min-h-[70px] flex items-center justify-center">
+        <Spinner />
+      </div>
+    )
+  }
+
   return (
-    <div>
+    <AnimatedSection>
+      <RubricToolbar
+        openModal={openModal}
+        roundId={roundId}
+        contestId={contestId}
+        criteria={criteria}
+        totalMaxScore={totalMaxScore}
+      />
+
       <TableFluentScrollable
         data={criteria}
         columns={columns}
-        loading={loadingRubric}
-        error={null}
+        error={isError}
         expandAt="description"
         maxHeight={400}
-        renderActions={() => (
-          <RubricActions
-            openModal={openModal}
-            roundId={roundId}
-            contestId={contestId}
-            criteria={criteria}
-            savingRubric={savingRubric}
-            totalMaxScore={totalMaxScore}
-          />
-        )}
       />
-    </div>
+    </AnimatedSection>
   )
 }
 
-export default RubricTable
+export default ManageRubric

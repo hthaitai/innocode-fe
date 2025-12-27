@@ -16,7 +16,8 @@ export default function RubricModal({
   initialData = null,
 }) {
   const isEditMode = !!initialData
-  const { data: criteria = [] } = useFetchRubricQuery(roundId)
+  const { data: rubricData } = useFetchRubricQuery(roundId)
+  const criteria = rubricData?.data?.criteria ?? []
 
   const [updateRubric, { isLoading: updating }] = useUpdateRubricMutation()
   const [createRubric, { isLoading: creating }] = useCreateRubricMutation()
@@ -37,16 +38,16 @@ export default function RubricModal({
     if (errors?.[name]) setErrors((prev) => ({ ...prev, [name]: "" }))
   }
 
+  const hasChanges = !initialData
+    ? formData.description.trim() !== "" || formData.maxScore !== 1
+    : formData.description !== initialData.description ||
+      formData.maxScore !== initialData.maxScore
+
   const handleSubmit = async () => {
     setErrors({})
 
     if (!formData.description.trim()) {
       setErrors({ description: "Description is required." })
-      return
-    }
-
-    if (formData.description.length > 500) {
-      setErrors({ description: "Description cannot exceed 500 characters." })
       return
     }
 
@@ -88,17 +89,19 @@ export default function RubricModal({
       </button>
       <button
         type="button"
-        className={isSubmitting ? "button-gray" : "button-orange"}
+        className={
+          isSubmitting || !hasChanges ? "button-gray" : "button-orange"
+        }
         onClick={handleSubmit}
-        disabled={isSubmitting}
+        disabled={isSubmitting || !hasChanges}
       >
         {isSubmitting
           ? isEditMode
             ? "Updating..."
             : "Creating..."
           : isEditMode
-          ? "Update Criterion"
-          : "Create Criterion"}
+          ? "Update criterion"
+          : "Create criterion"}
       </button>
     </div>
   )

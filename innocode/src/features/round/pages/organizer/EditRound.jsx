@@ -14,6 +14,12 @@ import {
   fromDatetimeLocal,
   toDatetimeLocal,
 } from "../../../../shared/utils/dateTime"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import RoundDateInfo from "@/features/round/components/organizer/RoundDateInfo"
+import RoundsList from "../../components/organizer/RoundsList"
+import { useGetRoundsByContestIdQuery } from "../../../../services/roundApi"
+import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { EMPTY_ROUND } from "../../constants/roundConstants"
 
 const EditRound = () => {
   const { contestId, roundId } = useParams()
@@ -23,8 +29,12 @@ const EditRound = () => {
   const { data: contest, isLoading: contestLoading } =
     useGetContestByIdQuery(contestId)
   const { data: round, isLoading: roundLoading } = useGetRoundByIdQuery(roundId)
+  const { data: roundsData, isLoading: roundsLoading } =
+    useGetRoundsByContestIdQuery(contestId)
 
-  const [formData, setFormData] = useState(null)
+  const rounds = roundsData?.data ?? []
+
+  const [formData, setFormData] = useState(EMPTY_ROUND)
   const [originalData, setOriginalData] = useState(null)
   const [errors, setErrors] = useState({})
 
@@ -46,6 +56,8 @@ const EditRound = () => {
     if (!round) return
 
     const formatted = {
+      isRetakeRound: round.isRetakeRound,
+      mainRoundName: round.mainRoundName,
       name: round.roundName,
       start: toDatetimeLocal(round.start),
       end: toDatetimeLocal(round.end),
@@ -99,10 +111,7 @@ const EditRound = () => {
 
       // Append MCQ config when editing MCQ rounds
       if (formData.problemType === "McqTest") {
-        formPayload.append(
-          "McqTestConfig.Name",
-          formData.mcqTestConfig.name
-        )
+        formPayload.append("McqTestConfig.Name", formData.mcqTestConfig.name)
         formPayload.append(
           "McqTestConfig.Config",
           formData.mcqTestConfig.config
@@ -146,14 +155,16 @@ const EditRound = () => {
     }
   }
 
-  // Show loading until data is ready
-  if (contestLoading || roundLoading || !formData) {
+  if (contestLoading || roundLoading || roundsLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
-        loading
-      />
+      >
+        <div className="min-h-[70px] flex items-center justify-center">
+          <Spinner />
+        </div>
+      </PageContainer>
     )
   }
 
@@ -162,16 +173,40 @@ const EditRound = () => {
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
     >
-      <RoundForm
-        formData={formData}
-        setFormData={setFormData}
-        errors={errors}
-        setErrors={setErrors}
-        onSubmit={handleSubmit}
-        isSubmitting={isUpdating}
-        mode="edit"
-        hasChanges={hasChanges}
-      />
+      <AnimatedSection>
+        {contest && <RoundDateInfo contest={contest} />}
+
+        <div className="space-y-5">
+          <div>
+            <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+              Active rounds
+            </div>
+            {formData && (
+              <RoundsList
+                rounds={rounds}
+                selectedStart={formData.start}
+                selectedEnd={formData.end}
+              />
+            )}
+          </div>
+
+          <div>
+            <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+              Create a round
+            </div>
+            <RoundForm
+              formData={formData}
+              setFormData={setFormData}
+              errors={errors}
+              setErrors={setErrors}
+              onSubmit={handleSubmit}
+              isSubmitting={isUpdating}
+              mode="edit"
+              hasChanges={hasChanges}
+            />
+          </div>
+        </div>
+      </AnimatedSection>
     </PageContainer>
   )
 }

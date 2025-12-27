@@ -180,7 +180,7 @@ const PublishContestSection = ({ contest }) => {
               key={idx}
               className="border-t border-[#E5E5E5] px-5 py-3 text-sm leading-5 flex justify-between"
             >
-              <div>{item}</div>
+              <div className="text-red-500">{item}</div>
               <div className="text-[#7A7574]">
                 Required
               </div>
