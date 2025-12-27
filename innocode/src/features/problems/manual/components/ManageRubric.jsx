@@ -11,10 +11,7 @@ import RubricToolbar from "./RubricToolbar"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 
-const ManageRubric = ({ roundId, contestId }) => {
-  const { data, isLoading, isError } = useFetchRubricQuery(roundId)
-  const criteria = data?.data?.criteria ?? []
-
+const ManageRubric = ({ roundId, contestId, criteria }) => {
   const [deleteCriterion] = useDeleteCriterionMutation()
   const { openModal } = useModal()
 
@@ -53,16 +50,8 @@ const ManageRubric = ({ roundId, contestId }) => {
   const columns = getRubricColumns(handleEdit, handleDelete)
   const totalMaxScore = criteria.reduce((a, c) => a + c.maxScore, 0)
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[70px] flex items-center justify-center">
-        <Spinner />
-      </div>
-    )
-  }
-
   return (
-    <AnimatedSection>
+    <div>
       <RubricToolbar
         openModal={openModal}
         roundId={roundId}
@@ -74,11 +63,10 @@ const ManageRubric = ({ roundId, contestId }) => {
       <TableFluentScrollable
         data={criteria}
         columns={columns}
-        error={isError}
         expandAt="description"
         maxHeight={400}
       />
-    </AnimatedSection>
+    </div>
   )
 }
 

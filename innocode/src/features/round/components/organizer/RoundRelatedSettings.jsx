@@ -18,13 +18,13 @@ const RoundRelatedSettings = ({ contestId, round }) => {
   if (round.problemType === "Manual") {
     items.push(
       {
-        title: "Rubric / Criteria",
+        title: "Rubric / criteria",
         subtitle: "Define scoring rules and judge guidelines",
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/manual/rubric`,
         icon: Code2,
       },
       {
-        title: "Manual Results",
+        title: "Manual results",
         subtitle: "View submissions and assign scores",
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/manual/results`,
         icon: ClipboardList,

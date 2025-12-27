@@ -104,6 +104,19 @@ export const manualProblemApi = api.injectEndpoints({
       ],
     }),
 
+    getManualTestResultBySubmissionId: builder.query({
+      query: ({ roundId, submissionId }) => ({
+        url: `rounds/${roundId}/manual-test/submissions/${submissionId}`,
+      }),
+      providesTags: (result, error, { roundId, submissionId }) => [
+        { type: "Results", id: roundId },
+        { type: "Results", id: submissionId },
+      ],
+      transformResponse: (response) => {
+        return response?.data || response;
+      },
+    }),
+
     fetchManualResults: builder.query({
       query: ({ roundId, search, pageNumber = 1, pageSize = 10 }) => ({
         url: `rounds/${roundId}/manual-test/my-result`,
@@ -175,6 +188,7 @@ export const {
   useDeleteCriterionMutation,
   useFetchManualResultsQuery,
   useFetchOrganizerManualResultsQuery,
+  useGetManualTestResultBySubmissionIdQuery,
   useSaveManualSubmissionMutation,
   useFinishRoundMutation,
   useSubmitNullSubmissionMutation,

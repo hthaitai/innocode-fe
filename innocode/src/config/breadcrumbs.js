@@ -150,6 +150,14 @@ export const BREADCRUMBS = {
     "Manual results",
   ],
 
+  ORGANIZER_MANUAL_RESULT_DETAIL: (contestName, roundName, studentName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Manual results",
+    studentName,
+  ],
+
   // auto evaluation
   ORGANIZER_TEST_CASES: (contestName, roundName) => [
     "Contests",
@@ -459,6 +467,14 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}/manual-results`,
+  ],
+
+  ORGANIZER_MANUAL_RESULT_DETAIL: (contestId, roundId, submissionId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/manual/results`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/manual-test/results/${submissionId}`,
   ],
 
   // auto evaluation

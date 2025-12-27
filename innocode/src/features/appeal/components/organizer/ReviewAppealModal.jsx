@@ -4,6 +4,7 @@ import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { useReviewAppealMutation } from "../../../../services/appealApi"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 import { Check, X } from "lucide-react"
+import Label from "../../../../shared/components/form/Label"
 
 export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
   const [decision, setDecision] = useState("Approved")
@@ -75,30 +76,34 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
       size="md"
       footer={footer}
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-5 text-sm leading-5">
         {/* Decision dropdown */}
-        <DropdownFluent
-          label="Decision"
-          options={decisionOptions}
-          value={decision}
-          onChange={setDecision}
-          placeholder="Select decision"
-        />
+        <div className="flex flex-col gap-2">
+          <Label>Decision</Label>
+          <DropdownFluent
+            options={decisionOptions}
+            value={decision}
+            onChange={setDecision}
+            placeholder="Select decision"
+          />
+        </div>
 
         {/* Decision reason input */}
-        <TextFieldFluent
-          label="Decision Reason"
-          name="decisionReason"
-          value={decisionReason}
-          onChange={(e) => {
-            setDecisionReason(e.target.value)
-            if (error) setError("")
-          }}
-          error={!!error}
-          helperText={error}
-          placeholder="Provide reason for your decision"
-          multiline
-        />
+        <div className="flex flex-col gap-2">
+          <Label required>Decision reason</Label>
+          <TextFieldFluent
+            name="decisionReason"
+            value={decisionReason}
+            onChange={(e) => {
+              setDecisionReason(e.target.value)
+              if (error) setError("")
+            }}
+            error={!!error}
+            helperText={error}
+            placeholder="Provide reason for your decision"
+            multiline
+          />
+        </div>
       </div>
     </BaseModal>
   )

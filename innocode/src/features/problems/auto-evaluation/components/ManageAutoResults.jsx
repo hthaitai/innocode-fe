@@ -9,25 +9,15 @@ import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSectio
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import AutoResultsToolbar from "./AutoResultsToolbar"
 
-const ManageAutoResults = () => {
+const ManageAutoResults = ({
+  results,
+  pagination,
+  setPage,
+  setTeamNameSearch,
+  setStudentNameSearch,
+}) => {
   const { roundId, contestId } = useParams()
   const navigate = useNavigate()
-  const [page, setPage] = useState(1)
-  const pageSize = 10
-  const [studentNameSearch, setStudentNameSearch] = useState("")
-  const [teamNameSearch, setTeamNameSearch] = useState("")
-
-  const {
-    data: resultsData,
-    isLoading,
-    isError,
-  } = useGetAutoTestResultsQuery({
-    roundId,
-    pageNumber: page,
-    pageSize,
-    studentNameSearch,
-    teamNameSearch,
-  })
 
   const handleSearch = ({ studentName, teamName }) => {
     setPage(1) // reset page
@@ -35,45 +25,29 @@ const ManageAutoResults = () => {
     setTeamNameSearch(teamName || "")
   }
 
-  const autoResults = resultsData?.data ?? []
-  const pagination = resultsData?.additionalData ?? {}
-
-  const handleRowClick = (submissionId) => {
-    navigate(
-      `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/results/${submissionId}`
-    )
+  const handleRowClick = (row) => {
+    const submissionId = row.submissionId
+    if (submissionId) {
+      navigate(
+        `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/results/${submissionId}`
+      )
+    }
   }
 
   const columns = getAutoResultColumns()
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[70px] flex items-center justify-center">
-        <Spinner />
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <div className="text-red-600 text-sm leading-5 border border-red-200 rounded-[5px] bg-red-50 flex items-center px-5 min-h-[70px]">
-        Something went wrong while loading results. Please try again.
-      </div>
-    )
-  }
-
   return (
-    <AnimatedSection>
+    <div>
       <AutoResultsToolbar onSearch={handleSearch} />
 
       <TableFluent
-        data={autoResults}
+        data={results}
         columns={columns}
         onRowClick={handleRowClick}
       />
 
       <TablePagination pagination={pagination} onPageChange={setPage} />
-    </AnimatedSection>
+    </div>
   )
 }
 

@@ -65,7 +65,8 @@
     "details": "Details",
     "saveChanges": "Save Changes",
     "areYouSure": "Are you sure?",
-    "thisActionCannotBeUndone": "This action cannot be undone."
+    "thisActionCannotBeUndone": "This action cannot be undone.",
+    "pageDeletedOrUnavailable": "This page has been deleted or is no longer available"
   },
   "home": {
     "welcome": "Welcome to InnoCode Platform",
@@ -104,4 +105,3 @@
     "invalidFormat": "Invalid format"
   }
 }
-

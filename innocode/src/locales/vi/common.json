@@ -65,7 +65,8 @@
     "details": "Chi tiết",
     "saveChanges": "Lưu thay đổi",
     "areYouSure": "Bạn có chắc chắn?",
-    "thisActionCannotBeUndone": "Hành động này không thể hoàn tác."
+    "thisActionCannotBeUndone": "Hành động này không thể hoàn tác.",
+    "pageDeletedOrUnavailable": "Trang này đã bị xóa hoặc không còn tồn tại"
   },
   "home": {
     "welcome": "Chào mừng đến với Nền tảng InnoCode",

@@ -13,39 +13,10 @@ import ContestsToolbar from "./ContestsToolbar"
 import TablePagination from "../../../../shared/components/TablePagination"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
-const ManageContests = () => {
-  // External hooks
+const ManageContests = ({ contests, pagination, setPage, setSearchName }) => {
   const navigate = useNavigate()
   const { confirmDeleteEntity } = useConfirmDelete()
-
-  // Local state
-  const [page, setPage] = useState(1)
-  const pageSize = 15
-  const [searchName, setSearchName] = useState("")
-
-  // RTK query hooks
-  const {
-    data: contestsData,
-    isLoading,
-    isError,
-  } = useGetOrganizerContestsQuery({
-    pageNumber: page,
-    pageSize,
-    nameSearch: searchName,
-  })
   const [deleteContest] = useDeleteContestMutation()
-
-  // Data extraction
-  const contests = contestsData?.data ?? []
-  const pagination = contestsData?.additionalData
-
-  // Early returns
-  if (isLoading)
-    return (
-      <div className="min-h-[70px] flex items-center justify-center">
-        <Spinner />
-      </div>
-    )
 
   // Handlers
   const handleSearch = (value) => {
@@ -68,7 +39,7 @@ const ManageContests = () => {
       deleteAction: deleteContest,
       idKey: "id",
       onNavigate: () => {
-        const count = contestsData?.data?.length ?? 0
+        const count = contests.length
         if (count === 1 && page > 1) {
           setPage(page - 1)
         }
@@ -79,27 +50,18 @@ const ManageContests = () => {
   /** Table columns */
   const columns = getContestColumns(handleEditContest, handleDeleteContest)
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[70px] flex items-center justify-center">
-        <Spinner />
-      </div>
-    )
-  }
-
   return (
-    <AnimatedSection>
+    <div>
       <ContestsToolbar onSearch={handleSearch} />
 
       <TableFluent
         data={contests}
         columns={columns}
-        error={isError}
         onRowClick={handleRowClick}
       />
 
       <TablePagination pagination={pagination} onPageChange={setPage} />
-    </AnimatedSection>
+    </div>
   )
 }
 

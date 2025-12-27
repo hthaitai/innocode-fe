@@ -16,6 +16,14 @@ const DropdownFluent = ({
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef(null)
   const itemRefs = useRef({}) // refs for each item
+  const [dropdownPosition, setDropdownPosition] = useState({
+    top: "100%",
+    left: 0,
+  })
+  const [dropdownDirection, setDropdownDirection] = useState({
+    vertical: "down", // or "up"
+    horizontal: "right", // or "left"
+  })
 
   // Memoize selected option label to prevent unnecessary recalculations
   const selectedLabel = useMemo(() => {
@@ -51,6 +59,45 @@ const DropdownFluent = ({
       })
     }
   }, [isOpen, value])
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const calculatePosition = () => {
+      if (!dropdownRef.current) return
+
+      const rect = dropdownRef.current.getBoundingClientRect()
+      const dropdownHeight = 200 // your max height
+      const dropdownWidth = 364 // your max width
+
+      // Simple flip if touching edges
+      const vertical =
+        rect.bottom + dropdownHeight > window.innerHeight ? "up" : "down"
+      const horizontal =
+        rect.left + dropdownWidth > window.innerWidth ? "left" : "right"
+
+      setDropdownDirection({ vertical, horizontal })
+
+      // Set CSS position
+      const position = {
+        top: vertical === "down" ? "100%" : "auto",
+        bottom: vertical === "up" ? "100%" : "auto",
+        left: horizontal === "right" ? 0 : "auto",
+        right: horizontal === "left" ? 0 : "auto",
+      }
+
+      setDropdownPosition(position)
+    }
+
+    calculatePosition()
+    window.addEventListener("resize", calculatePosition)
+    window.addEventListener("scroll", calculatePosition, true)
+
+    return () => {
+      window.removeEventListener("resize", calculatePosition)
+      window.removeEventListener("scroll", calculatePosition, true)
+    }
+  }, [isOpen])
 
   const handleSelect = useCallback(
     (val) => {
@@ -138,7 +185,9 @@ const DropdownFluent = ({
             style={{
               maxHeight: "200px",
               width: "max-content",
+              maxWidth: "364px",
               minWidth: dropdownRef.current?.offsetWidth,
+              ...dropdownPosition, // apply calculated position
             }}
           >
             <div className="overflow-y-auto max-h-[200px] overscroll-contain p-1 flex flex-col gap-1">

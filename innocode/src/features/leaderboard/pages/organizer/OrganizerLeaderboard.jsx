@@ -14,6 +14,7 @@ import {
 import { useGetContestByIdQuery } from "@/services/contestApi"
 import { getContestLeaderboardColumns } from "../../columns/getContestLeaderboardColumns"
 import { useLiveLeaderboard } from "../../hooks/useLiveLeaderboard"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 const OrganizerLeaderboard = () => {
   const { contestId } = useParams()
@@ -45,15 +46,18 @@ const OrganizerLeaderboard = () => {
     useToggleFreezeLeaderboardMutation()
 
   // Handle live updates from SignalR
-  const handleLiveUpdate = useCallback((data) => {
-    if (import.meta.env.VITE_ENV === "development") {
-      console.log("🔄 Live leaderboard update received (organizer):", data);
-    }
-    
-    // Refresh the current page data when live update comes in
-    // This ensures pagination stays consistent
-    refetchLeaderboard();
-  }, [refetchLeaderboard]);
+  const handleLiveUpdate = useCallback(
+    (data) => {
+      if (import.meta.env.VITE_ENV === "development") {
+        console.log("🔄 Live leaderboard update received (organizer):", data)
+      }
+
+      // Refresh the current page data when live update comes in
+      // This ensures pagination stays consistent
+      refetchLeaderboard()
+    },
+    [refetchLeaderboard]
+  )
 
   // Connect to live leaderboard hub
   const { isConnected, connectionError } = useLiveLeaderboard(
@@ -105,7 +109,9 @@ const OrganizerLeaderboard = () => {
 
   const handleRowClick = useCallback(
     (team) => {
-      navigate(`/organizer/contests/${contestId}/leaderboard/teams/${team.teamId}`)
+      navigate(
+        `/organizer/contests/${contestId}/leaderboard/teams/${team.teamId}`
+      )
     },
     [navigate, contestId]
   )
@@ -130,47 +136,51 @@ const OrganizerLeaderboard = () => {
       breadcrumbPaths={breadcrumbPaths}
       loading={loading}
     >
-      <TableFluent
-        data={entries}
-        columns={columns}
-        title="Leaderboard"
-        pagination={pagination}
-        onRowClick={handleRowClick}
-        renderActions={() => {
-          return (
-            <div className="min-h-[70px] flex items-center justify-between px-5">
-              <div className="flex items-center gap-3">
-                <p className="text-[14px] leading-[20px] font-medium">Leaderboard</p>
-                {/* Live indicator */}
-                {contestId && !isFrozen && (
-                  <div className="flex items-center gap-1.5">
-                    {isConnected ? (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span className="text-xs font-medium">Live</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1 text-gray-400">
-                        <WifiOff size={14} />
-                        <span className="text-xs">Offline</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+      <AnimatedSection>
+        <TableFluent
+          data={entries}
+          columns={columns}
+          title="Leaderboard"
+          pagination={pagination}
+          onRowClick={handleRowClick}
+          renderActions={() => {
+            return (
+              <div className="min-h-[70px] flex items-center justify-between px-5">
+                <div className="flex items-center gap-3">
+                  <p className="text-[14px] leading-[20px] font-medium">
+                    Leaderboard
+                  </p>
+                  {/* Live indicator */}
+                  {contestId && !isFrozen && (
+                    <div className="flex items-center gap-1.5">
+                      {isConnected ? (
+                        <div className="flex items-center gap-1 text-green-600">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="text-xs font-medium">Live</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-gray-400">
+                          <WifiOff size={14} />
+                          <span className="text-xs">Offline</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
 
-              {/* Toggle Switch */}
-              <ToggleSwitchFluent
-                enabled={isFrozen}
-                onChange={handleFreezeToggle}
-                labelLeft="Freeze"
-                labelRight="Unfreeze"
-                labelPosition="left"
-              />
-            </div>
-          )
-        }}
-      />
+                {/* Toggle Switch */}
+                <ToggleSwitchFluent
+                  enabled={isFrozen}
+                  onChange={handleFreezeToggle}
+                  labelLeft="Freeze"
+                  labelRight="Unfreeze"
+                  labelPosition="left"
+                />
+              </div>
+            )
+          }}
+        />
+      </AnimatedSection>
     </PageContainer>
   )
 }

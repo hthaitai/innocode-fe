@@ -12,25 +12,28 @@ import { useGetAttemptDetailQuery } from "@/services/mcqApi"
 import { useGetRoundByIdQuery } from "@/services/roundApi"
 import TableFluentScrollable from "../../../shared/components/table/TableFluentScrollable"
 import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
+import { LoadingState } from "../../../shared/components/ui/LoadingState"
+import { ErrorState } from "../../../shared/components/ui/ErrorState"
+import { MissingState } from "../../../shared/components/ui/MissingState"
 
 const OrganizerMcqAttemptDetail = () => {
   const { contestId, roundId, attemptId } = useParams()
 
-  // Fetch round info for contestName and roundName
-  const { data: round, isLoading: loadingRound } = useGetRoundByIdQuery(roundId)
-
-  // Fetch attempt detail
   const {
-    data: attemptDetail,
-    isLoading,
-    isError,
+    data: round,
+    isLoading: roundLoading,
+    isError: roundError,
+  } = useGetRoundByIdQuery(roundId)
+  const {
+    data: attempt,
+    isLoading: attemptLoading,
+    isError: attemptError,
   } = useGetAttemptDetailQuery(attemptId)
 
-  // Breadcrumb setup
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
     round?.contestName ?? "Contest",
     round?.roundName ?? "Round",
-    attemptDetail?.studentName ?? "Student name"
+    attempt?.studentName ?? "Student name"
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
     contestId,
@@ -38,32 +41,40 @@ const OrganizerMcqAttemptDetail = () => {
     attemptId
   )
 
-  if (isLoading || loadingRound) {
+  if (attemptLoading || roundLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="min-h-[70px] flex items-center justify-center">
-          <Spinner />
-        </div>
-      </PageContainer>
-    )
-  }
-  if (!attemptDetail) {
-    return (
-      <PageContainer
-        breadcrumb={breadcrumbItems}
-        breadcrumbPaths={breadcrumbPaths}
-      >
-        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          This attempt detail page has been deleted or is no longer available.
-        </div>
+        <LoadingState />
       </PageContainer>
     )
   }
 
-  const { totalQuestions, correctAnswers, score, answerResults } = attemptDetail
+  if (attemptError || roundError) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName="attempt" />
+      </PageContainer>
+    )
+  }
+
+  if (!round || !attempt) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <MissingState itemName="attempt" />
+      </PageContainer>
+    )
+  }
+
+  const { totalQuestions, correctAnswers, score, answerResults } = attempt
 
   return (
     <PageContainer
@@ -80,7 +91,7 @@ const OrganizerMcqAttemptDetail = () => {
 
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">Information</div>
-            <AttemptInfo attemptDetail={attemptDetail} />
+            <AttemptInfo attemptDetail={attempt} />
           </div>
 
           <div>
@@ -92,8 +103,6 @@ const OrganizerMcqAttemptDetail = () => {
                 answerResults?.map((q, idx) => ({ ...q, index: idx })) || []
               }
               columns={getMcqAttemptDetailColumns()}
-              loading={isLoading}
-              error={isError}
               maxHeight={400}
             />
           </div>

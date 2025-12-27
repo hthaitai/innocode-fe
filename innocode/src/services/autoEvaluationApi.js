@@ -140,6 +140,18 @@ export const autoEvaluationApi = api.injectEndpoints({
       },
     }),
 
+    getAutoTestResultBySubmissionId: builder.query({
+      query: ({ roundId, submissionId }) => ({
+        url: `/rounds/${roundId}/auto-test/results/${submissionId}`,
+      }),
+      providesTags: (result, error, { roundId, submissionId }) => [
+        { type: "TestResults", id: submissionId },
+      ],
+      transformResponse: (response) => {
+        return response?.data || response;
+      },
+    }),
+
     submitFinalAutoTest: builder.mutation({
       query: (submissionId) => ({
         url: `/submissions/${submissionId}/acceptance`,
@@ -174,6 +186,7 @@ export const {
   useGetAutoTestResultsQuery, // getAutoTestResults
   useSubmitAutoTestMutation, // submitAutoTest
   useGetAutoTestResultQuery, // getAutoTestResult
+  useGetAutoTestResultBySubmissionIdQuery, // getAutoTestResultBySubmissionId
   useSubmitFinalAutoTestMutation, // submitFinalAutoTest
   useSubmitNullSubmissionMutation, // submitNullSubmission
 } = autoEvaluationApi;

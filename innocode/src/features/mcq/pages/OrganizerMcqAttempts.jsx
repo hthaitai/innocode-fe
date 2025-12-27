@@ -9,6 +9,9 @@ import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { Users } from "lucide-react"
 import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
 import { Spinner } from "../../../shared/components/SpinnerFluent"
+import { LoadingState } from "../../../shared/components/ui/LoadingState"
+import { ErrorState } from "../../../shared/components/ui/ErrorState"
+import { MissingState } from "../../../shared/components/ui/MissingState"
 
 const OrganizerMcqAttempts = () => {
   const navigate = useNavigate()
@@ -20,19 +23,21 @@ const OrganizerMcqAttempts = () => {
   // Fetch attempts for the round
   const {
     data: attemptsData,
-    isLoading,
-    isError,
+    isLoading: attemptsLoading,
+    isError: attemptsError,
   } = useGetAttemptsQuery({
     roundId,
     pageNumber: page,
     pageSize,
   })
+  const {
+    data: round,
+    isLoading: roundLoading,
+    isError: roundError,
+  } = useGetRoundByIdQuery(roundId)
 
   const attempts = attemptsData?.data ?? []
-  const pagination = attemptsData?.additionalData
-
-  // Fetch round info (includes contestName and roundName)
-  const { data: round, isLoading: roundLoading } = useGetRoundByIdQuery(roundId)
+  const pagination = attemptsData?.additionalData ?? {}
 
   // Breadcrumbs
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPTS(
@@ -52,15 +57,36 @@ const OrganizerMcqAttempts = () => {
       `/organizer/contests/${contestId}/rounds/${roundId}/attempts/${attemptId}`
     )
   }
-  if (isLoading || roundLoading) {
+
+  if (attemptsLoading || roundLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="min-h-[70px] flex items-center justify-center">
-          <Spinner />
-        </div>
+        <LoadingState />
+      </PageContainer>
+    )
+  }
+
+  if (attemptsError || roundError) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName="attempts" />
+      </PageContainer>
+    )
+  }
+
+  if (!round) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <MissingState itemName="round" />
       </PageContainer>
     )
   }
@@ -69,7 +95,6 @@ const OrganizerMcqAttempts = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      error={isError}
     >
       <AnimatedSection>
         <TableFluent

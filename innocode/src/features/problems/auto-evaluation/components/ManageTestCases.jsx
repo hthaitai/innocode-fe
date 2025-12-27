@@ -14,23 +14,15 @@ import TablePagination from "../../../../shared/components/TablePagination"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
-const ManageTestCases = ({ contestId, roundId }) => {
+const ManageTestCases = ({
+  contestId,
+  roundId,
+  testCases,
+  pagination,
+  setPage,
+}) => {
   const navigate = useNavigate()
   const { openModal } = useModal()
-
-  const [pageNumber, setPageNumber] = useState(1)
-  const pageSize = 10
-
-  // Fetch test cases
-  const {
-    data: testCaseData,
-    isLoading,
-    isError,
-  } = useGetRoundTestCasesQuery({ roundId, pageNumber, pageSize })
-
-  const testCases = testCaseData?.data ?? []
-  const pagination = testCaseData?.additionalData
-
   const [deleteTestCase] = useDeleteRoundTestCaseMutation()
 
   // Open modal for delete confirmation
@@ -77,27 +69,19 @@ const ManageTestCases = ({ contestId, roundId }) => {
 
   const columns = getTestCaseColumns(handleEditTestCase, handleDeleteTestCase)
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[70px] flex items-center justify-center">
-        <Spinner />
-      </div>
-    )
-  }
-
   return (
-    <AnimatedSection>
+    <div>
       <TestCaseToolbar
         onUploadCsv={handleUploadCsv}
         onCreate={handleCreateTestCase}
       />
 
-      <TableFluent data={testCases} columns={columns} error={isError} />
+      <TableFluent data={testCases} columns={columns} />
 
       {pagination && (
-        <TablePagination pagination={pagination} onPageChange={setPageNumber} />
+        <TablePagination pagination={pagination} onPageChange={setPage} />
       )}
-    </AnimatedSection>
+    </div>
   )
 }
 

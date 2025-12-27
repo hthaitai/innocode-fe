@@ -2,6 +2,7 @@ import React from "react"
 import { useTranslation } from "react-i18next"
 import { BreadcrumbTitle } from "./breadcrumb"
 import { Spinner } from "./SpinnerFluent"
+import { AnimatedSection } from "./ui/AnimatedSection"
 
 export default function PageContainer({
   breadcrumb,
@@ -12,9 +13,10 @@ export default function PageContainer({
   bg = true,
   loading = false,
   error = null,
+  missing = false,
 }) {
   const { t } = useTranslation("common")
-  const hasState = loading || error
+  const hasState = loading || error || missing
 
   return (
     <div className={`min-h-screen w-full ${className}`}>
@@ -32,30 +34,43 @@ export default function PageContainer({
 
       {/* State handling */}
       {hasState ? (
-        <div className="flex items-center justify-center min-h-[70px]">
-          {loading && <Spinner />}
-          {error && (
-            <div className="text-red-500 text-center px-4">
-              <p className="font-medium">{t("common.somethingWentWrong")}</p>
-
-              <p className="text-sm opacity-80 mt-1">
-                {typeof error === "string"
-                  ? error
-                  : error?.data?.errorMessage
-                  ? error.data.errorMessage
-                  : error?.message
-                  ? error.message
-                  : t("common.pleaseTryAgain")}
-              </p>
-
-              {error?.errorCode && (
-                <p className="text-xs opacity-70 mt-1">
-                  Code: {error.errorCode}
-                </p>
-              )}
+        <>
+          {loading && (
+            <div className="flex items-center justify-center min-h-[70px]">
+              <Spinner />
             </div>
           )}
-        </div>
+
+          {error && (
+            <div className="text-red-600 text-sm leading-5 border border-red-200 rounded-[5px] bg-red-50 flex items-center px-5 min-h-[70px]">
+              <div className="text-red-500">
+                <p className="font-medium">{t("common.somethingWentWrong")}</p>
+
+                <p className="text-xs leading-4 opacity-80">
+                  {typeof error === "string"
+                    ? error
+                    : error?.data?.errorMessage
+                    ? error.data.errorMessage
+                    : error?.message
+                    ? error.message
+                    : t("common.pleaseTryAgain")}
+                </p>
+
+                {error?.errorCode && (
+                  <p className="text-xs leading-4 opacity-70">
+                    Code: {error.errorCode}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {missing && (
+            <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
+              {t("common.pageDeletedOrUnavailable")}
+            </div>
+          )}
+        </>
       ) : (
         <div className="w-full">{children}</div>
       )}

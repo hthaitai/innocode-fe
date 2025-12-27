@@ -1,49 +1,63 @@
-import React from "react"
+import React, { useState } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { useGetRoundByIdQuery } from "../../../../services/roundApi"
 import ManageTestCases from "../components/ManageTestCases"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { useGetRoundTestCasesQuery } from "../../../../services/autoEvaluationApi"
+import { LoadingState } from "../../../../shared/components/ui/LoadingState"
+import { ErrorState } from "../../../../shared/components/ui/ErrorState"
+import { MissingState } from "../../../../shared/components/ui/MissingState"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 const AutoEvaluationPage = () => {
   const { contestId, roundId } = useParams()
-  const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId)
 
-  const contestName = round?.contestName ?? "Contest"
-  const roundName = round?.roundName ?? "Round"
+  const [pageNumber, setPageNumber] = useState(1)
+  const pageSize = 10
+
+  const {
+    data: round,
+    isLoading: roundLoading,
+    isError: roundError,
+  } = useGetRoundByIdQuery(roundId)
+  const {
+    data: testCaseData,
+    isLoading: testCaseLoading,
+    isError: testCaseError,
+  } = useGetRoundTestCasesQuery({ roundId, pageNumber, pageSize })
+
+  const testCases = testCaseData?.data ?? []
+  const pagination = testCaseData?.additionalData ?? {}
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEST_CASES(
-    contestName,
-    roundName
+    round?.contestName ?? "Contest",
+    round?.roundName ?? "Round"
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEST_CASES(
     contestId,
     roundId
   )
 
-  if (isLoading) {
+  if (roundLoading || testCaseLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="min-h-[70px] flex items-center justify-center">
-          <Spinner />
-        </div>
+        <LoadingState />
       </PageContainer>
     )
   }
 
-  if (isError) {
+  if (roundError || testCaseError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="text-red-600 text-sm leading-5 border border-red-200 rounded-[5px] bg-red-50 flex items-center px-5 min-h-[70px]">
-          Something went wrong while loading this round. Please try again.
-        </div>
+        <ErrorState itemName="test cases" />
       </PageContainer>
     )
   }
@@ -54,9 +68,7 @@ const AutoEvaluationPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="text-[#7A7574] text-sm leading-5 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          This round has been deleted or is no longer available.
-        </div>
+        <MissingState itemName="round" />
       </PageContainer>
     )
   }
@@ -66,7 +78,15 @@ const AutoEvaluationPage = () => {
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
     >
-      <ManageTestCases contestId={contestId} roundId={roundId} />
+      <AnimatedSection>
+        <ManageTestCases
+          contestId={contestId}
+          roundId={roundId}
+          testCases={testCases}
+          pagination={pagination}
+          setPage={setPageNumber}
+        />
+      </AnimatedSection>
     </PageContainer>
   )
 }

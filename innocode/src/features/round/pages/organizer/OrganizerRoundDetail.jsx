@@ -10,19 +10,19 @@ import DeleteRoundSection from "../../components/organizer/DeleteRoundSection"
 import { useGetRoundByIdQuery } from "../../../../services/roundApi"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import { LoadingState } from "../../../../shared/components/ui/LoadingState"
+import { ErrorState } from "../../../../shared/components/ui/ErrorState"
+import { MissingState } from "../../../../shared/components/ui/MissingState"
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
 
-  // RTK Query hook to fetch the round
   const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId)
 
-  // Breadcrumbs
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round"
+    round?.contestName,
+    round?.roundName
   )
-
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_DETAIL(
     contestId,
     roundId
@@ -34,22 +34,29 @@ const OrganizerRoundDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="min-h-[70px] flex items-center justify-center">
-          <Spinner />
-        </div>
+        <LoadingState />
       </PageContainer>
     )
   }
 
-  if (!round && !isLoading) {
+  if (isError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          This round has been deleted or is no longer available.
-        </div>
+        <ErrorState itemName="round" />
+      </PageContainer>
+    )
+  }
+
+  if (!round) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <MissingState itemName="round" />
       </PageContainer>
     )
   }
@@ -58,7 +65,6 @@ const OrganizerRoundDetail = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      error={isError}
     >
       <AnimatedSection>
         <div className="space-y-5">

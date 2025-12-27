@@ -2,12 +2,13 @@ import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Icon } from "@iconify/react"
 import { AnimatePresence, motion } from "framer-motion"
+import { AnimatedSection } from "../ui/AnimatedSection"
 
 const BreadcrumbTitle = ({ items = [], paths = [], maxVisible = 3 }) => {
   const navigate = useNavigate()
   const [showAll, setShowAll] = useState(false)
   const fluentEaseOut = [0.16, 1, 0.3, 1]
-  
+
   if (!items || items.length === 0) return null
 
   const handleBreadcrumbClick = (index) => {
@@ -69,30 +70,19 @@ const BreadcrumbTitle = ({ items = [], paths = [], maxVisible = 3 }) => {
                 ...
                 <AnimatePresence>
                   {showAll && (
-                    <motion.div
-                      initial={{ y: -20, opacity: 0 }} // start slightly above
-                      animate={{
-                        y: 0,
-                        opacity: 1,
-                        transition: { duration: 0.5, ease: fluentEaseOut },
-                      }}
-                      exit={{
-                        y: -10,
-                        opacity: 0,
-                        transition: { duration: 0.25, ease: fluentEaseOut },
-                      }}
-                      className="p-1 absolute top-full left-0 mt-3 bg-white border border-[#E5E5E5] shadow-lg rounded-[5px] overflow-hidden min-w-max z-50 flex flex-col gap-1"
-                    >
-                      {hiddenItems.map((hiddenItem, i) => (
-                        <span
-                          key={`hidden-${i}`}
-                          className="rounded-[5px] px-3 py-1.5 cursor-pointer text-sm leading-5 text-black hover:bg-[#F0F0F0] transition-colors duration-150"
-                          onClick={() => handleBreadcrumbClick(i + 1)}
-                        >
-                          {hiddenItem}
-                        </span>
-                      ))}
-                    </motion.div>
+                    <AnimatedSection direction="top">
+                      <div className="p-1 absolute top-full left-0 mt-3 bg-white border border-[#E5E5E5] shadow-lg rounded-[5px] overflow-hidden min-w-max z-50 flex flex-col gap-1">
+                        {hiddenItems.map((hiddenItem, i) => (
+                          <span
+                            key={`hidden-${i}`}
+                            className="rounded-[5px] px-3 py-1.5 cursor-pointer text-sm leading-5 text-black hover:bg-[#F0F0F0] transition-colors duration-150"
+                            onClick={() => handleBreadcrumbClick(i + 1)}
+                          >
+                            {hiddenItem}
+                          </span>
+                        ))}
+                      </div>
+                    </AnimatedSection>
                   )}
                 </AnimatePresence>
               </span>

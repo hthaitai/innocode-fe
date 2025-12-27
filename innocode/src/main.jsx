@@ -31,9 +31,10 @@ import FinishQuiz from "./features/quiz/student/FinishQuiz"
 // Auth
 import ManualRubricPage from "./features/problems/manual/pages/ManualRubricPage"
 import ManualResultsPage from "./features/problems/manual/pages/ManualResultsPage"
+import ManualResultDetailPage from "./features/problems/manual/pages/ManualResultDetailPage"
 import AutoEvaluationPage from "./features/problems/auto-evaluation/pages/AutoEvaluationPage"
 import AutoTestResultsPage from "./features/problems/auto-evaluation/pages/AutoTestResultsPage"
-import AutoResultDetailPage from "./features/problems/auto-evaluation/pages/AutoResultDetailPage"
+import AutoResultDetail from "./features/problems/auto-evaluation/pages/AutoResultDetail"
 import Login from "./features/auth/components/Login"
 import Register from "./features/auth/components/Register"
 import RoleRegistration from "./features/auth/components/RoleRegistration"
@@ -548,6 +549,14 @@ const router = createBrowserRouter([
               </ProtectedRoute>
             ),
           },
+          {
+            path: ":contestId/rounds/:roundId/manual-test/results/:submissionId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <ManualResultDetailPage />
+              </ProtectedRoute>
+            ),
+          },
 
           {
             path: ":contestId/rounds/:roundId/problems/:problemId",
@@ -595,7 +604,7 @@ const router = createBrowserRouter([
             path: ":contestId/rounds/:roundId/auto-evaluation/results/:submissionId",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <AutoResultDetailPage />
+                <AutoResultDetail />
               </ProtectedRoute>
             ),
           },

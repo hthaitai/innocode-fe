@@ -11,21 +11,20 @@ import StartEndContestSection from "../../components/organizer/StartEndContestSe
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import { LoadingState } from "../../../../shared/components/ui/LoadingState"
+import { ErrorState } from "../../../../shared/components/ui/ErrorState"
+import { MissingState } from "../../../../shared/components/ui/MissingState"
 
 const OrganizerContestDetail = () => {
   const { contestId } = useParams()
 
-  // RTK Query
   const {
     data: contest,
     isLoading,
     isError,
   } = useGetContestByIdQuery(contestId)
 
-  // Breadcrumbs
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(
-    contest?.name ?? "Contest Detail"
-  )
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(contest?.name)
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
 
   if (isLoading) {
@@ -34,23 +33,29 @@ const OrganizerContestDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="min-h-[70px] flex items-center justify-center">
-          <Spinner />
-        </div>
+        <LoadingState />
       </PageContainer>
     )
   }
 
-  // If not found
-  if (!contest && !isLoading) {
+  if (isError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          This contest has been deleted or is no longer available.
-        </div>
+        <ErrorState itemName="contest" />
+      </PageContainer>
+    )
+  }
+
+  if (!contest) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <MissingState itemName="contest" />
       </PageContainer>
     )
   }
@@ -59,7 +64,6 @@ const OrganizerContestDetail = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      error={isError}
     >
       <AnimatedSection>
         <div className="space-y-5">

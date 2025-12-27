@@ -10,17 +10,19 @@ const AppealInfo = ({ appeal }) => {
 
   const data = [
     // Appeal specifics
+    { label: "Status", value: <StatusBadge status={appeal.state} /> },
     { label: "Student name", value: safe(appeal.ownerName) },
-    { label: "Reason", value: safe(appeal.reason) },
+    { label: "Student reason", value: safe(appeal.reason) },
     { spacer: true },
 
     // Decision info
     { label: "Mentor name", value: safe(appeal.mentorName) },
+    { label: "Mentor decision", value: safe(appeal.decision) },
     { label: "Mentor reason", value: safe(appeal.decisionReason) },
+    { label: "Appeal resolution", value: safe(appeal.appealResolution) },
     { spacer: true },
 
     // Identifiers / Context
-    { label: "Status", value: <StatusBadge status={appeal.state} /> },
     { label: "Team name", value: safe(appeal.teamName) },
     { label: "Contest name", value: safe(appeal.contestName) },
     { label: "Round name", value: safe(appeal.roundName) },
@@ -41,7 +43,7 @@ const AppealInfo = ({ appeal }) => {
 
   return (
     <InfoSection title="Appeal Information">
-      <DetailTable data={data} labelWidth="117px" />
+      <DetailTable data={data} labelWidth="134px" />
     </InfoSection>
   )
 }

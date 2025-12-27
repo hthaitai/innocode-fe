@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useMemo, useState } from "react"
 import { useParams } from "react-router-dom"
 
 import PageContainer from "@/shared/components/PageContainer"
@@ -8,43 +8,72 @@ import ManageMcqs from "../components/organizer/ManageMcqs"
 
 import { useGetRoundByIdQuery } from "../../../services/roundApi"
 import { Spinner } from "../../../shared/components/SpinnerFluent"
+import { LoadingState } from "../../../shared/components/ui/LoadingState"
+import { ErrorState } from "../../../shared/components/ui/ErrorState"
+import { useGetRoundMcqsQuery } from "../../../services/mcqApi"
+import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
+import { MissingState } from "../../../shared/components/ui/MissingState"
 
 const OrganizerMcq = () => {
-  const { roundId } = useParams()
-  const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId)
+  const { contestId, roundId } = useParams()
+  const [page, setPage] = useState(1)
+  const pageSize = 10
+
+  const {
+    data: round,
+    isLoading: roundLoading,
+    isError: roundError,
+  } = useGetRoundByIdQuery(roundId)
+  const {
+    data: mcqData,
+    isLoading: mcqLoading,
+    isError: mcqError,
+  } = useGetRoundMcqsQuery({ roundId, pageNumber: page, pageSize })
+
+  const mcqs = mcqData?.data?.mcqTest?.questions ?? []
+  const pagination = mcqData?.additionalData
+    ? {
+        ...mcqData.additionalData,
+        pageNumber: mcqData.additionalData.currentPage,
+      }
+    : {}
+  const testId = mcqData?.data?.mcqTest?.testId
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ(
     round?.contestName ?? "Contest",
     round?.roundName ?? "Round"
   )
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ(contestId, roundId)
 
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ(
-    round?.contestId,
-    roundId
-  )
-
-  if (isLoading) {
+  if (roundLoading || mcqLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="min-h-[70px] flex items-center justify-center">
-          <Spinner />
-        </div>
+        <LoadingState />
       </PageContainer>
     )
   }
 
-  if (!round && !isLoading) {
+  if (roundError || mcqError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          This round has been deleted or is no longer available.
-        </div>
+        <ErrorState itemName="questions" />
+      </PageContainer>
+    )
+  }
+
+  if (!round) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <MissingState itemName="round" />
       </PageContainer>
     )
   }
@@ -53,9 +82,15 @@ const OrganizerMcq = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      error={isError}
     >
-      <ManageMcqs />
+      <AnimatedSection>
+        <ManageMcqs
+          mcqs={mcqs}
+          pagination={pagination}
+          setPage={setPage}
+          testId={testId}
+        />
+      </AnimatedSection>
     </PageContainer>
   )
 }

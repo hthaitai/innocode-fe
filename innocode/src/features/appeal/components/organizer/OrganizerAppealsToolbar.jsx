@@ -1,17 +1,10 @@
 import React from "react"
 import DropdownFluent from "../../../../shared/components/DropdownFluent"
 
-const OrganizerAppealsActions = ({ decisionFilter, setDecisionFilter }) => {
+const OrganizerAppealsToolbar = ({ decisionFilter, setDecisionFilter }) => {
   return (
     <div className="flex items-center justify-end gap-2 mb-3">
-      <label
-        htmlFor="decisionFilterDropdown"
-        className="whitespace-nowrap text-sm leading-5 text-[#7A7574]"
-      >
-        Filter by decision:
-      </label>
-
-      <div className="w-[130px]">
+      <div className="max-w-[364px] w-max">
         <DropdownFluent
           id="decisionFilterDropdown"
           value={decisionFilter}
@@ -27,4 +20,4 @@ const OrganizerAppealsActions = ({ decisionFilter, setDecisionFilter }) => {
   )
 }
 
-export default OrganizerAppealsActions
+export default OrganizerAppealsToolbar

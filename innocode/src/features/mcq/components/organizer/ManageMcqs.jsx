@@ -17,47 +17,9 @@ import McqTableToolbar from "./McqTableToolbar"
 import TablePagination from "../../../../shared/components/TablePagination"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
-const ManageMcqs = () => {
-  const { roundId } = useParams()
+const ManageMcqs = ({ mcqs, pagination, setPage, testId }) => {
   const { openModal } = useModalContext()
-
-  const [page, setPage] = useState(1)
-  const pageSize = 10
-
-  /** Fetch MCQs via RTK Query */
-  const {
-    data: mcqData,
-    isLoading,
-    isError,
-  } = useGetRoundMcqsQuery(
-    { roundId, pageNumber: page, pageSize },
-    { skip: !roundId }
-  )
-
-  const mcqs = mcqData?.data?.mcqTest?.questions || []
-  const pagination = {
-    pageNumber: mcqData?.data?.mcqTest?.currentPage || 1,
-    pageSize: mcqData?.data?.mcqTest?.pageSize || 10,
-    totalPages: mcqData?.data?.mcqTest?.totalPages || 0,
-    totalCount: mcqData?.data?.mcqTest?.totalQuestions || 0,
-    hasPreviousPage: (mcqData?.data?.mcqTest?.currentPage || 1) > 1,
-    hasNextPage:
-      (mcqData?.data?.mcqTest?.currentPage || 1) <
-      (mcqData?.data?.mcqTest?.totalPages || 0),
-  }
-  const testId = mcqData?.data?.mcqTest?.testId
-
-  /** Edit MCQ weight mutation */
   const [updateQuestionWeight] = useUpdateQuestionWeightMutation()
-
-  /** Add row index like old code */
-  const mcqsWithIndex = useMemo(() => {
-    const start = (page - 1) * pageSize
-    return mcqs.map((q, i) => ({
-      ...q,
-      displayId: start + i + 1,
-    }))
-  }, [mcqs, page])
 
   /** Edit weight action */
   const handleEditWeight = useCallback(
@@ -91,20 +53,19 @@ const ManageMcqs = () => {
   const columns = getMcqColumns(handleEditWeight)
 
   return (
-    <AnimatedSection>
+    <div>
       <McqTableToolbar />
 
       <TableFluent
-        data={mcqsWithIndex}
+        data={mcqs}
         columns={columns}
-        loading={isLoading}
-        error={isError}
         renderSubComponent={(mcq) => <McqTableExpanded mcq={mcq} />}
         expandAt="text"
+        getRowId={(row) => row.questionId}
       />
 
       <TablePagination pagination={pagination} onPageChange={setPage} />
-    </AnimatedSection>
+    </div>
   )
 }
 
