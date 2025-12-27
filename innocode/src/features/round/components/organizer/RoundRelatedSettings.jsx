@@ -36,13 +36,13 @@ const RoundRelatedSettings = ({ contestId, round }) => {
   if (round.problemType === "McqTest") {
     items.push(
       {
-        title: "MCQ tests",
-        subtitle: "View or edit the MCQ test for this round",
+        title: "Multiple choice questions",
+        subtitle: "View or edit the questions for this round's test",
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/mcqs`,
         icon: ListChecks,
       },
       {
-        title: "MCQ attempts",
+        title: "Student attempts",
         subtitle: "See all participant attempts for this MCQ test",
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/attempts`,
         icon: ClipboardList,
@@ -54,13 +54,13 @@ const RoundRelatedSettings = ({ contestId, round }) => {
   if (round.problemType === "AutoEvaluation") {
     items.push(
       {
-        title: "Manage Auto Evaluation",
-        subtitle: "View or edit auto evaluation settings for this round",
+        title: "Manage auto test",
+        subtitle: "View or edit auto test settings for this round",
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/auto-evaluation`,
         icon: Settings2,
       },
       {
-        title: "Auto Evaluation Results",
+        title: "Auto test results",
         subtitle: "View auto-scored submissions",
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/auto-evaluation/results`,
         icon: ClipboardList,

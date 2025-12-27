@@ -2,6 +2,7 @@ import Label from "@/shared/components/form/Label"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { AnimatePresence, motion } from "framer-motion"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 export default function ProblemConfigurationSection({
   formData,
@@ -35,42 +36,47 @@ export default function ProblemConfigurationSection({
   }
 
   return (
-    <>
-      {/* {!formData.isRetakeRound && (
-        <> */}
-          <Label required>Problem type</Label>
+    <div className="space-y-1">
+      <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 flex flex-col gap-2">
+        <Label required>Problem type</Label>
+
+        <div className="w-fit">
           <DropdownFluent
             options={[
-              { value: "McqTest", label: "MCQ" },
-              { value: "Manual", label: "Manual Problem" },
-              { value: "AutoEvaluation", label: "Auto Evaluation" },
+              { value: "McqTest", label: "Multiple choice questions" },
+              { value: "Manual", label: "Manual test" },
+              { value: "AutoEvaluation", label: "Auto test" },
             ]}
             value={formData.problemType || ""}
             onChange={handleProblemTypeChange}
             error={!!errors.problemType}
             helperText={errors.problemType}
           />
+        </div>
+      </div>
 
-          {formData.problemType === "McqTest" && (
-            <>
-              <Label>Test name</Label>
-              <TextFieldFluent
-                value={formData.mcqTestConfig?.name || ""}
-                onChange={(e) =>
-                  handleNestedChange("mcqTestConfig", "name", e.target.value)
-                }
-                error={!!errors.mcqName}
-                helperText={errors.mcqName}
-              />
-            </>
-          )}
+      <div className="space-y-1">
+        {formData.problemType === "McqTest" && (
+          <div className="flex flex-col gap-2  border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
+            <Label>Test name</Label>
+            <TextFieldFluent
+              value={formData.mcqTestConfig?.name || ""}
+              onChange={(e) =>
+                handleNestedChange("mcqTestConfig", "name", e.target.value)
+              }
+              error={!!errors.mcqName}
+              helperText={errors.mcqName}
+            />
+          </div>
+        )}
 
-          {["Manual", "AutoEvaluation"].includes(formData.problemType) && (
-            <>
+        {["Manual", "AutoEvaluation"].includes(formData.problemType) && (
+          <div className="space-y-5 border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
+            <div className="flex flex-col gap-2">
               <Label required>Description</Label>
               <TextFieldFluent
                 multiline
-                rows={10}
+                rows={3}
                 value={formData.problemConfig?.description || ""}
                 onChange={(e) =>
                   handleNestedChange(
@@ -82,26 +88,31 @@ export default function ProblemConfigurationSection({
                 error={!!errors.problemConfigDescription}
                 helperText={errors.problemConfigDescription}
               />
+            </div>
 
+            <div className="flex flex-col gap-2">
               <Label>Language</Label>
               <TextFieldFluent
                 value={formData.problemConfig?.language || ""}
                 disabled
               />
+            </div>
 
-              <Label>Penalty rate</Label>
-              <TextFieldFluent
-                type="number"
-                value={formData.problemConfig?.penaltyRate ?? 0.1}
-                onChange={(e) =>
-                  handleNestedChange(
-                    "problemConfig",
-                    "penaltyRate",
-                    parseFloat(e.target.value)
-                  )
-                }
-              />
+            {/* <div className="flex flex-col gap-2">
+            <Label>Penalty rate</Label>
+            <TextFieldFluent
+              type="number"
+              value={formData.problemConfig?.penaltyRate ?? 0.1}
+              onChange={(e) =>
+                handleNestedChange(
+                  "problemConfig",
+                  "penaltyRate",
+                  parseFloat(e.target.value)
+                )
+              }
+            /> */}
 
+            <div className="flex flex-col gap-2">
               <Label>Template file</Label>
               <div>
                 <input
@@ -139,10 +150,10 @@ export default function ProblemConfigurationSection({
                   )}
                 </AnimatePresence>
               </div>
-            </>
-          )}
-        </>
-    //   )}
-    // </>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

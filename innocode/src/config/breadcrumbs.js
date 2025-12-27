@@ -164,12 +164,12 @@ export const BREADCRUMBS = {
     "Test cases",
     "New test case",
   ],
-  ORGANIZER_TEST_CASE_EDIT: (contestName, roundName, testCaseId) => [
+  ORGANIZER_TEST_CASE_EDIT: (contestName, roundName, testCaseName) => [
     "Contests",
     contestName,
     roundName,
     "Test cases",
-    `Edit test case #${testCaseId}`,
+    "Edit test case"
   ],
 
   ORGANIZER_AUTO_RESULTS: (contestName, roundName) => [
@@ -177,6 +177,14 @@ export const BREADCRUMBS = {
     contestName,
     roundName,
     "Auto results",
+  ],
+
+  ORGANIZER_AUTO_RESULT_DETAIL: (contestName, roundName, studentName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Auto results",
+    studentName,
   ],
 
   //idk old prolem detail
@@ -480,6 +488,14 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}`,
     `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/results`,
+  ],
+
+  ORGANIZER_AUTO_RESULT_DETAIL: (contestId, roundId, submissionId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/results`,
+    `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/results/${submissionId}`,
   ],
 
   //old stuff

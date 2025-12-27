@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
+import { EASING } from "./ui/easing"
 
 const TextFieldFluent = ({
   label,
@@ -101,9 +102,16 @@ const TextFieldFluent = ({
           <motion.div
             key="helper-text"
             initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              transition: { duration: 0.2, ease: EASING.fluentOut },
+            }}
+            exit={{
+              opacity: 0,
+              y: -4,
+              transition: { duration: 0.15, ease: EASING.fluentOut },
+            }}
             className={`text-xs leading-4 mt-1 ${
               error ? "text-[#D32F2F]" : "text-[#7A7574]"
             }`}

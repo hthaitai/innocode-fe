@@ -15,12 +15,12 @@ const items = [
     icon: <Gavel size={20} />,
     path: "judges",
   },
-  {
-    title: "Judge invites",
-    subtitle: "View invitations sent to judges",
-    icon: <Mail size={20} />,
-    path: "judges/invites",
-  },
+  // {
+  //   title: "Judge invites",
+  //   subtitle: "View invitations sent to judges",
+  //   icon: <Mail size={20} />,
+  //   path: "judges/invites",
+  // },
   {
     title: "Active judges",
     subtitle: "Judges currently assigned to this contest",

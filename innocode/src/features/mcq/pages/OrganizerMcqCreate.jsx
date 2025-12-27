@@ -14,6 +14,8 @@ import { useParams, useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useModal } from "../../../shared/hooks/useModal"
+import { Spinner } from "../../../shared/components/SpinnerFluent"
+import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
 
 const OrganizerMcqCreate = () => {
   const { roundId, contestId } = useParams()
@@ -32,12 +34,6 @@ const OrganizerMcqCreate = () => {
     isLoading: mcqLoading,
     isError: mcqError,
   } = useGetRoundMcqsQuery({ roundId, pageNumber: 1, pageSize: 10 })
-
-  const {
-    data: banks,
-    isLoading: banksLoading,
-    isError: banksError,
-  } = useGetBanksQuery({})
 
   const [createTest, { isLoading: createLoading }] = useCreateTestMutation()
 
@@ -112,22 +108,36 @@ const OrganizerMcqCreate = () => {
     roundId
   )
 
+  if (mcqLoading) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <div className="min-h-[70px] flex items-center justify-center">
+          <Spinner />
+        </div>
+      </PageContainer>
+    )
+  }
+
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={roundLoading}
       error={roundError}
     >
-      <QuestionsPreviewSection
-        questions={allQuestions}
-        selectedQuestions={selectedQuestions}
-        setSelectedQuestions={setSelectedQuestions}
-        loading={mcqLoading || banksLoading || createLoading}
-        onChoose={handleChoose}
-        onUploadCsv={handleUploadCsv}
-        onImportBanks={handleImportBanks}
-      />
+      <AnimatedSection>
+        <QuestionsPreviewSection
+          questions={allQuestions}
+          selectedQuestions={selectedQuestions}
+          setSelectedQuestions={setSelectedQuestions}
+          loading={mcqLoading || createLoading}
+          onChoose={handleChoose}
+          onUploadCsv={handleUploadCsv}
+          onImportBanks={handleImportBanks}
+        />
+      </AnimatedSection>
     </PageContainer>
   )
 }

@@ -5,16 +5,21 @@ export const getRubricColumns = (handleEdit, handleDelete) => [
   {
     accessorKey: "description",
     header: "Description",
-    cell: ({ row }) => row.original.description || "—",
+    size: 600,
+    cell: ({ row }) => row.original?.description || "—",
+    meta: { className: "truncate max-w-[360px]" },
   },
   {
     accessorKey: "maxScore",
-    header: "Max Score",
-    cell: ({ row }) => row.original.maxScore ?? "—",
+    header: "Max score",
+    size: 120,
+    cell: ({ row }) => row.original?.maxScore ?? "—",
+    meta: { className: "truncate max-w-[120px]" },
   },
   {
     id: "actions",
     header: "",
+    size: 60,
     enableSorting: false,
     enableHiding: false,
     cell: ({ row }) => (
@@ -35,5 +40,6 @@ export const getRubricColumns = (handleEdit, handleDelete) => [
         ]}
       />
     ),
+    meta: { className: "text-right w-[60px]" },
   },
 ]

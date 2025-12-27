@@ -96,7 +96,7 @@ export default function RubricCsvModal({ isOpen, onClose, roundId, contestId }) 
                   document.body.removeChild(link)
                 }}
               >
-                Download Template
+                Download template
               </button>
             </div>
           </div>

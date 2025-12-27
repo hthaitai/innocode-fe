@@ -12,20 +12,20 @@ const getTestCaseColumns = (handleEditTestCase, handleDeleteTestCase) => [
   {
     accessorKey: "input",
     header: "Input",
-    size: 180,
+    size: 160,
     meta: { className: "truncate max-w-[200px]" },
     cell: ({ row }) => row.original.input || "—",
   },
   {
     accessorKey: "expectedOutput",
     header: "Expected output",
-    size: 180,
+    size: 160,
     meta: { className: "truncate max-w-[200px]" },
     cell: ({ row }) => row.original.expectedOutput || "—",
   },
-  { accessorKey: "weight", header: "Weight", size: 60 },
-  { accessorKey: "timeLimitMs", header: "Time (ms)", size: 80 },
-  { accessorKey: "memoryKb", header: "Memory (KB)", size: 80 },
+  { accessorKey: "weight", header: "Weight", size: 80 },
+  { accessorKey: "timeLimitMs", header: "Time (ms)", size: 110 },
+  { accessorKey: "memoryKb", header: "Memory (KB)", size: 130 },
   {
     id: "actions",
     header: "",
@@ -50,7 +50,7 @@ const getTestCaseColumns = (handleEditTestCase, handleDeleteTestCase) => [
         ]}
       />
     ),
-    meta: { className: "text-right w-[60px]" }, // actions don't need truncation
+    meta: { className: "text-right w-[60px]" }, 
   },
 ]
 

@@ -55,10 +55,10 @@ export const autoEvaluationApi = api.injectEndpoints({
     }),
 
     updateRoundTestCases: builder.mutation({
-      query: ({ roundId, testCases }) => ({
+      query: ({ roundId, data }) => ({
         url: `/rounds/${roundId}/test-cases`,
         method: "PUT",
-        body: testCases,
+        body: data,
       }),
       invalidatesTags: ["TestCases"],
     }),

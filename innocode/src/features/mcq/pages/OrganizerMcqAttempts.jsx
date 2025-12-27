@@ -7,10 +7,13 @@ import { useGetRoundByIdQuery } from "@/services/roundApi"
 import { getMcqAttemptsColumns } from "../columns/getMcqAttemptsColumns"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { Users } from "lucide-react"
+import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
+import { Spinner } from "../../../shared/components/SpinnerFluent"
 
 const OrganizerMcqAttempts = () => {
   const navigate = useNavigate()
   const { contestId, roundId } = useParams()
+
   const [page, setPage] = useState(1)
   const pageSize = 10
 
@@ -25,16 +28,16 @@ const OrganizerMcqAttempts = () => {
     pageSize,
   })
 
-  const attempts = attemptsData?.data || []
-  const pagination = attemptsData?.additionalData || {}
+  const attempts = attemptsData?.data ?? []
+  const pagination = attemptsData?.additionalData
 
   // Fetch round info (includes contestName and roundName)
-  const { data: round, isLoading: loadingRound } = useGetRoundByIdQuery(roundId)
+  const { data: round, isLoading: roundLoading } = useGetRoundByIdQuery(roundId)
 
   // Breadcrumbs
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPTS(
-    round?.contestName || "Contest",
-    round?.roundName || "Round"
+    round?.contestName ?? "Contest",
+    round?.roundName ?? "Round"
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ_ATTEMPTS(
     contestId,
@@ -42,35 +45,41 @@ const OrganizerMcqAttempts = () => {
   )
 
   // Columns for the table
-  const columns = useMemo(() => getMcqAttemptsColumns(), [])
+  const columns = getMcqAttemptsColumns()
+
+  const handleRowClick = (attemptId) => {
+    navigate(
+      `/organizer/contests/${contestId}/rounds/${roundId}/attempts/${attemptId}`
+    )
+  }
+  if (isLoading || roundLoading) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <div className="min-h-[70px] flex items-center justify-center">
+          <Spinner />
+        </div>
+      </PageContainer>
+    )
+  }
 
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={isLoading}
       error={isError}
     >
-      <TableFluent
-        data={attempts}
-        columns={columns}
-        loading={isLoading || loadingRound}
-        error={isError ? "Failed to load attempts" : undefined}
-        pagination={pagination}
-        onPageChange={setPage}
-        onRowClick={(attempt) =>
-          navigate(
-            `/organizer/contests/${contestId}/rounds/${roundId}/attempts/${attempt.attemptId}`
-          )
-        }
-        renderActions={() => (
-          <div className="min-h-[70px] px-5 flex items-center">
-            <p className="text-[14px] leading-[20px] font-medium">
-              Student attempts
-            </p>
-          </div>
-        )}
-      />
+      <AnimatedSection>
+        <TableFluent
+          data={attempts}
+          columns={columns}
+          pagination={pagination}
+          onPageChange={setPage}
+          onRowClick={(attempt) => handleRowClick(attempt.attemptId)}
+        />
+      </AnimatedSection>
     </PageContainer>
   )
 }

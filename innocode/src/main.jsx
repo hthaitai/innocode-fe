@@ -33,6 +33,7 @@ import ManualRubricPage from "./features/problems/manual/pages/ManualRubricPage"
 import ManualResultsPage from "./features/problems/manual/pages/ManualResultsPage"
 import AutoEvaluationPage from "./features/problems/auto-evaluation/pages/AutoEvaluationPage"
 import AutoTestResultsPage from "./features/problems/auto-evaluation/pages/AutoTestResultsPage"
+import AutoResultDetailPage from "./features/problems/auto-evaluation/pages/AutoResultDetailPage"
 import Login from "./features/auth/components/Login"
 import Register from "./features/auth/components/Register"
 import RoleRegistration from "./features/auth/components/RoleRegistration"
@@ -84,7 +85,7 @@ import MyContest from "./features/contest/student/MyContest"
 import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal"
 // Organizer pages
 import AddTestCase from "./features/problems/auto-evaluation/pages/AddTestCase"
-import EditTestCasePage from "./features/problems/auto-evaluation/pages/EditTestCasePage"
+import EditTestCase from "./features/problems/auto-evaluation/pages/EditTestCase"
 
 // Judge pages
 import JudgeManualRubricPage from "./features/submission/pages/judge/JudgeManualRubricPage"
@@ -578,7 +579,7 @@ const router = createBrowserRouter([
             path: ":contestId/rounds/:roundId/auto-evaluation/:testCaseId/edit",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <EditTestCasePage />
+                <EditTestCase />
               </ProtectedRoute>
             ),
           },
@@ -587,6 +588,14 @@ const router = createBrowserRouter([
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <AutoTestResultsPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/rounds/:roundId/auto-evaluation/results/:submissionId",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <AutoResultDetailPage />
               </ProtectedRoute>
             ),
           },

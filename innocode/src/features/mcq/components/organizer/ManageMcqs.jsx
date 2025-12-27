@@ -13,9 +13,11 @@ import {
 } from "../../../../services/mcqApi"
 
 import { toast } from "react-hot-toast"
-import McqTableActions from "./McqTableActions"
+import McqTableToolbar from "./McqTableToolbar"
+import TablePagination from "../../../../shared/components/TablePagination"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
-const McqTable = () => {
+const ManageMcqs = () => {
   const { roundId } = useParams()
   const { openModal } = useModalContext()
 
@@ -86,26 +88,24 @@ const McqTable = () => {
   )
 
   /** Table Columns */
-  const columns = useMemo(
-    () => getMcqColumns(handleEditWeight),
-    [handleEditWeight]
-  )
+  const columns = getMcqColumns(handleEditWeight)
 
   return (
-    <div className="space-y-1">
+    <AnimatedSection>
+      <McqTableToolbar />
+
       <TableFluent
         data={mcqsWithIndex}
         columns={columns}
         loading={isLoading}
         error={isError}
-        pagination={pagination}
-        onPageChange={setPage}
-        renderActions={() => <McqTableActions />}
         renderSubComponent={(mcq) => <McqTableExpanded mcq={mcq} />}
         expandAt="text"
       />
-    </div>
+
+      <TablePagination pagination={pagination} onPageChange={setPage} />
+    </AnimatedSection>
   )
 }
 
-export default McqTable
+export default ManageMcqs

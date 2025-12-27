@@ -13,6 +13,7 @@ import {
   fromDatetimeLocal,
   toDatetimeLocal,
 } from "../../../../shared/utils/dateTime"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 export default function EditContest() {
   const { contestId } = useParams()
@@ -135,16 +136,18 @@ export default function EditContest() {
       loading={isLoading}
       error={isError}
     >
-      <ContestForm
-        formData={formData}
-        setFormData={setFormData}
-        errors={errors}
-        setErrors={setErrors}
-        onSubmit={handleSubmit}
-        isSubmitting={updating}
-        mode="edit"
-        hasChanges={hasChanges}
-      />
+      <AnimatedSection>
+        <ContestForm
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+          onSubmit={handleSubmit}
+          isSubmitting={updating}
+          mode="edit"
+          hasChanges={hasChanges}
+        />
+      </AnimatedSection>
     </PageContainer>
   )
 }

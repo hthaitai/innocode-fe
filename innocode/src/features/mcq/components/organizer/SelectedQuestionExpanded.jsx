@@ -1,4 +1,4 @@
-const PreviewQuestionExpanded = ({ question }) => {
+const SelectedQuestionExpanded = ({ question }) => {
   const options = question?.options || []
 
   return (
@@ -11,7 +11,7 @@ const PreviewQuestionExpanded = ({ question }) => {
         return (
           <div
             key={opt.optionId || i}
-            className={`flex items-center gap-2 text-sm leading-5 px-5 pl-24.5 py-1 ${
+            className={`flex items-center gap-2 text-sm leading-5 px-5 pl-11 py-1 ${
               isCorrect ? "bg-green-50" : ""
             }`}
           >
@@ -24,4 +24,4 @@ const PreviewQuestionExpanded = ({ question }) => {
   )
 }
 
-export default PreviewQuestionExpanded
+export default SelectedQuestionExpanded

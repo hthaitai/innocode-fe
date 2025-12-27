@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { ChevronDown } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
+import { EASING } from "./ui/easing"
 
 const DropdownFluent = ({
   label,
@@ -16,7 +17,6 @@ const DropdownFluent = ({
   const dropdownRef = useRef(null)
   const itemRefs = useRef({}) // refs for each item
 
-  const fluentEaseOut = [0.16, 1, 0.3, 1]
   // Memoize selected option label to prevent unnecessary recalculations
   const selectedLabel = useMemo(() => {
     return (
@@ -84,7 +84,7 @@ const DropdownFluent = ({
             : ""
         }`}
       >
-        <span className="capitalize text-[#333] truncate">{selectedLabel}</span>
+        <span className="truncate">{selectedLabel}</span>
         <ChevronDown
           size={16}
           className={`text-[#7A7574] transition-transform duration-200 flex-shrink-0 ${
@@ -99,9 +99,16 @@ const DropdownFluent = ({
           <motion.div
             key="helper-text"
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.15 }}
+            animate={{
+              y: 0,
+              opacity: 1,
+              transition: { duration: 0.5, ease: EASING.fluentOut },
+            }}
+            exit={{
+              y: -10,
+              opacity: 0,
+              transition: { duration: 0.25, ease: EASING.fluentOut },
+            }}
             className={`text-xs mt-1 overflow-hidden ${
               error ? "text-[#D32F2F]" : "text-[#7A7574]"
             }`}
@@ -120,15 +127,19 @@ const DropdownFluent = ({
             animate={{
               y: 0,
               opacity: 1,
-              transition: { duration: 0.5, ease: fluentEaseOut },
+              transition: { duration: 0.5, ease: EASING.fluentOut },
             }}
             exit={{
               y: -10,
               opacity: 0,
-              transition: { duration: 0.25, ease: fluentEaseOut },
+              transition: { duration: 0.25, ease: EASING.fluentOut },
             }}
             className="absolute left-0 top-full bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg overflow-hidden w-full z-50 "
-            style={{ maxHeight: "200px" }}
+            style={{
+              maxHeight: "200px",
+              width: "max-content",
+              minWidth: dropdownRef.current?.offsetWidth,
+            }}
           >
             <div className="overflow-y-auto max-h-[200px] overscroll-contain p-1 flex flex-col gap-1">
               {options.length === 0 ? (

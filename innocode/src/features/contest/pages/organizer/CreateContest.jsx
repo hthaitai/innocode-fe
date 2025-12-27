@@ -7,12 +7,12 @@ import { validateContest } from "@/features/contest/validators/contestValidator"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { fromDatetimeLocal } from "../../../../shared/utils/dateTime"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 const EMPTY_CONTEST = {
   year: new Date().getFullYear(),
   name: "",
   description: "",
-  imgUrl: "",
   start: "",
   end: "",
   registrationStart: "",
@@ -63,15 +63,7 @@ export default function CreateContest() {
 
       if (formData.imgFile) formPayload.append("ImageFile", formData.imgFile)
 
-      console.log("FormData preview:", {
-        Year: formData.year,
-        Name: formData.name,
-        Description: formData.description,
-        RewardsText: formData.rewardsText,
-      })
-
-      const res = await addContest(formPayload).unwrap()
-      console.log(res)
+      await addContest(formPayload).unwrap()
       toast.success("Contest created successfully!")
       navigate("/organizer/contests")
     } catch (err) {
@@ -98,15 +90,17 @@ export default function CreateContest() {
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
     >
-      <ContestForm
-        formData={formData}
-        setFormData={setFormData}
-        errors={errors}
-        setErrors={setErrors}
-        onSubmit={handleSubmit}
-        isSubmitting={isLoading}
-        mode="create"
-      />
+      <AnimatedSection>
+        <ContestForm
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+          onSubmit={handleSubmit}
+          isSubmitting={isLoading}
+          mode="create"
+        />
+      </AnimatedSection>
     </PageContainer>
   )
 }

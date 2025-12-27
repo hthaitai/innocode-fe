@@ -1,5 +1,6 @@
 import { ExpandColumn } from "@/shared/components/ExpandColumn"
 import { ChevronRight } from "lucide-react"
+import { formatDateTime } from "../../../../shared/utils/dateTime"
 
 export const getResultColumns = () => [
   {
@@ -36,14 +37,14 @@ export const getResultColumns = () => [
     meta: { className: "truncate max-w-[200px]" },
   },
   {
-    header: "Submitted At",
+    header: "Submitted at",
     accessorKey: "submittedAt",
     size: 160,
-    cell: ({ getValue }) => new Date(getValue()).toLocaleString(),
+    cell: ({ getValue }) => formatDateTime(getValue()),
     meta: { className: "truncate max-w-[160px]" },
   },
   {
-    header: "Judged By",
+    header: "Judged by",
     accessorKey: "judgedBy",
     size: 160,
     meta: { className: "truncate max-w-[160px]" },

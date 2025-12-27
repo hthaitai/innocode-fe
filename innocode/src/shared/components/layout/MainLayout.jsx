@@ -20,7 +20,7 @@ function ScrollToTop() {
 
 export default function MainLayout() {
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   // Define public routes that should not show sidebar
   const publicRoutes = ['/', '/about'];
@@ -29,7 +29,7 @@ export default function MainLayout() {
   // Define routes that should hide sidebar (like auto-evaluation)
   const hideSidebarRoutes = ['/auto-evaluation'];
   const shouldHideSidebar = hideSidebarRoutes.some(route => 
-    location.pathname.includes(route)
+    location.pathname.includes(route) && user?.role !== 'organizer'
   );
 
   // Hide sidebar if not authenticated OR on public routes OR on specific routes

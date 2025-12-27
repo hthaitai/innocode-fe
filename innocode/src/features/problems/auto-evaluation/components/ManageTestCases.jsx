@@ -7,27 +7,29 @@ import { toast } from "react-hot-toast"
 
 import {
   useGetRoundTestCasesQuery,
-  useCreateRoundTestCaseMutation,
   useDeleteRoundTestCaseMutation,
 } from "../../../../services/autoEvaluationApi"
-import TestCaseActions from "./TestCaseActions"
+import TestCaseToolbar from "./TestCaseToolbar"
+import TablePagination from "../../../../shared/components/TablePagination"
+import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
-const TestCaseTable = ({ contestId, roundId, roundLoading }) => {
+const ManageTestCases = ({ contestId, roundId }) => {
   const navigate = useNavigate()
   const { openModal } = useModal()
+
   const [pageNumber, setPageNumber] = useState(1)
-  const [pageSize] = useState(10)
+  const pageSize = 10
 
   // Fetch test cases
   const {
-    data: testCaseResponse,
+    data: testCaseData,
     isLoading,
     isError,
-    refetch,
   } = useGetRoundTestCasesQuery({ roundId, pageNumber, pageSize })
 
-  const testCases = testCaseResponse?.data ?? []
-  const pagination = testCaseResponse?.additionalData ?? {}
+  const testCases = testCaseData?.data ?? []
+  const pagination = testCaseData?.additionalData
 
   const [deleteTestCase] = useDeleteRoundTestCaseMutation()
 
@@ -45,14 +47,18 @@ const TestCaseTable = ({ contestId, roundId, roundLoading }) => {
             contestId,
           }).unwrap()
           toast.success("Test case deleted")
-          refetch()
         } catch (err) {
+          console.error(err)
           toast.error("Failed to delete test case")
         } finally {
           close()
         }
       },
     })
+  }
+
+  const handleUploadCsv = () => {
+    openModal("testCaseCsv", { roundId, contestId })
   }
 
   // Navigate to create page
@@ -71,27 +77,28 @@ const TestCaseTable = ({ contestId, roundId, roundLoading }) => {
 
   const columns = getTestCaseColumns(handleEditTestCase, handleDeleteTestCase)
 
+  if (isLoading) {
+    return (
+      <div className="min-h-[70px] flex items-center justify-center">
+        <Spinner />
+      </div>
+    )
+  }
+
   return (
-    <div>
-      <TableFluent
-        data={testCases}
-        columns={columns}
-        loading={isLoading}
-        error={isError}
-        pagination={pagination}
-        onPageChange={setPageNumber}
-        renderActions={() => (
-          <TestCaseActions
-            onCreate={handleCreateTestCase}
-            isLoading={isLoading || roundLoading}
-            openModal={openModal}
-            roundId={roundId}
-            contestId={contestId}
-          />
-        )}
+    <AnimatedSection>
+      <TestCaseToolbar
+        onUploadCsv={handleUploadCsv}
+        onCreate={handleCreateTestCase}
       />
-    </div>
+
+      <TableFluent data={testCases} columns={columns} error={isError} />
+
+      {pagination && (
+        <TablePagination pagination={pagination} onPageChange={setPageNumber} />
+      )}
+    </AnimatedSection>
   )
 }
 
-export default TestCaseTable
+export default ManageTestCases
