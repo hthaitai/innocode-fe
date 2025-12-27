@@ -100,17 +100,17 @@ export default function CreateAppealModal({
       return;
     }
 
-    console.log("Appeal Resolution:", appealResolution);
+    const appealData = {
+      RoundId: roundId,
+      TeamId: teamId,
+      StudentId: studentId,
+      Reason: reason,
+      Evidences: evidences && evidences.length > 0 ? evidences : [],
+      AppealResolution: appealResolution,
+    };
 
     try {
-      await createAppeal({
-        RoundId: roundId,
-        TeamId: teamId,
-        StudentId: studentId,
-        Reason: reason,
-        Evidences: evidences.length > 0 ? evidences : undefined,
-        AppealResolution: appealResolution,
-      }).unwrap();
+      await createAppeal(appealData).unwrap();
 
       toast.success("Appeal submitted successfully!");
       onClose();

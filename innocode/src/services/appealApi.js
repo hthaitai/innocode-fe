@@ -14,7 +14,14 @@ export const appealApi = api.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Appeal", id }],
     }),
     createAppeal: builder.mutation({
-      query: ({ RoundId, TeamId, StudentId, Reason, Evidences, AppealResolution }) => {
+      query: ({
+        RoundId,
+        TeamId,
+        StudentId,
+        Reason,
+        Evidences,
+        AppealResolution,
+      }) => {
         const formData = new FormData()
 
         // Append required fields
@@ -33,19 +40,21 @@ export const appealApi = api.injectEndpoints({
           formData.append("AppealResolution", AppealResolution)
         }
 
-        // Append Evidences array (files) and EvidenceNotes if provided
-        if (Evidences && Array.isArray(Evidences)) {
+        if (Evidences && Array.isArray(Evidences) && Evidences.length > 0) {
           Evidences.forEach((evidence, index) => {
             // Check if evidence is an object with file and note, or just a file
             if (evidence && typeof evidence === "object" && evidence.file) {
-              // New format: { file, note }
-              formData.append("Evidences", evidence.file)
-              // Append note (empty string if no note provided)
-              formData.append(`EvidenceNotes`, evidence.note || "")
+              // Format: Evidences[index].File and Evidences[index].Note
+              const fileKey = `Evidences[${index}].File`
+              const noteKey = `Evidences[${index}].Note`
+              formData.append(fileKey, evidence.file)
+              formData.append(noteKey, evidence.note || "")
             } else if (evidence instanceof File || evidence instanceof Blob) {
-              // Old format: just a file
-              formData.append("Evidences", evidence)
-              formData.append(`EvidenceNotes`, "")
+              // Old format: just a file (fallback)
+              const fileKey = `Evidences[${index}].File`
+              const noteKey = `Evidences[${index}].Note`
+              formData.append(fileKey, evidence)
+              formData.append(noteKey, "")
             }
           })
         }
@@ -117,3 +126,4 @@ export const {
   useGetAppealByIdQuery,
   useReviewAppealMutation,
 } = appealApi
+
