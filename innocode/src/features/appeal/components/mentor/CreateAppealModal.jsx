@@ -5,6 +5,7 @@ import { useCreateAppealMutation } from "@/services/appealApi";
 import { toast } from "react-hot-toast";
 import { Icon } from "@iconify/react";
 import DropdownFluent from "@/shared/components/DropdownFluent";
+import TextFieldFluent from "@/shared/components/TextFieldFluent";
 
 export default function CreateAppealModal({
   isOpen,
@@ -17,26 +18,70 @@ export default function CreateAppealModal({
   roundType,
 }) {
   const [reason, setReason] = useState("");
-  const [evidences, setEvidences] = useState([]);
-  const [appealResolution, setAppealResolution] = useState("retake");
+  const [evidences, setEvidences] = useState([]); // Array of { file, note }
+  const [appealResolution, setAppealResolution] = useState(""); // Single selected resolution
   const [createAppeal, { isLoading }] = useCreateAppealMutation();
+
+  // Get available resolution options based on roundType
+  const getResolutionOptions = () => {
+    if (roundType === "McqTest") {
+      return [{ value: "Retake", label: "Retake" }];
+    } else if (roundType === "AutoEvaluation") {
+      return [
+        { value: "Retake", label: "Retake" },
+        { value: "RecheckPlagiarism", label: "Recheck Plagiarism" },
+      ];
+    } else if (roundType === "Manual") {
+      return [
+        { value: "Retake", label: "Retake" },
+        { value: "Rescore", label: "Rescore" },
+        { value: "RecheckPlagiarism", label: "Recheck Plagiarism" },
+      ];
+    }
+    return [];
+  };
 
   useEffect(() => {
     if (isOpen) {
       setReason("");
       setEvidences([]);
       // Set default appealResolution based on roundType
-      if (roundType === "McqTest" || roundType === "AutoEvaluation") {
-        setAppealResolution("retake");
+      if (roundType === "McqTest") {
+        setAppealResolution("Retake");
+      } else if (roundType === "AutoEvaluation") {
+        setAppealResolution("Retake");
       } else if (roundType === "Manual") {
-        setAppealResolution("retake"); // Default to retake, but user can change
+        setAppealResolution("Retake");
+      } else {
+        setAppealResolution("");
       }
     }
   }, [isOpen, roundType]);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    setEvidences(files);
+    const newEvidences = files.map((file) => ({
+      file,
+      note: "",
+      id: Date.now() + Math.random(), // Unique ID for each evidence
+    }));
+    setEvidences((prev) => [...prev, ...newEvidences]);
+    // Reset input to allow selecting the same file again
+    e.target.value = "";
+  };
+
+  const handleRemoveEvidence = (id) => {
+    setEvidences((prev) => prev.filter((ev) => ev.id !== id));
+  };
+
+  const handleEvidenceNoteChange = (id, note) => {
+    setEvidences((prev) =>
+      prev.map((ev) => (ev.id === id ? { ...ev, note } : ev))
+    );
+  };
+
+  const handleResolutionChange = (value) => {
+    setAppealResolution(value);
   };
 
   const handleSubmit = async () => {
@@ -50,15 +95,22 @@ export default function CreateAppealModal({
       return;
     }
 
+    if (!appealResolution || appealResolution.trim() === "") {
+      toast.error("Please select an appeal resolution");
+      return;
+    }
+
+    const appealData = {
+      RoundId: roundId,
+      TeamId: teamId,
+      StudentId: studentId,
+      Reason: reason,
+      Evidences: evidences && evidences.length > 0 ? evidences : [],
+      AppealResolution: appealResolution,
+    };
+
     try {
-      await createAppeal({
-        RoundId: roundId,
-        TeamId: teamId,
-        StudentId: studentId,
-        Reason: reason,
-        Evidences: evidences.length > 0 ? evidences : undefined,
-        AppealResolution: appealResolution,
-      }).unwrap();
+      await createAppeal(appealData).unwrap();
 
       toast.success("Appeal submitted successfully!");
       onClose();
@@ -143,33 +195,46 @@ export default function CreateAppealModal({
         </div>
 
         {/* Appeal Resolution Field */}
-        {roundType === "Manual" ? (
-          <div>
-            <DropdownFluent
-              label="Appeal Resolution *"
-              value={appealResolution}
-              onChange={setAppealResolution}
-              options={[
-                { value: "retake", label: "Retake" },
-                { value: "rescore", label: "Rescore" },
-              ]}
-              placeholder="Select appeal resolution"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Choose whether to retake the round or request a rescore
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Appeal Resolution *
+          </label>
+          {roundType === "McqTest" ? (
+            <div className="bg-gray-50 rounded px-3 py-2 border border-gray-200">
+              <p className="text-sm font-medium text-gray-900">Retake</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Default resolution for MCQ rounds
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2 border border-gray-300 rounded px-4 py-3 bg-white">
+              {getResolutionOptions().map((option) => {
+                const isChecked = appealResolution === option.value;
+                return (
+                  <label
+                    key={option.value}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="appeal-resolution"
+                      value={option.value}
+                      checked={isChecked}
+                      onChange={() => handleResolutionChange(option.value)}
+                      className="w-4 h-4 text-[#E05307] accent-[#E05307] cursor-pointer"
+                    />
+                    <span className="text-sm text-gray-700">{option.label}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+          {appealResolution && (
+            <p className="text-xs text-gray-500 mt-2">
+              Selected: {appealResolution}
             </p>
-          </div>
-        ) : (
-          <div className="bg-gray-50 rounded px-3 py-2 border border-gray-200">
-            <p className="text-xs text-gray-600 mb-1">Appeal Resolution:</p>
-            <p className="text-sm font-medium text-gray-900 capitalize">
-              {appealResolution}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Default resolution for {roundType === "McqTest" ? "MCQ" : roundType === "AutoEvaluation" ? "Auto Evaluation" : "this round"} rounds
-            </p>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Evidence Upload */}
         <div>
@@ -196,29 +261,44 @@ export default function CreateAppealModal({
                   : "Click to upload evidence files"}
               </span>
             </label>
-            {evidences.length > 0 && (
-              <div className="mt-2 space-y-1">
-                {evidences.map((file, idx) => (
-                  <div
-                    key={idx}
-                    className="text-xs text-gray-600 flex items-center gap-2"
-                  >
-                    <Icon icon="mdi:file" width={16} />
-                    <span className="truncate">{file.name}</span>
+          </div>
+          {evidences.length > 0 && (
+            <div className="mt-3 space-y-3">
+              {evidences.map((evidence) => (
+                <div
+                  key={evidence.id}
+                  className="border border-gray-300 rounded px-4 py-3 bg-white"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <Icon icon="mdi:file" width={16} className="text-gray-600 flex-shrink-0" />
+                      <span className="text-sm text-gray-700 truncate">
+                        {evidence.file.name}
+                      </span>
+                    </div>
                     <button
-                      onClick={() =>
-                        setEvidences(evidences.filter((_, i) => i !== idx))
-                      }
-                      className="text-red-600 hover:text-red-800 ml-auto"
+                      onClick={() => handleRemoveEvidence(evidence.id)}
+                      className="text-red-600 hover:text-red-800 flex-shrink-0"
+                      type="button"
                     >
-                      <Icon icon="mdi:close" width={16} />
+                      <Icon icon="mdi:close" width={18} />
                     </button>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <p className="text-xs text-gray-500 mt-1">
+                  <TextFieldFluent
+                    label="Note (Optional)"
+                    value={evidence.note}
+                    onChange={(e) =>
+                      handleEvidenceNoteChange(evidence.id, e.target.value)
+                    }
+                    placeholder="Add a note for this evidence..."
+                    multiline
+                    rows={2}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="text-xs text-gray-500 mt-2">
             Supported formats: Images, PDF, Word documents
           </p>
         </div>

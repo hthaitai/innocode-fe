@@ -14,7 +14,14 @@ export const appealApi = api.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Appeal", id }],
     }),
     createAppeal: builder.mutation({
-      query: ({ RoundId, TeamId, StudentId, Reason, Evidences }) => {
+      query: ({
+        RoundId,
+        TeamId,
+        StudentId,
+        Reason,
+        Evidences,
+        AppealResolution,
+      }) => {
         const formData = new FormData()
 
         // Append required fields
@@ -23,11 +30,31 @@ export const appealApi = api.injectEndpoints({
         formData.append("StudentId", StudentId)
         formData.append("Reason", Reason)
 
-        // Append Evidences array (files) if provided
-        if (Evidences && Array.isArray(Evidences)) {
-          Evidences.forEach((file, index) => {
-            if (file instanceof File || file instanceof Blob) {
-              formData.append("Evidences", file)
+        // Append AppealResolution as array
+        if (AppealResolution && Array.isArray(AppealResolution)) {
+          AppealResolution.forEach((resolution) => {
+            formData.append("AppealResolution", resolution)
+          })
+        } else if (AppealResolution) {
+          // Fallback: if it's a single value, still append it
+          formData.append("AppealResolution", AppealResolution)
+        }
+
+        if (Evidences && Array.isArray(Evidences) && Evidences.length > 0) {
+          Evidences.forEach((evidence, index) => {
+            // Check if evidence is an object with file and note, or just a file
+            if (evidence && typeof evidence === "object" && evidence.file) {
+              // Format: Evidences[index].File and Evidences[index].Note
+              const fileKey = `Evidences[${index}].File`
+              const noteKey = `Evidences[${index}].Note`
+              formData.append(fileKey, evidence.file)
+              formData.append(noteKey, evidence.note || "")
+            } else if (evidence instanceof File || evidence instanceof Blob) {
+              // Old format: just a file (fallback)
+              const fileKey = `Evidences[${index}].File`
+              const noteKey = `Evidences[${index}].Note`
+              formData.append(fileKey, evidence)
+              formData.append(noteKey, "")
             }
           })
         }
@@ -99,3 +126,4 @@ export const {
   useGetAppealByIdQuery,
   useReviewAppealMutation,
 } = appealApi
+
