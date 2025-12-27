@@ -15,8 +15,8 @@ const EMPTY_TEST_CASE = {
   input: "",
   expectedOutput: "",
   weight: 1,
-  timeLimitMs: null,
-  memoryKb: null,
+  timeLimitMs: 1000,
+  memoryKb: 256000,
 }
 
 export default function AddTestCase() {

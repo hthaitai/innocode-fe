@@ -21,14 +21,11 @@ const CertificateTemplateModal = ({
     data: templatesData,
     isLoading,
     isError,
-  } = useGetCertificateTemplatesQuery(
-    {
-      contestIdSearch: contestId,
-      pageNumber: 1,
-      pageSize: 50,
-    },
-    { skip: !contestId || !isOpen }
-  )
+  } = useGetCertificateTemplatesQuery({
+    contestId,
+    pageNumber: page,
+    pageSize,
+  })
 
   const templates = templatesData?.data ?? []
   const pagination = templatesData?.additionalData

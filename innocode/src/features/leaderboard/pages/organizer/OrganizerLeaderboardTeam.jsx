@@ -84,9 +84,7 @@ const OrganizerLeaderboardTeam = () => {
         } catch (err) {
           console.error(err)
           toast.error(
-            err?.data?.message ||
-              err?.data?.error ||
-              "Unable to issue team certificate"
+            err?.data?.errorMessage || "Unable to issue team certificate"
           )
         } finally {
           setAwarding(false)
