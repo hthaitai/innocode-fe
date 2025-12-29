@@ -8,8 +8,36 @@ export const mcqApi = api.injectEndpoints({
         url: `rounds/${roundId}/mcq-test`,
         params: { pageNumber, pageSize, ...(openCode ? { openCode } : {}) },
       }),
+      transformResponse: (response) => {
+        // Remove isCorrect from options in questions
+        // API returns: { data: { testId, questions: [...] }, ... }
+        // Transform to match expected format: { data: { mcqTest: { testId, questions: [...] } } }
+        const apiData = response?.data || {}
+        const questions = apiData.questions || []
+
+        // Remove isCorrect from options
+        const transformedQuestions = questions.map((question) => ({
+          ...question,
+          options:
+            question.options?.map(({ isCorrect, ...option }) => option) || [],
+        }))
+
+        // Return in format expected by components: { mcqTest: { testId, questions, ... } }
+        return {
+          ...response,
+          data: {
+            mcqTest: {
+              testId: apiData.testId,
+              questions: transformedQuestions,
+              totalQuestions: transformedQuestions.length,
+            },
+          },
+        }
+      },
       providesTags: (result) => {
-        const questions = result?.data?.mcqTest?.questions ?? []
+        // Support both old structure (mcqTest.questions) and new structure (questions)
+        const questions =
+          result?.data?.questions ?? result?.data?.mcqTest?.questions ?? []
         return [
           ...questions.map((q) => ({ type: "Mcq", id: q.questionId })),
           { type: "Mcq", id: "LIST" },
