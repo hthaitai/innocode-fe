@@ -7,7 +7,20 @@
     "networkError": "Network error. Please check your connection",
     "timeout": "Request timeout. Please try again",
     "unexpectedError": "An unexpected error occurred",
-    "validationError": "Please check your input and try again"
+    "validationError": "Please check your input and try again",
+    "badRequest": "Invalid request. Please check your input",
+    "duplicate": "This item already exists",
+    "conflict": "Conflict occurred. Please try again",
+    "gone": "The requested resource is no longer available"
+  },
+  "activityLog": {
+    "logNotFound": "Activity log not found"
+  },
+  "appeal": {
+    "notFound": "Appeal not found"
+  },
+  "attachment": {
+    "notFound": "Attachment not found"
   },
   "auth": {
     "invalidCredentials": "Invalid email or password",
@@ -30,12 +43,184 @@
     "emailMismatch": "Token does not match user email",
     "badCurrentPassword": "Current password is incorrect"
   },
+  "certificate": {
+    "templateNotFound": "Certificate template not found",
+    "recipientInvalid": "Specify exactly one of studentId or teamId",
+    "studentNotFound": "Student not found",
+    "teamNotFound": "Team not found",
+    "duplicate": "Certificate already exists for this recipient and template",
+    "renderFailed": "Failed to render certificate image",
+    "uploadFailed": "Failed to upload certificate file",
+    "saveFailed": "Failed to save certificate record",
+    "recipientProcessingFailed": "Failed to process recipient",
+    "templateDownloadFailed": "Failed to download certificate template file",
+    "issuanceFailed": "An unexpected error occurred during certificate issuance",
+    "typeInvalid": "types must contain 'student' and/or 'team'",
+    "certNotFound": "Certificate not found",
+    "contestNotFound": "Contest not found"
+  },
+  "config": {
+    "notFound": "Config not found",
+    "exists": "Config already exists",
+    "invalidWindow": "End must be after Start",
+    "invalidKey": "Key is invalid",
+    "invalidInput": "Invalid import template type"
+  },
   "contest": {
     "duplicate": "A contest with this name already exists",
     "notFound": "Contest not found",
     "alreadyStarted": "Contest has already started",
     "registrationClosed": "Registration for this contest is closed",
-    "alreadyRegistered": "You are already registered for this contest"
+    "alreadyRegistered": "You are already registered for this contest",
+    "alreadyDeleted": "Contest already deleted",
+    "yearInvalid": "Year must be greater than 1900",
+    "dateInvalid": "Start date cannot be later than end date",
+    "nameRequired": "Contest name is required",
+    "teamMembersInvalid": "Team members configuration is invalid",
+    "teamLimitInvalid": "Team limit configuration is invalid",
+    "invalidImage": "Uploaded file is not a valid image",
+    "invalidState": "Contest is in invalid state for this operation",
+    "dateConflict": "Contest dates conflict with existing schedule"
+  },
+  "judge": {
+    "notFound": "Judge not found",
+    "inactive": "Your account is not active"
+  },
+  "judgeInvite": {
+    "inviteNotFound": "Invite not found",
+    "inviteNotPending": "Invite is not pending",
+    "inviteExpired": "Invite has expired",
+    "invalidCode": "Invalid invite code"
+  },
+  "leaderboard": {
+    "frozen": "Leaderboard is frozen and cannot be updated",
+    "entryNotFound": "Leaderboard entry not found",
+    "teamExists": "Team already exists in leaderboard",
+    "teamEliminated": "This team has been eliminated and cannot receive new scores",
+    "invalidEliminationRule": "Elimination rule policy is not valid"
+  },
+  "mcq": {
+    "testNotFound": "MCQ Test not found",
+    "questionNotFound": "MCQ Question not found",
+    "optionNotFound": "MCQ Option not found",
+    "testQuestionNotFound": "MCQ Test Question not found",
+    "attemptNotFound": "MCQ Attempt not found"
+  },
+  "mentor": {
+    "notFound": "Mentor not found",
+    "userNotMentor": "User role must be Mentor",
+    "userInvalidStatus": "User must be Active or Inactive",
+    "userAlreadyMentor": "This user is already a mentor",
+    "inUse": "Cannot delete a mentor who is assigned to teams"
+  },
+  "notification": {
+    "notFound": "Notification not found",
+    "recipientListEmpty": "Recipient list cannot be empty"
+  },
+  "problem": {
+    "notFound": "Problem not found",
+    "rubricTemplateNotAvailable": "Rubric template is only available for manual problem types",
+    "rubricNotFound": "Rubric not found",
+    "rubricCriterionNotFound": "Rubric criterion not found",
+    "mockTestNotProvided": "No mock test file was provided",
+    "mockTestInvalidType": "Mock test file must be a Python file",
+    "mockTestSizeExceeded": "Mock test file size exceeds the limit",
+    "mockTestWrongType": "Mock tests can only be uploaded for AutoEvaluation problems"
+  },
+  "province": {
+    "notFound": "Province not found",
+    "inUse": "Cannot delete a province that is in use",
+    "nameExists": "Province name already exists"
+  },
+  "quiz": {
+    "notFound": "Quiz not found",
+    "alreadyFinished": "You have already finished this round",
+    "openCodeRequired": "Open code is required to access this quiz",
+    "invalidOpenCode": "Invalid open code",
+    "bankNameRequired": "Bank name is required in first row",
+    "invalidCsv": "CSV file contains no valid question rows",
+    "keyRequired": "Key is required",
+    "keyMismatch": "Key does not belong to the current student"
+  },
+  "roleRegistration": {
+    "evidenceRequired": "At least 1 evidence file is required",
+    "registrationExists": "A pending role registration already exists for this email",
+    "notFound": "Role registration not found",
+    "notPending": "Only pending registrations can be processed",
+    "missingPassword": "Registration has no password hash",
+    "reasonRequired": "Deny reason is required",
+    "roleRequired": "RequestedRole is required",
+    "invalidRole": "RequestedRole must be staff, organizer, judge, schoolmanager, or admin"
+  },
+  "round": {
+    "notFound": "Round not found",
+    "dataRequired": "Round data cannot be null",
+    "nameRequired": "Round name is required",
+    "problemConfigRequired": "Problem configuration is required",
+    "mcqTestConfigRequired": "MCQ test configuration is required",
+    "mcqTestNameRequired": "MCQ test name is required",
+    "penaltyRateInvalid": "Penalty rate must be between 0 and 1",
+    "rankCutoffInvalid": "RankCutoff must be >= 0",
+    "invalidProblemType": "Invalid problem type",
+    "retakeRoundInvalid": "Retake round configuration is invalid",
+    "mainRoundNotFound": "Main round not found",
+    "cannotUpdate": "Cannot update round while it is in 'Opened' status",
+    "dateConflict": "Round dates conflict with existing round",
+    "dateInvalid": "Round dates are invalid",
+    "timeLimitInvalid": "Time limit configuration is invalid",
+    "noJudgesAvailable": "No judges available for this contest",
+    "noActiveJudges": "No active judges available",
+    "openCodeNotFound": "Open code not found",
+    "alreadyEnded": "Round already ended",
+    "notStarted": "Round has not started yet",
+    "alreadyFinished": "You have already finished this round",
+    "cannotEndBeforeStart": "Cannot end round before it starts",
+    "topCutoffRequired": "Your team is not in Top cutoff of the previous round"
+  },
+  "school": {
+    "inUse": "Cannot delete a school that has students, mentors, or teams",
+    "nameExists": "School name already exists in this province",
+    "provinceNotFound": "Province not found"
+  },
+  "schoolCreationRequest": {
+    "notFound": "School creation request not found",
+    "denyReasonRequired": "DenyReason is required",
+    "invalidEvidenceType": "Evidence must be .pdf, .png, .jpg, .jpeg, .doc, or .docx"
+  },
+  "student": {
+    "userNotStudent": "User role must be Student",
+    "userAlreadyStudent": "This user is already a student",
+    "inUse": "Cannot delete a student with related records"
+  },
+  "submission": {
+    "notFound": "Submission not found",
+    "deadlinePassed": "Submission deadline has passed",
+    "invalidFormat": "Invalid submission format",
+    "fileRequired": "File is required for File evaluation type",
+    "fileTypeNotSupported": "File type is not supported",
+    "codeRequired": "Code is required for Code evaluation type",
+    "noTestCases": "No test cases found for problem",
+    "cannotExecute": "Cannot execute code",
+    "fileNotFound": "No file found for submission",
+    "flagged": "Submission is flagged for plagiarism",
+    "cannotAcceptResult": "Cannot accept result",
+    "rubricEvaluationOnly": "Rubric evaluation is only available for manual problem types",
+    "noRubricCriteria": "No rubric criteria found for this problem",
+    "missingScores": "All criteria must be scored",
+    "duplicateCriteria": "Duplicate criteria found in submission",
+    "scoreExceedsMax": "Score exceeds max score for criterion",
+    "scoreNegative": "Score cannot be negative",
+    "noManualTestSubmission": "No manual test submission found for this round",
+    "detailsMissing": "Some submission details are missing",
+    "fingerprintNotFound": "Fingerprint/submission not found",
+    "plagiarismNotSuspected": "Submission is not in plagiarism suspected state",
+    "noMockTest": "This problem does not have a mock test configured"
+  },
+  "submissionArtifact": {
+    "notFound": "Submission Artifact not found"
+  },
+  "submissionDetail": {
+    "notFound": "Submission Detail not found"
   },
   "team": {
     "notFound": "Team not found",
@@ -43,12 +228,50 @@
     "teamFull": "Team is full",
     "inviteExpired": "Team invitation has expired",
     "inviteNotFound": "Team invitation not found",
-    "alreadyProcessed": "This invitation has already been processed"
+    "alreadyProcessed": "This invitation has already been processed",
+    "notMentor": "Only mentors can create teams",
+    "mentorNotBelongToSchool": "This mentor does not belong to the selected school",
+    "nameExists": "A team with this name already exists in the contest",
+    "mentorContestLimitExceeded": "A mentor can have only one active team in the same contest",
+    "inUse": "Cannot delete a team that has related records",
+    "contestStarted": "Contest has started. Team cannot be modified",
+    "memberNotFound": "Team member not found"
   },
-  "submission": {
-    "notFound": "Submission not found",
-    "deadlinePassed": "Submission deadline has passed",
-    "invalidFormat": "Invalid submission format"
+  "teamInvite": {
+    "teamFull": "Team member limit reached",
+    "invalidInput": "Provide StudentId or InviteeEmail",
+    "alreadyOnTeam": "Student is already on a team for this contest",
+    "timeConflict": "Student has a time conflict with another contest",
+    "studentProfileRequired": "Please create/complete student profile before accepting the invite",
+    "inviteNotForYou": "This invite is for a different student",
+    "accountRequired": "Please register with the invited email first",
+    "notStudent": "Only students can accept team invites",
+    "regClosed": "Registration window is closed"
+  },
+  "testCase": {
+    "notFound": "Test case not found",
+    "dataRequired": "Test case data cannot be null",
+    "inputRequired": "Input is required",
+    "expectedOutputRequired": "Expected output is required",
+    "weightInvalid": "Weight must be greater than 0",
+    "fieldTooLong": "Description, Input and ExpectedOutput must be 255 characters or less",
+    "timeLimitInvalid": "TimeLimitMs must be a positive integer if provided",
+    "listEmpty": "Test case list cannot be null or empty",
+    "duplicateIds": "Duplicate test case IDs found in the request",
+    "cannotDelete": "Only test cases of type 'TestCase' can be deleted",
+    "notAvailable": "Test cases are only available for AutoEvaluation problems"
+  },
+  "user": {
+    "invalidRole": "Role is not allowed",
+    "invalidStatus": "Status is not allowed",
+    "invalidProfileType": "Only Mentor can update phone",
+    "profileNotFound": "Profile not found"
+  },
+  "cloudinary": {
+    "noFileProvided": "No file was provided",
+    "fileTypeNotAllowed": "File type is not allowed",
+    "fileSizeExceeded": "File size exceeds the limit",
+    "noImageStream": "No image stream provided",
+    "evidenceInvalidType": "Evidence must be .pdf, .png, .jpg, or .jpeg"
   }
 }
-

@@ -26,7 +26,8 @@ const ContestCard = ({ contest, onClick }) => {
   const getStatusColor = (status) => {
     if (!status) return "text-gray-500 bg-gray-500/10";
     
-    const statusLower = status.toLowerCase();
+    // Normalize status: lowercase and remove spaces
+    const statusLower = status.toLowerCase().replace(/\s+/g, '');
     switch (statusLower) {
       case "upcoming":
         return "text-amber-500 bg-amber-500/10";
@@ -36,10 +37,8 @@ const ContestCard = ({ contest, onClick }) => {
         return "text-green-500 bg-green-500/10";
       case "published":
         return "text-green-500 bg-green-500/10";
-      case "registration open":
       case "registrationopen":
         return "text-green-500 bg-green-500/10";
-      case "registration closed":
       case "registrationclosed":
         return "text-orange-500 bg-orange-500/10";
       case "draft":
@@ -120,7 +119,7 @@ const ContestCard = ({ contest, onClick }) => {
         {statusLabel && (
           <div className="mb-2">
             <span className={`inline-block px-2 py-1 text-xs font-semibold rounded ${getStatusColor(
-              statusLabel || contest.status
+              contest.statusLabel || contest.status
             )}`}>
               {statusLabel}
             </span>
