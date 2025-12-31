@@ -45,7 +45,17 @@ const Login = () => {
       await login({ email, password });
       navigate("/");
     } catch (err) {
-      console.error("Login error:", err);
+      // Log error theo cấu trúc backend
+      if (import.meta.env.VITE_ENV === "development") {
+        const errorData = err?.response?.data || {};
+        console.error("❌ Login error:", {
+          status: err?.response?.status,
+          code: errorData?.errorCode || errorData?.Code,
+          message: errorData?.errorMessage || errorData?.Message || errorData?.message,
+          url: err?.config?.url,
+          data: errorData,
+        });
+      }
 
       // Xử lý các loại lỗi khác nhau
       // Use translateApiError to handle all error cases
@@ -119,7 +129,43 @@ const Login = () => {
             </div>
 
             {error && (
-              <div style={{ color: "red", marginBottom: 8 }}>{error}</div>
+              <div 
+                className="error-message"
+                style={{ 
+                  color: "#ef4444", 
+                  marginBottom: "1rem",
+                  padding: "0.75rem",
+                  backgroundColor: "#fef2f2",
+                  border: "1px solid #fecaca",
+                  borderRadius: "0.375rem",
+                  fontSize: "0.875rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem"
+                }}
+              >
+                <svg 
+                  width="20" 
+                  height="20" 
+                  viewBox="0 0 20 20" 
+                  fill="none" 
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{ flexShrink: 0 }}
+                >
+                  <path 
+                    d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z" 
+                    stroke="#ef4444" 
+                    strokeWidth="2"
+                  />
+                  <path 
+                    d="M10 6V10M10 14H10.01" 
+                    stroke="#ef4444" 
+                    strokeWidth="2" 
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span>{error}</span>
+              </div>
             )}
 
             <button

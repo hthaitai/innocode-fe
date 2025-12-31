@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageContainer from '@/shared/components/PageContainer';
 import Search from '@/shared/components/search/Search';
 import ContestCard from '@/shared/components/contest/ContestCard';
@@ -9,6 +10,7 @@ import useContests from '../hooks/useContests';
 import { Icon } from '@iconify/react';
 
 const Contests = () => {
+  const { t } = useTranslation('pages');
   const navigate = useNavigate();
   const { contests, loading, error, searchTerm, searchContests, pagination, onPageChange, isAutoSkipping } = useContests();
   const [inputValue, setInputValue] = useState(''); // Input value (can change while typing)
@@ -73,7 +75,7 @@ const Contests = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading contests...</p>
+            <p className="text-gray-600 font-medium">{t('contest.loading')}</p>
           </div>
         </div>
       </PageContainer>
@@ -89,7 +91,7 @@ const Contests = () => {
               className="w-20 h-20 text-red-500 mx-auto mb-4"
             />
             <h3 className="text-xl font-bold text-gray-800 mb-2">
-              Failed to Load Contests
+              {t('contest.failedToLoad')}
             </h3>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
@@ -97,7 +99,7 @@ const Contests = () => {
               className="button-orange"
             >
               <Icon icon="mdi:refresh" className="inline mr-2" />
-              Retry
+              {t('contest.retry')}
             </button>
           </div>
         </div>
@@ -115,7 +117,7 @@ const Contests = () => {
       <div className="w-full flex flex-col gap-[14px]">
         <div>
           <Search 
-            placeholder="Search Contests" 
+            placeholder={t('contest.searchPlaceholder')} 
             onSearch={handleSearch}
             value={inputValue}
             onChange={handleInputChange}
@@ -130,14 +132,14 @@ const Contests = () => {
                 className="w-20 h-20 text-gray-400 mx-auto mb-4"
               />
               <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                {searchTerm ? 'No contests found' : 'No contests available'}
+                {searchTerm ? t('contest.noContestsFound') : t('contest.noContestsAvailable')}
               </h3>
               <p className="text-gray-500 mb-4">
                 {searchTerm
-                  ? 'Try adjusting your search terms'
+                  ? t('contest.tryAdjustingSearch')
                   : hasMorePages
-                  ? 'This page contains only draft contests. Use pagination to view other pages.'
-                  : 'Check back later for upcoming contests!'}
+                  ? t('contest.draftContestsOnly')
+                  : t('contest.checkBackLater')}
               </p>
               {hasMorePages && pagination && (
                 <div className="mt-4">
@@ -155,7 +157,7 @@ const Contests = () => {
       <div className="w-full flex flex-col gap-[14px]">
         <div>
           <Search 
-            placeholder="Search Contests" 
+            placeholder={t('contest.searchPlaceholder')} 
             onSearch={handleSearch}
             value={inputValue}
             onChange={handleInputChange}
@@ -167,7 +169,7 @@ const Contests = () => {
           <div className="mb-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Icon icon="mdi:fire" className="text-red-500 text-2xl" />
-              Ongoing Contests
+              {t('contest.ongoing')}
               <span className="text-sm font-normal text-gray-500">
                 ({ongoingContests.length})
               </span>
@@ -192,7 +194,7 @@ const Contests = () => {
                 icon="mdi:calendar-clock"
                 className="text-blue-500 text-2xl"
               />
-              Upcoming Contests
+              {t('contest.upcoming')}
               <span className="text-sm font-normal text-gray-500">
                 ({upcomingContests.length})
               </span>
@@ -213,7 +215,7 @@ const Contests = () => {
           <div className="mb-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Icon icon="mdi:trophy" className="text-gray-500 text-2xl" />
-              Past Contests
+              {t('contest.past')}
               <span className="text-sm font-normal text-gray-500">
                 ({completedContests.length})
               </span>

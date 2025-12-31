@@ -104,8 +104,17 @@ export const authService = {
         user: user,
       };
     } catch (error) {
-      console.error('❌ Login error:', error);
-      console.error('❌ Error response:', error.response?.data);
+      // Log error theo cấu trúc backend
+      if (import.meta.env.VITE_ENV === "development") {
+        const errorData = error?.response?.data || {};
+        console.error('❌ Login error:', {
+          status: error?.response?.status,
+          code: errorData?.errorCode || errorData?.Code,
+          message: errorData?.errorMessage || errorData?.Message || errorData?.message,
+          url: error?.config?.url,
+          data: errorData,
+        });
+      }
       throw error;
     }
   },
@@ -148,10 +157,17 @@ export const authService = {
         user: user,
       };
     } catch (error) {
-      console.error('❌ Register error:', error);
-      console.error('❌ Error response:', error.response?.data);
-      console.error('❌ Error status:', error.response?.status);
-      console.error('❌ Error message:', error.response?.data?.message);
+      // Log error theo cấu trúc backend
+      if (import.meta.env.VITE_ENV === "development") {
+        const errorData = error?.response?.data || {};
+        console.error('❌ Register error:', {
+          status: error?.response?.status,
+          code: errorData?.errorCode || errorData?.Code,
+          message: errorData?.errorMessage || errorData?.Message || errorData?.message,
+          url: error?.config?.url,
+          data: errorData,
+        });
+      }
       throw error;
     }
   },
@@ -161,7 +177,17 @@ export const authService = {
       const apiData = response.data.data;
       return apiData.token;
     } catch (error) {
-      console.error('❌ Generate verification token error:', error);
+      // Log error theo cấu trúc backend
+      if (import.meta.env.VITE_ENV === "development") {
+        const errorData = error?.response?.data || {};
+        console.error('❌ Generate verification token error:', {
+          status: error?.response?.status,
+          code: errorData?.errorCode || errorData?.Code,
+          message: errorData?.errorMessage || errorData?.Message || errorData?.message,
+          url: error?.config?.url,
+          data: errorData,
+        });
+      }
       throw error;
     }
   },
@@ -170,7 +196,17 @@ export const authService = {
       const response = await authApi.verifyEmail(token);
       const apiData = response.data;
     } catch (error) {
-      console.error('❌ Verify email error:', error);
+      // Log error theo cấu trúc backend
+      if (import.meta.env.VITE_ENV === "development") {
+        const errorData = error?.response?.data || {};
+        console.error('❌ Verify email error:', {
+          status: error?.response?.status,
+          code: errorData?.errorCode || errorData?.Code,
+          message: errorData?.errorMessage || errorData?.Message || errorData?.message,
+          url: error?.config?.url,
+          data: errorData,
+        });
+      }
       throw error;
     }
   },
@@ -180,7 +216,17 @@ export const authService = {
       // Try to call API logout
       await authApi.logout();
     } catch (error) {
-      console.error('❌ Logout API error:', error);
+      // Log error theo cấu trúc backend
+      if (import.meta.env.VITE_ENV === "development") {
+        const errorData = error?.response?.data || {};
+        console.error('❌ Logout API error:', {
+          status: error?.response?.status,
+          code: errorData?.errorCode || errorData?.Code,
+          message: errorData?.errorMessage || errorData?.Message || errorData?.message,
+          url: error?.config?.url,
+          data: errorData,
+        });
+      }
       // Continue with local logout even if API fails
     } finally {
       // Always clear all auth data from local storage
@@ -252,7 +298,17 @@ export const authService = {
         user: user,
       };
     } catch (error) {
-      console.error('❌ Refresh token error:', error);
+      // Log error theo cấu trúc backend
+      if (import.meta.env.VITE_ENV === "development") {
+        const errorData = error?.response?.data || {};
+        console.error('❌ Refresh token error:', {
+          status: error?.response?.status,
+          code: errorData?.errorCode || errorData?.Code,
+          message: errorData?.errorMessage || errorData?.Message || errorData?.message,
+          url: error?.config?.url,
+          data: errorData,
+        });
+      }
       // If refresh fails, clear all tokens and logout
       this.logoutLocal();
       throw error;

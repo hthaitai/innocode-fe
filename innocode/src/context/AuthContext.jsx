@@ -69,7 +69,16 @@ export const AuthProvider = ({ children }) => {
             console.log("✅ Token refreshed automatically")
           }
         } catch (refreshError) {
-          console.error("❌ Automatic token refresh failed:", refreshError)
+          if (import.meta.env.VITE_ENV === "development") {
+            const errorData = refreshError?.response?.data || {};
+            console.error("❌ Automatic token refresh failed:", {
+              status: refreshError?.response?.status,
+              code: errorData?.errorCode || errorData?.Code,
+              message: errorData?.errorMessage || errorData?.Message || errorData?.message,
+              url: refreshError?.config?.url,
+              data: errorData,
+            });
+          }
           // If refresh fails, clear tokens and redirect to login
           stopTokenRefreshInterval()
           localStorage.removeItem("token")
@@ -83,7 +92,16 @@ export const AuthProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      console.error("❌ Token refresh check error:", error)
+      if (import.meta.env.VITE_ENV === "development") {
+        const errorData = error?.response?.data || {};
+        console.error("❌ Token refresh check error:", {
+          status: error?.response?.status,
+          code: errorData?.Code || errorData?.errorCode,
+          message: errorData?.Message || errorData?.message || errorData?.errorMessage,
+          url: error?.config?.url,
+          data: errorData,
+        });
+      }
     }
   }, [stopTokenRefreshInterval])
 
@@ -172,7 +190,16 @@ export const AuthProvider = ({ children }) => {
               })
             )
           } catch (refreshError) {
-            console.error("❌ Initial token refresh failed:", refreshError)
+            if (import.meta.env.VITE_ENV === "development") {
+              const errorData = refreshError?.response?.data || {};
+              console.error("❌ Initial token refresh failed:", {
+                status: refreshError?.response?.status,
+                code: errorData?.Code || errorData?.errorCode,
+                message: errorData?.Message || errorData?.message || errorData?.errorMessage,
+                url: refreshError?.config?.url,
+                data: errorData,
+              });
+            }
             // If refresh fails, clear tokens but don't redirect (let user stay on page)
             localStorage.removeItem("token")
             localStorage.removeItem("refreshToken")
@@ -228,7 +255,16 @@ export const AuthProvider = ({ children }) => {
               })
             )
           } catch (refreshError) {
-            console.error("❌ Initial token refresh failed:", refreshError)
+            if (import.meta.env.VITE_ENV === "development") {
+              const errorData = refreshError?.response?.data || {};
+              console.error("❌ Initial token refresh failed:", {
+                status: refreshError?.response?.status,
+                code: errorData?.Code || errorData?.errorCode,
+                message: errorData?.Message || errorData?.message || errorData?.errorMessage,
+                url: refreshError?.config?.url,
+                data: errorData,
+              });
+            }
             // If refresh fails, clear tokens
             localStorage.removeItem("token")
             localStorage.removeItem("refreshToken")
@@ -240,7 +276,16 @@ export const AuthProvider = ({ children }) => {
           }
         }
       } catch (error) {
-        console.error("❌ Initialize auth error:", error)
+        if (import.meta.env.VITE_ENV === "development") {
+          const errorData = error?.response?.data || {};
+          console.error("❌ Initialize auth error:", {
+            status: error?.response?.status,
+            code: errorData?.Code || errorData?.errorCode,
+            message: errorData?.Message || errorData?.message || errorData?.errorMessage,
+            url: error?.config?.url,
+            data: errorData,
+          });
+        }
       } finally {
         setLoading(false)
       }
@@ -274,7 +319,16 @@ export const AuthProvider = ({ children }) => {
           }
         }
       } catch (error) {
-        console.error("❌ Token refresh handler error:", error)
+        if (import.meta.env.VITE_ENV === "development") {
+          const errorData = error?.response?.data || {};
+          console.error("❌ Token refresh handler error:", {
+            status: error?.response?.status,
+            code: errorData?.Code || errorData?.errorCode,
+            message: errorData?.Message || errorData?.message || errorData?.errorMessage,
+            url: error?.config?.url,
+            data: errorData,
+          });
+        }
       }
     }
 

@@ -22,7 +22,7 @@ const ContestInfo = ({ contest }) => {
       <DetailTable
         data={[
           { label: "Name", value: safe(contest.name) },
-          { label: "Status", value: <StatusBadge status={contest.status} /> },
+          { label: "Status", value: <StatusBadge status={contest.status} translate={true} /> },
           { label: "Year", value: safe(contest.year) },
           { spacer: true },
           {

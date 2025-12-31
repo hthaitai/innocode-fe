@@ -22,7 +22,7 @@ export const getContestColumns = (handleEdit, handleDelete) => [
     accessorKey: "status",
     header: "Status",
     size: 180,
-    cell: ({ row }) => <StatusBadge status={row.original?.status || "Draft"} />,
+    cell: ({ row }) => <StatusBadge status={row.original?.status || "Draft"} translate={true} />,
     meta: { className: "truncate max-w-[180px]" },
   },
   {

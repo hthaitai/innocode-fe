@@ -17,15 +17,9 @@ export const translateApiError = (error, namespace = 'errors') => {
   }
 
   // If error is an object, extract message
+  // Ưu tiên errorMessage từ response.data (backend) trước error.message (axios)
   const errorMessage =
-    error?.errorMessage ||
-    error?.message ||
-    error?.Message ||
-    error?.data?.errorMessage ||
-    error?.data?.message ||
-    error?.response?.data?.errorMessage ||
-    error?.response?.data?.message
-
+    error?.response?.data?.errorMessage 
   if (!errorMessage) {
     return i18n.t(`${namespace}:common.unexpectedError`)
   }
@@ -42,27 +36,34 @@ export const translateApiError = (error, namespace = 'errors') => {
  */
 const translateErrorMessage = (message, namespace, error = {}) => {
   const currentLang = i18n.language
-  const errorCode = error?.errorCode || error?.code
-  const statusCode = error?.status || error?.response?.status
+  // Lấy errorCode từ response.data theo cấu trúc backend
+  const errorCode = error?.response?.data?.errorCode || error?.data?.errorCode || error?.errorCode
+  const statusCode = error?.response?.status || error?.status
 
-  // Try to translate by error code first
+  // Nếu ngôn ngữ là tiếng Anh, sử dụng trực tiếp errorMessage từ backend
+  // Backend đã gửi errorMessage bằng tiếng Anh, không cần translate
+  if (currentLang === 'en' || currentLang?.startsWith('en-')) {
+    return message
+  }
+
+  // Nếu ngôn ngữ là tiếng Việt hoặc ngôn ngữ khác, translate dựa trên errorCode
+  // Ưu tiên 1: Translate bằng errorCode (chính xác nhất)
   if (errorCode) {
     const codeTranslation = translateByErrorCode(errorCode, namespace)
     if (codeTranslation) return codeTranslation
   }
 
-  // Try to translate by status code
+  // Ưu tiên 2: Match pattern từ errorMessage (nếu không có errorCode hoặc errorCode không match)
+  const commonMessageTranslation = matchCommonMessage(message, namespace)
+  if (commonMessageTranslation) return commonMessageTranslation
+
+  // Ưu tiên 3: Translate bằng statusCode
   if (statusCode) {
     const statusTranslation = translateByStatusCode(statusCode, namespace)
     if (statusTranslation) return statusTranslation
   }
 
-  // Try to match common error messages
-  const commonMessageTranslation = matchCommonMessage(message, namespace)
-  if (commonMessageTranslation) return commonMessageTranslation
-
-  // If no translation found, return original message
-  // (This allows backend to send pre-translated messages if needed)
+  // Fallback: Nếu không translate được, trả về errorMessage gốc (tiếng Anh từ backend)
   return message
 }
 
@@ -85,6 +86,19 @@ const translateByErrorCode = (errorCode, namespace) => {
     EMAIL_EXISTS: `${namespace}:auth.emailExists`,
     WEAK_PASSWORD: `${namespace}:auth.weakPassword`,
     TOKEN_EXPIRED: `${namespace}:auth.tokenExpired`,
+    CONFIRM_PASSWORD_MISMATCH: `${namespace}:auth.confirmPasswordMismatch`,
+    SCHOOL_ID_REQUIRED: `${namespace}:auth.schoolIdRequired`,
+    SCHOOL_NOT_FOUND: `${namespace}:auth.schoolNotFound`,
+    USER_UNVERIFIED: `${namespace}:auth.userUnverified`,
+    USER_INACTIVE: `${namespace}:auth.userInactive`,
+    UNAUTHENTICATED: `${namespace}:auth.unauthenticated`,
+    ALREADY_VERIFIED: `${namespace}:auth.alreadyVerified`,
+    INVALID_TOKEN: `${namespace}:auth.invalidToken`,
+    INVALID_TOKEN_TYPE: `${namespace}:auth.invalidTokenType`,
+    INVALID_REFRESH: `${namespace}:auth.invalidRefresh`,
+    USER_NOT_FOUND: `${namespace}:auth.userNotFound`,
+    EMAIL_MISMATCH: `${namespace}:auth.emailMismatch`,
+    BAD_CURRENT_PASSWORD: `${namespace}:auth.badCurrentPassword`,
 
     // Contest codes
     DUPLICATE: `${namespace}:contest.duplicate`,
