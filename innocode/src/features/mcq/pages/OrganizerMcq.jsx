@@ -1,13 +1,9 @@
-import React, { useMemo, useState } from "react"
+import React, { useState } from "react"
 import { useParams } from "react-router-dom"
-
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-
 import ManageMcqs from "../components/organizer/ManageMcqs"
-
 import { useGetRoundByIdQuery } from "../../../services/roundApi"
-import { Spinner } from "../../../shared/components/SpinnerFluent"
 import { LoadingState } from "../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../shared/components/ui/ErrorState"
 import { useGetRoundMcqsQuery } from "../../../services/mcqApi"
@@ -30,14 +26,9 @@ const OrganizerMcq = () => {
     isError: mcqError,
   } = useGetRoundMcqsQuery({ roundId, pageNumber: page, pageSize })
 
-  const mcqs = mcqData?.data?.mcqTest?.questions ?? []
-  const pagination = mcqData?.additionalData
-    ? {
-        ...mcqData.additionalData,
-        pageNumber: mcqData.additionalData.currentPage,
-      }
-    : {}
-  const testId = mcqData?.data?.mcqTest?.testId
+  const testId = mcqData?.data?.testId
+  const mcqs = mcqData?.data?.questions ?? []
+  const pagination = mcqData?.additionalData ?? {}
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ(
     round?.contestName ?? "Contest",

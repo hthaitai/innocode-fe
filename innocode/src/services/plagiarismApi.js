@@ -3,10 +3,16 @@ import { api } from "./api"
 export const plagiarismApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getPlagiarismQueue: builder.query({
-      query: ({ contestId, pageNumber = 1, pageSize = 20 }) => ({
+      query: ({
+        contestId,
+        pageNumber = 1,
+        pageSize = 20,
+        teamName,
+        studentName,
+      }) => ({
         url: "organizer/plagiarism/queue",
         method: "GET",
-        params: { contestId, pageNumber, pageSize },
+        params: { contestId, pageNumber, pageSize, teamName, studentName },
       }),
 
       providesTags: (result) =>

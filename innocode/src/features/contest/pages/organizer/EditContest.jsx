@@ -86,6 +86,7 @@ export default function EditContest() {
       "registrationEnd",
       fromDatetimeLocal(formData.registrationEnd)
     )
+    formPayload.append("teamMembersMin", formData.teamMembersMin)
     formPayload.append("teamMembersMax", formData.teamMembersMax)
     formPayload.append("teamLimitMax", formData.teamLimitMax)
     formPayload.append("rewardsText", formData.rewardsText)

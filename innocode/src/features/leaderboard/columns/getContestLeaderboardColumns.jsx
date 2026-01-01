@@ -1,25 +1,23 @@
-import React from "react"
-
 export const getContestLeaderboardColumns = () => [
   {
-    header: "#",
     accessorKey: "rank",
-    size: 40,
-    cell: (info) => info.getValue(),
+    header: "#",
+    size: 60,
+    cell: ({ row }) => row.original?.rank ?? "—",
     meta: { className: "truncate max-w-[60px]" },
   },
   {
-    header: "Team name",
     accessorKey: "teamName",
-    size: 200,
-    cell: (info) => info.getValue(),
-    meta: { className: "truncate max-w-[200px]" },
+    header: "Team name",
+    size: 720,
+    cell: ({ row }) => row.original?.teamName || "—",
+    meta: { className: "truncate max-w-[720px]" },
   },
   {
-    header: "Team score",
     accessorKey: "score",
-    size: 40,
-    cell: (info) => info.getValue(),
-    meta: { className: "truncate max-w-[100px]" },
+    header: "Team score",
+    size: 140,
+    cell: ({ row }) => row.original?.score ?? "—",
+    meta: { className: "truncate max-w-[140px]" },
   },
 ]

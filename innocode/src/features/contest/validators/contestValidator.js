@@ -68,10 +68,21 @@ export const validateContest = (data, { isEdit = false } = {}) => {
   }
 
   // ---- Team Members ----
+  if (data.teamMembersMin == null || data.teamMembersMin === "") {
+    errors.teamMembersMin = "Min team members is required"
+  } else if (data.teamMembersMin < 1 || data.teamMembersMin > 50) {
+    errors.teamMembersMin = "Min team members must be between 1 and 50"
+  }
+
   if (data.teamMembersMax == null || data.teamMembersMax === "") {
-    errors.teamMembersMax = "Team member limit is required"
+    errors.teamMembersMax = "Max team members is required"
   } else if (data.teamMembersMax < 1 || data.teamMembersMax > 50) {
-    errors.teamMembersMax = "Team members must be between 1 and 50"
+    errors.teamMembersMax = "Max team members must be between 1 and 50"
+  } else if (
+    data.teamMembersMin &&
+    Number(data.teamMembersMin) > Number(data.teamMembersMax)
+  ) {
+    errors.teamMembersMax = "Max team members must be >= Min team members"
   }
 
   // ---- Team Limit ----

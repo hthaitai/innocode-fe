@@ -24,20 +24,20 @@ export const getJudgeInviteColumns = ({
   {
     accessorKey: "judgeEmail",
     header: "Email",
-    size: 260,
+    size: 240,
     cell: ({ row }) => row.original.judgeEmail || "—",
     meta: { className: "truncate max-w-[260px]" },
   },
   {
     accessorKey: "inviteStatus",
-    header: "Invite Status",
-    size: 110,
+    header: "Invite status",
+    size: 130,
     cell: ({ row }) => <StatusBadge status={row.original.inviteStatus} />,
     meta: { className: "truncate max-w-[110px]" },
   },
   {
     accessorKey: "invitedAt",
-    header: "Invited At",
+    header: "Invited at",
     size: 180,
     cell: ({ row }) => {
       const value = row.original.invitedAt
@@ -51,7 +51,7 @@ export const getJudgeInviteColumns = ({
   },
   {
     accessorKey: "expiresAt",
-    header: "Expires At",
+    header: "Expires at",
     size: 180,
     cell: ({ row }) => {
       const value = row.original.expiresAt

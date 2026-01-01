@@ -96,6 +96,10 @@ export const contestApi = api.injectEndpoints({
         { type: "Contests", id: "LIST" },
       ],
     }),
+    getContestReport: builder.query({
+      query: (id) => `contests/${id}/report`,
+      transformResponse: (response) => response.data,
+    }),
   }),
 })
 
@@ -110,4 +114,5 @@ export const {
   usePublishContestMutation,
   useStartContestNowMutation,
   useEndContestNowMutation,
+  useLazyGetContestReportQuery,
 } = contestApi

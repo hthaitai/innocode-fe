@@ -3,23 +3,23 @@ import { formatDateTime } from "@/shared/utils/dateTime"
 
 export const getJudgeInviteColumns = () => [
   {
-    header: "Judge Name",
+    header: "Judge name",
     accessorKey: "judgeName",
     size: 180,
     cell: ({ row }) => row.original?.judgeName || "—",
     meta: { className: "truncate" },
   },
   {
-    header: "Judge Email",
+    header: "Judge email",
     accessorKey: "judgeEmail",
-    size: 220,
+    size: 180,
     cell: ({ row }) => row.original?.judgeEmail || "—",
     meta: { className: "truncate" },
   },
   {
-    header: "Status",
+    header: "Invite status",
     accessorKey: "status",
-    size: 120,
+    size: 140,
     cell: ({ row }) => (
       <StatusBadge status={row.original?.status || "PendingInvite"} />
     ),
@@ -41,14 +41,14 @@ export const getJudgeInviteColumns = () => [
     meta: { className: "text-center" },
   },
   {
-    header: "Created At",
+    header: "Created at",
     accessorKey: "createdAt",
     size: 160,
     cell: ({ row }) => formatDateTime(row.original?.createdAt),
     meta: { className: "truncate" },
   },
   {
-    header: "Accepted At",
+    header: "Accepted at",
     accessorKey: "acceptedAt",
     size: 160,
     cell: ({ row }) =>

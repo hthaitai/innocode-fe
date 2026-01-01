@@ -16,15 +16,16 @@ const AutoTestResultsPage = () => {
 
   const [page, setPage] = useState(1)
   const pageSize = 10
+
   const [studentNameSearch, setStudentNameSearch] = useState("")
   const [teamNameSearch, setTeamNameSearch] = useState("")
 
-  // Fetch round info
   const {
     data: round,
     isLoading: roundLoading,
     isError: roundError,
   } = useGetRoundByIdQuery(roundId)
+
   const {
     data: resultsData,
     isLoading: resultsLoading,

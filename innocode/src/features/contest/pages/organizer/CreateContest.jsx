@@ -18,6 +18,7 @@ const EMPTY_CONTEST = {
   registrationStart: "",
   registrationEnd: "",
   teamMembersMax: "",
+  teamMembersMin: "",
   teamLimitMax: "",
   rewardsText: "",
   saveAsDraft: true,
@@ -57,6 +58,7 @@ export default function CreateContest() {
         "RegistrationEnd",
         fromDatetimeLocal(formData.registrationEnd)
       )
+      formPayload.append("TeamMembersMin", formData.teamMembersMin)
       formPayload.append("TeamMembersMax", formData.teamMembersMax)
       formPayload.append("TeamLimitMax", formData.teamLimitMax)
       formPayload.append("RewardsText", formData.rewardsText)

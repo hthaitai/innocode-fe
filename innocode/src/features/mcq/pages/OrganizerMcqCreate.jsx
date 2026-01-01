@@ -2,13 +2,11 @@ import React, { useState, useMemo, useCallback } from "react"
 import PageContainer from "@/shared/components/PageContainer"
 import BankTable from "../components/organizer/BankTable"
 import QuestionsPreviewSection from "../components/organizer/QuestionsPreviewSection"
-
 import {
   useGetRoundMcqsQuery,
   useGetBanksQuery,
   useCreateTestMutation,
 } from "@/services/mcqApi"
-
 import { useGetRoundByIdQuery } from "@/services/roundApi"
 import { useParams, useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
@@ -37,7 +35,7 @@ const OrganizerMcqCreate = () => {
 
   const [createTest, { isLoading: createLoading }] = useCreateTestMutation()
 
-  const testId = mcqData?.data?.mcqTest?.testId
+  const testId = mcqData?.data?.testId
 
   // ===== LOCAL STATE =====
   const [uploadedQuestions, setUploadedQuestions] = useState([])

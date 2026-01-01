@@ -43,7 +43,7 @@ import { AuthProvider, ROLES } from "./context/AuthContext"
 import OrganizerContests from "./features/contest/pages/organizer/OrganizerContests"
 import OrganizerContestDetail from "./features/contest/pages/organizer/OrganizerContestDetail"
 import ContestJudgeInvitesPage from "./features/invite-judge/pages/ContestJudgeInvitesPage"
-import ContestJudgesListPage from "./features/invite-judge/pages/ContestJudgesListPage"
+import ActiveJudgesList from "./features/invite-judge/pages/ActiveJudgesList"
 import OrganizerRoundDetail from "./features/round/pages/organizer/OrganizerRoundDetail"
 import CreateRound from "./features/round/pages/organizer/CreateRound"
 import EditRound from "./features/round/pages/organizer/EditRound"
@@ -104,7 +104,7 @@ import StaffSchoolCreationRequestDetail from "./features/school/pages/staff/Staf
 import StaffRoleRegistrations from "./features/role-registration/pages/staff/StaffRoleRegistrations"
 import StaffRoleRegistrationDetail from "./features/role-registration/pages/staff/StaffRoleRegistrationDetail"
 import StudentCertificate from "./features/certificate/pages/student/StudentCertificate"
-import ContestJudgesPage from "./features/invite-judge/pages/ContestJudgesPage"
+import JudgeInvitations from "./features/invite-judge/pages/JudgeInvitations"
 import JudgeInviteAccept from "./features/invite-judge/pages/JudgeInviteAccept"
 import JudgeInviteDecline from "./features/invite-judge/pages/JudgeInviteDecline"
 import JudgeInviteResponse from "./features/invite-judge/pages/JudgeInviteResponse"
@@ -614,7 +614,7 @@ const router = createBrowserRouter([
             path: ":contestId/judges",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <ContestJudgesPage />
+                <JudgeInvitations />
               </ProtectedRoute>
             ),
           },
@@ -622,7 +622,7 @@ const router = createBrowserRouter([
             path: ":contestId/judges/active",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-                <ContestJudgesListPage />
+                <ActiveJudgesList />
               </ProtectedRoute>
             ),
           },

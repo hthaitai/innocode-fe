@@ -1,21 +1,12 @@
-import React, { useState, useMemo, useCallback } from "react"
-import { useParams } from "react-router-dom"
-
+import React, { useCallback } from "react"
 import TableFluent from "@/shared/components/TableFluent"
 import McqTableExpanded from "./McqTableExpanded"
-
 import { useModalContext } from "@/context/ModalContext"
 import { getMcqColumns } from "../../columns/getMcqColumns"
-
-import {
-  useGetRoundMcqsQuery,
-  useUpdateQuestionWeightMutation,
-} from "../../../../services/mcqApi"
-
+import { useUpdateQuestionWeightMutation } from "../../../../services/mcqApi"
 import { toast } from "react-hot-toast"
 import McqTableToolbar from "./McqTableToolbar"
 import TablePagination from "../../../../shared/components/TablePagination"
-import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 const ManageMcqs = ({ mcqs, pagination, setPage, testId }) => {
   const { openModal } = useModalContext()
@@ -38,6 +29,7 @@ const ManageMcqs = ({ mcqs, pagination, setPage, testId }) => {
 
             toast.success("Question weight updated successfully!")
           } catch (err) {
+            console.error(err)
             toast.error(
               err?.Message || err?.message || "Failed to update weight"
             )

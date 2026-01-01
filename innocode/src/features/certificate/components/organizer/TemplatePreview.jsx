@@ -36,13 +36,9 @@ export default function TemplatePreview({ formData, setFormData, zoom }) {
     }
 
     if (formData.file) {
-      if (formData.file.type === "application/pdf") {
-        setImageUrl("/pdf-placeholder.png")
-      } else {
-        const url = URL.createObjectURL(formData.file)
-        setImageUrl(url)
-        return () => URL.revokeObjectURL(url)
-      }
+      const url = URL.createObjectURL(formData.file)
+      setImageUrl(url)
+      return () => URL.revokeObjectURL(url)
     } else {
       setImageUrl(formData.fileUrl)
     }
@@ -79,8 +75,8 @@ export default function TemplatePreview({ formData, setFormData, zoom }) {
         <FileDropzone
           selectedFile={formData.file}
           onFileSelected={(file) => setFormData((prev) => ({ ...prev, file }))}
-          label="Drag & drop your template image here or click to select"
-          accept={{ "image/*": [], "application/pdf": [] }}
+          label="Drag and drop your template image here, or click to select a file. Supported formats: PNG, JPG, JPEG."
+          accept={{ "image/png": [".png"], "image/jpeg": [".jpg", ".jpeg"] }}
           noBorder
         />
       </div>

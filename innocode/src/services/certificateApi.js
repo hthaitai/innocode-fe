@@ -12,9 +12,9 @@ export const certificateApi = api.injectEndpoints({
     }),
 
     getCertificateTemplates: builder.query({
-      query: ({ pageNumber = 1, pageSize = 10, contestId }) => ({
+      query: ({ page = 1, pageSize = 10, contestId }) => ({
         url: "certificate-templates",
-        params: { pageNumber, pageSize, contestId },
+        params: { page, pageSize, contestId },
       }),
       providesTags: (result) =>
         result?.data

@@ -2,8 +2,6 @@ import React from "react"
 import { CheckCircle2, XCircle, Terminal } from "lucide-react"
 
 const AutoResultTestCases = ({ details }) => {
-  if (!details || details.length === 0) return null
-
   return (
     <div className="space-y-1">
       {details.length === 0 ? (

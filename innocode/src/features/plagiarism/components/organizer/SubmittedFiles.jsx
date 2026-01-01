@@ -4,8 +4,6 @@ import { formatDateTime } from "@/shared/utils/dateTime"
 import toast from "react-hot-toast"
 
 const SubmittedFiles = ({ artifacts }) => {
-  if (!artifacts || artifacts.length === 0) return null
-
   const [downloadingId, setDownloadingId] = useState(null)
 
   const handleDownload = async (artifact) => {
@@ -39,10 +37,13 @@ const SubmittedFiles = ({ artifacts }) => {
   }
 
   return (
-    <div>
-      <div className="text-sm font-semibold pt-3 pb-2">Submitted files</div>
-      <div className="flex flex-col gap-1">
-        {artifacts.map((artifact) => {
+    <div className="flex flex-col gap-1">
+      {!artifacts || artifacts.length === 0 ? (
+        <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 min-h-[70px] text-[#7A7574] flex justify-center items-center text-xs leading-4">
+          This submission does not include any files.
+        </div>
+      ) : (
+        artifacts.map((artifact) => {
           const isDownloading = downloadingId === artifact.artifactId
 
           return (
@@ -65,16 +66,14 @@ const SubmittedFiles = ({ artifacts }) => {
               <button
                 onClick={() => handleDownload(artifact)}
                 disabled={isDownloading}
-                className={`${
-                  isDownloading ? "button-gray" : "button-orange"
-                }`}
+                className={`${isDownloading ? "button-gray" : "button-orange"}`}
               >
                 Download
               </button>
             </div>
           )
-        })}
-      </div>
+        })
+      )}
     </div>
   )
 }

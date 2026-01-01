@@ -9,7 +9,7 @@ import {
 const TablePagination = ({ pagination, onPageChange }) => {
   if (!pagination) return null
 
-  const currentPage = pagination.pageNumber
+  const currentPage = pagination.pageNumber || pagination.currentPage
   const totalPages = pagination.totalPages
   const maxPagesToShow = 5
 

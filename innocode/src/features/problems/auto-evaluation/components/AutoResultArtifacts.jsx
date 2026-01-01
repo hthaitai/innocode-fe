@@ -2,9 +2,6 @@ import React from "react"
 import { FileCode, Download } from "lucide-react"
 
 const AutoResultArtifacts = ({ artifacts }) => {
-  if (!artifacts || artifacts.length === 0) return null
-
-  // Function to fetch the file content and trigger download
   const handleDownload = async (fileUrl, filename) => {
     try {
       const res = await fetch(fileUrl)

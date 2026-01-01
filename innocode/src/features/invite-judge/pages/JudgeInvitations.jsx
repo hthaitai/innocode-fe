@@ -2,41 +2,40 @@ import React, { useState } from "react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-import { useGetContestByIdQuery } from "@/services/contestApi"
-import { useGetCertificateTemplatesQuery } from "@/services/certificateApi"
-import ManageCertificateTemplates from "../../components/organizer/ManageCertificateTemplates"
+import { useGetContestByIdQuery } from "../../../services/contestApi"
+import { useGetJudgesToInviteQuery } from "../../../services/contestJudgeApi"
+import ManageJudgeInvitations from "../components/organizer/ManageJudgeInvitations"
 import { LoadingState } from "@/shared/components/ui/LoadingState"
 import { ErrorState } from "@/shared/components/ui/ErrorState"
 import { MissingState } from "@/shared/components/ui/MissingState"
 import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
 
-const OrganizerCertificateTemplates = () => {
+const JudgeInvitations = () => {
   const { contestId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
-  const pageSize = 9
+  const pageSize = 10
 
   const {
     data: contest,
-    isLoading: contestLoading,
-    isError: contestError,
+    isLoading: isContestLoading,
+    isError: isContestError,
   } = useGetContestByIdQuery(contestId)
 
   const {
-    data: templatesData,
-    isLoading: templatesLoading,
-    isError: templatesError,
-  } = useGetCertificateTemplatesQuery({ page: pageNumber, pageSize })
+    data: judgesData,
+    isLoading: isJudgesLoading,
+    isError: isJudgesError,
+  } = useGetJudgesToInviteQuery({ contestId, page: pageNumber, pageSize })
 
-  const templates = templatesData?.data ?? []
-  const pagination = templatesData?.additionalData ?? {}
+  const judges = judgesData?.data ?? []
+  const pagination = judgesData?.additionalData ?? {}
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CERTIFICATE_TEMPLATES(
-    contest?.name ?? "Contest"
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_JUDGES(
+    contest?.name ?? "Contest Judges"
   )
-  const breadcrumbPaths =
-    BREADCRUMB_PATHS.ORGANIZER_CERTIFICATE_TEMPLATES(contestId)
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_JUDGES(contestId)
 
-  if (contestLoading || templatesLoading) {
+  if (isContestLoading || isJudgesLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -47,13 +46,13 @@ const OrganizerCertificateTemplates = () => {
     )
   }
 
-  if (contestError || templatesError) {
+  if (isContestError || isJudgesError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="certificate templates" />
+        <ErrorState itemName="judges" />
       </PageContainer>
     )
   }
@@ -75,9 +74,10 @@ const OrganizerCertificateTemplates = () => {
       breadcrumbPaths={breadcrumbPaths}
     >
       <AnimatedSection>
-        <ManageCertificateTemplates
+        <ManageJudgeInvitations
           contestId={contestId}
-          templates={templates}
+          contestName={contest?.name}
+          judges={judges}
           pagination={pagination}
           setPageNumber={setPageNumber}
         />
@@ -86,4 +86,4 @@ const OrganizerCertificateTemplates = () => {
   )
 }
 
-export default OrganizerCertificateTemplates
+export default JudgeInvitations

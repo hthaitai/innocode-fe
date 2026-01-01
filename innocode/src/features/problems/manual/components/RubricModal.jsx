@@ -6,6 +6,7 @@ import {
   useCreateRubricMutation,
   useFetchRubricQuery,
 } from "../../../../services/manualProblemApi"
+import { validateRubric } from "../validators/rubricValidator"
 import toast from "react-hot-toast"
 
 export default function RubricModal({
@@ -44,15 +45,10 @@ export default function RubricModal({
       formData.maxScore !== initialData.maxScore
 
   const handleSubmit = async () => {
-    setErrors({})
+    const validationErrors = validateRubric(formData)
+    setErrors(validationErrors)
 
-    if (!formData.description.trim()) {
-      setErrors({ description: "Description is required." })
-      return
-    }
-
-    if (formData.maxScore <= 0) {
-      setErrors({ maxScore: "Max score must be positive." })
+    if (Object.keys(validationErrors).length > 0) {
       return
     }
 
@@ -110,7 +106,7 @@ export default function RubricModal({
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditMode ? "Edit Criterion" : "Add New Criterion"}
+      title={isEditMode ? "Edit criterion" : "Add new criterion"}
       size="md"
       footer={footer}
     >
@@ -122,12 +118,13 @@ export default function RubricModal({
           onChange={handleChange}
           multiline
           rows={3}
+          maxLength={500}
           error={!!errors.description}
           helperText={errors.description}
         />
 
         <TextFieldFluent
-          label="Max Score"
+          label="Max score"
           name="maxScore"
           type="number"
           value={formData.maxScore}

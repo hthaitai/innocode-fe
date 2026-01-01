@@ -40,7 +40,7 @@ export const getPlagiarismColumns = () => [
   },
   {
     accessorKey: "submittedAt",
-    header: "Submitted At",
+    header: "Submitted at",
     size: 180,
     cell: ({ row }) => formatDateTime(row.original.submittedAt),
     meta: { className: "truncate max-w-[150px]" },

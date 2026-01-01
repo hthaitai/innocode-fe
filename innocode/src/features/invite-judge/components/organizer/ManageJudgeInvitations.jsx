@@ -1,49 +1,27 @@
-import React, { useState, useCallback, useMemo } from "react"
-import { useParams } from "react-router-dom"
-import PageContainer from "@/shared/components/PageContainer"
+import React, { useCallback, useMemo } from "react"
 import TableFluent from "@/shared/components/TableFluent"
-import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-import { useGetContestByIdQuery } from "../../../services/contestApi"
+import JudgeInvitationsToolbar from "./JudgeInvitationsToolbar"
+import TablePagination from "@/shared/components/TablePagination"
+import { getJudgeInviteColumns } from "../../columns/judgeInviteColumns"
+import { useModal } from "@/shared/hooks/useModal"
 import {
-  useGetJudgesToInviteQuery,
   useResendJudgeInviteMutation,
   useRevokeJudgeInviteMutation,
-} from "../../../services/contestJudgeApi"
-import { useModal } from "@/shared/hooks/useModal"
-import { getJudgeInviteColumns } from "../columns/judgeInviteColumns"
+} from "../../../../services/contestJudgeApi"
 import { sendJudgeInviteEmail } from "@/shared/services/emailService"
 import { toast } from "react-hot-toast"
 
-const ContestJudgesPage = () => {
-  const { contestId } = useParams()
-  const [page, setPage] = useState(1)
-  const pageSize = 10
+const ManageJudgeInvitations = ({
+  contestId,
+  contestName,
+  judges,
+  pagination,
+  setPageNumber,
+}) => {
   const { openModal } = useModal()
 
-  const {
-    data: contest,
-    isLoading: isContestLoading,
-    isError: isContestError,
-  } = useGetContestByIdQuery(contestId)
-
-  const {
-    data: judgesData,
-    isLoading: isJudgesLoading,
-    isError: isJudgesError,
-  } = useGetJudgesToInviteQuery({ contestId, page, pageSize })
-
-  const [resendJudgeInvite, { isLoading: isResending }] =
-    useResendJudgeInviteMutation()
-  const [revokeJudgeInvite, { isLoading: isRevoking }] =
-    useRevokeJudgeInviteMutation()
-
-  const judges = judgesData?.data || []
-  const pagination = judgesData?.additionalData || {}
-
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_JUDGES(
-    contest?.name ?? "Contest Judges"
-  )
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_JUDGES(contestId)
+  const [resendJudgeInvite] = useResendJudgeInviteMutation()
+  const [revokeJudgeInvite] = useRevokeJudgeInviteMutation()
 
   // Invite handler (per row)
   const handleInvite = useCallback(
@@ -60,7 +38,6 @@ const ContestJudgesPage = () => {
     [contestId, openModal]
   )
 
-  // Placeholders for future functionality
   const handleResend = useCallback(
     async (judge) => {
       if (!judge || !contestId || !judge.inviteId) return
@@ -73,7 +50,8 @@ const ContestJudgesPage = () => {
 
         const payload = result?.data || result || {}
         const inviteCode = payload.inviteCode
-        const contestName = payload.contestName || contest?.name || "Contest"
+        const contestNameFromPayload =
+          payload.contestName || contestName || "Contest"
         const judgeEmail = judge.judgeEmail
         const judgeName = judge.judgeName || "Judge"
 
@@ -86,14 +64,15 @@ const ContestJudgesPage = () => {
           return
         }
 
-        const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin
+        const baseUrl =
+          import.meta.env.VITE_FRONTEND_URL || window.location.origin
         const acceptUrl = `${baseUrl}/judge/accept?inviteCode=${inviteCode}`
         const declineUrl = `${baseUrl}/judge/decline?inviteCode=${inviteCode}`
 
         const emailed = await sendJudgeInviteEmail({
           judgeEmail,
           judgeName,
-          contestName,
+          contestName: contestNameFromPayload,
           acceptUrl,
           declineUrl,
         })
@@ -108,7 +87,7 @@ const ContestJudgesPage = () => {
         toast.error(`Failed to resend invite to ${judge.judgeName}`)
       }
     },
-    [contestId, resendJudgeInvite, contest?.name]
+    [contestId, resendJudgeInvite, contestName]
   )
 
   const handleRevoke = useCallback(
@@ -136,40 +115,21 @@ const ContestJudgesPage = () => {
     [contestId, revokeJudgeInvite]
   )
 
-  const columns = useMemo(
-    () =>
-      getJudgeInviteColumns({
-        onInvite: handleInvite,
-        onResend: handleResend,
-        onRevoke: handleRevoke,
-      }),
-    [handleInvite, handleResend, handleRevoke]
-  )
+  const columns = getJudgeInviteColumns({
+    onInvite: handleInvite,
+    onResend: handleResend,
+    onRevoke: handleRevoke,
+  })
 
   return (
-    <PageContainer
-      breadcrumb={breadcrumbItems}
-      breadcrumbPaths={breadcrumbPaths}
-      loading={isContestLoading || isJudgesLoading}
-      error={isContestError || isJudgesError}
-    >
-      <div>
-        <TableFluent
-          data={judges}
-          columns={columns}
-          loading={isJudgesLoading}
-          error={isJudgesError}
-          pagination={pagination}
-          onPageChange={setPage}
-          renderActions={() => (
-            <div className="flex items-center justify-between px-5 min-h-[70px]">
-              <div className="text-sm leading-5 font-medium">Judges list</div>
-            </div>
-          )}
-        />
-      </div>
-    </PageContainer>
+    <div>
+      {/* <JudgeInvitationsToolbar /> */}
+
+      <TableFluent data={judges} columns={columns} />
+
+      <TablePagination pagination={pagination} onPageChange={setPageNumber} />
+    </div>
   )
 }
 
-export default ContestJudgesPage
+export default ManageJudgeInvitations

@@ -6,57 +6,95 @@ import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetPlagiarismQueueQuery } from "@/services/plagiarismApi"
 import { useGetContestByIdQuery } from "@/services/contestApi"
 import { getPlagiarismColumns } from "../../columns/getPlagiarismColumns"
+import TablePagination from "../../../../shared/components/TablePagination"
+import ManagePlagiarism from "../../components/organizer/ManagePlagiarism"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import { LoadingState } from "../../../../shared/components/ui/LoadingState"
+import { ErrorState } from "../../../../shared/components/ui/ErrorState"
+import { MissingState } from "../../../../shared/components/ui/MissingState"
 
 export default function OrganizerPlagiarismQueue() {
-  const navigate = useNavigate()
   const { contestId } = useParams()
-  const [page, setPage] = useState(1)
-  const pageSize = 20
 
-  // Fetch contest info
+  const [page, setPage] = useState(1)
+  const pageSize = 10
+
+  const [studentNameSearch, setStudentNameSearch] = useState("")
+  const [teamNameSearch, setTeamNameSearch] = useState("")
+
   const {
     data: contest,
     isLoading: contestLoading,
     isError: contestError,
   } = useGetContestByIdQuery(contestId)
 
-  const contestName = contest?.name || "Contest"
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_PLAGIARISM(contestName)
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_PLAGIARISM(contestId)
-
-  // Fetch plagiarism queue
   const {
     data: plagiarismData,
     isLoading: plagiarismLoading,
     isError: plagiarismError,
-  } = useGetPlagiarismQueueQuery({ pageNumber: page, pageSize })
+  } = useGetPlagiarismQueueQuery({
+    pageNumber: page,
+    pageSize,
+    teamName: teamNameSearch,
+    studentName: studentNameSearch,
+  })
+
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_PLAGIARISM(
+    contest?.name ?? "Contest"
+  )
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_PLAGIARISM(contestId)
 
   const plagiarismItems = plagiarismData?.data ?? []
-  const pagination = plagiarismData?.additionalData
+  const pagination = plagiarismData?.additionalData ?? {}
 
-  const handleRowClick = (item) => {
-    navigate(`/organizer/contests/${contestId}/plagiarism/${item.submissionId}`)
+  if (plagiarismLoading || contestLoading) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <LoadingState />
+      </PageContainer>
+    )
   }
 
-  const plagiarismColumns = getPlagiarismColumns()
+  if (plagiarismError || contestError) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName="submissions" />
+      </PageContainer>
+    )
+  }
+
+  if (!contest) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <MissingState itemName="contest" />
+      </PageContainer>
+    )
+  }
 
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={plagiarismLoading || contestLoading}
-      error={plagiarismError || contestError}
     >
-      <TableFluent
-        data={plagiarismItems}
-        columns={plagiarismColumns}
-        onRowClick={handleRowClick}
-        loading={plagiarismLoading}
-        error={plagiarismError}
-        pagination={pagination}
-        onPageChange={setPage}
-      />
+      <AnimatedSection>
+        <ManagePlagiarism
+          contestId={contestId}
+          plagiarismItems={plagiarismItems}
+          pagination={pagination}
+          setPage={setPage}
+          setTeamNameSearch={setTeamNameSearch}
+          setStudentNameSearch={setStudentNameSearch}
+        />
+      </AnimatedSection>
     </PageContainer>
   )
 }
-

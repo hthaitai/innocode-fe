@@ -3,7 +3,7 @@ import BaseModal from "@/shared/components/BaseModal"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { useInviteJudgeToContestMutation } from "@/services/contestJudgeApi"
 import { toast } from "react-hot-toast"
-import { sendJudgeInviteEmail } from "../../../shared/services/emailService"
+import { sendJudgeInviteEmail } from "../../../../shared/services/emailService"
 
 export default function InviteJudgeModal({
   isOpen,

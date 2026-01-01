@@ -5,6 +5,21 @@ const ParticipationLimitsSection = ({ formData, errors, onChange }) => {
   return (
     <div className="space-y-5 border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
       <div className="flex flex-col gap-2">
+        <Label htmlFor="teamMembersMin" required>
+          Min team members
+        </Label>
+        <TextFieldFluent
+          id="teamMembersMin"
+          name="teamMembersMin"
+          type="number"
+          value={formData.teamMembersMin || ""}
+          onChange={onChange}
+          error={!!errors.teamMembersMin}
+          helperText={errors.teamMembersMin}
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
         <Label htmlFor="teamMembersMax" required>
           Max team members
         </Label>
