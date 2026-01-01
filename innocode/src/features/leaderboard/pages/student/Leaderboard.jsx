@@ -10,6 +10,7 @@ import {
   ChevronUp,
   Wifi,
   WifiOff,
+  MedalIcon,
 } from "lucide-react";
 import { formatDateTime } from "@/shared/utils/dateTime";
 import { BREADCRUMBS } from "@/config/breadcrumbs";
@@ -28,9 +29,18 @@ const Leaderboard = () => {
   const [expandedTeamId, setExpandedTeamId] = useState(null);
   const [liveData, setLiveData] = useState(null);
 
-  // Format score with commas
+  // Format score with commas (no rounding, display as backend sends)
   const formatScore = (score) => {
-    return (score ?? 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    if (score == null || score === undefined || score === null) return "0";
+    // Convert to string and add thousand separators without rounding
+    const scoreStr = String(score);
+    // Check if it's a decimal number
+    if (scoreStr.includes('.')) {
+      const parts = scoreStr.split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return parts.join('.');
+    }
+    return scoreStr.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   // Toggle team expansion
@@ -306,7 +316,7 @@ const Leaderboard = () => {
                             {round.roundName || "Round"}
                           </p>
                           <span className="text-xs font-bold text-blue-600 ml-2">
-                            {round.score?.toFixed(2) || "0.00"}
+                            {round.score ?? "0"}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 mt-1">
@@ -524,7 +534,7 @@ const Leaderboard = () => {
                     >
                       <div className="flex flex-col items-center">
                         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center mb-2">
-                          <Users size={24} className="text-gray-600" />
+                          <MedalIcon size={24} className="text-gray-600" />
                         </div>
                         <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full">
                           {entries[1]?.teamName || "—"}
@@ -576,7 +586,7 @@ const Leaderboard = () => {
                       onClick={() => toggleTeamExpansion(entries[2]?.teamId)}
                     >
                       <div className="flex flex-col items-center">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-200 to-amber-300 flex items-center justify-center mb-2">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mb-2">
                           <Award className="text-amber-700" size={24} />
                         </div>
                         <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full">

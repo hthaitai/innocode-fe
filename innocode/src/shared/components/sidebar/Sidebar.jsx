@@ -23,7 +23,7 @@ const allMenus = {
   leaderboard: {
     path: "/leaderboard",
     label: "Leaderboard",
-    icon: "lucide:chart-no-axes-column",
+    icon: "mdi:podium",
   },
   certificate: {
     path: "/certificate",

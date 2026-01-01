@@ -33,7 +33,11 @@ const StudentAutoEvaluation = () => {
     localStorage.setItem("codeEditorTheme", theme);
   }, [theme]);
 
-  // Custom hook auto evaluation
+  // Extract round and problem data
+  const round = contest?.rounds?.find((r) => r.roundId === roundId);
+  const problem = round?.problem;
+
+  // Custom hook auto evaluation - pass problem to check mockTestUrl
   const {
     code,
     setCode,
@@ -52,16 +56,16 @@ const StudentAutoEvaluation = () => {
     handleClearCode,
     handleRunCode,
     handleFinalSubmit,
-  } = useStudentAutoEvaluation(contestId, roundId);
+  } = useStudentAutoEvaluation(contestId, roundId, problem);
 
   // Direct submit mutation for auto-submit
   const [submitFinalAutoTest] = useSubmitFinalAutoTestMutation();
   const [submitAutoTest] = useSubmitAutoTestMutation();
   const [submitNullSubmission] = useSubmitNullSubmissionMutation();
 
-  // Extract round and problem data
-  const round = contest?.rounds?.find((r) => r.roundId === roundId);
-  const problem = round?.problem;
+  // Check if mockTestUrl exists to determine which API to use
+  const useMockTest = problem?.mockTestUrl !== null && problem?.mockTestUrl !== undefined;
+
   const timeLimitMinutes = round?.timeLimitSeconds / 60;
   const sampleTestCase = testCases?.data?.[0];
 
@@ -105,6 +109,7 @@ const StudentAutoEvaluation = () => {
           const result = await submitAutoTest({
             roundId,
             code: code || "", // Submit code hiện tại hoặc code trống
+            useMockTest: useMockTest, // Use mock test endpoint if mockTestUrl is not null
           }).unwrap();
 
           finalSubmissionId =

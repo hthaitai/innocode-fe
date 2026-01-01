@@ -98,6 +98,43 @@ export const autoEvaluationApi = api.injectEndpoints({
     }),
 
     submitAutoTest: builder.mutation({
+      query: ({ roundId, code, file, useMockTest = false }) => {
+        const formData = new FormData();
+
+        // Append Code if provided
+        if (code) {
+          formData.append("Code", code);
+          formData.append("type", "Code"); // Specify submission type
+        }
+
+        // Append File if provided
+        if (file) {
+          formData.append("File", file);
+          formData.append("type", "File"); // Specify submission type
+        }
+
+        // Use mock test endpoint if useMockTest is true
+        const endpoint = useMockTest 
+          ? `/rounds/${roundId}/auto-test/mock-test/submissions`
+          : `/rounds/${roundId}/auto-test/submissions`;
+
+        return {
+          url: endpoint,
+          method: "POST",
+          body: formData,
+        };
+      },
+      invalidatesTags: ["TestResults"],
+      // Note: transformResponse extracts data, so result will be { submissionId, summary, cases }
+      // But if transformResponse doesn't work, we handle both cases in component
+      transformResponse: (response) => {
+        // If response has data property, return it, otherwise return response
+        return response?.data || response;
+      },
+    }),
+
+    // Separate mutation for mock test submission (for clarity, though submitAutoTest can also be used)
+    submitMockAutoTest: builder.mutation({
       query: ({ roundId, code, file }) => {
         const formData = new FormData();
 
@@ -114,14 +151,12 @@ export const autoEvaluationApi = api.injectEndpoints({
         }
 
         return {
-          url: `/rounds/${roundId}/auto-test/submissions`,
+          url: `/rounds/${roundId}/auto-test/mock-test/submissions`,
           method: "POST",
           body: formData,
         };
       },
       invalidatesTags: ["TestResults"],
-      // Note: transformResponse extracts data, so result will be { submissionId, summary, cases }
-      // But if transformResponse doesn't work, we handle both cases in component
       transformResponse: (response) => {
         // If response has data property, return it, otherwise return response
         return response?.data || response;
@@ -185,6 +220,7 @@ export const {
   // === Auto Test Submissions & Results ===
   useGetAutoTestResultsQuery, // getAutoTestResults
   useSubmitAutoTestMutation, // submitAutoTest
+  useSubmitMockAutoTestMutation, // submitMockAutoTest
   useGetAutoTestResultQuery, // getAutoTestResult
   useGetAutoTestResultBySubmissionIdQuery, // getAutoTestResultBySubmissionId
   useSubmitFinalAutoTestMutation, // submitFinalAutoTest

@@ -6,8 +6,12 @@ const submissionApi = {
     axiosClient.get(`/submissions/${submissionId}/download`),
 
   //Submit code for auto evaluation
-  submitAutoTest: (roundId, data) => {
-    return axiosClient.post(`/rounds/${roundId}/auto-test/submissions`, data);
+  // If useMockTest is true, uses mock test endpoint
+  submitAutoTest: (roundId, data, useMockTest = false) => {
+    const endpoint = useMockTest
+      ? `/rounds/${roundId}/auto-test/mock-test/submissions`
+      : `/rounds/${roundId}/auto-test/submissions`;
+    return axiosClient.post(endpoint, data);
   },
   //Submit final auto evaluation
   submitFinalAutoTest: (submissionId) => {

@@ -13,13 +13,17 @@ import {
  * Custom hook quản lý logic cho StudentAutoEvaluation
  * @param {string} contestId - Contest ID
  * @param {string} roundId - Round ID
+ * @param {object} problem - Problem object containing mockTestUrl
  * @returns {object} - State và handlers
  */
-const useStudentAutoEvaluation = (contestId, roundId) => {
+const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
   const navigate = useNavigate();
   const { openModal } = useModal();
   const STORAGE_KEY = `code_${roundId}`;
   const TEST_RESULTS_STORAGE_KEY = `testResults_${roundId}`; // Thêm key mới cho test results
+
+  // Check if mockTestUrl exists to determine which API to use
+  const useMockTest = problem?.mockTestUrl !== null && problem?.mockTestUrl !== undefined;
 
   // State
   const [code, setCode] = useState(() => {
@@ -157,6 +161,7 @@ const useStudentAutoEvaluation = (contestId, roundId) => {
       const result = await submitAutoTest({
         roundId,
         code: code,
+        useMockTest: useMockTest, // Pass useMockTest flag to determine endpoint
       }).unwrap();
 
       console.log("📥 API Response:", result);
