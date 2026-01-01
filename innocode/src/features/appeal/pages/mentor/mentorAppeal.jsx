@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import PageContainer from "@/shared/components/PageContainer";
 import TabNavigation from "@/shared/components/TabNavigation";
 import DropdownFluent from "@/shared/components/DropdownFluent";
@@ -29,6 +30,7 @@ import useContests from "@/features/contest/hooks/useContests";
 import { useAuth } from "@/context/AuthContext";
 import { useModal } from "@/shared/hooks/useModal";
 function MentorAppeal() {
+  const { t } = useTranslation("pages");
   const { contestId: urlContestId } = useParams();
   const { user } = useAuth();
   const { openModal } = useModal();
@@ -49,15 +51,7 @@ function MentorAppeal() {
       const status = c.status?.toLowerCase() || "";
       const now = new Date();
 
-      // Check if ongoing - only ongoing contests can have appeals
-      const isOngoing =
-        status === "ongoing" ||
-        status === "registrationopen" ||
-        status === "registrationclosed" ||
-        (c.start && c.end && now >= new Date(c.start) && now < new Date(c.end));
-
-      // Only include ongoing contests
-      return isOngoing;
+    return true;
     });
   }, [contests]);
 
@@ -120,15 +114,41 @@ function MentorAppeal() {
   // Extract appeals from API response
   // API /appeals/my-appeal already returns appeals for current mentor, no need to filter
   const myAppeals = useMemo(() => {
-    if (!appealsData) return [];
-    return appealsData.appeals || [];
+    if (!appealsData) {
+      console.log("No appealsData available");
+      return [];
+    }
+    
+    // Handle different response structures
+    if (Array.isArray(appealsData)) {
+      console.log("appealsData is array, using directly");
+      return appealsData;
+    }
+    
+    if (appealsData.appeals && Array.isArray(appealsData.appeals)) {
+      console.log("Using appealsData.appeals");
+      return appealsData.appeals;
+    }
+    
+    if (appealsData.data && Array.isArray(appealsData.data)) {
+      console.log("Using appealsData.data");
+      return appealsData.data;
+    }
+    
+    console.warn("Unknown appealsData structure:", appealsData);
+    return [];
   }, [appealsData]);
 
-  // Console log my appeals
+  // Console log my appeals - Debug API response
   useEffect(() => {
-    console.log("My Appeals:", myAppeals);
+    console.log("=== APPEALS API DEBUG ===");
+    console.log("Selected Contest ID:", selectedContestId);
+    console.log("Appeals Loading:", appealsLoading);
+    console.log("Appeals Error:", appealsError);
     console.log("Appeals Data (raw):", appealsData);
-  }, [myAppeals, appealsData]);
+    console.log("My Appeals (processed):", myAppeals);
+    console.log("=========================");
+  }, [selectedContestId, appealsLoading, appealsError, appealsData, myAppeals]);
 
   // Format score
   const formatScore = (score) => {
@@ -236,7 +256,7 @@ function MentorAppeal() {
     if (members.length === 0) {
       return (
         <div className="px-4 py-3">
-          <p className="text-sm text-gray-500">No members data available</p>
+          <p className="text-sm text-gray-500">{t("appeal.noMembersDataAvailable")}</p>
         </div>
       );
     }
@@ -245,7 +265,7 @@ function MentorAppeal() {
       <div className="px-4 py-4">
         <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
           <Users size={16} />
-          Team Members
+          {t("appeal.teamMembers")}
         </h4>
         <div className="space-y-4">
           {members.map((member, idx) => {
@@ -254,7 +274,7 @@ function MentorAppeal() {
               member.memberName ||
               member.member_name ||
               member.name ||
-              "Unknown Member";
+              t("appeal.unknownMember");
             const memberRole =
               member.memberRole ||
               member.member_role ||
@@ -286,7 +306,7 @@ function MentorAppeal() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-500">Total Score</p>
+                    <p className="text-xs text-gray-500">{t("appeal.totalScore")}</p>
                     <p className="text-lg font-bold text-blue-600">
                       {formatScore(totalScore)}
                     </p>
@@ -297,7 +317,7 @@ function MentorAppeal() {
                 {rounds && rounds.length > 0 ? (
                   <div className="mt-3 pt-3 border-t border-gray-200">
                     <p className="text-xs font-medium text-gray-600 mb-2">
-                      Rounds:
+                      {t("appeal.rounds")}
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                       {rounds.map((round) => {
@@ -369,7 +389,7 @@ function MentorAppeal() {
                                     icon="mdi:bullhorn-outline"
                                     width={14}
                                   />
-                                  Request an appeal
+                                  {t("appeal.requestAnAppeal")}
                                 </button>
                               </div>
                             )}
@@ -380,7 +400,7 @@ function MentorAppeal() {
                   </div>
                 ) : (
                   <div className="mt-3 pt-3 border-t border-gray-200">
-                    <p className="text-xs text-gray-500">No rounds available</p>
+                    <p className="text-xs text-gray-500">{t("appeal.noRoundsAvailable")}</p>
                   </div>
                 )}
               </div>
@@ -405,8 +425,8 @@ function MentorAppeal() {
 
   // Tab definitions
   const tabs = [
-    { id: "student-results", label: "Student Results" },
-    { id: "my-appeals", label: "My Appeal Submissions" },
+    { id: "student-results", label: t("appeal.studentResults") },
+    { id: "my-appeals", label: t("appeal.myAppealSubmissions") },
   ];
 
   return (
@@ -417,30 +437,30 @@ function MentorAppeal() {
       <div className="space-y-6">
         {/* Header with Contest Selector */}
         <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6">
-          <div className="flex gap-4 items-center justify-between">
+          <div className="flex gap-4 items-center justify-between flex-wrap">
             <div className="flex gap-4 items-center">
               <div className="p-3 bg-blue-50 rounded-lg">
                 <Icon className="text-orange-500" icon="mdi:gavel" width={28} />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-[#2d3748] mb-2">
-                  Contest Appeals & Results
+                  {t("appeal.contestAppealsResults")}
                 </h1>
                 {(contest || selectedContest) && (
                   <p className="text-[#7A7574] text-sm">
                     {(contest || selectedContest)?.name ||
                       (contest || selectedContest)?.title ||
-                      "Select a contest"}
+                      t("appeal.selectContest")}
                   </p>
                 )}
               </div>
             </div>
             {/* Contest Selector */}
-            {availableContests.length > 1 && (
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-[#7A7574]">
-                  Contest:
-                </label>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <label className="text-sm font-medium text-[#7A7574] whitespace-nowrap">
+                {t("appeal.contest")}
+              </label>
+              <div className="min-w-[200px]">
                 <DropdownFluent
                   options={availableContests.map((contest) => ({
                     value: contest.contestId,
@@ -448,9 +468,10 @@ function MentorAppeal() {
                   }))}
                   value={selectedContestId}
                   onChange={(value) => setSelectedContestId(value)}
+                  placeholder={availableContests.length === 0 ? t("appeal.selectContest") : undefined}
                 />
               </div>
-            )}
+            </div>
           </div>
         </div>
 
@@ -473,7 +494,7 @@ function MentorAppeal() {
                   <div className="flex items-center justify-center py-12">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-                      <p className="text-gray-600">Loading contests...</p>
+                      <p className="text-gray-600">{t("appeal.loadingContests")}</p>
                     </div>
                   </div>
                 ) : availableContests.length === 0 ? (
@@ -484,11 +505,10 @@ function MentorAppeal() {
                       className="mx-auto mb-3 text-gray-400"
                     />
                     <p className="text-[#7A7574] text-sm mb-2">
-                      No contests available
+                      {t("appeal.noContestsAvailable")}
                     </p>
                     <p className="text-[#7A7574] text-xs">
-                      There are no ongoing contests to display results for.
-                      Appeals can only be requested for ongoing contests.
+                      {t("appeal.noOngoingContestsMessage")}
                     </p>
                   </div>
                 ) : !selectedContestId ? (
@@ -498,14 +518,14 @@ function MentorAppeal() {
                       className="mx-auto mb-3 text-amber-500"
                     />
                     <p className="text-[#7A7574] text-sm mb-2">
-                      Please select a contest to view student results.
+                      {t("appeal.pleaseSelectContest")}
                     </p>
                   </div>
                 ) : leaderboardLoading ? (
                   <div className="flex items-center justify-center py-12">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-                      <p className="text-gray-600">Loading leaderboard...</p>
+                      <p className="text-gray-600">{t("appeal.loadingLeaderboard")}</p>
                     </div>
                   </div>
                 ) : leaderboardError ? (
@@ -526,11 +546,10 @@ function MentorAppeal() {
                         className="mx-auto mb-2 opacity-50"
                       />
                       <p className="text-lg font-medium mb-1">
-                        This contest has no leaderboard yet
+                        {t("appeal.thisContestHasNoLeaderboard")}
                       </p>
                       <p className="text-sm">
-                        The leaderboard will appear once teams start
-                        participating in this contest
+                        {t("appeal.leaderboardWillAppear")}
                       </p>
                     </div>
                   ) : (
@@ -541,7 +560,7 @@ function MentorAppeal() {
                         className="mx-auto mb-2 text-red-500 opacity-50"
                       />
                       <p className="text-lg font-medium text-red-600 mb-1">
-                        Failed to load leaderboard
+                        {t("appeal.failedToLoadLeaderboard")}
                       </p>
                       <p className="text-sm text-[#7A7574]">
                         {(() => {
@@ -594,7 +613,7 @@ function MentorAppeal() {
                                       entries[1]?.totalScore ||
                                       entries[1]?.total_score
                                   )}{" "}
-                                  pts
+                                  {t("appeal.pts")}
                                 </p>
                               </div>
                             </div>
@@ -640,7 +659,7 @@ function MentorAppeal() {
                                       entries[0]?.totalScore ||
                                       entries[0]?.total_score
                                   )}{" "}
-                                  pts
+                                  {t("appeal.pts")}
                                 </p>
                               </div>
                             </div>
@@ -676,7 +695,7 @@ function MentorAppeal() {
                                       entries[2]?.totalScore ||
                                       entries[2]?.total_score
                                   )}{" "}
-                                  pts
+                                  {t("appeal.pts")}
                                 </p>
                               </div>
                             </div>
@@ -731,7 +750,7 @@ function MentorAppeal() {
                     {entries.length > 3 && (
                       <div className="space-y-3">
                         <h4 className="text-md font-semibold text-[#2d3748] mb-3">
-                          Other Rankings
+                          {t("appeal.otherRankings")}
                         </h4>
                         {entries.slice(3).map((entry, index) => {
                           const actualRank =
@@ -771,12 +790,11 @@ function MentorAppeal() {
                                         {entry.members?.length ||
                                           entry.memberList?.length ||
                                           0}{" "}
-                                        member
                                         {(entry.members?.length ||
                                           entry.memberList?.length ||
                                           0) !== 1
-                                          ? "s"
-                                          : ""}
+                                          ? t("appeal.members")
+                                          : t("appeal.member")}
                                       </p>
                                     )}
                                   </div>
@@ -879,12 +897,11 @@ function MentorAppeal() {
                                         {entry.members?.length ||
                                           entry.memberList?.length ||
                                           0}{" "}
-                                        member
                                         {(entry.members?.length ||
                                           entry.memberList?.length ||
                                           0) !== 1
-                                          ? "s"
-                                          : ""}
+                                          ? t("appeal.members")
+                                          : t("appeal.member")}
                                       </p>
                                     )}
                                   </div>
@@ -896,7 +913,7 @@ function MentorAppeal() {
                                           entry.total_score
                                       )}{" "}
                                       <span className="text-xs text-[#13d45d]">
-                                        pts
+                                        {t("appeal.pts")}
                                       </span>
                                     </p>
                                   </div>
@@ -951,10 +968,10 @@ function MentorAppeal() {
                       className="mx-auto mb-2 opacity-50"
                     />
                     <p className="text-lg font-medium mb-1">
-                      No rankings available yet
+                      {t("appeal.noRankingsAvailable")}
                     </p>
                     <p className="text-sm">
-                      Leaderboard will appear once teams start participating
+                      {t("appeal.leaderboardWillAppearOnceTeamsStart")}
                     </p>
                   </div>
                 )}
@@ -967,12 +984,11 @@ function MentorAppeal() {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-[#2d3748] flex items-center gap-2">
                     <FileText size={20} className="text-[#ff6b35]" />
-                    My Appeal Submissions
+                    {t("appeal.myAppealSubmissions")}
                   </h2>
                   {myAppeals.length > 0 && (
                     <span className="text-sm text-[#7A7574]">
-                      {myAppeals.length} appeal
-                      {myAppeals.length !== 1 ? "s" : ""}
+                      {myAppeals.length} {myAppeals.length !== 1 ? t("appeal.appeals") : t("appeal.appeal")}
                     </span>
                   )}
                 </div>
@@ -984,17 +1000,44 @@ function MentorAppeal() {
                       width="48"
                       className="mx-auto mb-2 text-[#ff6b35] animate-spin"
                     />
-                    <p className="text-[#7A7574]">Loading appeals...</p>
+                    <p className="text-[#7A7574]">{t("appeal.loadingAppeals")}</p>
                   </div>
                 ) : appealsError ? (
                   <div className="bg-red-50 border border-red-200 rounded-[8px] p-4 text-center">
-                    <p className="text-red-600">
-                      Error loading appeals. Please try again later.
+                    <Icon
+                      icon="mdi:alert-circle"
+                      width="48"
+                      className="mx-auto mb-2 text-red-500"
+                    />
+                    <p className="text-red-600 font-semibold mb-2">
+                      {t("appeal.errorLoadingAppeals")}
                     </p>
-                    {appealsError?.data?.message && (
-                      <p className="text-sm text-red-500 mt-2">
-                        {appealsError.data.message}
-                      </p>
+                    <div className="text-sm text-red-500 space-y-1">
+                      {appealsError?.data?.message && (
+                        <p>{appealsError.data.message}</p>
+                      )}
+                      {appealsError?.data?.Message && (
+                        <p>{appealsError.data.Message}</p>
+                      )}
+                      {typeof appealsError === "string" && (
+                        <p>{appealsError}</p>
+                      )}
+                      {appealsError?.status && (
+                        <p className="text-xs">Status: {appealsError.status}</p>
+                      )}
+                      {appealsError?.statusCode && (
+                        <p className="text-xs">Status Code: {appealsError.statusCode}</p>
+                      )}
+                    </div>
+                    {process.env.NODE_ENV === "development" && (
+                      <details className="mt-4 text-left">
+                        <summary className="text-xs text-red-400 cursor-pointer">
+                          Debug Info (Dev Only)
+                        </summary>
+                        <pre className="mt-2 text-xs bg-red-100 p-2 rounded overflow-auto max-h-40">
+                          {JSON.stringify(appealsError, null, 2)}
+                        </pre>
+                      </details>
                     )}
                   </div>
                 ) : myAppeals.length === 0 ? (
@@ -1004,10 +1047,10 @@ function MentorAppeal() {
                       className="mx-auto mb-3 text-gray-400"
                     />
                     <p className="text-[#7A7574] text-sm mb-2">
-                      You haven't submitted any appeals yet.
+                      {t("appeal.noAppealsSubmitted")}
                     </p>
                     <p className="text-[#7A7574] text-xs">
-                      Appeals will appear here once you submit them.
+                      {t("appeal.appealsWillAppearHere")}
                     </p>
                   </div>
                 ) : (
@@ -1041,12 +1084,12 @@ function MentorAppeal() {
                               </div>
 
                               <div className="font-semibold text-[#2d3748] mb-2">
-                                {appeal.contestName || "No contest provided"}
+                                {appeal.contestName || t("appeal.noContestProvided")}
                               </div>
                               <div className="font-semibold text-[#2d3748] mb-2">
-                                <p>Your Reason:</p>
+                                <p>{t("appeal.yourReason")}</p>
                                 <p className="text-sm text-[#4a5568]  p-3  ">
-                                  {appeal.reason || "No reason provided"}
+                                  {appeal.reason || t("appeal.noReasonProvided")}
                                 </p>
                               </div>
 
@@ -1059,7 +1102,7 @@ function MentorAppeal() {
                                       className="text-[#7A7574]"
                                     />
                                     <span className="text-[#7A7574]">
-                                      Round:
+                                      {t("appeal.round")}
                                     </span>
                                     <span className="font-medium text-[#2d3748]">
                                       {roundName}
@@ -1074,7 +1117,7 @@ function MentorAppeal() {
                                       className="text-[#7A7574]"
                                     />
                                     <span className="text-[#7A7574]">
-                                      Team:
+                                      {t("appeal.team")}
                                     </span>
                                     <span className="font-medium text-[#2d3748]">
                                       {teamName}
@@ -1087,7 +1130,7 @@ function MentorAppeal() {
                                     width="16"
                                     className="text-[#7A7574]"
                                   />
-                                  <span className="text-[#7A7574]">Type:</span>
+                                  <span className="text-[#7A7574]">{t("appeal.type")}</span>
                                   <span className="font-medium text-[#2d3748] capitalize">
                                     {targetType?.replace("_", " ") || "Unknown"}
                                   </span>
@@ -1095,7 +1138,7 @@ function MentorAppeal() {
                                 <div className="flex items-center gap-2">
                                   <Clock size={16} className="text-[#7A7574]" />
                                   <span className="text-[#7A7574]">
-                                    Created:
+                                    {t("appeal.created")}
                                   </span>
                                   <span className="font-medium text-[#2d3748]">
                                     {formatDateTime(createdAt)}
@@ -1142,7 +1185,7 @@ function MentorAppeal() {
                                   icon="mdi:comment-text-outline"
                                   width="16"
                                 />
-                                Decision
+                                {t("appeal.decision")}
                               </p>
                               <p className="text-sm text-[#4a5568] bg-[#f9fafb] rounded-[5px] p-3 border border-[#E5E5E5]">
                                 {decision}

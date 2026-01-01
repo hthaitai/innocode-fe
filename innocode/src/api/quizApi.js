@@ -1,7 +1,7 @@
 import axiosClient from "./axiosClient";
 
 const quizApi = {
-  //Get quiz for round
+  //Get quiz for round (deprecated - use RTK Query useGetRoundMcqsQuery instead)
   getQuiz: (roundId, openCode) => {
     const params = openCode ? { openCode } : {};
     return axiosClient.get(`/rounds/${roundId}/mcq-test`, { params });

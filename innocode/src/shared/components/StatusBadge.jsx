@@ -41,8 +41,12 @@ export const statusColorMap = {
   notinvited: "bg-gray-400",
 }
 
+import { useTranslation } from 'react-i18next'
+
 // StatusBadge component
-const StatusBadge = ({ status }) => {
+const StatusBadge = ({ status, translate = false }) => {
+  const { t } = useTranslation('pages')
+  
   if (!status) status = "draft"
 
   // Normalize status: lowercase, remove spaces & special chars
@@ -56,11 +60,34 @@ const StatusBadge = ({ status }) => {
   // Get color, default gray if unknown
   const colorClass = statusColorMap[safeStatus] || "bg-gray-500"
 
-  // Format display: split camelCase or snake_case into words
-  const displayStatus = status
-    .replace(/([a-z])([A-Z])/g, "$1 $2") // split camelCase
-    .replace(/_/g, " ") // replace underscores
-    .trim()
+  // Get display status
+  let displayStatus;
+  
+  if (translate) {
+    // Use translation for contest status
+    // Map status to translation key
+    const statusMap = {
+      'ongoing': 'contest.statusLabels.ongoing',
+      'upcoming': 'contest.statusLabels.upcoming',
+      'completed': 'contest.statusLabels.completed',
+      'published': 'contest.statusLabels.published',
+      'registrationopen': 'contest.statusLabels.registrationOpen',
+      'registrationclosed': 'contest.statusLabels.registrationClosed',
+      'draft': 'contest.statusLabels.draft',
+    };
+    
+    const translationKey = statusMap[safeStatus];
+    displayStatus = translationKey ? t(translationKey) : status
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .replace(/_/g, " ")
+      .trim();
+  } else {
+    // Format display: split camelCase or snake_case into words
+    displayStatus = status
+      .replace(/([a-z])([A-Z])/g, "$1 $2") // split camelCase
+      .replace(/_/g, " ") // replace underscores
+      .trim()
+  }
 
   return (
     <span className="flex items-center gap-2 text-sm">

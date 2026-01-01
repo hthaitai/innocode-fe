@@ -78,18 +78,14 @@ axiosClient.interceptors.response.use(
       const { status, data } = error.response;
 
       if (import.meta.env.VITE_ENV === "development") {
-        console.error(
-          "❌ Error:",
-          status,
-          error.config?.url || error.config?.method,
-          data
-        );
-        // Only log as error if status is actually an error
+        // Log error theo cấu trúc backend
         if (status >= 400) {
           console.error("❌ HTTP Error Response:", {
             url: error.config?.url,
             method: error.config?.method,
             status: status,
+            code: data?.errorCode || data?.Code,
+            message: data?.errorMessage || data?.Message || data?.message,
             data: data,
           });
         }
@@ -211,19 +207,49 @@ axiosClient.interceptors.response.use(
           }
           break;
         case 403:
-          console.error("Access denied");
+          if (import.meta.env.VITE_ENV === "development") {
+            console.error("❌ Access denied:", {
+              url: error.config?.url,
+              status: status,
+              code: data?.Code || data?.errorCode,
+              message: data?.Message || data?.message || data?.errorMessage,
+              data: data,
+            });
+          }
           break;
         case 404:
-          console.error("Resource not found");
+          if (import.meta.env.VITE_ENV === "development") {
+            console.error("❌ Resource not found:", {
+              url: error.config?.url,
+              status: status,
+              code: data?.Code || data?.errorCode,
+              message: data?.Message || data?.message || data?.errorMessage,
+              data: data,
+            });
+          }
           break;
         case 500:
-          console.error("Server error");
+          if (import.meta.env.VITE_ENV === "development") {
+            console.error("❌ Server error:", {
+              url: error.config?.url,
+              status: status,
+              code: data?.Code || data?.errorCode,
+              message: data?.Message || data?.message || data?.errorMessage,
+              data: data,
+            });
+          }
           break;
         default:
           break;
       }
     } else if (error.request) {
-      console.error("Network error:", error.message);
+      if (import.meta.env.VITE_ENV === "development") {
+        console.error("❌ Network error:", {
+          message: error.message,
+          url: error.config?.url,
+          method: error.config?.method,
+        });
+      }
     }
 
     return Promise.reject(error);

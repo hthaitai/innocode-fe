@@ -208,7 +208,7 @@ const Register = () => {
   return (
     <div className="login-container relative">
       <div className="login-form-container">
-        <Link to="/" className="absolute top-4 left-4 w-[60px] h-[60px]">
+        <Link to="/" className="absolute top-4 left-4 w-[60px] h-[60px] z-10">
           <img
             src={InnoCodeLogo}
             alt="InnoCode"

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import PageContainer from "@/shared/components/PageContainer";
 import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs";
 import { Icon } from "@iconify/react";
@@ -29,6 +30,7 @@ import manualProblemApi from "@/api/manualProblemApi";
 import { useModal } from "@/shared/hooks/useModal";
 
 const ContestDetail = () => {
+  const { t } = useTranslation('pages');
   const { contestId } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
@@ -347,21 +349,21 @@ const ContestDetail = () => {
   };
 
   const getCountdownLabel = () => {
-    if (!contest) return "Time Remaining";
+    if (!contest) return t('contest.timeRemaining');
 
     const now = new Date();
     const startDate = new Date(contest.start);
     const endDate = new Date(contest.end);
 
     if (now < startDate) {
-      return "Time Until Start";
+      return t('contest.timeUntilStart');
     }
 
     if (now >= startDate && now < endDate) {
-      return "Time Until End";
+      return t('contest.timeUntilEnd');
     }
 
-    return "Contest Ended";
+    return t('contest.contestEnded');
   };
 
   // Check if registration is closed
@@ -386,15 +388,15 @@ const ContestDetail = () => {
   const registrationClosed = isRegistrationClosed();
 
   const tabs = [
-    { id: "overview", label: "Overview", icon: "mdi:information-outline" },
+    { id: "overview", label: t('contest.overview'), icon: "mdi:information-outline" },
     {
       id: "rounds",
-      label: "Rounds",
+      label: t('contest.rounds'),
       icon: "mdi:clipboard-play-multiple-outline",
     },
     {
       id: "ranks",
-      label: "Ranking",
+      label: t('contest.ranking'),
       icon: "mdi:trophy-outline",
     },
   ];
@@ -407,7 +409,7 @@ const ContestDetail = () => {
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
             <p className="text-gray-600 font-medium">
-              Loading contest details...
+              {t('contest.loadingDetails')}
             </p>
           </div>
         </div>
@@ -426,7 +428,7 @@ const ContestDetail = () => {
               className="w-20 h-20 text-red-500 mx-auto mb-4"
             />
             <h3 className="text-xl font-bold text-gray-800 mb-2">
-              Failed to Load Contest
+              {t('contest.failedToLoadDetail')}
             </h3>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
@@ -434,7 +436,7 @@ const ContestDetail = () => {
               className="button-orange"
             >
               <Icon icon="mdi:arrow-left" className="inline mr-2" />
-              Back to Contests
+              {t('contest.backToContests')}
             </button>
           </div>
         </div>
@@ -449,7 +451,7 @@ const ContestDetail = () => {
         breadcrumbPaths={breadcrumbData.paths}
       >
         <div className="flex items-center justify-center h-[400px]">
-          <p className="text-[#7A7574] text-lg">Contest not found</p>
+          <p className="text-[#7A7574] text-lg">{t('contest.contestNotFound')}</p>
         </div>
       </PageContainer>
     );
@@ -481,7 +483,7 @@ const ContestDetail = () => {
                   {contest.name || contest.title}
                 </h1>
                 <p className="text-lg opacity-90 truncate max-w-full mx-auto">
-                  Organized by {contest.createdByName}
+                  {t('contest.organizedBy')} {contest.createdByName}
                 </p>
               </div>
             </div>
@@ -495,10 +497,34 @@ const ContestDetail = () => {
                   contest.statusLabel || contest.status
                 )}`}
               >
-                {(contest.statusLabel || contest.status || "")
-                  .charAt(0)
-                  .toUpperCase() +
-                  (contest.statusLabel || contest.status || "").slice(1)}
+                {(() => {
+                  const rawStatus = contest.statusLabel || contest.status;
+                  if (!rawStatus) return '';
+                  
+                  // Normalize status to lowercase for matching
+                  const statusLower = rawStatus.toLowerCase().replace(/\s+/g, '');
+                  
+                  // Map status to translation key
+                  const statusMap = {
+                    'ongoing': 'contest.statusLabels.ongoing',
+                    'upcoming': 'contest.statusLabels.upcoming',
+                    'completed': 'contest.statusLabels.completed',
+                    'published': 'contest.statusLabels.published',
+                    'registrationopen': 'contest.statusLabels.registrationOpen',
+                    'registrationclosed': 'contest.statusLabels.registrationClosed',
+                    'draft': 'contest.statusLabels.draft',
+                  };
+                  
+                  const translationKey = statusMap[statusLower];
+                  if (translationKey) {
+                    return t(translationKey);
+                  }
+                  
+                  // Fallback: format status to readable label if no translation found
+                  return rawStatus
+                    .charAt(0)
+                    .toUpperCase() + rawStatus.slice(1);
+                })()}
               </span>
             </div>
 
@@ -507,7 +533,7 @@ const ContestDetail = () => {
               <div className="flex items-center gap-2 text-sm min-w-0">
                 <Calendar size={26} className="text-[#7A7574] flex-shrink-0" />
                 <div className="min-w-0">
-                  <div className="text-[#7A7574] text-xs">Start Date</div>
+                  <div className="text-[#7A7574] text-xs">{t('contest.startDate')}</div>
                   <div className="font-medium text-[#2d3748] break-words">
                     {contest.start
                       ? formatDate(contest.start).split(",")[0]
@@ -521,7 +547,7 @@ const ContestDetail = () => {
                   className="text-[#7A7574] flex-shrink-0"
                 />
                 <div className="min-w-0">
-                  <div className="text-[#7A7574] text-xs">Prize Pool</div>
+                  <div className="text-[#7A7574] text-xs">{t('contest.prizePool')}</div>
                   <div
                     className="font-medium text-[#2d3748] break-words line-clamp-2"
                     title={contest.rewardsText || "TBA"}
@@ -536,14 +562,12 @@ const ContestDetail = () => {
                   className="text-[#7A7574] flex-shrink-0"
                 />
                 <div className="min-w-0">
-                  <div className="text-[#7A7574] text-xs">Rounds</div>
+                  <div className="text-[#7A7574] text-xs">{t('contest.rounds')}</div>
                   <div className="font-medium text-[#2d3748] break-words">
                     {Array.isArray(contest.rounds) ? contest.rounds.length : 0}{" "}
-                    Round
-                    {Array.isArray(contest.rounds) &&
-                    contest.rounds.length !== 1
-                      ? "s"
-                      : ""}
+                    {Array.isArray(contest.rounds) && contest.rounds.length === 1
+                      ? t('contest.round')
+                      : t('contest.roundsPlural')}
                   </div>
                 </div>
               </div>
@@ -576,7 +600,7 @@ const ContestDetail = () => {
                   {/* Description */}
                   <div>
                     <h3 className="text-lg font-semibold text-[#2d3748] mb-3">
-                      About the Contest
+                      {t('contest.aboutContest')}
                     </h3>
                     <p
                       className="text-[#4a5568] text-base leading-relaxed whitespace-pre-wrap break-words max-w-full"
@@ -592,7 +616,7 @@ const ContestDetail = () => {
                   {/* Prizes */}
                   <div>
                     <h3 className="text-lg font-semibold text-amber-500 mb-3">
-                      Prizes & Awards
+                      {t('contest.prizesAwards')}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <p className="text-sm text-[#4a5568] break-words line-clamp-3">
@@ -613,7 +637,7 @@ const ContestDetail = () => {
                         <div className="flex flex-col items-center gap-3">
                           <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-orange-500"></div>
                           <p className="text-sm text-[#7A7574] font-medium">
-                            Refreshing rounds...
+                            {t('contest.refreshingRounds')}
                           </p>
                         </div>
                       </div>
@@ -621,14 +645,14 @@ const ContestDetail = () => {
 
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold text-[#2d3748]">
-                      Contest Rounds
+                      {t('contest.contestRounds')}
                     </h3>
                     <div className="flex items-center gap-2">
                       {(roundsLoading || roundsFetching) && (
                         <span className="text-sm text-[#7A7574] animate-pulse font-medium">
                           {roundsFetching && hasRoundsFromQuery
-                            ? "Refreshing..."
-                            : "Loading..."}
+                            ? t('contest.refreshing')
+                            : t('common:common.loading')}
                         </span>
                       )}
                       <RefreshCcw
@@ -653,7 +677,7 @@ const ContestDetail = () => {
                         width="48"
                         className="mx-auto mb-2 text-red-500 opacity-50"
                       />
-                      <p className="text-[#7A7574]">Failed to load rounds</p>
+                      <p className="text-[#7A7574]">{t('contest.failedToLoadRounds')}</p>
                       <p className="text-sm text-[#7A7574] mt-1">
                         {roundsError?.data?.message ||
                           roundsError?.message ||
@@ -664,7 +688,7 @@ const ContestDetail = () => {
                     !hasRoundsFromQuery ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-                      <p className="text-[#7A7574]">Loading rounds...</p>
+                      <p className="text-[#7A7574]">{t('contest.loadingRounds')}</p>
                     </div>
                   ) : rounds && rounds.length > 0 ? (
                     rounds.map((round, index) => {
@@ -721,17 +745,17 @@ const ContestDetail = () => {
                       // ✅ Get button label based on problemType and completion status
                       const getButtonLabel = () => {
                         if (isRoundCompleted()) {
-                          return "View Result";
+                          return t('contest.viewResult');
                         }
                         switch (round.problemType) {
                           case "McqTest":
-                            return "Start Test";
+                            return t('contest.startTest');
                           case "Manual":
-                            return "Start Problem";
+                            return t('contest.startProblem');
                           case "AutoEvaluation":
-                            return "Start Challenge";
+                            return t('contest.startChallenge');
                           default:
-                            return "Start";
+                            return t('contest.start');
                         }
                       };
 
@@ -752,7 +776,7 @@ const ContestDetail = () => {
                               <h4 className="font-semibold text-[#2d3748] break-words line-clamp-2 min-w-0 flex-1">
                                 {round.roundName ||
                                   round.name ||
-                                  `Round ${index + 1}`}
+                                  `${t('contest.round')} ${index + 1}`}
                               </h4>
                             </div>
                             <div className="flex flex-col items-end gap-2 flex-shrink-0">
@@ -793,7 +817,7 @@ const ContestDetail = () => {
                                             roundName:
                                               round.roundName ||
                                               round.name ||
-                                              `Round ${index + 1}`,
+                                              `${t('contest.round')} ${index + 1}`,
                                             roundId: round.roundId,
                                             onConfirm: (openCode) => {
                                               // Store openCode in sessionStorage for this round
@@ -840,11 +864,11 @@ const ContestDetail = () => {
                               />
                               <span className="truncate">
                                 {round.problemType === "McqTest"
-                                  ? "Multiple Choice Questions"
+                                  ? t('contest.multipleChoiceQuestions')
                                   : round.problemType === "Manual"
-                                  ? "Manual Problem"
+                                  ? t('contest.manualProblem')
                                   : round.problemType === "AutoEvaluation"
-                                  ? "Auto Evaluation"
+                                  ? t('contest.autoEvaluation')
                                   : round.problemType}
                               </span>
                             </div>
@@ -859,7 +883,7 @@ const ContestDetail = () => {
                                 />
                                 <span>
                                   {Math.floor(round.timeLimitSeconds / 60)}{" "}
-                                  minutes
+                                  {t('contest.minutes')}
                                 </span>
                               </div>
                             )}
@@ -885,7 +909,7 @@ const ContestDetail = () => {
                         width="48"
                         className="mx-auto mb-2 opacity-50"
                       />
-                      <p>No rounds scheduled yet</p>
+                      <p>{t('contest.noRoundsScheduled')}</p>
                     </div>
                   )}
                 </div>
@@ -895,11 +919,11 @@ const ContestDetail = () => {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold text-[#2d3748]">
-                      Ranking and team standings
+                      {t('contest.rankingAndStandings')}
                     </h3>
                     {leaderboardContestInfo?.snapshotAt && (
                       <p className="text-sm text-[#7A7574]">
-                        Last updated:{" "}
+                        {t('contest.lastUpdated')}:{" "}
                         {formatDateTime(leaderboardContestInfo.snapshotAt)}
                       </p>
                     )}
@@ -908,7 +932,7 @@ const ContestDetail = () => {
                     <div className="flex items-center justify-center py-12">
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-                        <p className="text-gray-600">Loading leaderboard...</p>
+                        <p className="text-gray-600">{t('contest.loadingLeaderboard')}</p>
                       </div>
                     </div>
                   ) : leaderboardError ? (
@@ -924,12 +948,12 @@ const ContestDetail = () => {
                           className="mx-auto mb-2 opacity-50"
                         />
                         <p className="text-lg font-medium mb-1">
-                          No rankings available yet
+                          {t('contest.noRankingsAvailable')}
                         </p>
                         <p className="text-sm">
                           {isOngoing
-                            ? "Leaderboard will appear once teams start participating"
-                            : "This contest has not started yet"}
+                            ? t('contest.leaderboardWillAppear')
+                            : t('contest.contestNotStarted')}
                         </p>
                       </div>
                     ) : (
@@ -940,7 +964,7 @@ const ContestDetail = () => {
                           className="mx-auto mb-2 text-red-500 opacity-50"
                         />
                         <p className="text-lg font-medium text-red-600 mb-1">
-                          Failed to load leaderboard
+                          {t('contest.failedToLoadLeaderboard')}
                         </p>
                         <p className="text-sm text-[#7A7574]">
                           {typeof leaderboardError === "string"
@@ -1046,7 +1070,7 @@ const ContestDetail = () => {
                       {leaderboardEntries.length > 3 && (
                         <div className="space-y-3">
                           <h4 className="text-md font-semibold text-[#2d3748] mb-3">
-                            Other Rankings
+                            {t('contest.otherRankings')}
                           </h4>
                           {leaderboardEntries.slice(3).map((entry, index) => {
                             const actualRank = entry.rank || index + 4;
@@ -1081,7 +1105,7 @@ const ContestDetail = () => {
                                   {/* Score */}
                                   <div className="text-right flex-shrink-0">
                                     <p className="text-xl font-bold text-[#ff6b35]">
-                                      {formatScore(entry.score)} pts
+                                      {formatScore(entry.score)} {t('contest.pts')}
                                     </p>
                                   </div>
                                 </div>
@@ -1138,7 +1162,7 @@ const ContestDetail = () => {
                                     <p className="text-xl font-bold text-[#13d45d]">
                                       {formatScore(entry.score)}{" "}
                                       <span className="text-xs text-[#13d45d]">
-                                        pts
+                                        {t('contest.pts')}
                                       </span>
                                     </p>
                                   </div>
@@ -1182,10 +1206,10 @@ const ContestDetail = () => {
                 className="button-orange w-full flex items-center justify-center gap-2 py-3"
               >
                 <Icon icon="mdi:account-plus" width="18" />
-                Register Now
+                {t('contest.registerNow')}
               </button>
               <p className="text-xs text-[#7A7574] text-center mt-2">
-                Registration closes on{" "}
+                {t('contest.registrationClosesOn')}{" "}
                 {contest.registrationEnd
                   ? formatDate(contest.registrationEnd).split(",")[0]
                   : "TBA"}
@@ -1201,12 +1225,11 @@ const ContestDetail = () => {
                   className="text-[#7A7574] flex-shrink-0"
                 />
                 <p className="text-sm font-semibold text-[#2d3748]">
-                  Registration Closed
+                  {t('contest.registrationClosedDetail')}
                 </p>
               </div>
               <p className="text-xs text-[#7A7574] text-center">
-                The registration window has closed. You can no longer create new
-                teams for this contest.
+                {t('contest.registrationWindowClosed')}
               </p>
             </div>
           )}{" "}
@@ -1222,10 +1245,10 @@ const ContestDetail = () => {
               className="button-orange w-full flex items-center justify-center gap-2 py-3"
             >
               <Trophy size={18} />
-              View Leaderboard
+              {t('contest.viewLeaderboard')}
             </button>
             <p className="text-xs text-[#7A7574] text-center mt-2">
-              Check current rankings and team standings
+              {t('contest.checkCurrentRankings')}
             </p>
           </div>
           {/* See My Result Button - Show if student has completed quiz, manual, or auto test */}
@@ -1245,21 +1268,21 @@ const ContestDetail = () => {
                       type: "quiz",
                       route: `/quiz/${r.roundId}/finish`,
                       icon: "mdi:clipboard-check-outline",
-                      label: "Quiz",
+                      label: t('contest.quiz'),
                     })),
                     ...completedAutoTests.map((r) => ({
                       ...r,
                       type: "auto",
                       route: `/auto-test-result/${contestId}/${r.roundId}`,
                       icon: "mdi:code-tags-check",
-                      label: "Auto Test",
+                      label: t('contest.autoTest'),
                     })),
                     ...completedManualProblems.map((r) => ({
                       ...r,
                       type: "manual",
                       route: `/manual-problem/${contestId}/${r.roundId}`,
                       icon: "mdi:file-document-check",
-                      label: "Manual",
+                      label: t('contest.manual'),
                     })),
                   ];
 
@@ -1274,10 +1297,10 @@ const ContestDetail = () => {
                     const roundInfo = rounds.find(
                       (r) => r.roundId === result.roundId
                     );
-                    const roundName =
+                      const roundName =
                       roundInfo?.roundName ||
                       result.roundName ||
-                      `${result.label} Result`;
+                      `${result.label} ${t('contest.result')}`;
 
                     return (
                       <>
@@ -1290,11 +1313,10 @@ const ContestDetail = () => {
                           className="button-green w-full flex items-center justify-center gap-2 py-3"
                         >
                           <Icon icon={result.icon} width="18" />
-                          See Your Result
+                          {t('contest.seeYourResult')}
                         </button>
                         <p className="text-xs text-[#7A7574] text-center mt-2">
-                          View your {result.label.toLowerCase()} results and
-                          scores
+                          {t('contest.viewYourResults', { type: result.label.toLowerCase() })}
                         </p>
                       </>
                     );
@@ -1303,7 +1325,7 @@ const ContestDetail = () => {
                     return (
                       <>
                         <h3 className="text-sm font-semibold text-gray-800 mb-3">
-                          Your Results ({totalCount})
+                          {t('contest.yourResults')} ({totalCount})
                         </h3>
                         <div className="space-y-2">
                           {allResults.map((result, index) => {
@@ -1338,7 +1360,7 @@ const ContestDetail = () => {
                           })}
                         </div>
                         <p className="text-xs text-[#7A7574] text-center mt-3">
-                          Click on a result to view detailed information
+                          {t('contest.clickResultToView')}
                         </p>
                       </>
                     );
@@ -1354,13 +1376,13 @@ const ContestDetail = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold text-[#2d3748] flex items-center gap-2">
                     <Users size={26} className="text-[#ff6b35] flex-shrink-0" />
-                    <span className="min-w-0 break-words">Your Team</span>
+                    <span className="min-w-0 break-words">{t('contest.yourTeam')}</span>
                   </h3>
                 </div>
                 {teamLoading ? (
                   <div className="text-center py-4">
                     <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#ff6b35] border-t-transparent mx-auto mb-2"></div>
-                    <p className="text-sm text-[#7A7574]">Loading team...</p>
+                    <p className="text-sm text-[#7A7574]">{t('contest.loadingTeam')}</p>
                   </div>
                 ) : myTeam ? (
                   <div className="space-y-4">
@@ -1372,7 +1394,7 @@ const ContestDetail = () => {
                             <div className="flex items-center justify-center gap-2">
                               <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
                               <span className="text-sm">
-                                Loading rankings...
+                                {t('contest.loadingRankings')}
                               </span>
                             </div>
                           </div>
@@ -1399,13 +1421,13 @@ const ContestDetail = () => {
                                     />
                                   ) : null}
                                   <span className="font-bold text-lg min-w-0 break-words">
-                                    Rank #{myTeamLeaderboardEntry.rank || "—"}
+                                    {t('contest.rank')} #{myTeamLeaderboardEntry.rank || "—"}
                                   </span>
                                 </div>
                               </div>
                               <div className="flex items-baseline gap-2">
                                 <span className="text-xs opacity-90">
-                                  Score:
+                                  {t('contest.score')}:
                                 </span>
                                 <span className="text-2xl font-bold">
                                   {(myTeamLeaderboardEntry.score ?? 0).toFixed(
@@ -1429,7 +1451,7 @@ const ContestDetail = () => {
                           <div className="flex items-center gap-3 flex-shrink-0">
                             <div>
                               <p className="text-xs text-[#7A7574] mb-0.5">
-                                Members
+                                {t('contest.members')}
                               </p>
                               <p className="font-semibold text-[#2d3748] text-sm">
                                 {myTeam.members?.length || 0} /{" "}
@@ -1439,7 +1461,7 @@ const ContestDetail = () => {
                             {myTeamLeaderboardEntry && (
                               <div>
                                 <p className="text-xs text-[#7A7574] mb-0.5">
-                                  Rank
+                                  {t('contest.rank')}
                                 </p>
                                 <p className="font-semibold text-[#2d3748] text-sm">
                                   #{myTeamLeaderboardEntry.rank || "—"}
@@ -1453,14 +1475,14 @@ const ContestDetail = () => {
                         {myTeam.members && myTeam.members.length > 0 && (
                           <div className="pt-3 border-t border-[#E5E5E5]">
                             <p className="text-xs text-[#7A7574] mb-2">
-                              Team Members
+                              {t('contest.teamMembers')}
                             </p>
                             <div className="space-y-2">
                               {myTeam.members
                                 .slice(0, 3)
                                 .map((member, index) => {
                                   const memberName =
-                                    member.studentFullname || "Unknown Member";
+                                    member.studentFullname || t('contest.unknownMember');
                                   const memberInitial =
                                     memberName?.charAt(0)?.toUpperCase() || "M";
 
@@ -1484,8 +1506,7 @@ const ContestDetail = () => {
                                 })}
                               {myTeam.members.length > 3 && (
                                 <p className="text-xs text-[#7A7574] text-center pt-1">
-                                  +{myTeam.members.length - 3} more member
-                                  {myTeam.members.length - 3 > 1 ? "s" : ""}
+                                  {t('contest.moreMembers', { count: myTeam.members.length - 3 })}
                                 </p>
                               )}
                             </div>
@@ -1504,7 +1525,7 @@ const ContestDetail = () => {
                             }}
                             className="button-orange flex-1 text-sm"
                           >
-                            Team Details
+                            {t('contest.teamDetails')}
                           </button>
                         </div>
                       </>
@@ -1536,14 +1557,14 @@ const ContestDetail = () => {
                         {myTeam.members && myTeam.members.length > 0 ? (
                           <div className="pt-3 border-t border-[#E5E5E5]">
                             <p className="text-xs text-[#7A7574] mb-2">
-                              Team Members
+                              {t('contest.teamMembers')}
                             </p>
                             <div className="space-y-2">
                               {myTeam.members
                                 .slice(0, 3)
                                 .map((member, index) => {
                                   const memberName =
-                                    member.studentFullname || "Unknown Member";
+                                    member.studentFullname || t('contest.unknownMember');
                                   const memberInitial =
                                     memberName?.charAt(0)?.toUpperCase() || "M";
 
@@ -1567,8 +1588,7 @@ const ContestDetail = () => {
                                 })}
                               {myTeam.members.length > 3 && (
                                 <p className="text-xs text-[#7A7574] text-center pt-1">
-                                  +{myTeam.members.length - 3} more member
-                                  {myTeam.members.length - 3 > 1 ? "s" : ""}
+                                  {t('contest.moreMembers', { count: myTeam.members.length - 3 })}
                                 </p>
                               )}
                             </div>
@@ -1576,7 +1596,7 @@ const ContestDetail = () => {
                         ) : (
                           <div className="pt-3 border-t border-[#E5E5E5]">
                             <p className="text-xs text-[#7A7574] text-center">
-                              No members yet
+                              {t('contest.noMembersYet')}
                             </p>
                           </div>
                         )}
@@ -1592,7 +1612,7 @@ const ContestDetail = () => {
                           }}
                           className="button-white w-full text-sm mt-3"
                         >
-                          View Team Details
+                          {t('contest.viewTeamDetails')}
                         </button>
                       </>
                     )}
@@ -1606,13 +1626,13 @@ const ContestDetail = () => {
                     />
                     <p className="text-sm text-[#7A7574] mb-3">
                       {role === "student"
-                        ? "You haven't joined a team yet"
-                        : "You haven't created a team yet"}
+                        ? t('contest.haventJoinedTeamStudent')
+                        : t('contest.haventCreatedTeam')}
                     </p>
                     <p className="text-xs text-[#7A7574]">
                       {role === "student"
-                        ? "Contact your mentor to get more information"
-                        : "Create a team to get started"}
+                        ? t('contest.contactMentor')
+                        : t('contest.createTeamToStart')}
                     </p>
                   </div>
                 )}
@@ -1621,21 +1641,21 @@ const ContestDetail = () => {
           {/* Contest Info */}
           <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
             <h3 className="text-sm font-semibold text-[#2d3748] mb-4">
-              Contest Information
+              {t('contest.contestInformation')}
             </h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-[#7A7574]">Format:</span>
-                <span className="font-medium text-[#2d3748]">Team</span>
+                <span className="text-[#7A7574]">{t('contest.format')}:</span>
+                <span className="font-medium text-[#2d3748]">{t('contest.team')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#7A7574]">Team Size:</span>
+                <span className="text-[#7A7574]">{t('contest.teamSize')}:</span>
                 <span className="font-medium text-[#2d3748]">
-                  1-{contest.teamMembersMax || contest.maxTeamSize || 3} members
+                  1-{contest.teamMembersMax || contest.maxTeamSize || 3} {t('contest.members')}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#7A7574]">Language:</span>
+                <span className="text-[#7A7574]">{t('contest.language')}:</span>
                 <span className="font-medium text-[#2d3748]">Python 3</span>
               </div>
             </div>
@@ -1649,12 +1669,11 @@ const ContestDetail = () => {
                 className="text-[#fbbc05] flex-shrink-0 mt-0.5"
               />
               <h3 className="text-sm font-semibold text-[#2d3748]">
-                Important Notice
+                {t('contest.importantNotice')}
               </h3>
             </div>
             <p className="text-sm text-[#4a5568] leading-relaxed">
-              Make sure to register before the deadline. Late registrations will
-              not be accepted.
+              {t('contest.registerBeforeDeadline')}
             </p>
           </div>
         </div>

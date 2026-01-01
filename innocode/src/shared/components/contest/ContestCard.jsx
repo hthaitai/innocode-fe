@@ -1,29 +1,33 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './ContestCard.css';
 import { Icon } from '@iconify/react';
 
 const ContestCard = ({ contest, onClick }) => {
+  const { t } = useTranslation('pages');
+  
   // ✅ Calculate time left from start date
   const calculateTimeLeft = (startDate) => {
-    if (!startDate) return 'TBA';
+    if (!startDate) return t('contest.tba');
     const now = new Date();
     const start = new Date(startDate);
     const diff = start - now;
-    if (diff <= 0) return 'Started';
+    if (diff <= 0) return t('contest.started');
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((diff / (1000 * 60)) % 60);
     if (days > 0) return `${days}d ${hours}h`;
     if (hours > 0) return `${hours}h ${minutes}m`;
     if (minutes > 0) return `${minutes}m`;
-    return 'Less than a minute';
+    return t('contest.lessThanMinute');
   };
 
   // ✅ Get status color - same logic as ContestDetail
   const getStatusColor = (status) => {
     if (!status) return "text-gray-500 bg-gray-500/10";
     
-    const statusLower = status.toLowerCase();
+    // Normalize status: lowercase and remove spaces
+    const statusLower = status.toLowerCase().replace(/\s+/g, '');
     switch (statusLower) {
       case "upcoming":
         return "text-amber-500 bg-amber-500/10";
@@ -33,10 +37,8 @@ const ContestCard = ({ contest, onClick }) => {
         return "text-green-500 bg-green-500/10";
       case "published":
         return "text-green-500 bg-green-500/10";
-      case "registration open":
       case "registrationopen":
         return "text-green-500 bg-green-500/10";
-      case "registration closed":
       case "registrationclosed":
         return "text-orange-500 bg-orange-500/10";
       case "draft":
@@ -51,12 +53,30 @@ const ContestCard = ({ contest, onClick }) => {
 
   // Format status label from status if statusLabel is not available
   const getStatusLabel = () => {
-    if (contest.statusLabel) return contest.statusLabel;
-    if (!contest.status) return null;
+    const rawStatus = contest.statusLabel || contest.status;
+    if (!rawStatus) return null;
     
-    // Format status to readable label
-    const status = contest.status;
-    return status
+    // Normalize status to lowercase for matching
+    const statusLower = rawStatus.toLowerCase().replace(/\s+/g, '');
+    
+    // Map status to translation key
+    const statusMap = {
+      'ongoing': 'contest.statusLabels.ongoing',
+      'upcoming': 'contest.statusLabels.upcoming',
+      'completed': 'contest.statusLabels.completed',
+      'published': 'contest.statusLabels.published',
+      'registrationopen': 'contest.statusLabels.registrationOpen',
+      'registrationclosed': 'contest.statusLabels.registrationClosed',
+      'draft': 'contest.statusLabels.draft',
+    };
+    
+    const translationKey = statusMap[statusLower];
+    if (translationKey) {
+      return t(translationKey);
+    }
+    
+    // Fallback: format status to readable label if no translation found
+    return rawStatus
       .replace(/([A-Z])/g, ' $1')
       .trim()
       .split(' ')
@@ -99,7 +119,7 @@ const ContestCard = ({ contest, onClick }) => {
         {statusLabel && (
           <div className="mb-2">
             <span className={`inline-block px-2 py-1 text-xs font-semibold rounded ${getStatusColor(
-              statusLabel || contest.status
+              contest.statusLabel || contest.status
             )}`}>
               {statusLabel}
             </span>
@@ -116,7 +136,11 @@ const ContestCard = ({ contest, onClick }) => {
         <div className="contest-card__meta">
           <span className="contest-card__teams">
             <Icon icon="mdi:account-group" className="inline mr-1" />
-            {contest.teamLimitMax > 0 ? `${contest.teamLimitMax} Teams` : contest.teams > 0 ? `${contest.teams} Teams` : 'No limit'}
+            {contest.teamLimitMax > 0 
+              ? `${contest.teamLimitMax} ${t('contest.teams')}` 
+              : contest.teams > 0 
+              ? `${contest.teams} ${t('contest.teams')}` 
+              : t('contest.noLimit')}
           </span>
           <span className="contest-card__time">
             <Icon icon="mdi:clock-outline" className="inline mr-1" />

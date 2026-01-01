@@ -85,6 +85,39 @@ export const teamApi = api.injectEndpoints({
         { type: "Teams", id: "MY_TEAM" },
       ],
     }),
+    updateTeam: builder.mutation({
+      query: ({ teamId, data }) => ({
+        url: `teams/${teamId}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: (result, error, { teamId }) => [
+        { type: "Teams", id: teamId },
+        { type: "Teams", id: "MY_TEAM" },
+        { type: "Teams", id: "LIST" },
+      ],
+    }),
+    deleteTeam: builder.mutation({
+      query: (teamId) => ({
+        url: `teams/${teamId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, teamId) => [
+        { type: "Teams", id: teamId },
+        { type: "Teams", id: "MY_TEAM" },
+        { type: "Teams", id: "LIST" },
+      ],
+    }),
+    deleteTeamMember: builder.mutation({
+      query: ({ teamId, studentId }) => ({
+        url: `teams/${teamId}/members/${studentId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, { teamId }) => [
+        { type: "Teams", id: teamId },
+        { type: "Teams", id: "MY_TEAM" },
+      ],
+    }),
   }),
 })
 
@@ -93,4 +126,7 @@ export const {
   useGetTeamByIdQuery,
   useGetMyTeamQuery,
   useCreateTeamMutation,
+  useUpdateTeamMutation,
+  useDeleteTeamMutation,
+  useDeleteTeamMemberMutation,
 } = teamApi

@@ -7,22 +7,220 @@
     "networkError": "Lỗi kết nối. Vui lòng kiểm tra kết nối mạng",
     "timeout": "Hết thời gian chờ. Vui lòng thử lại",
     "unexpectedError": "Đã xảy ra lỗi không mong muốn",
-    "validationError": "Vui lòng kiểm tra thông tin nhập và thử lại"
+    "validationError": "Vui lòng kiểm tra thông tin nhập và thử lại",
+    "badRequest": "Yêu cầu không hợp lệ. Vui lòng kiểm tra thông tin nhập",
+    "duplicate": "Mục này đã tồn tại",
+    "conflict": "Xảy ra xung đột. Vui lòng thử lại",
+    "gone": "Tài nguyên yêu cầu không còn khả dụng"
+  },
+  "activityLog": {
+    "logNotFound": "Không tìm thấy nhật ký hoạt động"
+  },
+  "appeal": {
+    "notFound": "Không tìm thấy khiếu nại"
+  },
+  "attachment": {
+    "notFound": "Không tìm thấy tệp đính kèm"
   },
   "auth": {
     "invalidCredentials": "Email hoặc mật khẩu không đúng",
     "accountDisabled": "Tài khoản bị vô hiệu hóa hoặc chưa được xác minh",
     "tooManyAttempts": "Quá nhiều lần đăng nhập. Vui lòng thử lại sau",
-    "emailExists": "Email đã tồn tại",
+    "emailExists": "Email này đã được đăng ký",
     "weakPassword": "Mật khẩu quá yếu",
-    "tokenExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại"
+    "tokenExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại",
+    "confirmPasswordMismatch": "Mật khẩu xác nhận không khớp",
+    "schoolIdRequired": "Vui lòng chọn trường học",
+    "schoolNotFound": "Không tìm thấy trường học",
+    "userUnverified": "Vui lòng xác minh email của bạn",
+    "userInactive": "Tài khoản của bạn đã bị vô hiệu hóa",
+    "unauthenticated": "Yêu cầu đăng nhập",
+    "alreadyVerified": "Email đã được xác minh",
+    "invalidToken": "Token không hợp lệ hoặc đã hết hạn",
+    "invalidTokenType": "Sai loại token",
+    "invalidRefresh": "Người dùng không hợp lệ",
+    "userNotFound": "Không tìm thấy người dùng",
+    "emailMismatch": "Token không khớp với email người dùng",
+    "badCurrentPassword": "Mật khẩu hiện tại không đúng"
+  },
+  "certificate": {
+    "templateNotFound": "Không tìm thấy mẫu chứng chỉ",
+    "recipientInvalid": "Vui lòng chỉ định chính xác một trong studentId hoặc teamId",
+    "studentNotFound": "Không tìm thấy học sinh",
+    "teamNotFound": "Không tìm thấy đội",
+    "duplicate": "Chứng chỉ đã tồn tại cho người nhận và mẫu này",
+    "renderFailed": "Không thể tạo hình ảnh chứng chỉ",
+    "uploadFailed": "Không thể tải lên tệp chứng chỉ",
+    "saveFailed": "Không thể lưu bản ghi chứng chỉ",
+    "recipientProcessingFailed": "Không thể xử lý người nhận",
+    "templateDownloadFailed": "Không thể tải xuống tệp mẫu chứng chỉ",
+    "issuanceFailed": "Đã xảy ra lỗi không mong muốn khi cấp chứng chỉ",
+    "typeInvalid": "types phải chứa 'student' và/hoặc 'team'",
+    "certNotFound": "Không tìm thấy chứng chỉ",
+    "contestNotFound": "Không tìm thấy cuộc thi"
+  },
+  "config": {
+    "notFound": "Không tìm thấy cấu hình",
+    "exists": "Cấu hình đã tồn tại",
+    "invalidWindow": "Thời gian kết thúc phải sau thời gian bắt đầu",
+    "invalidKey": "Khóa không hợp lệ",
+    "invalidInput": "Loại mẫu nhập không hợp lệ"
   },
   "contest": {
     "duplicate": "Đã tồn tại cuộc thi với tên này",
     "notFound": "Không tìm thấy cuộc thi",
     "alreadyStarted": "Cuộc thi đã bắt đầu",
     "registrationClosed": "Đăng ký cho cuộc thi này đã đóng",
-    "alreadyRegistered": "Bạn đã đăng ký cuộc thi này rồi"
+    "alreadyRegistered": "Bạn đã đăng ký cuộc thi này rồi",
+    "alreadyDeleted": "Cuộc thi đã bị xóa",
+    "yearInvalid": "Năm phải lớn hơn 1900",
+    "dateInvalid": "Ngày bắt đầu không thể muộn hơn ngày kết thúc",
+    "nameRequired": "Tên cuộc thi là bắt buộc",
+    "teamMembersInvalid": "Cấu hình thành viên đội không hợp lệ",
+    "teamLimitInvalid": "Cấu hình giới hạn đội không hợp lệ",
+    "invalidImage": "Tệp tải lên không phải là hình ảnh hợp lệ",
+    "invalidState": "Cuộc thi đang ở trạng thái không hợp lệ cho thao tác này",
+    "dateConflict": "Ngày cuộc thi xung đột với lịch trình hiện có"
+  },
+  "judge": {
+    "notFound": "Không tìm thấy giám khảo",
+    "inactive": "Tài khoản của bạn không hoạt động"
+  },
+  "judgeInvite": {
+    "inviteNotFound": "Không tìm thấy lời mời",
+    "inviteNotPending": "Lời mời không ở trạng thái chờ xử lý",
+    "inviteExpired": "Lời mời đã hết hạn",
+    "invalidCode": "Mã lời mời không hợp lệ"
+  },
+  "leaderboard": {
+    "frozen": "Bảng xếp hạng đã bị đóng băng và không thể cập nhật",
+    "entryNotFound": "Không tìm thấy mục bảng xếp hạng",
+    "teamExists": "Đội đã tồn tại trong bảng xếp hạng",
+    "teamEliminated": "Đội này đã bị loại và không thể nhận điểm mới",
+    "invalidEliminationRule": "Quy tắc loại trừ không hợp lệ"
+  },
+  "mcq": {
+    "testNotFound": "Không tìm thấy bài kiểm tra trắc nghiệm",
+    "questionNotFound": "Không tìm thấy câu hỏi trắc nghiệm",
+    "optionNotFound": "Không tìm thấy lựa chọn trắc nghiệm",
+    "testQuestionNotFound": "Không tìm thấy câu hỏi trong bài kiểm tra",
+    "attemptNotFound": "Không tìm thấy lượt làm bài"
+  },
+  "mentor": {
+    "notFound": "Không tìm thấy người hướng dẫn",
+    "userNotMentor": "Vai trò người dùng phải là Mentor",
+    "userInvalidStatus": "Người dùng phải ở trạng thái Active hoặc Inactive",
+    "userAlreadyMentor": "Người dùng này đã là người hướng dẫn",
+    "inUse": "Không thể xóa người hướng dẫn đang được gán cho đội"
+  },
+  "notification": {
+    "notFound": "Không tìm thấy thông báo",
+    "recipientListEmpty": "Danh sách người nhận không được để trống"
+  },
+  "problem": {
+    "notFound": "Không tìm thấy bài toán",
+    "rubricTemplateNotAvailable": "Mẫu rubric chỉ có sẵn cho loại bài toán thủ công",
+    "rubricNotFound": "Không tìm thấy rubric",
+    "rubricCriterionNotFound": "Không tìm thấy tiêu chí rubric",
+    "mockTestNotProvided": "Không có tệp mock test được cung cấp",
+    "mockTestInvalidType": "Tệp mock test phải là tệp Python",
+    "mockTestSizeExceeded": "Kích thước tệp mock test vượt quá giới hạn",
+    "mockTestWrongType": "Mock test chỉ có thể tải lên cho bài toán AutoEvaluation"
+  },
+  "province": {
+    "notFound": "Không tìm thấy tỉnh/thành phố",
+    "inUse": "Không thể xóa tỉnh/thành phố đang được sử dụng",
+    "nameExists": "Tên tỉnh/thành phố đã tồn tại"
+  },
+  "quiz": {
+    "notFound": "Không tìm thấy bài kiểm tra",
+    "alreadyFinished": "Bạn đã hoàn thành vòng thi này",
+    "openCodeRequired": "Yêu cầu mã mở để truy cập bài kiểm tra",
+    "invalidOpenCode": "Mã mở không hợp lệ",
+    "bankNameRequired": "Yêu cầu tên ngân hàng câu hỏi ở dòng đầu tiên",
+    "invalidCsv": "Tệp CSV không chứa hàng câu hỏi hợp lệ",
+    "keyRequired": "Yêu cầu khóa",
+    "keyMismatch": "Khóa không thuộc về học sinh hiện tại"
+  },
+  "roleRegistration": {
+    "evidenceRequired": "Yêu cầu ít nhất 1 tệp bằng chứng",
+    "registrationExists": "Đã tồn tại đăng ký vai trò chờ xử lý cho email này",
+    "notFound": "Không tìm thấy đăng ký vai trò",
+    "notPending": "Chỉ có thể xử lý các đăng ký đang chờ",
+    "missingPassword": "Đăng ký không có mật khẩu",
+    "reasonRequired": "Yêu cầu lý do từ chối",
+    "roleRequired": "Yêu cầu RequestedRole",
+    "invalidRole": "RequestedRole phải là staff, organizer, judge, schoolmanager hoặc admin"
+  },
+  "round": {
+    "notFound": "Không tìm thấy vòng thi",
+    "dataRequired": "Dữ liệu vòng thi không được để trống",
+    "nameRequired": "Tên vòng thi là bắt buộc",
+    "problemConfigRequired": "Yêu cầu cấu hình bài toán",
+    "mcqTestConfigRequired": "Yêu cầu cấu hình bài kiểm tra trắc nghiệm",
+    "mcqTestNameRequired": "Tên bài kiểm tra trắc nghiệm là bắt buộc",
+    "penaltyRateInvalid": "Tỷ lệ phạt phải nằm giữa 0 và 1",
+    "rankCutoffInvalid": "RankCutoff phải >= 0",
+    "invalidProblemType": "Loại bài toán không hợp lệ",
+    "retakeRoundInvalid": "Cấu hình vòng thi lại không hợp lệ",
+    "mainRoundNotFound": "Không tìm thấy vòng thi chính",
+    "cannotUpdate": "Không thể cập nhật vòng thi khi đang ở trạng thái 'Opened'",
+    "dateConflict": "Ngày vòng thi xung đột với vòng thi hiện có",
+    "dateInvalid": "Ngày vòng thi không hợp lệ",
+    "timeLimitInvalid": "Cấu hình giới hạn thời gian không hợp lệ",
+    "noJudgesAvailable": "Không có giám khảo khả dụng cho cuộc thi này",
+    "noActiveJudges": "Không có giám khảo đang hoạt động",
+    "openCodeNotFound": "Không tìm thấy mã mở",
+    "alreadyEnded": "Vòng thi đã kết thúc",
+    "notStarted": "Vòng thi chưa bắt đầu",
+    "alreadyFinished": "Bạn đã hoàn thành vòng thi này",
+    "cannotEndBeforeStart": "Không thể kết thúc vòng thi trước khi bắt đầu",
+    "topCutoffRequired": "Đội của bạn không nằm trong Top cutoff của vòng thi trước"
+  },
+  "school": {
+    "inUse": "Không thể xóa trường học có học sinh, người hướng dẫn hoặc đội",
+    "nameExists": "Tên trường học đã tồn tại trong tỉnh/thành phố này",
+    "provinceNotFound": "Không tìm thấy tỉnh/thành phố"
+  },
+  "schoolCreationRequest": {
+    "notFound": "Không tìm thấy yêu cầu tạo trường học",
+    "denyReasonRequired": "Yêu cầu lý do từ chối",
+    "invalidEvidenceType": "Bằng chứng phải là .pdf, .png, .jpg, .jpeg, .doc hoặc .docx"
+  },
+  "student": {
+    "userNotStudent": "Vai trò người dùng phải là Student",
+    "userAlreadyStudent": "Người dùng này đã là học sinh",
+    "inUse": "Không thể xóa học sinh có bản ghi liên quan"
+  },
+  "submission": {
+    "notFound": "Không tìm thấy bài nộp",
+    "deadlinePassed": "Đã hết hạn nộp bài",
+    "invalidFormat": "Định dạng bài nộp không hợp lệ",
+    "fileRequired": "Yêu cầu tệp cho loại đánh giá File",
+    "fileTypeNotSupported": "Loại tệp không được hỗ trợ",
+    "codeRequired": "Yêu cầu mã cho loại đánh giá Code",
+    "noTestCases": "Không tìm thấy test case cho bài toán",
+    "cannotExecute": "Không thể thực thi mã",
+    "fileNotFound": "Không tìm thấy tệp cho bài nộp",
+    "flagged": "Bài nộp đã bị đánh dấu đạo văn",
+    "cannotAcceptResult": "Không thể chấp nhận kết quả",
+    "rubricEvaluationOnly": "Đánh giá rubric chỉ có sẵn cho loại bài toán thủ công",
+    "noRubricCriteria": "Không tìm thấy tiêu chí rubric cho bài toán này",
+    "missingScores": "Tất cả các tiêu chí phải được chấm điểm",
+    "duplicateCriteria": "Tìm thấy tiêu chí trùng lặp trong bài nộp",
+    "scoreExceedsMax": "Điểm vượt quá điểm tối đa cho tiêu chí",
+    "scoreNegative": "Điểm không thể âm",
+    "noManualTestSubmission": "Không tìm thấy bài nộp kiểm tra thủ công cho vòng thi này",
+    "detailsMissing": "Một số chi tiết bài nộp bị thiếu",
+    "fingerprintNotFound": "Không tìm thấy fingerprint/bài nộp",
+    "plagiarismNotSuspected": "Bài nộp không ở trạng thái nghi ngờ đạo văn",
+    "noMockTest": "Bài toán này không có mock test được cấu hình"
+  },
+  "submissionArtifact": {
+    "notFound": "Không tìm thấy tạo phẩm bài nộp"
+  },
+  "submissionDetail": {
+    "notFound": "Không tìm thấy chi tiết bài nộp"
   },
   "team": {
     "notFound": "Không tìm thấy đội",
@@ -30,12 +228,50 @@
     "teamFull": "Đội đã đầy",
     "inviteExpired": "Lời mời tham gia đội đã hết hạn",
     "inviteNotFound": "Không tìm thấy lời mời tham gia đội",
-    "alreadyProcessed": "Lời mời này đã được xử lý"
+    "alreadyProcessed": "Lời mời này đã được xử lý",
+    "notMentor": "Chỉ người hướng dẫn mới có thể tạo đội",
+    "mentorNotBelongToSchool": "Người hướng dẫn này không thuộc về trường học đã chọn",
+    "nameExists": "Đã tồn tại đội với tên này trong cuộc thi",
+    "mentorContestLimitExceeded": "Một người hướng dẫn chỉ có thể có một đội hoạt động trong cùng một cuộc thi",
+    "inUse": "Không thể xóa đội có bản ghi liên quan",
+    "contestStarted": "Cuộc thi đã bắt đầu. Không thể chỉnh sửa đội",
+    "memberNotFound": "Không tìm thấy thành viên đội"
   },
-  "submission": {
-    "notFound": "Không tìm thấy bài nộp",
-    "deadlinePassed": "Đã hết hạn nộp bài",
-    "invalidFormat": "Định dạng bài nộp không hợp lệ"
+  "teamInvite": {
+    "teamFull": "Đã đạt giới hạn thành viên đội",
+    "invalidInput": "Cung cấp StudentId hoặc InviteeEmail",
+    "alreadyOnTeam": "Học sinh đã ở trong một đội cho cuộc thi này",
+    "timeConflict": "Học sinh có xung đột thời gian với cuộc thi khác",
+    "studentProfileRequired": "Vui lòng tạo/hoàn thành hồ sơ học sinh trước khi chấp nhận lời mời",
+    "inviteNotForYou": "Lời mời này dành cho học sinh khác",
+    "accountRequired": "Vui lòng đăng ký với email được mời trước",
+    "notStudent": "Chỉ học sinh mới có thể chấp nhận lời mời tham gia đội",
+    "regClosed": "Cửa sổ đăng ký đã đóng"
+  },
+  "testCase": {
+    "notFound": "Không tìm thấy test case",
+    "dataRequired": "Dữ liệu test case không được để trống",
+    "inputRequired": "Yêu cầu đầu vào",
+    "expectedOutputRequired": "Yêu cầu đầu ra mong đợi",
+    "weightInvalid": "Trọng số phải lớn hơn 0",
+    "fieldTooLong": "Mô tả, Đầu vào và Đầu ra mong đợi phải ít hơn hoặc bằng 255 ký tự",
+    "timeLimitInvalid": "TimeLimitMs phải là số nguyên dương nếu được cung cấp",
+    "listEmpty": "Danh sách test case không được để trống",
+    "duplicateIds": "Tìm thấy ID test case trùng lặp trong yêu cầu",
+    "cannotDelete": "Chỉ có thể xóa test case loại 'TestCase'",
+    "notAvailable": "Test case chỉ có sẵn cho bài toán AutoEvaluation"
+  },
+  "user": {
+    "invalidRole": "Vai trò không được phép",
+    "invalidStatus": "Trạng thái không được phép",
+    "invalidProfileType": "Chỉ Mentor mới có thể cập nhật số điện thoại",
+    "profileNotFound": "Không tìm thấy hồ sơ"
+  },
+  "cloudinary": {
+    "noFileProvided": "Không có tệp được cung cấp",
+    "fileTypeNotAllowed": "Loại tệp không được phép",
+    "fileSizeExceeded": "Kích thước tệp vượt quá giới hạn",
+    "noImageStream": "Không có luồng hình ảnh được cung cấp",
+    "evidenceInvalidType": "Bằng chứng phải là .pdf, .png, .jpg hoặc .jpeg"
   }
 }
-

@@ -1,45 +1,60 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Icon } from "@iconify/react";
-import { Users, Mail, UserPlus } from "lucide-react";
-import PageContainer from "@/shared/components/PageContainer";
-import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs";
-import useContestDetail from "@/features/contest/hooks/useContestDetail";
-import { useAuth } from "@/context/AuthContext";
-import useMentors from "../../../../shared/hooks/useMentors";
-import { sendTeamInviteEmail } from "@/shared/services/emailService";
+import React, { useEffect, useState, useMemo } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import { Icon } from "@iconify/react"
+import { Users, Mail, UserPlus } from "lucide-react"
+import PageContainer from "@/shared/components/PageContainer"
+import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs"
+import useContestDetail from "@/features/contest/hooks/useContestDetail"
+import { useAuth } from "@/context/AuthContext"
+import useMentors from "../../../../shared/hooks/useMentors"
+import { sendTeamInviteEmail } from "@/shared/services/emailService"
 import {
   useGetMyTeamQuery,
   useCreateTeamMutation,
-} from "@/services/teamApi";
-import { useGetStudentsBySchoolIdQuery } from "@/services/studentApi";
+  useUpdateTeamMutation,
+} from "@/services/teamApi"
+import { useGetStudentsBySchoolIdQuery } from "@/services/studentApi"
 import {
   useGetTeamInvitesQuery,
   useInviteStudentMutation,
-} from "@/services/teamInviteApi";
+} from "@/services/teamInviteApi"
+import {
+  useDeleteTeamMemberMutation,
+  useDeleteTeamMutation,
+} from "../../../../services/teamApi"
+import toast from "react-hot-toast"
+import BaseModal from "@/shared/components/BaseModal"
 
 const MentorTeam = () => {
-  const { contestId } = useParams();
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("create"); // 'create' or 'myTeam'
-  const [teamName, setTeamName] = useState("");
-  const [schoolId, setSchoolId] = useState(null);
-  const [mentorId, setMentorId] = useState(null);
-  const [errors, setErrors] = useState({});
-  const [inviteError, setInviteError] = useState("");
-  const [invitedStudentIds, setInvitedStudentIds] = useState(new Set()); // Track invited students
-  const { contest, loading: contestLoading } = useContestDetail(contestId);
+  const { contestId } = useParams()
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState("create") // 'create' or 'myTeam'
+  const [teamName, setTeamName] = useState("")
+  const [schoolId, setSchoolId] = useState(null)
+  const [mentorId, setMentorId] = useState(null)
+  const [errors, setErrors] = useState({})
+  const [inviteError, setInviteError] = useState("")
+  const [invitedStudentIds, setInvitedStudentIds] = useState(new Set()) // Track invited students
+  const { contest, loading: contestLoading } = useContestDetail(contestId)
+  const [deleteTeam, { isLoading: deletingTeam }] = useDeleteTeamMutation()
+  const [deleteTeamMember, { isLoading: deletingTeamMember }] =
+    useDeleteTeamMemberMutation()
+  const [memberToDelete, setMemberToDelete] = useState(null)
+  const [showDeleteTeamConfirm, setShowDeleteTeamConfirm] = useState(false)
+  const [showDeleteMemberConfirm, setShowDeleteMemberConfirm] = useState(false)
+  const [isEditingTeamName, setIsEditingTeamName] = useState(false)
+  const [editedTeamName, setEditedTeamName] = useState("")
   const {
     mentors,
     loading: mentorLoading,
     error: mentorError,
     getMentorByUserId,
-  } = useMentors();
-  const { user } = useAuth();
+  } = useMentors()
+  const { user } = useAuth()
 
   const breadcrumbData = contest
     ? createBreadcrumbWithPaths("CONTEST_DETAIL", contest.name || contest.title)
-    : { items: BREADCRUMBS.NOT_FOUND, paths: ["/"] };
+    : { items: BREADCRUMBS.NOT_FOUND, paths: ["/"] }
 
   // RTK Query hooks
   const {
@@ -48,24 +63,25 @@ const MentorTeam = () => {
     refetch: refetchMyTeam,
   } = useGetMyTeamQuery(undefined, {
     skip: !user?.id,
-  });
+  })
 
-  const [createTeam, { isLoading: creatingTeam }] = useCreateTeamMutation();
+  const [createTeam, { isLoading: creatingTeam }] = useCreateTeamMutation()
+  const [updateTeam, { isLoading: updatingTeam }] = useUpdateTeamMutation()
 
   // Filter myTeam by contestId
   const myTeam = useMemo(() => {
-    if (!myTeamsData || !contestId) return null;
+    if (!myTeamsData || !contestId) return null
     return myTeamsData.find((team) => {
-      const teamContestId = team.contestId || team.contest_id;
+      const teamContestId = team.contestId || team.contest_id
       return (
         String(teamContestId) === String(contestId) ||
         teamContestId === contestId ||
         teamContestId === parseInt(contestId)
-      );
-    });
-  }, [myTeamsData, contestId]);
+      )
+    })
+  }, [myTeamsData, contestId])
 
-  const teamId = myTeam?.teamId || myTeam?.team_id || myTeam?.id;
+  const teamId = myTeam?.teamId || myTeam?.team_id || myTeam?.id
 
   // Fetch team invites
   const {
@@ -74,155 +90,151 @@ const MentorTeam = () => {
     refetch: refetchInvites,
   } = useGetTeamInvitesQuery(teamId, {
     skip: !teamId || activeTab !== "myTeam",
-  });
+  })
 
   // Filter pending invites
   const pendingInvites = useMemo(() => {
-    if (!Array.isArray(invitesData)) return [];
-    return invitesData.filter((invite) => invite.status === "pending");
-  }, [invitesData]);
+    if (!Array.isArray(invitesData)) return []
+    return invitesData.filter((invite) => invite.status === "pending")
+  }, [invitesData])
 
   // Fetch students by schoolId
-  const {
-    data: studentsData = [],
-    isLoading: loadingStudents,
-  } = useGetStudentsBySchoolIdQuery(schoolId, {
-    skip: !schoolId || activeTab !== "myTeam" || !myTeam,
-  });
+  const { data: studentsData = [], isLoading: loadingStudents } =
+    useGetStudentsBySchoolIdQuery(schoolId, {
+      skip: !schoolId || activeTab !== "myTeam" || !myTeam,
+    })
 
   const [inviteStudent, { isLoading: invitingStudent }] =
-    useInviteStudentMutation();
+    useInviteStudentMutation()
 
   // Reset invited students when contest changes
   useEffect(() => {
-    setInvitedStudentIds(new Set());
-  }, [contestId]);
+    setInvitedStudentIds(new Set())
+  }, [contestId])
 
   // Set default tab to 'myTeam' if mentor already has a team
   useEffect(() => {
     if (myTeam && activeTab === "create") {
-      setActiveTab("myTeam");
+      setActiveTab("myTeam")
     }
-  }, [myTeam, activeTab]);
+  }, [myTeam, activeTab])
   useEffect(() => {
     if (user?.id) {
-      getMentorByUserId(user?.id);
+      getMentorByUserId(user?.id)
     }
-  }, [user?.id, getMentorByUserId]);
+  }, [user?.id, getMentorByUserId])
 
   // Auto-set mentorId and schoolId from fetched mentor
   useEffect(() => {
     if (mentors && mentors.length > 0) {
       // API returns array with response object: [{data: [...], ...}]
-      const response = mentors[0];
+      const response = mentors[0]
       // Get actual mentor from response.data[0]
       const mentorData =
-        response?.data && Array.isArray(response.data)
-          ? response.data[0]
-          : null;
+        response?.data && Array.isArray(response.data) ? response.data[0] : null
 
       if (mentorData) {
         // Handle both camelCase and snake_case field names
-        const mentorIdValue = mentorData?.mentorId || mentorData?.mentor_id;
-        const schoolIdValue = mentorData?.schoolId || mentorData?.school_id;
+        const mentorIdValue = mentorData?.mentorId || mentorData?.mentor_id
+        const schoolIdValue = mentorData?.schoolId || mentorData?.school_id
 
         if (mentorIdValue) {
-          setMentorId(mentorIdValue);
+          setMentorId(mentorIdValue)
         }
         if (schoolIdValue) {
-          setSchoolId(schoolIdValue);
+          setSchoolId(schoolIdValue)
         }
       }
     }
-  }, [mentors]);
+  }, [mentors])
 
   // Update invitedStudentIds when pending invites change
   useEffect(() => {
     if (pendingInvites.length > 0) {
       const pendingStudentIds = new Set(
         pendingInvites.map((invite) => invite.studentId)
-      );
+      )
       setInvitedStudentIds((prev) => {
-        const updated = new Set(prev);
-        pendingStudentIds.forEach((id) => updated.add(id));
-        return updated;
-      });
+        const updated = new Set(prev)
+        pendingStudentIds.forEach((id) => updated.add(id))
+        return updated
+      })
     }
-  }, [pendingInvites]);
+  }, [pendingInvites])
 
   // Update invitedStudentIds when myTeam changes (remove students who became members)
   useEffect(() => {
     if (myTeam && myTeam.members) {
       const memberIds = new Set(
         (myTeam.members || []).map((m) => m.studentId || m.student_id)
-      );
+      )
       // Remove students from invited list if they became members
       setInvitedStudentIds((prev) => {
-        const updated = new Set(prev);
-        memberIds.forEach((id) => updated.delete(id));
-        return updated;
-      });
+        const updated = new Set(prev)
+        memberIds.forEach((id) => updated.delete(id))
+        return updated
+      })
     }
-  }, [myTeam]);
+  }, [myTeam])
 
   // Filter available students
   const { students, allStudents } = useMemo(() => {
     if (!Array.isArray(studentsData)) {
-      return { students: [], allStudents: [] };
+      return { students: [], allStudents: [] }
     }
 
     // Store all students for lookup (e.g., in pending invites)
-    const allStudentsList = studentsData;
+    const allStudentsList = studentsData
 
     // Filter out students who are already members, have been invited, or have pending invites
     const existingMemberIds = (myTeam?.members || []).map(
       (m) => m.studentId || m.student_id
-    );
+    )
     const pendingInviteStudentIds = new Set(
       pendingInvites.map((invite) => invite.studentId)
-    );
+    )
     const availableStudents = allStudentsList.filter(
       (s) =>
         !existingMemberIds.includes(s.studentId) &&
         !invitedStudentIds.has(s.studentId) &&
         !pendingInviteStudentIds.has(s.studentId)
-    );
+    )
 
-    return { students: availableStudents, allStudents: allStudentsList };
-  }, [studentsData, myTeam, invitedStudentIds, pendingInvites]);
+    return { students: availableStudents, allStudents: allStudentsList }
+  }, [studentsData, myTeam, invitedStudentIds, pendingInvites])
 
   const handleCreateTeam = async () => {
-    setErrors({});
-    const newErrors = {};
+    setErrors({})
+    const newErrors = {}
 
     if (!teamName.trim()) {
-      newErrors.teamName = "Team name is required";
+      newErrors.teamName = "Team name is required"
     }
     if (!schoolId) {
-      newErrors.submit = "School information is missing. Please try again.";
+      newErrors.submit = "School information is missing. Please try again."
     }
     if (!mentorId) {
-      newErrors.submit = "Mentor information is missing. Please try again.";
+      newErrors.submit = "Mentor information is missing. Please try again."
     }
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+      setErrors(newErrors)
+      return
     }
 
     try {
       // Get mentor data from response structure
-      let schoolIdValue = schoolId;
+      let schoolIdValue = schoolId
 
       if (mentors && mentors.length > 0) {
-        const response = mentors[0];
+        const response = mentors[0]
         const mentorData =
           response?.data && Array.isArray(response.data)
             ? response.data[0]
-            : null;
+            : null
 
         if (mentorData) {
-          schoolIdValue = mentorData?.schoolId || mentorData?.school_id;
+          schoolIdValue = mentorData?.schoolId || mentorData?.school_id
         }
       }
 
@@ -230,44 +242,44 @@ const MentorTeam = () => {
         name: teamName.trim(),
         contestId: String(contestId),
         schoolId: String(schoolIdValue),
-      };
-      
-      await createTeam(requestBody).unwrap();
+      }
+
+      await createTeam(requestBody).unwrap()
 
       // Refetch my team to get updated data
-      await refetchMyTeam();
+      await refetchMyTeam()
 
       // Switch to My Team tab after successful creation
-      setActiveTab("myTeam");
-      setTeamName("");
+      setActiveTab("myTeam")
+      setTeamName("")
     } catch (error) {
       const errorMessage =
         error?.data?.errorMessage ||
         error?.data?.message ||
         error?.message ||
-        "Failed to create team";
-      setErrors({ submit: errorMessage });
+        "Failed to create team"
+      setErrors({ submit: errorMessage })
     }
-  };
+  }
 
   // Handle invite member by student
   const handleInviteStudent = async (student) => {
     if (!student || !student.studentId) {
-      setInviteError("Invalid student");
-      return;
+      setInviteError("Invalid student")
+      return
     }
 
     if (!student.userEmail) {
-      setInviteError("Student email is missing");
-      return;
+      setInviteError("Student email is missing")
+      return
     }
 
     if (!teamId) {
-      setInviteError("Team ID not found");
-      return;
+      setInviteError("Team ID not found")
+      return
     }
 
-    setInviteError("");
+    setInviteError("")
 
     try {
       // Call RTK Query mutation to invite member
@@ -278,28 +290,28 @@ const MentorTeam = () => {
           inviteeEmail: student.userEmail,
           ttlDays: 60,
         },
-      }).unwrap();
+      }).unwrap()
 
       // Extract data from response
-      const inviteData = response?.data || response || {};
-      const token = inviteData.token || response?.token;
-      const teamNameValue = inviteData.teamName || myTeam?.name || "Team";
+      const inviteData = response?.data || response || {}
+      const token = inviteData.token || response?.token
+      const teamNameValue = inviteData.teamName || myTeam?.name || "Team"
       const contestName =
-        inviteData.contestName || contest?.name || contest?.title || "Contest";
-      const mentorName = user?.name || "Mentor";
-      const studentEmail = student.userEmail;
+        inviteData.contestName || contest?.name || contest?.title || "Contest"
+      const mentorName = user?.name || "Mentor"
+      const studentEmail = student.userEmail
 
       if (token && studentEmail) {
         // Generate accept and decline URLs
         // Format: /team-invite?token={token}&email={email}&action=accept|decline
         const baseUrl =
-          import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+          import.meta.env.VITE_FRONTEND_URL || window.location.origin
         const acceptUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(
           token
-        )}&email=${encodeURIComponent(studentEmail)}&action=accept`;
+        )}&email=${encodeURIComponent(studentEmail)}&action=accept`
         const declineUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(
           token
-        )}&email=${encodeURIComponent(studentEmail)}&action=decline`;
+        )}&email=${encodeURIComponent(studentEmail)}&action=decline`
 
         // Send invitation email
         try {
@@ -310,41 +322,41 @@ const MentorTeam = () => {
             contestName: contestName,
             acceptUrl: acceptUrl,
             declineUrl: declineUrl,
-          });
+          })
         } catch (emailError) {
           // Don't throw error - invitation was created successfully, just email failed
         }
       }
 
       // Add student to invited list
-      setInvitedStudentIds((prev) => new Set([...prev, student.studentId]));
+      setInvitedStudentIds((prev) => new Set([...prev, student.studentId]))
 
       // Refetch data to get updated team and invites
-      await Promise.all([refetchMyTeam(), refetchInvites()]);
+      await Promise.all([refetchMyTeam(), refetchInvites()])
     } catch (error) {
       // Handle different error cases
-      let errorMessage = "Failed to send invitation";
+      let errorMessage = "Failed to send invitation"
 
       if (error?.data) {
-        const responseData = error.data;
-        const errorCode = responseData?.errorCode;
-        const errorMsg = responseData?.errorMessage || responseData?.message;
+        const responseData = error.data
+        const errorCode = responseData?.errorCode
+        const errorMsg = responseData?.errorMessage || responseData?.message
 
         // Handle REG_CLOSED - Registration window is closed
         if (errorCode === "REG_CLOSED") {
           errorMessage =
             errorMsg ||
-            "Registration window is closed. You cannot invite members at this time.";
+            "Registration window is closed. You cannot invite members at this time."
         }
         // Handle 409 Conflict - student already invited or is member
         else if (error?.status === 409 || errorCode === "CONFLICT") {
           errorMessage =
             errorMsg ||
             responseData?.error ||
-            `${student.userFullname} has already been invited or is already a member of this team.`;
+            `${student.userFullname} has already been invited or is already a member of this team.`
 
           // Refresh team data to get updated members
-          await refetchMyTeam();
+          await refetchMyTeam()
         }
         // Handle other errors
         else {
@@ -352,36 +364,124 @@ const MentorTeam = () => {
             errorMsg ||
             responseData?.error ||
             responseData?.data?.message ||
-            `Error: ${error?.status || "Unknown"}`;
+            `Error: ${error?.status || "Unknown"}`
         }
       } else if (error?.message) {
-        errorMessage = error.message;
+        errorMessage = error.message
       }
 
-      setInviteError(errorMessage);
+      setInviteError(errorMessage)
     }
-  };
+  }
 
   // Check if registration is closed
   const isRegistrationClosed = () => {
-    if (!contest) return false;
+    if (!contest) return false
 
     // Check by status
     if (contest.status === "RegistrationClosed") {
-      return true;
+      return true
     }
 
     // Check by registrationEnd date
     if (contest.registrationEnd) {
-      const now = new Date();
-      const registrationEnd = new Date(contest.registrationEnd);
-      return now > registrationEnd;
+      const now = new Date()
+      const registrationEnd = new Date(contest.registrationEnd)
+      return now > registrationEnd
     }
 
-    return false;
-  };
+    return false
+  }
+  const handleDeleteTeam = async (onClose) => {
+    if (!teamId) return
+    
+    try {
+      await deleteTeam(teamId).unwrap()
+      // Close modal first
+      if (onClose) onClose()
+      toast.success("Team deleted successfully")
+      // Refetch to update UI
+      await refetchMyTeam()
+    } catch (error) {
+      // Close modal even on error
+      if (onClose) onClose()
+      const errorMessage =
+        error?.data?.errorMessage ||
+        error?.data?.message ||
+        error?.message ||
+        "Failed to delete team"
+      toast.error(errorMessage)
+      console.log(error)
+      setErrors({ submit: errorMessage })
+    }
+  }
 
-  const registrationClosed = isRegistrationClosed();
+  const handleDeleteTeamMember = async (studentId, onClose) => {
+    if (!teamId || !studentId) return
+    
+    try {
+      await deleteTeamMember({ teamId, studentId }).unwrap()
+      // Close modal first
+      if (onClose) onClose()
+      toast.success("Member removed successfully")
+      // Refetch to update UI
+      await refetchMyTeam()
+      setMemberToDelete(null)
+    } catch (error) {
+      // Close modal even on error
+      if (onClose) onClose()
+      const errorMessage =
+        error?.data?.errorMessage ||
+        error?.data?.message ||
+        error?.message ||
+        "Failed to remove member"
+      toast.error(errorMessage)
+      setInviteError(errorMessage)
+    }
+  }
+
+  // Handle edit team name
+  const handleStartEditTeamName = () => {
+    setEditedTeamName(myTeam?.name || "")
+    setIsEditingTeamName(true)
+  }
+
+  const handleCancelEditTeamName = () => {
+    setIsEditingTeamName(false)
+    setEditedTeamName("")
+  }
+
+  const handleSaveTeamName = async () => {
+    if (!teamId || !editedTeamName.trim()) {
+      toast.error("Team name cannot be empty")
+      return
+    }
+
+    if (editedTeamName.trim() === myTeam?.name) {
+      setIsEditingTeamName(false)
+      return
+    }
+
+    try {
+      await updateTeam({
+        teamId,
+        data: { name: editedTeamName.trim() },
+      }).unwrap()
+      toast.success("Team name updated successfully")
+      setIsEditingTeamName(false)
+      // Refetch to update UI
+      await refetchMyTeam()
+    } catch (error) {
+      const errorMessage =
+        error?.data?.errorMessage ||
+        error?.data?.message ||
+        error?.message ||
+        "Failed to update team name"
+      toast.error(errorMessage)
+      setErrors({ submit: errorMessage })
+    }
+  }
+  const registrationClosed = isRegistrationClosed()
 
   if (contestLoading) {
     return (
@@ -396,7 +496,7 @@ const MentorTeam = () => {
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   return (
@@ -551,10 +651,56 @@ const MentorTeam = () => {
                             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#ff8c5a] text-white flex items-center justify-center font-semibold text-xl shadow-md">
                               <Users size={32} />
                             </div>
-                            <div>
-                              <h4 className="text-2xl font-bold text-[#2d3748] mb-1">
-                                {myTeam.name}
-                              </h4>
+                            <div className="flex-1">
+                              {isEditingTeamName ? (
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="text"
+                                    value={editedTeamName}
+                                    onChange={(e) => setEditedTeamName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        handleSaveTeamName()
+                                      } else if (e.key === "Escape") {
+                                        handleCancelEditTeamName()
+                                      }
+                                    }}
+                                    className="text-2xl font-bold text-[#2d3748] px-2 py-1 border border-[#ff6b35] rounded-[5px] focus:outline-none focus:ring-2 focus:ring-[#ff6b35] flex-1"
+                                    autoFocus
+                                    disabled={updatingTeam}
+                                  />
+                                  <button
+                                    onClick={handleSaveTeamName}
+                                    disabled={updatingTeam || !editedTeamName.trim()}
+                                    className="p-2 text-green-600 hover:bg-green-50 rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Save"
+                                  >
+                                    <Icon icon="mdi:check" width="20" />
+                                  </button>
+                                  <button
+                                    onClick={handleCancelEditTeamName}
+                                    disabled={updatingTeam}
+                                    className="p-2 text-gray-600 hover:bg-gray-50 rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Cancel"
+                                  >
+                                    <Icon icon="mdi:close" width="20" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <h4 className="text-2xl font-bold text-[#2d3748] mb-1">
+                                    {myTeam.name}
+                                  </h4>
+                                  <button
+                                    onClick={handleStartEditTeamName}
+                                    disabled={updatingTeam}
+                                    className="p-1 text-[#7A7574] hover:text-[#ff6b35] hover:bg-orange-50 rounded-[5px] transition-colors"
+                                    title="Edit team name"
+                                  >
+                                    <Icon icon="mdi:pencil-outline" width="18" />
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-4 mt-4">
@@ -577,6 +723,14 @@ const MentorTeam = () => {
                             </div>
                           </div>
                         </div>
+                        <button
+                          onClick={() => setShowDeleteTeamConfirm(true)}
+                          disabled={deletingTeam}
+                          className="flex items-center gap-2 px-4 py-2 button-red hover:bg-red-50 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Icon icon="mdi:delete-outline" width="18" />
+                          Delete Team
+                        </button>
                       </div>
                     </div>
 
@@ -603,7 +757,7 @@ const MentorTeam = () => {
                                 member.user?.name ||
                                 member.user?.fullName ||
                                 member.name ||
-                                "Unknown Member";
+                                "Unknown Member"
 
                               const memberEmail =
                                 member.studentEmail ||
@@ -612,7 +766,7 @@ const MentorTeam = () => {
                                 member.user_email ||
                                 member.user?.email ||
                                 member.email ||
-                                "";
+                                ""
 
                               const memberInitial =
                                 member.studentFullname
@@ -623,7 +777,7 @@ const MentorTeam = () => {
                                   ?.charAt(0)
                                   ?.toUpperCase() ||
                                 memberName?.charAt(0)?.toUpperCase() ||
-                                "M";
+                                "M"
 
                               return (
                                 <div
@@ -655,11 +809,24 @@ const MentorTeam = () => {
                                       )}
                                     </div>
                                   </div>
-                                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                                    Active
-                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                      Active
+                                    </span>
+                                    <button
+                                      onClick={() => {
+                                        setMemberToDelete(member)
+                                        setShowDeleteMemberConfirm(true)
+                                      }}
+                                      disabled={deletingTeamMember}
+                                      className="p-2 text-red-600 hover:bg-red-50 rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      title="Remove member"
+                                    >
+                                      <Icon icon="mdi:delete-outline" width="18" />
+                                    </button>
+                                  </div>
                                 </div>
-                              );
+                              )
                             })}
                           </div>
                         ) : (
@@ -698,12 +865,12 @@ const MentorTeam = () => {
                                 invite.student_fullname ||
                                 invite.studentName ||
                                 invite.student_name ||
-                                null;
+                                null
 
                               // If not in invite, try to find in allStudents list (not filtered)
                               const studentInfo = allStudents.find(
                                 (s) => s.studentId === invite.studentId
-                              );
+                              )
 
                               // Get student name with priority: invite object > students list > fallback
                               const studentName =
@@ -711,17 +878,17 @@ const MentorTeam = () => {
                                 studentInfo?.userFullname ||
                                 studentInfo?.user_fullname ||
                                 studentInfo?.name ||
-                                "Unknown Student";
+                                "Unknown Student"
 
                               const studentEmail =
                                 invite.inviteeEmail ||
                                 invite.invitee_email ||
                                 studentInfo?.userEmail ||
                                 studentInfo?.user_email ||
-                                "No email";
+                                "No email"
 
                               const studentInitial =
-                                studentName.charAt(0).toUpperCase() || "S";
+                                studentName.charAt(0).toUpperCase() || "S"
 
                               return (
                                 <div
@@ -751,7 +918,7 @@ const MentorTeam = () => {
                                     Pending
                                   </span>
                                 </div>
-                              );
+                              )
                             })}
                           </div>
                         ) : (
@@ -880,8 +1047,106 @@ const MentorTeam = () => {
           </div>
         </div>
       </div>
-    </PageContainer>
-  );
-};
 
-export default MentorTeam;
+      {/* Delete Team Confirmation Modal */}
+      <BaseModal
+        isOpen={showDeleteTeamConfirm}
+        onClose={() => setShowDeleteTeamConfirm(false)}
+        title="Confirm Delete Team"
+        size="sm"
+        footer={
+          <>
+            <button
+              className="button-white"
+              onClick={() => setShowDeleteTeamConfirm(false)}
+              disabled={deletingTeam}
+            >
+              Cancel
+            </button>
+            <button
+              className="button-red"
+              onClick={() => handleDeleteTeam(() => setShowDeleteTeamConfirm(false))}
+              disabled={deletingTeam}
+            >
+              {deletingTeam ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent inline-block mr-2"></div>
+                  Deleting...
+                </>
+              ) : (
+                "Delete Team"
+              )}
+            </button>
+          </>
+        }
+      >
+        <p className="text-[#7A7574]">
+          Are you sure you want to delete <strong>{myTeam?.name}</strong>? 
+          This action cannot be undone. All team members will be removed.
+        </p>
+      </BaseModal>
+
+      {/* Delete Member Confirmation Modal */}
+      <BaseModal
+        isOpen={showDeleteMemberConfirm}
+        onClose={() => {
+          setShowDeleteMemberConfirm(false)
+          setMemberToDelete(null)
+        }}
+        title="Confirm Remove Member"
+        size="sm"
+        footer={
+          <>
+            <button
+              className="button-white"
+              onClick={() => {
+                setShowDeleteMemberConfirm(false)
+                setMemberToDelete(null)
+              }}
+              disabled={deletingTeamMember}
+            >
+              Cancel
+            </button>
+            <button
+              className="button-red"
+              onClick={() => {
+                if (memberToDelete) {
+                  const studentId = memberToDelete.studentId || memberToDelete.student_id
+                  handleDeleteTeamMember(studentId, () => {
+                    setShowDeleteMemberConfirm(false)
+                    setMemberToDelete(null)
+                  })
+                }
+              }}
+              disabled={deletingTeamMember}
+            >
+              {deletingTeamMember ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent inline-block mr-2"></div>
+                  Removing...
+                </>
+              ) : (
+                "Remove Member"
+              )}
+            </button>
+          </>
+        }
+      >
+        <p className="text-[#7A7574]">
+          Are you sure you want to remove{" "}
+          <strong>
+            {memberToDelete?.studentFullname ||
+              memberToDelete?.student_fullname ||
+              memberToDelete?.userFullname ||
+              memberToDelete?.user_fullname ||
+              memberToDelete?.name ||
+              "this member"}
+          </strong>{" "}
+          from the team? This action cannot be undone.
+        </p>
+      </BaseModal>
+    </PageContainer>
+  )
+}
+
+export default MentorTeam
