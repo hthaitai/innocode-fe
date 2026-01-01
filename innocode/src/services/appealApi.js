@@ -4,12 +4,54 @@ export const appealApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMyAppeals: builder.query({
       query: (contestId) => `/contests/${contestId}/appeals/my-appeal`,
-      transformResponse: (response) => {
-        // API returns: { data: [...], additionalData: {...}, message: "...", statusCode: 200, code: "SUCCESS" }
-        return {
-          appeals: response.data || [],
-          pagination: response.additionalData || null,
+      transformResponse: (response, meta, arg) => {
+        console.log("=== getMyAppeals API Response ===");
+        console.log("Raw response:", response);
+        console.log("Contest ID:", arg);
+        console.log("Response type:", typeof response);
+        console.log("Is array:", Array.isArray(response));
+        
+        // Handle different response formats
+        // Format 1: { data: [...], additionalData: {...}, message: "...", statusCode: 200, code: "SUCCESS" }
+        if (response && typeof response === 'object' && response.data) {
+          console.log("Using format 1: response.data");
+          return {
+            appeals: Array.isArray(response.data) ? response.data : [],
+            pagination: response.additionalData || null,
+          }
         }
+        
+        // Format 2: Direct array
+        if (Array.isArray(response)) {
+          console.log("Using format 2: direct array");
+          return {
+            appeals: response,
+            pagination: null,
+          }
+        }
+        
+        // Format 3: { appeals: [...] }
+        if (response && response.appeals) {
+          console.log("Using format 3: response.appeals");
+          return {
+            appeals: Array.isArray(response.appeals) ? response.appeals : [],
+            pagination: response.pagination || null,
+          }
+        }
+        
+        // Fallback: empty array
+        console.warn("Unknown response format, returning empty array");
+        return {
+          appeals: [],
+          pagination: null,
+        }
+      },
+      transformErrorResponse: (response, meta, arg) => {
+        console.error("=== getMyAppeals API Error ===");
+        console.error("Error response:", response);
+        console.error("Contest ID:", arg);
+        console.error("==============================");
+        return response;
       },
       providesTags: (result, error, id) => [{ type: "Appeal", id }],
     }),
