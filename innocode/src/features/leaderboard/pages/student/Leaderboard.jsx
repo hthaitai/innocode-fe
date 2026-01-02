@@ -13,6 +13,7 @@ import {
   MedalIcon,
 } from "lucide-react";
 import { formatDateTime } from "@/shared/utils/dateTime";
+import { formatScore } from "@/shared/utils/formatNumber";
 import { BREADCRUMBS } from "@/config/breadcrumbs";
 import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
 import useContests from "../../../contest/hooks/useContests";
@@ -28,20 +29,6 @@ const Leaderboard = () => {
 
   const [expandedTeamId, setExpandedTeamId] = useState(null);
   const [liveData, setLiveData] = useState(null);
-
-  // Format score with commas (no rounding, display as backend sends)
-  const formatScore = (score) => {
-    if (score == null || score === undefined || score === null) return "0";
-    // Convert to string and add thousand separators without rounding
-    const scoreStr = String(score);
-    // Check if it's a decimal number
-    if (scoreStr.includes('.')) {
-      const parts = scoreStr.split('.');
-      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      return parts.join('.');
-    }
-    return scoreStr.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
 
   // Toggle team expansion
   const toggleTeamExpansion = (teamId) => {
@@ -294,7 +281,7 @@ const Leaderboard = () => {
                 <div className="text-right">
                   <p className="text-xs text-gray-500">Total Score</p>
                   <p className="text-lg font-bold text-blue-600">
-                    {formatScore(member.totalScore)}
+                    {formatScore(member.totalScore) || "0"}
                   </p>
                 </div>
               </div>
@@ -316,7 +303,7 @@ const Leaderboard = () => {
                             {round.roundName || "Round"}
                           </p>
                           <span className="text-xs font-bold text-blue-600 ml-2">
-                            {round.score ?? "0"}
+                            {formatScore(round.score)}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 mt-1">

@@ -10,6 +10,7 @@ import { Award } from "lucide-react"
 import { useAwardCertificatesMutation } from "@/services/certificateApi"
 import { useModal } from "@/shared/hooks/useModal"
 import toast from "react-hot-toast"
+import { formatScore } from "@/shared/utils/formatNumber"
 
 const OrganizerLeaderboardTeam = () => {
   const { contestId, teamId } = useParams()
@@ -151,7 +152,7 @@ const OrganizerLeaderboardTeam = () => {
 
                   <div className="flex items-center gap-5">
                     <p className="text-[14px] leading-5 text-[#7A7574]">
-                      {member.totalScore} points
+                      {formatScore(member.totalScore)} points
                     </p>
                     <ChevronRight size={20} className="text-[#7A7574]" />
                   </div>

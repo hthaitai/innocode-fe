@@ -7,6 +7,7 @@ import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useAwardCertificatesMutation } from "@/services/certificateApi"
 import { useModal } from "@/shared/hooks/useModal"
 import toast from "react-hot-toast"
+import { formatScore } from "@/shared/utils/formatNumber"
 
 const OrganizerLeaderboardMember = () => {
   const { contestId, teamId, memberId } = useParams()
@@ -157,7 +158,7 @@ const OrganizerLeaderboardMember = () => {
             </div>
 
             <div className="text-[14px] leading-5 text-[#7A7574]">
-              {round.score ?? 0} points
+              {formatScore(round.score)} points
             </div>
           </div>
         ))}

@@ -16,6 +16,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { formatDateTime } from "@/shared/utils/dateTime";
+import { formatScore } from "@/shared/utils/formatNumber";
 import StatusBadge from "@/shared/components/StatusBadge";
 import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
 import { useGetMyAppealsQuery } from "@/services/appealApi";
@@ -153,19 +154,6 @@ function MentorAppeal() {
     console.log("=========================");
   }, [selectedContestId, appealsLoading, appealsError, appealsData, myAppeals]);
 
-  // Format score (no rounding, display as backend sends)
-  const formatScore = (score) => {
-    if (score == null || score === undefined || score === null) return "0";
-    // Convert to string and add thousand separators without rounding
-    const scoreStr = String(score);
-    // Check if it's a decimal number
-    if (scoreStr.includes('.')) {
-      const parts = scoreStr.split('.');
-      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      return parts.join('.');
-    }
-    return scoreStr.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
 
   // Format round type
   const formatRoundType = (roundType) => {
