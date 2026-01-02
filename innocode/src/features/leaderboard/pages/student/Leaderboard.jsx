@@ -269,7 +269,7 @@ const Leaderboard = () => {
       <div className="px-4 py-4">
         <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
           <Users size={16} />
-          Team Members
+          {entry.teamName}
         </h4>
         <div className="space-y-4">
           {members.map((member, idx) => (

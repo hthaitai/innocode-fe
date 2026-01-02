@@ -292,6 +292,7 @@ const StudentAutoEvaluation = () => {
           onRunCode={handleRunCode}
           onFinalSubmit={handleFinalSubmit}
           isTimeUp={isExpired}
+          templateUrl={round.problem.templateUrl}
         />
 
         {/* Problem Description */}
