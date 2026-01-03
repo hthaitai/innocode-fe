@@ -1,6 +1,7 @@
 import React, { useMemo } from "react"
 import { Icon } from "@iconify/react"
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { useGetNotificationsQuery } from "@/services/notificationApi"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import "./NotificationDropdown.css"
@@ -11,6 +12,7 @@ import useNotificationNavigation from "../../hooks/useNotificationNavigation"
 
 const NotificationDropdown = ({ onClose }) => {
   const navigate = useNavigate()
+  const { t } = useTranslation("common")
   const {
     data: notificationsData,
     isLoading,
@@ -30,16 +32,16 @@ const NotificationDropdown = ({ onClose }) => {
 
     return notificationsData.items.map((notification) => {
       let parsedPayload = {}
-      let message = "No message"
+      let message = t("notification.noMessage")
 
       try {
         parsedPayload =
           typeof notification.payload === "string"
             ? JSON.parse(notification.payload)
             : notification.payload || {}
-        message = parsedPayload.message || notification.payload || "No message"
+        message = parsedPayload.message || notification.payload || t("notification.noMessage")
       } catch {
-        message = notification.payload || "No message"
+        message = notification.payload || t("notification.noMessage")
       }
 
       return {
@@ -49,7 +51,7 @@ const NotificationDropdown = ({ onClose }) => {
         isRead: notification.read ?? notification.isRead ?? false,
       }
     })
-  }, [notificationsData])
+  }, [notificationsData, t])
 
 
   const handleReadAllNotifications = async () => {
@@ -79,14 +81,14 @@ const NotificationDropdown = ({ onClose }) => {
   return (
     <div className="notification-dropdown">
       <div className="notification-dropdown-header">
-        <h3 className="notification-title">Notifications</h3>
+        <h3 className="notification-title">{t("notification.title")}</h3>
         {notifications.length > 0 && (
           <span className="notification-count">
             {
               notifications.filter((notification) => !notification.isRead)
                 .length
             }{" "}
-            new
+            {t("notification.new")}
           </span>
         )}
       </div>
@@ -95,17 +97,17 @@ const NotificationDropdown = ({ onClose }) => {
         {isLoading ? (
           <div className="notification-loading">
             <Icon icon="mdi:loading" width="20" className="spinning" />
-            <span>Loading...</span>
+            <span>{t("notification.loading")}</span>
           </div>
         ) : error ? (
           <div className="notification-empty">
             <Icon icon="mdi:alert-circle-outline" width="24" />
-            <span>Error loading notifications</span>
+            <span>{t("notification.errorLoading")}</span>
           </div>
         ) : notifications.length === 0 ? (
           <div className="notification-empty">
             <Icon icon="mdi:bell-off-outline" width="24" />
-            <span>No notifications</span>
+            <span>{t("notification.noNotifications")}</span>
           </div>
         ) : (
           displayedNotifications.map((notification) => (
@@ -138,7 +140,7 @@ const NotificationDropdown = ({ onClose }) => {
       <div className="notification-dropdown-footer">
         {hasMoreNotifications && (
           <button className="notification-view-all" onClick={handleViewAll}>
-            <span>View all</span>
+            <span>{t("notification.viewAll")}</span>
             <Icon icon="mdi:chevron-right" width="16" />
           </button>
         )}
@@ -147,7 +149,7 @@ const NotificationDropdown = ({ onClose }) => {
             className="notification-mark-all"
             onClick={handleReadAllNotifications}
           >
-            Mark all as read
+            {t("notification.markAllAsRead")}
           </button>
         )}
       </div>

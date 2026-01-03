@@ -1,4 +1,5 @@
 import React, { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 
 export default function ProvinceForm({
@@ -7,6 +8,7 @@ export default function ProvinceForm({
   errors,
   setErrors,
 }) {
+  const { t } = useTranslation("pages")
   const handleChange = useCallback((e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -20,7 +22,7 @@ export default function ProvinceForm({
   return (
     <div className="flex flex-col gap-4">
       <TextFieldFluent
-        label="Province Name"
+        label={t("provinces.provinceName")}
         name="name"
         value={formData.name || ""}
         onChange={handleChange}
@@ -29,7 +31,7 @@ export default function ProvinceForm({
       />
 
       <TextFieldFluent
-        label="Address"
+        label={t("provinces.address")}
         name="address"
         value={formData.address || ""}
         onChange={handleChange}

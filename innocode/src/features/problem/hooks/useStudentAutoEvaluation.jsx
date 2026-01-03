@@ -266,6 +266,17 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
       onConfirm: async () => {
         try {
           await submitFinalAutoTest(submissionId).unwrap();
+          
+          // Xóa localStorage sau khi submit thành công
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(TEST_RESULTS_STORAGE_KEY);
+          
+          // Reset state
+          setCode("");
+          setSubmitResponseCases(null);
+          setSubmissionId(null);
+          setHasRunCode(false);
+          
           toast.dismiss();
           toast.success(
             "Submission accepted! Your score has been added to the leaderboard."

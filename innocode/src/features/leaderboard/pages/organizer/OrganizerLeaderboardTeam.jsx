@@ -1,5 +1,6 @@
 import React from "react"
 import { useParams, Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { User, ChevronRight } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
@@ -15,6 +16,7 @@ import { ErrorState } from "@/shared/components/ui/ErrorState"
 import { formatScore } from "@/shared/utils/formatNumber"
 
 const OrganizerLeaderboardTeam = () => {
+  const { t } = useTranslation("pages")
   const { contestId, teamId } = useParams()
   const { openModal } = useModal()
 
@@ -30,8 +32,8 @@ const OrganizerLeaderboardTeam = () => {
   const team = leaderboardData?.data?.teamIdList?.find(
     (t) => t.teamId === teamId
   )
-  const contestName = leaderboardData?.data?.contestName ?? "Contest"
-  const teamName = team?.teamName ?? "Team"
+  const contestName = leaderboardData?.data?.contestName ?? t("pages.contest.contest")
+  const teamName = team?.teamName ?? t("pages.contest.team")
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD_DETAIL(
     contestName ?? "Contest",
@@ -107,10 +109,10 @@ const OrganizerLeaderboardTeam = () => {
                   <Award size={20} />
                   <div>
                     <p className="text-[14px] leading-5">
-                      Award team certificate
+                      {t("leaderboard.awardTeamCertificate")}
                     </p>
                     <p className="text-[12px] leading-4 text-[#7A7574]">
-                      Issue a certificate for the entire team
+                      {t("leaderboard.issueTeamCertificate")}
                     </p>
                   </div>
                 </div>
@@ -121,7 +123,7 @@ const OrganizerLeaderboardTeam = () => {
                   className="button-orange px-3"
                   onClick={handleAwardTeam}
                 >
-                  Award
+                  {t("leaderboard.award")}
                 </button>
               </div>
             </div>
@@ -146,7 +148,7 @@ const OrganizerLeaderboardTeam = () => {
 
                   <div className="flex items-center gap-5">
                     <p className="text-[14px] leading-5 text-[#7A7574]">
-                      {formatScore(member.totalScore)} points
+                      {formatScore(member.totalScore)} {t("leaderboard.points")}
                     </p>
                     <ChevronRight size={20} className="text-[#7A7574]" />
                   </div>

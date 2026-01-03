@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { BREADCRUMBS } from '@/config/breadcrumbs'
 import PageContainer from "@/shared/components/PageContainer"
 import { School, Pencil, Trash2 } from "lucide-react"
@@ -9,6 +10,7 @@ import useProvinces from "../../../province/hooks/useProvinces"
 import { useModal } from "../../../../shared/hooks/useModal"
 
 const OrganizerSchools = () => {
+  const { t } = useTranslation("pages")
   const { schools, loading, error, addSchool, updateSchool, deleteSchool } =
     useSchools()
   const { provinces } = useProvinces()
@@ -42,12 +44,12 @@ const OrganizerSchools = () => {
   const schoolsColumns = [
     {
       accessorKey: "name",
-      header: "School Name",
+      header: t("schools.schoolName"),
       cell: ({ row }) => row.original.name || "—",
     },
     {
       accessorKey: "province_id",
-      header: "Province",
+      header: t("schools.province"),
       cell: ({ row }) => {
         const province = provinces.find(
           (p) => p.province_id === row.original.province_id
@@ -57,12 +59,12 @@ const OrganizerSchools = () => {
     },
     {
       accessorKey: "contact",
-      header: "Contact",
+      header: t("schools.contact"),
       cell: ({ row }) => row.original.contact || "—",
     },
     {
       accessorKey: "created_at",
-      header: "Created At",
+      header: t("schools.createdAt"),
       cell: ({ row }) =>
         new Date(row.original.created_at).toLocaleDateString("en-GB"),
     },
@@ -76,12 +78,12 @@ const OrganizerSchools = () => {
           row={row.original}
           items={[
             {
-              label: "Edit",
+              label: t("schools.edit"),
               icon: Pencil,
               onClick: () => handleSchoolModal("edit", row.original),
             },
             {
-              label: "Delete",
+              label: t("schools.delete"),
               icon: Trash2,
               className: "text-red-500",
               onClick: () => handleDeleteSchool(row.original),
@@ -104,9 +106,9 @@ const OrganizerSchools = () => {
           <div className="flex gap-5 items-center">
             <School size={20} />
             <div>
-              <p className="text-[14px] leading-[20px]">Schools Management</p>
+              <p className="text-[14px] leading-[20px]">{t("schools.schoolsManagement")}</p>
               <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                Create and manage schools
+                {t("schools.createAndManageSchools")}
               </p>
             </div>
           </div>
@@ -114,11 +116,11 @@ const OrganizerSchools = () => {
             className="button-orange"
             onClick={() => handleSchoolModal("create")}
           >
-            New School
+            {t("schools.newSchool")}
           </button>
         </div>
 
-        <TableFluent data={schools} columns={schoolsColumns} title="Schools" />
+        <TableFluent data={schools} columns={schoolsColumns} title={t("schools.schools")} />
       </div>
     </PageContainer>
   )

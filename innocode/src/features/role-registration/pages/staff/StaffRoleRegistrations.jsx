@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import PageContainer from "@/shared/components/PageContainer"
@@ -9,6 +10,7 @@ import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSectio
 import DropdownFluent from "@/shared/components/DropdownFluent"
 
 const StaffRoleRegistrations = () => {
+  const { t } = useTranslation("pages")
   const navigate = useNavigate()
   const [statusFilter, setStatusFilter] = useState("") // "pending", "approved", "denied"
   const [requestedRoleFilter, setRequestedRoleFilter] = useState("")
@@ -40,15 +42,15 @@ const StaffRoleRegistrations = () => {
   const StatusBadge = ({ status }) => {
     const statusConfig = {
       pending: {
-        label: "Pending",
+        label: t("roleRegistrations.pending"),
         className: "bg-yellow-50 text-yellow-700 border-yellow-300",
       },
       approved: {
-        label: "Approved",
+        label: t("roleRegistrations.approved"),
         className: "bg-green-50 text-green-700 border-green-300",
       },
       denied: {
-        label: "Denied",
+        label: t("roleRegistrations.denied"),
         className: "bg-red-50 text-red-700 border-red-300",
       },
     }
@@ -84,10 +86,10 @@ const StaffRoleRegistrations = () => {
     if (!role) return "—"
     // Handle different role formats
     const roleMap = {
-      judge: "Judge",
-      organizer: "Organizer",
-      "school manager": "School Manager",
-      staff: "Staff",
+      judge: t("roleRegistrations.judge"),
+      organizer: t("roleRegistrations.organizer"),
+      "school manager": t("roleRegistrations.schoolManager"),
+      staff: t("roleRegistrations.staff"),
     }
     const lowerRole = role.toLowerCase()
     return roleMap[lowerRole] || role.replace(/([A-Z])/g, " $1").trim()
@@ -97,7 +99,7 @@ const StaffRoleRegistrations = () => {
   const registrationsColumns = [
     {
       accessorKey: "fullname",
-      header: "Full Name",
+      header: t("roleRegistrations.fullName"),
       cell: ({ row }) => {
         const name =
           row.original.fullname ||
@@ -110,7 +112,7 @@ const StaffRoleRegistrations = () => {
     },
     {
       accessorKey: "email",
-      header: "Email",
+      header: t("roleRegistrations.email"),
       cell: ({ row }) => {
         const email = row.original.email || row.original.Email || "—"
         return <span className="text-gray-700">{email}</span>
@@ -119,7 +121,7 @@ const StaffRoleRegistrations = () => {
     },
     {
       accessorKey: "requestedRole",
-      header: "Requested Role",
+      header: t("roleRegistrations.requestedRole"),
       cell: ({ row }) => {
         const role =
           row.original.requestedRole || row.original.RequestedRole || "—"
@@ -133,7 +135,7 @@ const StaffRoleRegistrations = () => {
     },
     {
       accessorKey: "phone",
-      header: "Phone",
+      header: t("roleRegistrations.phone"),
       cell: ({ row }) => {
         const phone = row.original.phone || row.original.Phone || "—"
         return <span className="text-gray-700">{phone}</span>
@@ -142,7 +144,7 @@ const StaffRoleRegistrations = () => {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("schools.status"),
       cell: ({ row }) => (
         <StatusBadge status={row.original.status || row.original.Status} />
       ),
@@ -150,7 +152,7 @@ const StaffRoleRegistrations = () => {
     },
     {
       accessorKey: "createdAt",
-      header: "Submitted Date",
+      header: t("roleRegistrations.submittedDate"),
       cell: ({ row }) => {
         const date =
           row.original.createdAt ||
@@ -194,50 +196,50 @@ const StaffRoleRegistrations = () => {
           <div className="flex flex-wrap gap-3 items-center">
             <div className="flex gap-2 items-center">
               <label className="text-sm text-gray-600 font-medium">
-                Status:
+                {t("schools.status")}
               </label>
               <div className="min-w-[150px]">
                 <DropdownFluent
                   value={statusFilter}
                   onChange={setStatusFilter}
                   options={[
-                    { value: "", label: "All Status" },
-                    { value: "pending", label: "Pending" },
-                    { value: "approved", label: "Approved" },
-                    { value: "denied", label: "Denied" },
+                    { value: "", label: t("roleRegistrations.allStatus") },
+                    { value: "pending", label: t("roleRegistrations.pending") },
+                    { value: "approved", label: t("roleRegistrations.approved") },
+                    { value: "denied", label: t("roleRegistrations.denied") },
                   ]}
-                  placeholder="All Status"
+                  placeholder={t("roleRegistrations.allStatus")}
                 />
               </div>
             </div>
 
             <div className="flex gap-2 items-center">
-              <label className="text-sm text-gray-600 font-medium">Role:</label>
+              <label className="text-sm text-gray-600 font-medium">{t("roleRegistrations.role")}:</label>
               <div className="min-w-[150px]">
                 <DropdownFluent
                   value={requestedRoleFilter}
                   onChange={setRequestedRoleFilter}
                   options={[
-                    { value: "", label: "All Roles" },
-                    { value: "judge", label: "Judge" },
-                    { value: "organizer", label: "Organizer" },
-                    { value: "school manager", label: "School Manager" },
-                    { value: "staff", label: "Staff" },
+                    { value: "", label: t("roleRegistrations.allRoles") },
+                    { value: "judge", label: t("roleRegistrations.judge") },
+                    { value: "organizer", label: t("roleRegistrations.organizer") },
+                    { value: "school manager", label: t("roleRegistrations.schoolManager") },
+                    { value: "staff", label: t("roleRegistrations.staff") },
                   ]}
-                  placeholder="All Roles"
+                  placeholder={t("roleRegistrations.allRoles")}
                 />
               </div>
             </div>
 
             <div className="flex gap-2 items-center">
               <label className="text-sm text-gray-600 font-medium">
-                Email:
+                {t("roleRegistrations.email")}:
               </label>
               <input
                 type="text"
                 value={emailSearch}
                 onChange={(e) => setEmailSearch(e.target.value)}
-                placeholder="Search email..."
+                placeholder={t("roleRegistrations.searchEmail")}
                 className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 min-w-[200px]"
               />
             </div>
@@ -248,7 +250,7 @@ const StaffRoleRegistrations = () => {
         <TableFluent
           data={registrations}
           columns={registrationsColumns}
-          title="Role Registrations"
+          title={t("roleRegistrations.roleRegistrations")}
           onRowClick={handleRowClick}
           pagination={pagination}
           onPageChange={setPageNumber}

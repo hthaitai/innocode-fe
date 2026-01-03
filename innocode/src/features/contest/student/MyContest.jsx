@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageContainer from '@/shared/components/PageContainer';
 import Search from '@/shared/components/search/Search';
 import Filter from '@/shared/components/search/Filter';
@@ -9,6 +10,7 @@ import useContests from '../hooks/useContests';
 import { Icon } from '@iconify/react';
 
 const MyContest = () => {
+  const { t } = useTranslation('common');
   const [hasFilter, setHasFilter] = useState(true);
   const navigate = useNavigate();
   const { getMyContests } = useContests();
@@ -27,7 +29,7 @@ const MyContest = () => {
         const myContests = await getMyContests(searchTerm || undefined);
         setContests(Array.isArray(myContests) ? myContests : []);
       } catch (err) {
-        setError(err.message || 'Failed to load my contests');
+        setError(err.message || t('myContest.failedToLoadError'));
         setContests([]);
       } finally {
         setLoading(false);
@@ -98,7 +100,7 @@ const MyContest = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading contests...</p>
+            <p className="text-gray-600 font-medium">{t('myContest.loadingContests')}</p>
           </div>
         </div>
       </PageContainer>
@@ -114,7 +116,7 @@ const MyContest = () => {
               className="w-20 h-20 text-red-500 mx-auto mb-4"
             />
             <h3 className="text-xl font-bold text-gray-800 mb-2">
-              Failed to Load My Contests
+              {t('myContest.failedToLoad')}
             </h3>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
@@ -122,7 +124,7 @@ const MyContest = () => {
               className="button-orange"
             >
               <Icon icon="mdi:refresh" className="inline mr-2" />
-              Retry
+              {t('myContest.retry')}
             </button>
           </div>
         </div>
@@ -137,7 +139,7 @@ const MyContest = () => {
         <div className="w-full flex flex-col gap-[14px]">
           <div>
             <Search 
-              placeholder="Search Contests" 
+              placeholder={t('myContest.searchContests')} 
               onSearch={handleSearch}
               value={inputValue}
               onChange={handleInputChange}
@@ -146,7 +148,7 @@ const MyContest = () => {
               <Filter
                 selectedFilter={hasFilter}
                 onFilterRemove={handleFilterRemove}
-                label="All Contests"
+                label={t('myContest.allContests')}
               />
             )}
           </div>
@@ -158,12 +160,12 @@ const MyContest = () => {
                 className="w-20 h-20 text-gray-400 mx-auto mb-4"
               />
               <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                {searchTerm ? 'No contests found' : 'No contests available'}
+                {searchTerm ? t('myContest.noContestsFound') : t('myContest.noContestsAvailable')}
               </h3>
               <p className="text-gray-500">
                 {searchTerm
-                  ? 'Try adjusting your search terms'
-                  : 'You are not participating in any contests yet.'}
+                  ? t('myContest.tryAdjustingSearch')
+                  : t('myContest.notParticipating')}
               </p>
             </div>
           </div>
@@ -176,7 +178,7 @@ const MyContest = () => {
       <div className="w-full flex flex-col gap-[14px]">
         <div>
           <Search 
-            placeholder="Search Contests" 
+            placeholder={t('myContest.searchContests')} 
             onSearch={handleSearch}
             value={inputValue}
             onChange={handleInputChange}
@@ -185,7 +187,7 @@ const MyContest = () => {
             <Filter
               selectedFilter={hasFilter}
               onFilterRemove={handleFilterRemove}
-              label="All Contests"
+              label={t('myContest.allContests')}
             />
           )}
         </div>
@@ -194,7 +196,7 @@ const MyContest = () => {
           <div className="mb-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Icon icon="mdi:fire" className="text-red-500 text-2xl" />
-              Ongoing Contests
+              {t('myContest.ongoingContests')}
               <span className="text-sm font-normal text-gray-500">
                 ({ongoingContests.length})
               </span>
@@ -219,7 +221,7 @@ const MyContest = () => {
                 icon="mdi:calendar-clock"
                 className="text-blue-500 text-2xl"
               />
-              Upcoming Contests
+              {t('myContest.upcomingContests')}
               <span className="text-sm font-normal text-gray-500">
                 ({upcomingContests.length})
               </span>
@@ -240,7 +242,7 @@ const MyContest = () => {
           <div className="mb-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Icon icon="mdi:trophy" className="text-gray-500 text-2xl" />
-              Past Contests
+              {t('myContest.pastContests')}
               <span className="text-sm font-normal text-gray-500">
                 ({completedContests.length})
               </span>

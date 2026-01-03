@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { Calendar, Award } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
@@ -12,6 +13,7 @@ import { ErrorState } from "@/shared/components/ui/ErrorState"
 import { formatScore } from "@/shared/utils/formatNumber"
 
 const OrganizerLeaderboardMember = () => {
+  const { t } = useTranslation("pages")
   const { contestId, teamId, memberId } = useParams()
   const { openModal } = useModal()
 
@@ -29,9 +31,9 @@ const OrganizerLeaderboardMember = () => {
   )
   const member = team?.members?.find((m) => m.memberId === memberId)
 
-  const contestName = leaderboardData?.data?.contestName ?? "Contest"
-  const teamName = team?.teamName ?? "Team"
-  const memberName = member?.memberName ?? "Member"
+  const contestName = leaderboardData?.data?.contestName ?? t("pages.contest.contest")
+  const teamName = team?.teamName ?? t("pages.contest.team")
+  const memberName = member?.memberName ?? t("leaderboard.member")
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD_MEMBER(
     contestName,
@@ -108,10 +110,10 @@ const OrganizerLeaderboardMember = () => {
                 <Award size={20} />
                 <div>
                   <p className="text-[14px] leading-5">
-                    Award member certificate
+                    {t("leaderboard.awardMemberCertificate")}
                   </p>
                   <p className="text-[12px] leading-4 text-[#7A7574]">
-                    Issue a certificate for this member
+                    {t("leaderboard.issueMemberCertificate")}
                   </p>
                 </div>
               </div>
@@ -122,7 +124,7 @@ const OrganizerLeaderboardMember = () => {
                 className="button-orange px-3"
                 onClick={handleAward}
               >
-                Award
+                {t("leaderboard.award")}
               </button>
             </div>
           </div>
@@ -144,14 +146,14 @@ const OrganizerLeaderboardMember = () => {
                     <span>
                       {round.completedAt
                         ? new Date(round.completedAt).toLocaleString()
-                        : "Not completed"}
+                        : t("leaderboard.notCompleted")}
                     </span>
                   </div>
                 </div>
               </div>
 
             <div className="text-[14px] leading-5 text-[#7A7574]">
-              {formatScore(round.score)} points
+              {formatScore(round.score)} {t("leaderboard.points")}
             </div>
           </div>
         ))}

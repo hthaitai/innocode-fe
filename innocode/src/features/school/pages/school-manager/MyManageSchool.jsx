@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs";
@@ -7,6 +8,7 @@ import TableFluent from "@/shared/components/TableFluent";
 import { School } from "lucide-react";
 
 const MyManageSchool = () => {
+  const { t } = useTranslation("pages");
   const navigate = useNavigate();
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 20;
@@ -35,7 +37,7 @@ const MyManageSchool = () => {
   const columns = [
     {
       accessorKey: "name",
-      header: "School Name",
+      header: t("schools.schoolName"),
       cell: ({ row }) => (
         <span className="font-medium">{row.original.name || "—"}</span>
       ),
@@ -43,7 +45,7 @@ const MyManageSchool = () => {
     },
     {
       accessorKey: "provinceName",
-      header: "Province",
+      header: t("schools.province"),
       cell: ({ row }) => (
         <span className="text-gray-700">{row.original.provinceName || "—"}</span>
       ),
@@ -51,7 +53,7 @@ const MyManageSchool = () => {
     },
     {
       accessorKey: "contact",
-      header: "Contact",
+      header: t("schools.contact"),
       cell: ({ row }) => (
         <span className="text-gray-700">{row.original.contact || "—"}</span>
       ),
@@ -59,7 +61,7 @@ const MyManageSchool = () => {
     },
     {
       accessorKey: "address",
-      header: "Address",
+      header: t("schools.address"),
       cell: ({ row }) => (
         <span className="text-gray-700">{row.original.address || "—"}</span>
       ),
@@ -67,7 +69,7 @@ const MyManageSchool = () => {
     },
     {
       accessorKey: "managerUsername",
-      header: "Manager",
+      header: t("schools.manager"),
       cell: ({ row }) => (
         <span className="text-gray-700">
           {row.original.managerUsername || "—"}
@@ -77,7 +79,7 @@ const MyManageSchool = () => {
     },
     {
       accessorKey: "createdAt",
-      header: "Created Date",
+      header: t("schools.createdDate"),
       cell: ({ row }) => (
         <span className="text-gray-700 text-sm">
           {formatDate(row.original.createdAt)}
@@ -121,10 +123,10 @@ const MyManageSchool = () => {
             <School size={20} className="text-gray-700" />
             <div>
               <p className="text-[14px] leading-[20px] font-semibold text-gray-800">
-                My Managed Schools
+                {t("schools.myManagedSchools")}
               </p>
               <p className="text-[12px] leading-[16px] text-[#7A7574] mt-0.5">
-                View and manage schools you are managing
+                {t("schools.viewAndManageSchools")}
               </p>
             </div>
           </div>

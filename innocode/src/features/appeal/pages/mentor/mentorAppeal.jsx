@@ -159,11 +159,11 @@ function MentorAppeal() {
   const formatRoundType = (roundType) => {
     switch (roundType) {
       case "McqTest":
-        return "MCQ Test";
+        return t("appeal.mcqTest");
       case "Manual":
-        return "Manual Problem";
+        return t("appeal.manualProblem");
       case "AutoEvaluation":
-        return "Auto Evaluation";
+        return t("appeal.autoEvaluation");
       default:
         return roundType || "—";
     }
@@ -219,7 +219,7 @@ function MentorAppeal() {
     // No need to check completedAt - allows appeals during ongoing rounds
     members.forEach((member) => {
       const memberId = member.memberId || member.member_id || member.id;
-      const memberName = member.memberName || member.member_name || member.name || "Unknown";
+      const memberName = member.memberName || member.member_name || member.name || t("appeal.unknown");
       const roundScores = member.roundScores || member.round_scores || member.roundScoresList || [];
 
       roundScores.forEach((roundScore) => {
@@ -269,7 +269,7 @@ function MentorAppeal() {
     if (currentContest) {
       return createBreadcrumbWithPaths(
         "APPEAL",
-        currentContest.name || currentContest.title || "Appeals"
+        currentContest.name || currentContest.title || t("appeal.appeals")
       );
     }
     return { items: BREADCRUMBS.APPEAL, paths: ["/appeal"] };
@@ -384,10 +384,10 @@ function MentorAppeal() {
                       className="mx-auto mb-3 text-gray-400"
                     />
                     <p className="text-[#7A7574] text-sm mb-2">
-                      You don't have a team in this contest
+                      {t("appeal.noTeamInContest")}
                     </p>
                     <p className="text-[#7A7574] text-xs">
-                      Create or join a team to see student results
+                      {t("appeal.createOrJoinTeam")}
                     </p>
                   </div>
                 ) : studentRounds.length === 0 ? (
@@ -398,20 +398,20 @@ function MentorAppeal() {
                       className="mx-auto mb-3 text-gray-400"
                     />
                     <p className="text-[#7A7574] text-sm mb-2">
-                      No rounds attempted yet
+                      {t("appeal.noRoundsAttempted")}
                     </p>
                     <p className="text-[#7A7574] text-xs">
-                      Rounds will appear here once students start attempting them
+                      {t("appeal.roundsWillAppear")}
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold text-[#2d3748]">
-                        Student Rounds
+                        {t("appeal.studentRounds")}
                       </h3>
                       <span className="text-sm text-[#7A7574]">
-                        {studentRounds.length} round{studentRounds.length !== 1 ? "s" : ""}
+                        {studentRounds.length} {studentRounds.length !== 1 ? t("appeal.rounds") : t("appeal.round")}
                       </span>
                     </div>
                     
@@ -449,7 +449,7 @@ function MentorAppeal() {
                             <div className="flex items-center gap-4 flex-wrap text-sm">
                               <div className="flex items-center gap-2">
                                 <Users size={16} className="text-[#7A7574]" />
-                                <span className="text-[#7A7574]">Student:</span>
+                                <span className="text-[#7A7574]">{t("appeal.student")}</span>
                                 <span className="font-medium text-[#2d3748]">
                                   {round.studentName}
                                 </span>
@@ -460,7 +460,7 @@ function MentorAppeal() {
                                   width={16}
                                   className="text-[#7A7574]"
                                 />
-                                <span className="text-[#7A7574]">Type:</span>
+                                <span className="text-[#7A7574]">{t("appeal.typeLabel")}</span>
                                 <span className="font-medium text-[#2d3748] capitalize">
                                   {formatRoundType(round.roundType)}
                                 </span>
@@ -468,7 +468,7 @@ function MentorAppeal() {
                               {round.completedAt && (
                                 <div className="flex items-center gap-2">
                                   <Clock size={16} className="text-[#7A7574]" />
-                                  <span className="text-[#7A7574]">Completed:</span>
+                                  <span className="text-[#7A7574]">{t("appeal.completed")}</span>
                                   <span className="font-medium text-[#2d3748]">
                                     {formatDateTime(round.completedAt)}
                                   </span>
@@ -477,7 +477,7 @@ function MentorAppeal() {
                               {round.score !== undefined && round.score !== null && (
                                 <div className="flex items-center gap-2">
                                   <Trophy size={16} className="text-[#7A7574]" />
-                                  <span className="text-[#7A7574]">Score:</span>
+                                  <span className="text-[#7A7574]">{t("appeal.score")}</span>
                                   <span className="font-medium text-blue-600">
                                     {round.score}
                                   </span>
@@ -566,7 +566,7 @@ function MentorAppeal() {
                     {process.env.NODE_ENV === "development" && (
                       <details className="mt-4 text-left">
                         <summary className="text-xs text-red-400 cursor-pointer">
-                          Debug Info (Dev Only)
+                          {t("appeal.debugInfo")}
                         </summary>
                         <pre className="mt-2 text-xs bg-red-100 p-2 rounded overflow-auto max-h-40">
                           {JSON.stringify(appealsError, null, 2)}
@@ -611,7 +611,7 @@ function MentorAppeal() {
                               <div className="flex items-center gap-3 mb-3">
                                 <div className="px-3 py-1 bg-[#f9fafb] rounded-[5px] border border-[#E5E5E5]">
                                   <span className="text-xs font-medium text-[#7A7574]">
-                                    Appeal #{appealId?.substring(0, 8) || "N/A"}
+                                    {t("appeal.appealNumber")}{appealId?.substring(0, 8) || "N/A"}
                                   </span>
                                 </div>
                                 <StatusBadge status={state} />
@@ -666,7 +666,7 @@ function MentorAppeal() {
                                   />
                                   <span className="text-[#7A7574]">{t("appeal.type")}</span>
                                   <span className="font-medium text-[#2d3748] capitalize">
-                                    {targetType?.replace("_", " ") || "Unknown"}
+                                    {targetType?.replace("_", " ") || t("appeal.unknown")}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">

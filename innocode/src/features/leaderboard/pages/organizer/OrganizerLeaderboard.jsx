@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { toast } from "react-hot-toast"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
@@ -23,6 +24,7 @@ import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 
 const OrganizerLeaderboard = () => {
+  const { t } = useTranslation("pages")
   const { contestId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
@@ -95,7 +97,7 @@ const OrganizerLeaderboard = () => {
 
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-              Leaderboard
+              {t("leaderboard.leaderboardTitle")}
             </div>
             <ManageLeaderboard
               contestId={contestId}

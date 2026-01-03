@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 import PageContainer from "@/shared/components/PageContainer";
 import { BREADCRUMBS } from "@/config/breadcrumbs";
@@ -16,6 +17,7 @@ import StatusBadge from "@/shared/components/StatusBadge";
 import { formatDateTime } from "@/shared/utils/dateTime";
 
 const StaffRoleRegistrationDetail = () => {
+  const { t } = useTranslation("pages");
   const { id } = useParams();
   const navigate = useNavigate();
   const { openModal } = useModal();
@@ -45,7 +47,7 @@ const StaffRoleRegistrationDetail = () => {
         try {
           const registrationId = registration.registrationId || registration.id;
           await approveRegistration(registrationId).unwrap();
-          toast.success("Role registration approved successfully");
+          toast.success(t("roleRegistrations.roleRegistrationApproved"));
           await refetch();
           navigate("/role-registrations-staff");
         } catch (err) {
@@ -53,7 +55,7 @@ const StaffRoleRegistrationDetail = () => {
           toast.error(
             err?.data?.errorMessage ||
               err?.data?.message ||
-              "Failed to approve role registration"
+              t("roleRegistrations.failedToApprove")
           );
           throw err;
         }
@@ -70,7 +72,7 @@ const StaffRoleRegistrationDetail = () => {
         try {
           const registrationId = registration.registrationId || registration.id;
           await denyRegistration({ id: registrationId, reason }).unwrap();
-          toast.success("Role registration denied successfully");
+          toast.success(t("roleRegistrations.roleRegistrationDenied"));
           await refetch();
           navigate("/role-registrations-staff");
         } catch (err) {
@@ -79,7 +81,7 @@ const StaffRoleRegistrationDetail = () => {
             err?.data?.errorMessage ||
               err?.data?.message ||
               err?.message ||
-              "Failed to deny role registration"
+              t("roleRegistrations.failedToDeny")
           );
           throw err;
         }
@@ -104,12 +106,12 @@ const StaffRoleRegistrationDetail = () => {
     return (
       <PageContainer breadcrumb={BREADCRUMBS.ROLE_REGISTRATIONS} error={error}>
         <div className="text-center py-8">
-          <p className="text-red-500 mb-2">Error loading registration details</p>
+          <p className="text-red-500 mb-2">{t("roleRegistrations.errorLoadingDetails")}</p>
           <p className="text-sm text-gray-500">
             {error?.data?.errorMessage ||
               error?.data?.message ||
               error?.message ||
-              "Please try again later"}
+              t("roleRegistrations.pleaseTryAgainLater")}
           </p>
         </div>
       </PageContainer>
@@ -120,7 +122,7 @@ const StaffRoleRegistrationDetail = () => {
     return (
       <PageContainer breadcrumb={BREADCRUMBS.ROLE_REGISTRATIONS}>
         <div className="text-center py-8 text-gray-500">
-          Registration not found
+          {t("roleRegistrations.registrationNotFound")}
         </div>
       </PageContainer>
     );
@@ -130,10 +132,10 @@ const StaffRoleRegistrationDetail = () => {
   const formatRoleName = (role) => {
     if (!role) return "—";
     const roleMap = {
-      judge: "Judge",
-      organizer: "Organizer",
-      "school manager": "School Manager",
-      staff: "Staff",
+      judge: t("roleRegistrations.judge"),
+      organizer: t("roleRegistrations.organizer"),
+      "school manager": t("roleRegistrations.schoolManager"),
+      staff: t("roleRegistrations.staff"),
     };
     const lowerRole = role.toLowerCase();
     return roleMap[lowerRole] || role.replace(/([A-Z])/g, " $1").trim();
@@ -142,27 +144,27 @@ const StaffRoleRegistrationDetail = () => {
   // Prepare registration data for DetailTable
   const registrationData = [
     {
-      label: "Full Name",
+      label: t("roleRegistrations.fullName"),
       value: registration?.fullname || registration?.fullName || "—",
     },
     {
-      label: "Email",
+      label: t("roleRegistrations.email"),
       value: registration?.email || "—",
     },
     {
-      label: "Phone",
+      label: t("roleRegistrations.phone"),
       value: registration?.phone || "—",
     },
     {
-      label: "Requested Role",
+      label: t("roleRegistrations.requestedRole"),
       value: formatRoleName(registration?.requestedRole) || "—",
     },
     {
-      label: "Status",
+      label: t("schools.status"),
       value: <StatusBadge status={registration?.status} />,
     },
     {
-      label: "Submitted Date",
+      label: t("roleRegistrations.submittedDate"),
       value: registration?.createdAt
         ? formatDateTime(registration.createdAt)
         : "—",
@@ -170,7 +172,7 @@ const StaffRoleRegistrationDetail = () => {
     ...(registration?.evidenceCount !== undefined
       ? [
           {
-            label: "Evidence Documents Count",
+            label: t("roleRegistrations.evidenceDocumentsCount"),
             value: registration.evidenceCount,
           },
         ]
@@ -181,14 +183,14 @@ const StaffRoleRegistrationDetail = () => {
   const reviewData = registration?.reviewedBy
     ? [
         {
-          label: "Reviewed By",
+          label: t("roleRegistrations.reviewedBy"),
           value:
             registration.reviewedByName ||
             registration.reviewedByEmail ||
             "—",
         },
         {
-          label: "Reviewed At",
+          label: t("roleRegistrations.reviewedAt"),
           value: registration.reviewedAt
             ? formatDateTime(registration.reviewedAt)
             : "—",
@@ -196,7 +198,7 @@ const StaffRoleRegistrationDetail = () => {
         ...(registration.denyReason
           ? [
               {
-                label: "Deny Reason",
+                label: t("roleRegistrations.denyReason"),
                 value: (
                   <div className="whitespace-pre-wrap bg-red-50 p-3 rounded border border-red-200 text-gray-900">
                     {registration.denyReason}
@@ -212,20 +214,20 @@ const StaffRoleRegistrationDetail = () => {
     <PageContainer breadcrumb={BREADCRUMBS.ROLE_REGISTRATIONS}>
       <div className="space-y-5">
         {/* Registration Information */}
-        <InfoSection title="Registration Information">
+        <InfoSection title={t("roleRegistrations.registrationInformation")}>
           <DetailTable data={registrationData} labelWidth="180px" />
         </InfoSection>
 
         {/* Review Information */}
         {reviewData.length > 0 && (
-          <InfoSection title="Review Information">
+          <InfoSection title={t("roleRegistrations.reviewInformation")}>
             <DetailTable data={reviewData} labelWidth="180px" />
           </InfoSection>
         )}
 
         {/* Additional Information */}
         {registration?.payload && (
-          <InfoSection title="Additional Information">
+          <InfoSection title={t("roleRegistrations.additionalInformation")}>
             <div className="whitespace-pre-wrap bg-gray-50 p-3 rounded border text-gray-900">
               {registration.payload}
             </div>
@@ -238,11 +240,10 @@ const StaffRoleRegistrationDetail = () => {
             registration.evidenceFiles.length > 0)) && (
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">
-              Evidence Documents
+              {t("roleRegistrations.evidenceDocuments")}
               {registration?.evidenceCount !== undefined && (
                 <span className="text-gray-500 font-normal ml-2">
-                  ({registration.evidenceCount} file
-                  {registration.evidenceCount !== 1 ? "s" : ""})
+                  ({registration.evidenceCount} {registration.evidenceCount !== 1 ? t("roleRegistrations.files") : t("roleRegistrations.file")})
                 </span>
               )}
             </div>
@@ -282,14 +283,14 @@ const StaffRoleRegistrationDetail = () => {
                           )}
                           {evidenceDate && (
                             <span>
-                              Uploaded:{" "}
+                              {t("roleRegistrations.uploaded")}{" "}
                               {new Date(evidenceDate).toLocaleDateString()}
                             </span>
                           )}
                         </div>
                         {evidenceNote && (
                           <p className="text-xs text-gray-600 mt-1 italic">
-                            Note: {evidenceNote}
+                            {t("roleRegistrations.note")} {evidenceNote}
                           </p>
                         )}
                       </div>
@@ -313,12 +314,12 @@ const StaffRoleRegistrationDetail = () => {
               {isDenying ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Denying...</span>
+                  <span>{t("roleRegistrations.denying")}</span>
                 </>
               ) : (
                 <>
                   <XCircle size={16} />
-                  <span>Deny</span>
+                  <span>{t("roleRegistrations.deny")}</span>
                 </>
               )}
             </button>
@@ -331,12 +332,12 @@ const StaffRoleRegistrationDetail = () => {
               {isApproving ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Approving...</span>
+                  <span>{t("roleRegistrations.approving")}</span>
                 </>
               ) : (
                 <>
                   <CheckCircle2 size={16} />
-                  <span>Approve</span>
+                  <span>{t("roleRegistrations.approve")}</span>
                 </>
               )}
             </button>

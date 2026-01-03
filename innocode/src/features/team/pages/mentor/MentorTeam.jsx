@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { Icon } from "@iconify/react"
 import { Users, Mail, UserPlus } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
@@ -26,6 +27,7 @@ import toast from "react-hot-toast"
 import BaseModal from "@/shared/components/BaseModal"
 
 const MentorTeam = () => {
+  const { t } = useTranslation("common")
   const { contestId } = useParams()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("create") // 'create' or 'myTeam'
@@ -208,13 +210,13 @@ const MentorTeam = () => {
     const newErrors = {}
 
     if (!teamName.trim()) {
-      newErrors.teamName = "Team name is required"
+      newErrors.teamName = t("team.teamNameRequired")
     }
     if (!schoolId) {
-      newErrors.submit = "School information is missing. Please try again."
+      newErrors.submit = t("team.schoolInfoMissing")
     }
     if (!mentorId) {
-      newErrors.submit = "Mentor information is missing. Please try again."
+      newErrors.submit = t("team.mentorInfoMissing")
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -255,9 +257,8 @@ const MentorTeam = () => {
     } catch (error) {
       const errorMessage =
         error?.data?.errorMessage ||
-        error?.data?.message ||
         error?.message ||
-        "Failed to create team"
+        t("team.failedToCreateTeam")
       setErrors({ submit: errorMessage })
     }
   }
@@ -265,17 +266,17 @@ const MentorTeam = () => {
   // Handle invite member by student
   const handleInviteStudent = async (student) => {
     if (!student || !student.studentId) {
-      setInviteError("Invalid student")
+      setInviteError(t("team.invalidStudent"))
       return
     }
 
     if (!student.userEmail) {
-      setInviteError("Student email is missing")
+      setInviteError(t("team.studentEmailMissing"))
       return
     }
 
     if (!teamId) {
-      setInviteError("Team ID not found")
+      setInviteError(t("team.teamIdNotFound"))
       return
     }
 
@@ -335,7 +336,7 @@ const MentorTeam = () => {
       await Promise.all([refetchMyTeam(), refetchInvites()])
     } catch (error) {
       // Handle different error cases
-      let errorMessage = "Failed to send invitation"
+      let errorMessage = t("team.failedToSendInvitation")
 
       if (error?.data) {
         const responseData = error.data
@@ -346,14 +347,14 @@ const MentorTeam = () => {
         if (errorCode === "REG_CLOSED") {
           errorMessage =
             errorMsg ||
-            "Registration window is closed. You cannot invite members at this time."
+            t("team.registrationWindowClosed")
         }
         // Handle 409 Conflict - student already invited or is member
         else if (error?.status === 409 || errorCode === "CONFLICT") {
           errorMessage =
             errorMsg ||
             responseData?.error ||
-            `${student.userFullname} has already been invited or is already a member of this team.`
+            t("team.studentAlreadyInvited", { studentName: student.userFullname })
 
           // Refresh team data to get updated members
           await refetchMyTeam()
@@ -399,7 +400,7 @@ const MentorTeam = () => {
       await deleteTeam(teamId).unwrap()
       // Close modal first
       if (onClose) onClose()
-      toast.success("Team deleted successfully")
+      toast.success(t("team.teamDeletedSuccess"))
       // Refetch to update UI
       await refetchMyTeam()
     } catch (error) {
@@ -407,9 +408,8 @@ const MentorTeam = () => {
       if (onClose) onClose()
       const errorMessage =
         error?.data?.errorMessage ||
-        error?.data?.message ||
         error?.message ||
-        "Failed to delete team"
+        t("team.failedToDeleteTeam")
       toast.error(errorMessage)
       console.log(error)
       setErrors({ submit: errorMessage })
@@ -423,7 +423,7 @@ const MentorTeam = () => {
       await deleteTeamMember({ teamId, studentId }).unwrap()
       // Close modal first
       if (onClose) onClose()
-      toast.success("Member removed successfully")
+      toast.success(t("team.memberRemovedSuccess"))
       // Refetch to update UI
       await refetchMyTeam()
       setMemberToDelete(null)
@@ -432,9 +432,8 @@ const MentorTeam = () => {
       if (onClose) onClose()
       const errorMessage =
         error?.data?.errorMessage ||
-        error?.data?.message ||
         error?.message ||
-        "Failed to remove member"
+        t("team.failedToRemoveMember")
       toast.error(errorMessage)
       setInviteError(errorMessage)
     }
@@ -453,7 +452,7 @@ const MentorTeam = () => {
 
   const handleSaveTeamName = async () => {
     if (!teamId || !editedTeamName.trim()) {
-      toast.error("Team name cannot be empty")
+      toast.error(t("team.teamNameCannotBeEmpty"))
       return
     }
 
@@ -467,16 +466,15 @@ const MentorTeam = () => {
         teamId,
         data: { name: editedTeamName.trim() },
       }).unwrap()
-      toast.success("Team name updated successfully")
+      toast.success(t("team.teamNameUpdatedSuccess"))
       setIsEditingTeamName(false)
       // Refetch to update UI
       await refetchMyTeam()
     } catch (error) {
       const errorMessage =
         error?.data?.errorMessage ||
-        error?.data?.message ||
         error?.message ||
-        "Failed to update team name"
+        t("team.failedToUpdateTeamName")
       toast.error(errorMessage)
       setErrors({ submit: errorMessage })
     }
@@ -492,7 +490,7 @@ const MentorTeam = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading...</p>
+            <p className="text-gray-600 font-medium">{t("common.loading")}</p>
           </div>
         </div>
       </PageContainer>
@@ -519,7 +517,7 @@ const MentorTeam = () => {
                 }`}
               >
                 <Icon icon="mdi:plus-circle" width="18" />
-                Create Team
+                {t("team.createTeam")}
               </button>
             )}
             {myTeam && (
@@ -532,7 +530,7 @@ const MentorTeam = () => {
                 }`}
               >
                 <Icon icon="mdi:account-group" width="18" />
-                My Team
+                {t("team.myTeam")}
               </button>
             )}
           </div>
@@ -547,15 +545,14 @@ const MentorTeam = () => {
                   className="text-[#E5E5E5] mx-auto mb-4"
                 />
                 <h3 className="text-xl font-semibold text-[#2d3748] mb-2">
-                  Registration Closed
+                  {t("team.registrationClosed")}
                 </h3>
                 <p className="text-[#7A7574] text-sm mb-4">
-                  The registration window has closed. You can no longer create
-                  new teams for this contest.
+                  {t("team.registrationClosedDesc")}
                 </p>
                 {contest.registrationEnd && (
                   <p className="text-xs text-[#7A7574]">
-                    Registration closed on{" "}
+                    {t("team.registrationClosedOn")}{" "}
                     {new Date(contest.registrationEnd).toLocaleDateString()}
                   </p>
                 )}
@@ -565,11 +562,10 @@ const MentorTeam = () => {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold text-[#2d3748] mb-4">
-                    Create New Team
+                    {t("team.createNewTeam")}
                   </h3>
                   <p className="text-sm text-[#7A7574] mb-6">
-                    Create a new team to participate in this contest. You'll be
-                    the team leader.
+                    {t("team.createTeamDesc")}
                   </p>
                 </div>
 
@@ -577,13 +573,13 @@ const MentorTeam = () => {
                   {/* Team Name */}
                   <div>
                     <label className="block text-sm font-medium text-[#2d3748] mb-2">
-                      Team Name <span className="text-red-500">*</span>
+                      {t("team.teamName")} <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       value={teamName}
                       onChange={(e) => setTeamName(e.target.value)}
-                      placeholder="Enter team name"
+                      placeholder={t("team.enterTeamName")}
                       className={`w-full px-4 py-2 border rounded-[5px] focus:outline-none focus:ring-2 focus:ring-[#ff6b35] ${
                         errors.teamName ? "border-red-500" : "border-[#E5E5E5]"
                       }`}
@@ -606,7 +602,7 @@ const MentorTeam = () => {
                       onClick={() => navigate(`/contest-detail/${contestId}`)}
                       className="button-white flex-1"
                     >
-                      Cancel
+                      {t("buttons.cancel")}
                     </button>
                     <button
                       onClick={handleCreateTeam}
@@ -616,12 +612,12 @@ const MentorTeam = () => {
                       {creatingTeam ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                          Creating...
+                          {t("team.creating")}
                         </>
                       ) : (
                         <>
                           <Icon icon="mdi:check" width="18" />
-                          Create Team
+                          {t("team.createTeam")}
                         </>
                       )}
                     </button>
@@ -634,10 +630,10 @@ const MentorTeam = () => {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold text-[#2d3748] mb-4">
-                    My Team
+                    {t("team.myTeam")}
                   </h3>
                   <p className="text-sm text-[#7A7574] mb-6">
-                    Manage your team information and members.
+                    {t("team.manageTeamInfo")}
                   </p>
                 </div>
 
@@ -695,7 +691,7 @@ const MentorTeam = () => {
                                     onClick={handleStartEditTeamName}
                                     disabled={updatingTeam}
                                     className="p-1 text-[#7A7574] hover:text-[#ff6b35] hover:bg-orange-50 rounded-[5px] transition-colors"
-                                    title="Edit team name"
+                                    title={t("team.editTeamName")}
                                   >
                                     <Icon icon="mdi:pencil-outline" width="18" />
                                   </button>
@@ -703,10 +699,10 @@ const MentorTeam = () => {
                               )}
                             </div>
                           </div>
-                          <div className="grid grid-cols-2 gap-4 mt-4">
+                            <div className="grid grid-cols-2 gap-4 mt-4">
                             <div className="p-3 bg-[#f9fafb] rounded-[5px]">
                               <p className="text-xs text-[#7A7574] mb-1">
-                                Contest
+                                {t("team.contest")}
                               </p>
                               <p className="font-semibold text-[#2d3748]">
                                 {contest?.name || contest?.title || "N/A"}
@@ -714,7 +710,7 @@ const MentorTeam = () => {
                             </div>
                             <div className="p-3 bg-[#f9fafb] rounded-[5px]">
                               <p className="text-xs text-[#7A7574] mb-1">
-                                Members
+                                {t("team.members")}
                               </p>
                               <p className="font-semibold text-[#2d3748]">
                                 {myTeam.members?.length || 0} /{" "}
@@ -729,7 +725,7 @@ const MentorTeam = () => {
                           className="flex items-center gap-2 px-4 py-2 button-red hover:bg-red-50 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Icon icon="mdi:delete-outline" width="18" />
-                          Delete Team
+                          {t("team.deleteTeam")}
                         </button>
                       </div>
                     </div>
@@ -740,7 +736,7 @@ const MentorTeam = () => {
                       <div className="border border-[#E5E5E5] rounded-[8px] p-6 bg-white">
                         <div className="flex items-center justify-between mb-4">
                           <h5 className="text-lg font-semibold text-[#2d3748]">
-                            Team Members
+                            {t("team.teamMembers")}
                           </h5>
                         </div>
 
@@ -757,7 +753,7 @@ const MentorTeam = () => {
                                 member.user?.name ||
                                 member.user?.fullName ||
                                 member.name ||
-                                "Unknown Member"
+                                t("team.unknownMember")
 
                               const memberEmail =
                                 member.studentEmail ||
@@ -810,8 +806,8 @@ const MentorTeam = () => {
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                                      Active
+                                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium whitespace-nowrap">
+                                      {t("team.active")}
                                     </span>
                                     <button
                                       onClick={() => {
@@ -820,7 +816,7 @@ const MentorTeam = () => {
                                       }}
                                       disabled={deletingTeamMember}
                                       className="p-2 text-red-600 hover:bg-red-50 rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                      title="Remove member"
+                                      title={t("team.removeMemberTitle")}
                                     >
                                       <Icon icon="mdi:delete-outline" width="18" />
                                     </button>
@@ -836,7 +832,7 @@ const MentorTeam = () => {
                               className="text-[#E5E5E5] mx-auto mb-3"
                             />
                             <p className="text-[#7A7574] text-sm mb-4">
-                              No members yet. Invite members to join your team.
+                              {t("team.noMembersYet")}
                             </p>
                           </div>
                         )}
@@ -846,7 +842,7 @@ const MentorTeam = () => {
                       <div className="border border-[#E5E5E5] rounded-[8px] p-6 bg-white">
                         <div className="flex items-center justify-between mb-4">
                           <h5 className="text-lg font-semibold text-[#2d3748]">
-                            Pending Student Invitations
+                            {t("team.pendingStudentInvitations")}
                           </h5>
                           {loadingInvites && (
                             <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#ff6b35] border-t-transparent"></div>
@@ -878,14 +874,14 @@ const MentorTeam = () => {
                                 studentInfo?.userFullname ||
                                 studentInfo?.user_fullname ||
                                 studentInfo?.name ||
-                                "Unknown Student"
+                                t("team.unknownStudent")
 
                               const studentEmail =
                                 invite.inviteeEmail ||
                                 invite.invitee_email ||
                                 studentInfo?.userEmail ||
                                 studentInfo?.user_email ||
-                                "No email"
+                                t("team.noEmail")
 
                               const studentInitial =
                                 studentName.charAt(0).toUpperCase() || "S"
@@ -914,8 +910,8 @@ const MentorTeam = () => {
                                       </div>
                                     </div>
                                   </div>
-                                  <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
-                                    Pending
+                                  <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium whitespace-nowrap">
+                                    {t("team.pending")}
                                   </span>
                                 </div>
                               )
@@ -928,7 +924,7 @@ const MentorTeam = () => {
                               className="text-[#E5E5E5] mx-auto mb-3"
                             />
                             <p className="text-[#7A7574] text-sm">
-                              No pending invitations.
+                              {t("team.noPendingInvitations")}
                             </p>
                           </div>
                         )}
@@ -939,7 +935,7 @@ const MentorTeam = () => {
                     <div className="border border-[#E5E5E5] rounded-[8px] p-6 bg-white">
                       <div className="flex items-center justify-between mb-4">
                         <h5 className="text-lg font-semibold text-[#2d3748]">
-                          Available Students
+                          {t("team.availableStudents")}
                         </h5>
                       </div>
 
@@ -963,7 +959,7 @@ const MentorTeam = () => {
                           <div className="flex items-center gap-2">
                             <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#ff6b35] border-t-transparent"></div>
                             <span className="text-sm text-[#7A7574]">
-                              Loading students...
+                              {t("team.loadingStudents")}
                             </span>
                           </div>
                         </div>
@@ -982,7 +978,7 @@ const MentorTeam = () => {
                                 </div>
                                 <div className="flex-1">
                                   <p className="font-semibold text-[#2d3748]">
-                                    {student.userFullname || "Unknown Student"}
+                                    {student.userFullname || t("team.unknownStudent")}
                                   </p>
                                   <div className="flex items-center gap-2 mt-1">
                                     <Mail
@@ -990,7 +986,7 @@ const MentorTeam = () => {
                                       className="text-[#7A7574]"
                                     />
                                     <p className="text-sm text-[#7A7574]">
-                                      {student.userEmail || "No email"}
+                                      {student.userEmail || t("team.noEmail")}
                                     </p>
                                   </div>
                                 </div>
@@ -1003,12 +999,12 @@ const MentorTeam = () => {
                                 {invitingStudent ? (
                                   <>
                                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                                    Inviting...
+                                    {t("team.inviting")}
                                   </>
                                 ) : (
                                   <>
                                     <UserPlus size={18} />
-                                    Invite
+                                    {t("team.invite")}
                                   </>
                                 )}
                               </button>
@@ -1023,8 +1019,8 @@ const MentorTeam = () => {
                           />
                           <p className="text-[#7A7574] text-sm">
                             {loadingStudents
-                              ? "Loading students..."
-                              : "No available students to invite."}
+                              ? t("team.loadingStudents")
+                              : t("team.noAvailableStudents")}
                           </p>
                         </div>
                       )}
@@ -1038,7 +1034,7 @@ const MentorTeam = () => {
                       className="text-[#E5E5E5] mx-auto mb-4"
                     />
                     <p className="text-[#7A7574] text-sm">
-                      No team found. Please create a team first.
+                      {t("team.noTeamFound")}
                     </p>
                   </div>
                 )}
@@ -1052,7 +1048,7 @@ const MentorTeam = () => {
       <BaseModal
         isOpen={showDeleteTeamConfirm}
         onClose={() => setShowDeleteTeamConfirm(false)}
-        title="Confirm Delete Team"
+        title={t("team.confirmDeleteTeam")}
         size="sm"
         footer={
           <>
@@ -1061,7 +1057,7 @@ const MentorTeam = () => {
               onClick={() => setShowDeleteTeamConfirm(false)}
               disabled={deletingTeam}
             >
-              Cancel
+              {t("buttons.cancel")}
             </button>
             <button
               className="button-red"
@@ -1071,19 +1067,16 @@ const MentorTeam = () => {
               {deletingTeam ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent inline-block mr-2"></div>
-                  Deleting...
+                  {t("team.deleting")}
                 </>
               ) : (
-                "Delete Team"
+                t("team.deleteTeam")
               )}
             </button>
           </>
         }
       >
-        <p className="text-[#7A7574]">
-          Are you sure you want to delete <strong>{myTeam?.name}</strong>? 
-          This action cannot be undone. All team members will be removed.
-        </p>
+        <p className="text-[#7A7574]" dangerouslySetInnerHTML={{ __html: t("team.confirmDeleteTeamDesc", { teamName: myTeam?.name || "" }) }} />
       </BaseModal>
 
       {/* Delete Member Confirmation Modal */}
@@ -1093,7 +1086,7 @@ const MentorTeam = () => {
           setShowDeleteMemberConfirm(false)
           setMemberToDelete(null)
         }}
-        title="Confirm Remove Member"
+        title={t("team.confirmRemoveMember")}
         size="sm"
         footer={
           <>
@@ -1105,7 +1098,7 @@ const MentorTeam = () => {
               }}
               disabled={deletingTeamMember}
             >
-              Cancel
+              {t("buttons.cancel")}
             </button>
             <button
               className="button-red"
@@ -1123,27 +1116,23 @@ const MentorTeam = () => {
               {deletingTeamMember ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent inline-block mr-2"></div>
-                  Removing...
+                  {t("team.removing")}
                 </>
               ) : (
-                "Remove Member"
+                t("team.removeMember")
               )}
             </button>
           </>
         }
       >
-        <p className="text-[#7A7574]">
-          Are you sure you want to remove{" "}
-          <strong>
-            {memberToDelete?.studentFullname ||
-              memberToDelete?.student_fullname ||
-              memberToDelete?.userFullname ||
-              memberToDelete?.user_fullname ||
-              memberToDelete?.name ||
-              "this member"}
-          </strong>{" "}
-          from the team? This action cannot be undone.
-        </p>
+        <p className="text-[#7A7574]" dangerouslySetInnerHTML={{ __html: t("team.confirmRemoveMemberDesc", { 
+          memberName: memberToDelete?.studentFullname ||
+            memberToDelete?.student_fullname ||
+            memberToDelete?.userFullname ||
+            memberToDelete?.user_fullname ||
+            memberToDelete?.name ||
+            t("team.unknownMember")
+        }) }} />
       </BaseModal>
     </PageContainer>
   )

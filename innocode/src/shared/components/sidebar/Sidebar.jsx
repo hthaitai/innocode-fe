@@ -2,98 +2,99 @@ import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Icon } from "@iconify/react"
 import { motion } from "framer-motion"
+import { useTranslation } from "react-i18next"
 import { useAuth } from "@/context/AuthContext"
 
 const allMenus = {
-  profile: { path: "/profile", label: "Profile", icon: "lucide:user" },
+  profile: { path: "/profile", labelKey: "sidebar.profile", icon: "lucide:user" },
   dashboard: {
     path: "/dashboard",
-    label: "Dashboard",
+    labelKey: "sidebar.dashboard",
     icon: "lucide:layout-dashboard",
   },
 
   // Student menus
-  contests: { path: "/contests", label: "Contests", icon: "lucide:trophy" },
+  contests: { path: "/contests", labelKey: "sidebar.contests", icon: "lucide:trophy" },
   practice: {
     path: "/practice",
-    label: "Practice",
+    labelKey: "sidebar.practice",
     icon: "lucide:file-spreadsheet",
   },
-  team: { path: "/team", label: "Team", icon: "lucide:users" },
+  team: { path: "/team", labelKey: "sidebar.team", icon: "lucide:users" },
   leaderboard: {
     path: "/leaderboard",
-    label: "Leaderboard",
+    labelKey: "sidebar.leaderboard",
     icon: "mdi:podium",
   },
   certificate: {
     path: "/certificate",
-    label: "Certificate",
+    labelKey: "sidebar.certificate",
     icon: "lucide:award",
   },
   mycontest: {
     path: "/mycontest",
-    label: "My Contest",
+    labelKey: "sidebar.myContest",
     icon: "lucide:notebook-pen",
   },
   // Organizer menus
   organizerContests: {
     path: "/organizer/contests",
-    label: "Contests",
+    labelKey: "sidebar.contests",
     icon: "lucide:trophy",
   },
   organizerNotifications: {
     path: "/organizer/notifications",
-    label: "Notifications",
+    labelKey: "sidebar.notifications",
     icon: "lucide:bell",
   },
 
   //judge
   judgeContests: {
     path: "/judge/contests",
-    label: "Contests",
+    labelKey: "sidebar.contests",
     icon: "lucide:trophy",
   },
   manualSubmissions: {
     path: "/judge/manual-submissions",
-    label: "Submissions",
+    labelKey: "sidebar.submissions",
     icon: "lucide:file-text",
   },
   //Mentor menus
   appeal: {
     path: "/appeal",
-    label: "Appeal",
+    labelKey: "sidebar.appeal",
     icon: "lucide:calendar-range",
   },
   // Common menus
   notifications: {
     path: "/notifications",
-    label: "Notifications",
+    labelKey: "sidebar.notifications",
     icon: "lucide:bell",
   },
   provinceStaff: {
     path: "/province-staff",
-    label: "Provinces",
+    labelKey: "sidebar.provinces",
     icon: "lucide:map-pin",
   },
   schoolStaff: {
     path: "/school-staff",
-    label: "Schools",
+    labelKey: "sidebar.schools",
     icon: "lucide:school",
   },
   roleRegistrationsStaff: {
     path: "/role-registrations-staff",
-    label: "Role Registrations",
+    labelKey: "sidebar.roleRegistrations",
     icon: "lucide:user-check",
   },
   //SchoolManager menus
   schoolManagerRequests: {
     path: "/school-requests",
-    label: "School Creation Requests",
+    labelKey: "sidebar.schoolCreationRequests",
     icon: "lucide:notepad-text",
   },
   schoolManager: {
     path: "/school-manager",
-    label: "Schools Management",
+    labelKey: "sidebar.schoolsManagement",
     icon: "lucide:school",
   },
 }
@@ -103,16 +104,13 @@ const menuByRole = {
     "profile",
     "contests",
     "mycontest",
-    "practice",
     "team",
-    "leaderboard",
     "certificate",
     "notifications",
   ],
   organizer: ["profile", "organizerContests", "notifications"],
   mentor: [
     "profile",
-    "leaderboard",
     "contests",
     "team",
     "notifications",
@@ -123,7 +121,6 @@ const menuByRole = {
     "provinceStaff",
     "schoolStaff",
     "roleRegistrationsStaff",
-    "leaderboard",
     "contests",
     "team",
     "notifications",
@@ -141,7 +138,6 @@ const menuByRole = {
     "profile",
     "schoolManager",
     "schoolManagerRequests",
-    "leaderboard",
     "contests",
     "team",
     "notifications",
@@ -151,6 +147,7 @@ const menuByRole = {
 const Sidebar = () => {
   const location = useLocation()
   const { user } = useAuth()
+  const { t } = useTranslation("common")
 
   const role = user?.role || "student" // Get role from AuthContext instead of localStorage
 
@@ -184,7 +181,7 @@ const Sidebar = () => {
         <div>
           <div className="text-sm leading-5 font-medium">{user?.name}</div>
           <div className="text-xs leading-4">
-            {role.charAt(0).toUpperCase() + role.slice(1)} account
+            {t(`roles.${role}`, role.charAt(0).toUpperCase() + role.slice(1))} {t("sidebar.account")}
           </div>
         </div>
       </div>
@@ -205,7 +202,7 @@ const Sidebar = () => {
                 <Icon icon={item.icon} className="w-5 h-5 fill-current" />
               </div>
               <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                {item.label}
+                {t(item.labelKey)}
               </span>
               {active && (
                 <motion.div

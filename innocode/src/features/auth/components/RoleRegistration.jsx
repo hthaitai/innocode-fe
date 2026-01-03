@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import "./RoleRegistration.css";
@@ -8,6 +9,7 @@ import { Icon } from "@iconify/react";
 import DropdownFluent from "@/shared/components/DropdownFluent";
 
 const RoleRegistration = () => {
+  const { t } = useTranslation("pages");
   const navigate = useNavigate();
   const [requestedRole, setRequestedRole] = useState("");
   const [fullName, setFullName] = useState("");
@@ -28,13 +30,13 @@ const RoleRegistration = () => {
   const [createRoleRegistration, { isLoading: isSubmitting }] =
     useCreateRoleRegistrationMutation();
 
-  const fullText = "Register as Professional";
+  const fullText = t("roleRegistrations.registerAsProfessional");
 
   const roles = [
-    { value: "judge", label: "Judge" },
-    { value: "organizer", label: "Organizer" },
-    { value: "schoolManager", label: "School Manager" },
-    { value: "staff", label: "Staff" },
+    { value: "judge", label: t("roleRegistrations.judge") },
+    { value: "organizer", label: t("roleRegistrations.organizer") },
+    { value: "schoolManager", label: t("roleRegistrations.schoolManager") },
+    { value: "staff", label: t("roleRegistrations.staff") },
   ];
 
   useEffect(() => {
@@ -57,37 +59,37 @@ const RoleRegistration = () => {
     const errors = {};
 
     if (!requestedRole) {
-      errors.requestedRole = "Please select a role";
+      errors.requestedRole = t("roleRegistrations.pleaseSelectRole");
     }
 
     if (!fullName.trim()) {
-      errors.fullName = "Full name is required";
+      errors.fullName = t("roleRegistrations.fullNameRequired");
     } else if (fullName.trim().length < 2) {
-      errors.fullName = "Full name must be at least 2 characters";
+      errors.fullName = t("roleRegistrations.fullNameMinLength");
     }
 
     if (!email) {
-      errors.email = "Email is required";
+      errors.email = t("roleRegistrations.emailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.email = "Invalid email format";
+      errors.email = t("roleRegistrations.invalidEmailFormat");
     }
 
     if (!password) {
-      errors.password = "Password is required";
+      errors.password = t("roleRegistrations.passwordRequired");
     } else if (password.length < 8) {
-      errors.password = "Password must be at least 8 characters";
+      errors.password = t("roleRegistrations.passwordMinLength");
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      errors.password = "Password must contain uppercase, lowercase and number";
+      errors.password = t("roleRegistrations.passwordRequirements");
     }
 
     if (!confirmPassword) {
-      errors.confirmPassword = "Please confirm your password";
+      errors.confirmPassword = t("roleRegistrations.confirmPasswordRequired");
     } else if (password !== confirmPassword) {
-      errors.confirmPassword = "Passwords do not match";
+      errors.confirmPassword = t("roleRegistrations.passwordsDoNotMatch");
     }
 
     if (evidenceFiles.length === 0) {
-      errors.evidenceFiles = "At least one evidence file is required";
+      errors.evidenceFiles = t("roleRegistrations.atLeastOneFileRequired");
     }
 
     setValidationErrors(errors);
@@ -141,7 +143,7 @@ const RoleRegistration = () => {
       console.log("Registration response:", response);
 
       setSuccessMessage(
-        "Registration successful! Your request has been submitted and is pending approval. Please wait for approval."
+        t("roleRegistrations.registrationSuccessMessage")
       );
 
       // Reset form
@@ -188,7 +190,7 @@ const RoleRegistration = () => {
       // Xử lý các loại lỗi khác nhau
       if (err?.code === "ECONNABORTED" || err?.message?.includes("timeout")) {
         setError(
-          "Request timeout. Please check your connection and try again."
+          t("roleRegistrations.requestTimeout")
         );
       } else if (status) {
         // Ưu tiên hiển thị errorMessage từ API
@@ -198,13 +200,13 @@ const RoleRegistration = () => {
           case 400:
             setError(
               displayError ||
-                "Invalid registration data. Please check your input."
+                t("roleRegistrations.invalidRegistrationData")
             );
             break;
           case 409:
             // Xử lý lỗi email đã tồn tại
             if (errorData?.errorCode === "EMAIL_EXISTS" || errorMessage) {
-              const emailErrorMsg = errorMessage || "Email already exists. Please use a different email.";
+              const emailErrorMsg = errorMessage || t("roleRegistrations.emailAlreadyExists");
               setError(emailErrorMsg);
               // Cũng hiển thị lỗi ở field email
               setValidationErrors((prev) => ({
@@ -212,30 +214,30 @@ const RoleRegistration = () => {
                 email: emailErrorMsg,
               }));
             } else {
-              setError("Email already exists. Please use a different email.");
+              setError(t("roleRegistrations.emailAlreadyExists"));
             }
             break;
           case 422:
             setError(
               displayError ||
-                "Validation failed. Please check your input fields above."
+                t("roleRegistrations.validationFailed")
             );
             break;
           case 500:
             setError(
               displayError ||
-                "Server error. Please try again later."
+                t("roleRegistrations.serverError")
             );
             break;
           default:
             setError(
               displayError ||
-                "An error occurred. Please try again."
+                t("roleRegistrations.errorOccurred")
             );
         }
       } else if (err?.request || err?.message?.includes("Network")) {
         setError(
-          "Cannot connect to server. Please check your internet connection."
+          t("roleRegistrations.cannotConnectToServer")
         );
       } else {
         // Hiển thị bất kỳ thông báo lỗi nào có sẵn
@@ -244,7 +246,7 @@ const RoleRegistration = () => {
             message ||
             error ||
             err?.message ||
-            "An unexpected error occurred. Please try again."
+            t("roleRegistrations.unexpectedError")
         );
       }
     }
@@ -268,7 +270,7 @@ const RoleRegistration = () => {
               marginBottom: "2rem",
             }}
           >
-            Role Registration
+            {t("roleRegistrations.roleRegistration")}
           </h1>
 
           {successMessage && (
@@ -287,12 +289,11 @@ const RoleRegistration = () => {
                 </svg>
                 <div>
                   <p className="font-semibold text-green-800">
-                    Registration Successful!
+                    {t("roleRegistrations.registrationSuccessful")}
                   </p>
                   <p className="text-green-700 mt-1">{successMessage}</p>
                   <p className="text-green-600 mt-2 text-xs italic">
-                    ⏳ Please wait for approval. You will receive an email
-                    notification once your request is reviewed.
+                    {t("roleRegistrations.waitForApproval")}
                   </p>
                 </div>
               </div>
@@ -307,7 +308,7 @@ const RoleRegistration = () => {
             {/* Role Selection */}
             <div className="form-group">
               <label htmlFor="requestedRole" className="form-label">
-                Role <span style={{ color: "red" }}>*</span>
+                {t("roleRegistrations.role")} <span style={{ color: "red" }}>*</span>
               </label>
               <DropdownFluent
                 id="requestedRole"
@@ -323,7 +324,7 @@ const RoleRegistration = () => {
                   }
                 }}
                 options={roles}
-                placeholder="Select a role"
+                placeholder={t("roleRegistrations.selectRole")}
                 error={!!validationErrors.requestedRole}
                 helperText={validationErrors.requestedRole}
               />
@@ -332,7 +333,7 @@ const RoleRegistration = () => {
             {/* Full Name */}
             <div className="form-group">
               <label htmlFor="fullName" className="form-label">
-                Full Name <span style={{ color: "red" }}>*</span>
+                {t("roleRegistrations.fullName")} <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 type="text"
@@ -367,7 +368,7 @@ const RoleRegistration = () => {
             {/* Email */}
             <div className="form-group">
               <label htmlFor="email" className="form-label">
-                Email <span style={{ color: "red" }}>*</span>
+                {t("roleRegistrations.email")} <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 type="email"
@@ -402,7 +403,7 @@ const RoleRegistration = () => {
             {/* Phone */}
             <div className="form-group">
               <label htmlFor="phone" className="form-label">
-                Phone
+                {t("roleRegistrations.phone")}
               </label>
               <input
                 type="tel"
@@ -418,7 +419,7 @@ const RoleRegistration = () => {
             <div className="form-group">
               <div className="password-header">
                 <label htmlFor="password" className="form-label">
-                  Password <span style={{ color: "red" }}>*</span>
+                  {t("roleRegistrations.password")} <span style={{ color: "red" }}>*</span>
                 </label>
                 <button
                   type="button"
@@ -461,7 +462,7 @@ const RoleRegistration = () => {
                 </div>
               )}
               <p className="text-xs text-gray-500 mt-1">
-                Minimum 8 characters with uppercase, lowercase and number
+                {t("roleRegistrations.passwordHint")}
               </p>
             </div>
 
@@ -469,7 +470,7 @@ const RoleRegistration = () => {
             <div className="form-group">
               <div className="password-header">
                 <label htmlFor="confirmPassword" className="form-label">
-                  Confirm Password <span style={{ color: "red" }}>*</span>
+                  {t("roleRegistrations.confirmPassword")} <span style={{ color: "red" }}>*</span>
                 </label>
                 <button
                   type="button"
@@ -516,7 +517,7 @@ const RoleRegistration = () => {
             {/* Payload */}
             <div className="form-group">
               <label htmlFor="payload" className="form-label">
-                Additional Information
+                {t("roleRegistrations.additionalInformation")}
               </label>
               <textarea
                 id="payload"
@@ -524,14 +525,14 @@ const RoleRegistration = () => {
                 onChange={(e) => setPayload(e.target.value)}
                 className="form-input"
                 rows="3"
-                placeholder="Enter additional information (optional)"
+                placeholder={t("roleRegistrations.additionalInfoPlaceholder")}
               />
             </div>
 
             {/* Evidence Files */}
             <div className="form-group">
               <label htmlFor="evidenceFiles" className="form-label">
-                Evidence Documents <span style={{ color: "red" }}>*</span>
+                {t("roleRegistrations.evidenceDocuments")} <span style={{ color: "red" }}>*</span>
               </label>
               <div className="file-input-wrapper">
                 <input
@@ -552,8 +553,8 @@ const RoleRegistration = () => {
                     style={{ marginRight: "0.5rem" }}
                   />
                   {evidenceFiles.length > 0
-                    ? `${evidenceFiles.length} file(s) selected`
-                    : "Choose files"}
+                    ? `${evidenceFiles.length} ${t("roleRegistrations.filesSelected")}`
+                    : t("roleRegistrations.chooseFiles")}
                 </label>
               </div>
               {validationErrors.evidenceFiles && (
@@ -578,7 +579,7 @@ const RoleRegistration = () => {
                 </div>
               )}
               <p className="text-xs text-gray-500 mt-2">
-                Accepted formats: PDF, DOC, DOCX, JPG, JPEG, PNG
+                {t("roleRegistrations.acceptedFormats")}
               </p>
             </div>
 
@@ -588,7 +589,7 @@ const RoleRegistration = () => {
                 <div className="flex items-start gap-2">
                   <Icon icon="mdi:alert-circle" className="text-red-600 mt-0.5 flex-shrink-0" width="20" />
                   <div className="flex-1">
-                    <p className="font-semibold text-red-800 mb-1">Error</p>
+                    <p className="font-semibold text-red-800 mb-1">{t("roleRegistrations.error")}</p>
                     <p className="text-red-700">{error}</p>
                   </div>
                   <button
@@ -618,32 +619,32 @@ const RoleRegistration = () => {
                   }}
                 >
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Registering...</span>
+                  <span>{t("roleRegistrations.registering")}</span>
                 </div>
               ) : (
-                "Register"
+                t("roleRegistrations.register")
               )}
             </button>
           </form>
 
           <div className="divider">
-            <span className="divider-text">OR</span>
+            <span className="divider-text">{t("roleRegistrations.or")}</span>
           </div>
           <div className="signup-link">
-            Already have an account?{" "}
+            {t("roleRegistrations.alreadyHaveAccount")}{" "}
             <Link to="/login" className="signup-text">
-              Sign In
+              {t("roleRegistrations.signIn")}
             </Link>
           </div>
 
           <div className="legal-text">
-            By continuing, you agree to the{" "}
+            {t("roleRegistrations.termsAndPrivacy")}{" "}
             <a href="#terms" className="legal-link">
-              Terms of use
+              {t("roleRegistrations.termsOfUse")}
             </a>{" "}
-            and{" "}
+            {t("roleRegistrations.and")}{" "}
             <a href="#privacy" className="legal-link">
-              Privacy Policy
+              {t("roleRegistrations.privacyPolicy")}
             </a>
             .
           </div>
@@ -655,7 +656,7 @@ const RoleRegistration = () => {
             {typedText}
             <span className="typing-cursor">|</span>
           </h1>
-          <p className="typing-subtitle">Join Our Professional Community</p>
+          <p className="typing-subtitle">{t("roleRegistrations.joinProfessionalCommunity")}</p>
         </div>
       </div>
     </div>

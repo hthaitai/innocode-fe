@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import BaseModal from "@/shared/components/BaseModal"
 import { validateProvince } from "@/shared/validators/provinceValidator"
 import ProvinceForm from "./ProvinceForm"
@@ -12,6 +13,7 @@ export default function ProvinceModal({
   onSubmit,
   onClose,
 }) {
+  const { t } = useTranslation("pages")
   const emptyData = {
     name: "",
     address: "",
@@ -42,16 +44,16 @@ export default function ProvinceModal({
   // Dynamic title + footer
   const title =
     mode === "edit"
-      ? `Edit Province: ${initialData.name || ""}`
-      : "Create New Province"
+      ? `${t("provinces.editProvince")} ${initialData.name || ""}`
+      : t("provinces.createNewProvince")
 
   const footer = (
     <div className="flex justify-end gap-2">
       <button type="button" className="button-white" onClick={onClose}>
-        Cancel
+        {t("provinces.cancel")}
       </button>
       <button type="button" className="button-orange" onClick={handleSubmit}>
-        {mode === "edit" ? "Save Changes" : "Create"}
+        {mode === "edit" ? t("provinces.saveChanges") : t("provinces.create")}
       </button>
     </div>
   )

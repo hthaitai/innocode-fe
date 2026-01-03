@@ -61,6 +61,19 @@ const clearAuthData = () => {
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
   
+  // Xóa tất cả code và test results từ auto evaluation để tránh dữ liệu của tài khoản cũ
+  const keysToRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key) {
+      // Xóa tất cả keys liên quan đến code và test results
+      if (key.startsWith('code_') || key.startsWith('testResults_')) {
+        keysToRemove.push(key);
+      }
+    }
+  }
+  keysToRemove.forEach(key => localStorage.removeItem(key));
+  
   // Don't clear sessionStorage here - allow user to continue after re-login
   // The sessionStorage is marked with user ID and will be cleared if different user logs in
 };

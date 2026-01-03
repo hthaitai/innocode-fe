@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { BREADCRUMBS } from "@/config/breadcrumbs";
 import PageContainer from "@/shared/components/PageContainer";
 import TableFluent from "@/shared/components/TableFluent";
@@ -13,6 +14,7 @@ import {
 } from "../../../../services/provinceApi";
 
 const StaffProvinces = () => {
+  const { t } = useTranslation("pages");
   const { openModal } = useModal();
 
   // ----- Fetch Data -----
@@ -75,12 +77,12 @@ const StaffProvinces = () => {
   const provincesColumns = [
     {
       accessorKey: "name",
-      header: "Name",
+      header: t("provinces.name"),
       cell: ({ row }) => row.original.name || "—",
     },
     {
       accessorKey: "address",
-      header: "Address",
+      header: t("provinces.address"),
       cell: ({ row }) => row.original.address || "—",
     },
     {
@@ -93,12 +95,12 @@ const StaffProvinces = () => {
           row={row.original}
           items={[
             {
-              label: "Edit",
+              label: t("provinces.edit"),
               icon: Pencil,
               onClick: () => handleProvinceModal("edit", row.original),
             },
             {
-              label: "Delete",
+              label: t("provinces.delete"),
               icon: Trash2,
               className: "text-red-500",
               onClick: () => handleDeleteProvince(row.original),
@@ -135,9 +137,9 @@ const StaffProvinces = () => {
           <div className="flex gap-5 items-center">
             <MapPin size={20} />
             <div>
-              <p className="text-[14px] leading-[20px]">Provinces Management</p>
+              <p className="text-[14px] leading-[20px]">{t("provinces.provincesManagement")}</p>
               <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                Create and manage provinces
+                {t("provinces.createAndManageProvinces")}
               </p>
             </div>
           </div>
@@ -145,14 +147,14 @@ const StaffProvinces = () => {
             className="button-orange"
             onClick={() => handleProvinceModal("create")}
           >
-            New Province
+            {t("provinces.newProvince")}
           </button>
         </div>
 
         <TableFluent
           data={provinces}
           columns={provincesColumns}
-          title="Provinces"
+          title={t("provinces.provinces")}
         />
       </div>
     </PageContainer>

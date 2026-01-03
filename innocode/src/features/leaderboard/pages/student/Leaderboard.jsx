@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
-import { useParams } from "react-router-dom";
-import PageContainer from "@/shared/components/PageContainer";
+import React, { useEffect, useState, useMemo, useCallback, useRef } from "react"
+import { useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import PageContainer from "@/shared/components/PageContainer"
 import {
   Trophy,
   Medal,
@@ -11,73 +12,73 @@ import {
   Wifi,
   WifiOff,
   MedalIcon,
-} from "lucide-react";
-import { formatDateTime } from "@/shared/utils/dateTime";
-import { formatScore } from "@/shared/utils/formatNumber";
-import { BREADCRUMBS } from "@/config/breadcrumbs";
-import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
-import useContests from "../../../contest/hooks/useContests";
-import { Icon } from "@iconify/react";
-import DropdownFluent from "../../../../shared/components/DropdownFluent";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLiveLeaderboard } from "../../hooks/useLiveLeaderboard";
+} from "lucide-react"
+import { formatDateTime } from "@/shared/utils/dateTime"
+import { formatScore } from "@/shared/utils/formatNumber"
+import { BREADCRUMBS } from "@/config/breadcrumbs"
+import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi"
+import useContests from "../../../contest/hooks/useContests"
+import { Icon } from "@iconify/react"
+import DropdownFluent from "../../../../shared/components/DropdownFluent"
+import { motion, AnimatePresence } from "framer-motion"
+import { useLiveLeaderboard } from "../../hooks/useLiveLeaderboard"
 
 const Leaderboard = () => {
-  const { contestId: urlContestId } = useParams();
+  const { t } = useTranslation("pages")
+  const { contestId: urlContestId } = useParams()
 
-  const { contests, loading: contestsLoading } = useContests();
+  const { contests, loading: contestsLoading } = useContests()
 
-  const [expandedTeamId, setExpandedTeamId] = useState(null);
-  const [liveData, setLiveData] = useState(null);
+  const [expandedTeamId, setExpandedTeamId] = useState(null)
+  const [liveData, setLiveData] = useState(null)
 
   // Toggle team expansion
   const toggleTeamExpansion = (teamId) => {
-    setExpandedTeamId(expandedTeamId === teamId ? null : teamId);
-  };
+    setExpandedTeamId(expandedTeamId === teamId ? null : teamId)
+  }
 
   // Get available contests (ongoing or completed)
   const availableContests = useMemo(() => {
-    if (!contests || !Array.isArray(contests)) return [];
-    
+    if (!contests || !Array.isArray(contests)) return []
+
     return contests.filter((c) => {
       // Filter out Draft contests
-      if (c.status === 'Draft') return false;
-      
-      const status = c.status?.toLowerCase() || '';
-      const now = new Date();
-      
+      if (c.status === "Draft") return false
+
+      const status = c.status?.toLowerCase() || ""
+      const now = new Date()
+
       // Check if ongoing
-      const isOngoing = 
-        status === 'ongoing' || 
-        status === 'registrationopen' || 
-        status === 'registrationclosed' ||
-        (c.start && c.end && now >= new Date(c.start) && now < new Date(c.end));
-      
+      const isOngoing =
+        status === "ongoing" ||
+        status === "registrationopen" ||
+        status === "registrationclosed" ||
+        (c.start && c.end && now >= new Date(c.start) && now < new Date(c.end))
+
       // Check if completed
-      const isCompleted = 
-        status === 'completed' || 
-        (c.end && now > new Date(c.end));
-      
+      const isCompleted =
+        status === "completed" || (c.end && now > new Date(c.end))
+
       // Include if ongoing or completed
-      return isOngoing || isCompleted;
-    });
-  }, [contests]);
+      return isOngoing || isCompleted
+    })
+  }, [contests])
 
   // Use contestId from URL or first available contest
   const [selectedContestId, setSelectedContestId] = useState(
     urlContestId || null
-  );
+  )
 
   useEffect(() => {
     if (!selectedContestId && availableContests.length > 0) {
-      setSelectedContestId(availableContests[0].contestId);
+      setSelectedContestId(availableContests[0].contestId)
     }
-  }, [availableContests, selectedContestId]);
+  }, [availableContests, selectedContestId])
 
   // Get selected contest details
   const selectedContest = availableContests.find(
     (c) => c.contestId === selectedContestId
-  );
+  )
 
   // Fetch leaderboard data using RTK Query
   const {
@@ -87,55 +88,55 @@ const Leaderboard = () => {
     refetch,
   } = useGetTeamsByContestIdQuery(selectedContestId, {
     skip: !selectedContestId,
-  });
+  })
 
   // Handle live updates from SignalR
   const handleLiveUpdate = useCallback((data) => {
-    console.log("🔄 ========== HANDLE LIVE UPDATE ==========");
-    console.log("🔄 Raw data received in component:", data);
-    console.log("🔄 Data type:", typeof data);
-    console.log("�� Is array:", Array.isArray(data));
+    console.log("🔄 ========== HANDLE LIVE UPDATE ==========")
+    console.log("🔄 Raw data received in component:", data)
+    console.log("🔄 Data type:", typeof data)
+    console.log("�� Is array:", Array.isArray(data))
     console.log("🔄 Data structure:", {
       isArray: Array.isArray(data),
       hasTeams: !!data?.teams,
       hasTeamIdList: !!data?.teamIdList,
       hasEntries: !!data?.entries,
-      keys: data ? Object.keys(data) : "null"
-    });
-    
+      keys: data ? Object.keys(data) : "null",
+    })
+
     // Update live data state
     // The data structure might be: { teams: [...] } or just the teams array
-    const updatedData = Array.isArray(data) 
+    const updatedData = Array.isArray(data)
       ? { teams: data }
-      : data?.teams 
-        ? data 
-        : { teams: data?.teamIdList || data?.entries || [] };
-    
-    console.log("🔄 Processed updatedData:", updatedData);
-    console.log("🔄 Teams count:", updatedData?.teams?.length || 0);
+      : data?.teams
+      ? data
+      : { teams: data?.teamIdList || data?.entries || [] }
+
+    console.log("🔄 Processed updatedData:", updatedData)
+    console.log("🔄 Teams count:", updatedData?.teams?.length || 0)
     if (updatedData?.teams?.length > 0) {
-      console.log("🔄 First team:", updatedData.teams[0]);
+      console.log("🔄 First team:", updatedData.teams[0])
     }
-    console.log("🔄 ========================================");
-    
-    setLiveData(updatedData);
-  }, []);
+    console.log("🔄 ========================================")
+
+    setLiveData(updatedData)
+  }, [])
 
   // Connect to live leaderboard hub - ensure this is always called
   const { isConnected, connectionError } = useLiveLeaderboard(
     selectedContestId || null, // Always pass a value, never undefined
     handleLiveUpdate,
     !!selectedContestId
-  );
+  )
 
   // Reset live data and refetch when contest changes
   useEffect(() => {
-    setLiveData(null);
+    setLiveData(null)
     if (selectedContestId) {
       // Refetch leaderboard data when contest changes
-      refetch();
+      refetch()
     }
-  }, [selectedContestId, refetch]);
+  }, [selectedContestId, refetch])
 
   // Debug: Log leaderboard data
   useEffect(() => {
@@ -143,48 +144,48 @@ const Leaderboard = () => {
       console.log(
         "🔍 [Leaderboard Component] selectedContestId:",
         selectedContestId
-      );
+      )
       console.log(
         "🔍 [Leaderboard Component] leaderboardData:",
         leaderboardData
-      );
+      )
       console.log(
         "🔍 [Leaderboard Component] leaderboardData type:",
         typeof leaderboardData
-      );
+      )
       console.log(
         "🔍 [Leaderboard Component] leaderboardData isArray:",
         Array.isArray(leaderboardData)
-      );
-      console.log("🔍 [Leaderboard Component] loading:", loading);
-      console.log("🔍 [Leaderboard Component] error:", error);
+      )
+      console.log("🔍 [Leaderboard Component] loading:", loading)
+      console.log("🔍 [Leaderboard Component] error:", error)
     }
-  }, [leaderboardData, selectedContestId, loading, error]);
+  }, [leaderboardData, selectedContestId, loading, error])
 
   // Handle data structure - Use live data if available, otherwise use initial data
   // Priority: liveData > leaderboardData
-  const currentData = liveData || leaderboardData;
+  const currentData = liveData || leaderboardData
   const entries = Array.isArray(currentData)
     ? currentData // Fallback for old format
     : currentData?.teams ||
       currentData?.teamIdList ||
       currentData?.entries ||
-      [];
+      []
 
   // Debug: Log entries
   useEffect(() => {
     if (import.meta.env.VITE_ENV === "development") {
-      console.log("🔍 [Leaderboard Component] entries:", entries);
-      console.log("🔍 [Leaderboard Component] entries length:", entries.length);
+      console.log("🔍 [Leaderboard Component] entries:", entries)
+      console.log("🔍 [Leaderboard Component] entries length:", entries.length)
       if (entries.length > 0) {
-        console.log("🔍 [Leaderboard Component] first entry:", entries[0]);
+        console.log("🔍 [Leaderboard Component] first entry:", entries[0])
         console.log(
           "🔍 [Leaderboard Component] first entry keys:",
           Object.keys(entries[0] || {})
-        );
+        )
       }
     }
-  }, [entries]);
+  }, [entries])
 
   // Get contest info from selected contest or from data
   const contestInfo = {
@@ -194,62 +195,80 @@ const Leaderboard = () => {
       ? entries.length
       : currentData?.totalTeamCount || 0,
     snapshotAt: currentData?.snapshotAt || null,
-  };
+  }
 
   // Get rank icon based on position
   const getRankIcon = (rank) => {
     switch (rank) {
       case 1:
-        return <Trophy className="text-yellow-500" size={20} />;
+        return <Trophy className="text-yellow-500" size={20} />
       case 2:
-        return <Medal className="text-gray-400" size={20} />;
+        return <Medal className="text-gray-400" size={20} />
       case 3:
-        return <Award className="text-amber-600" size={20} />;
+        return <Award className="text-amber-600" size={20} />
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   // Get rank badge color
   const getRankBadgeClass = (rank) => {
     switch (rank) {
       case 1:
-        return "bg-yellow-100 text-yellow-800 border-yellow-300";
+        return "bg-yellow-100 text-yellow-800 border-yellow-300"
       case 2:
-        return "bg-gray-100 text-gray-800 border-gray-300";
+        return "bg-gray-100 text-gray-800 border-gray-300"
       case 3:
-        return "bg-amber-100 text-amber-800 border-amber-300";
+        return "bg-amber-100 text-amber-800 border-amber-300"
       default:
-        return "bg-blue-50 text-blue-800 border-blue-200";
+        return "bg-blue-50 text-blue-800 border-blue-200"
     }
-  };
+  }
 
   // Format round type for display
   const formatRoundType = (roundType) => {
     switch (roundType) {
       case "McqTest":
-        return "MCQ Test";
+        return t("leaderboard.mcqTest")
       case "Manual":
-        return "Manual Problem";
+        return t("leaderboard.manualProblem")
       case "AutoEvaluation":
-        return "Auto Evaluation";
+        return t("leaderboard.autoEvaluation")
       default:
-        return roundType || "—";
+        return roundType || "—"
     }
-  };
+  }
+
+  // Get status color class based on status
+  const getStatusColorClass = (status) => {
+    if (!status) return "text-gray-400"
+
+    switch (status) {
+      case "Pending":
+      case "PlagiarismSuspected":
+        return "text-yellow-500"
+      case "PlagiarismConfirmed":
+      case "Cancelled":
+        return "text-red-500"
+      case "Finished":
+        return "text-green-500"
+      default:
+        return "text-gray-400"
+    }
+  }
 
   // Render team members detail
   const renderTeamMembers = (entry) => {
-    const members = entry.members || [];
+    const members = entry.members || []
 
     if (members.length === 0) {
       return (
         <div className="px-4 py-3">
           <p className="text-sm text-gray-500">
-            Only member of this team can see detail information
+            {t("leaderboard.onlyMemberCanSee")}
           </p>
         </div>
-      );
+      )
     }
 
     return (
@@ -271,15 +290,15 @@ const Leaderboard = () => {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">
-                      {member.memberName || "Unknown Member"}
+                      {member.memberName || t("leaderboard.unknownMember")}
                     </p>
                     <p className="text-xs text-gray-500 capitalize">
-                      {member.memberRole || "member"}
+                      {member.memberRole || t("leaderboard.memberRole")}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-gray-500">Total Score</p>
+                  <p className="text-xs text-gray-500">{t("leaderboard.totalScore")}</p>
                   <p className="text-lg font-bold text-blue-600">
                     {formatScore(member.totalScore) || "0"}
                   </p>
@@ -290,7 +309,7 @@ const Leaderboard = () => {
               {member.roundScores && member.roundScores.length > 0 ? (
                 <div className="mt-3 pt-3 border-t border-gray-200">
                   <p className="text-xs font-medium text-gray-600 mb-2">
-                    Round Scores:
+                    {t("leaderboard.roundScores")}
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     {member.roundScores.map((round, roundIdx) => (
@@ -300,7 +319,16 @@ const Leaderboard = () => {
                       >
                         <div className="flex items-center justify-between mb-1">
                           <p className="text-xs font-medium text-gray-700 truncate">
-                            {round.roundName || "Round"}
+                            {round.roundName || t("leaderboard.round")}{" "}
+                            {round.status && (
+                              <span
+                                className={`text-xs ml-4 ${getStatusColorClass(
+                                  round.status
+                                )}`}
+                              >
+                                {round.status}
+                              </span>
+                            )}
                           </p>
                           <span className="text-xs font-bold text-blue-600 ml-2">
                             {formatScore(round.score)}
@@ -334,7 +362,7 @@ const Leaderboard = () => {
               ) : (
                 <div className="mt-3 pt-3 border-t border-gray-200">
                   <p className="text-xs text-gray-500">
-                    No round scores available
+                    {t("leaderboard.noRoundScores")}
                   </p>
                 </div>
               )}
@@ -342,8 +370,8 @@ const Leaderboard = () => {
           ))}
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   if (contestsLoading) {
     return (
@@ -351,11 +379,11 @@ const Leaderboard = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading...</p>
+            <p className="text-gray-600 font-medium">{t("leaderboard.loading")}</p>
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   if (!availableContests || availableContests.length === 0) {
@@ -364,15 +392,14 @@ const Leaderboard = () => {
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 py-8 text-center">
           <Trophy className="mx-auto text-gray-400 mb-4" size={48} />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            No Contests Available
+            {t("leaderboard.noContestsAvailable")}
           </h3>
           <p className="text-gray-600">
-            There are no active or completed contests to display leaderboards
-            for.
+            {t("leaderboard.noContestsAvailableDesc")}
           </p>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   return (
@@ -396,7 +423,7 @@ const Leaderboard = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl font-semibold text-gray-900">
-                    {contestInfo.contestName || "Contest Leaderboard"}
+                    {contestInfo.contestName || t("leaderboard.contestLeaderboard")}
                   </h2>
                   {/* Live indicator */}
                   {selectedContestId && (
@@ -404,30 +431,29 @@ const Leaderboard = () => {
                       {isConnected ? (
                         <div className="flex items-center gap-1 text-green-600">
                           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                          <span className="text-xs font-medium">Live</span>
+                          <span className="text-xs font-medium">{t("leaderboard.live")}</span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1 text-gray-400">
                           <WifiOff size={14} />
-                          <span className="text-xs">Offline</span>
+                          <span className="text-xs">{t("leaderboard.offline")}</span>
                         </div>
                       )}
                     </div>
                   )}
                 </div>
                 <p className="text-sm text-gray-600">
-                  {isConnected ? "Live updates enabled" : "View current standings and team rankings"}
+                  {isConnected
+                    ? t("leaderboard.liveUpdatesEnabled")
+                    : t("leaderboard.viewCurrentStandings")}
                   {!isConnected && contestInfo.snapshotAt && (
                     <span>
                       {" "}
-                      • Last updated: {formatDateTime(contestInfo.snapshotAt)}
+                      • {t("leaderboard.lastUpdated")} {formatDateTime(contestInfo.snapshotAt)}
                     </span>
                   )}
                   {isConnected && liveData && (
-                    <span className="text-green-600">
-                      {" "}
-                      • Updated just now
-                    </span>
+                    <span className="text-green-600"> • {t("leaderboard.updatedJustNow")}</span>
                   )}
                 </p>
               </div>
@@ -436,7 +462,7 @@ const Leaderboard = () => {
             {availableContests.length > 1 && (
               <div className="flex items-center gap-2">
                 <label className="text-sm font-medium text-gray-700">
-                  Contest:
+                  {t("leaderboard.contest")}
                 </label>
                 <DropdownFluent
                   options={availableContests.map((contest) => ({
@@ -456,7 +482,7 @@ const Leaderboard = () => {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading leaderboard...</p>
+              <p className="text-gray-600">{t("leaderboard.loadingLeaderboard")}</p>
             </div>
           </div>
         ) : error ? (
@@ -475,11 +501,10 @@ const Leaderboard = () => {
                 className="mx-auto mb-2 opacity-50"
               />
               <p className="text-lg font-medium mb-1">
-                This contest has no leaderboard yet
+                {t("leaderboard.noLeaderboardYet")}
               </p>
               <p className="text-sm">
-                The leaderboard will appear once teams start participating in
-                this contest
+                {t("leaderboard.leaderboardWillAppear")}
               </p>
             </div>
           ) : (
@@ -490,19 +515,19 @@ const Leaderboard = () => {
                 className="mx-auto mb-2 text-red-500 opacity-50"
               />
               <p className="text-lg font-medium text-red-600 mb-1">
-                Failed to load leaderboard
+                {t("leaderboard.failedToLoadLeaderboard")}
               </p>
               <p className="text-sm text-[#7A7574]">
                 {(() => {
-                  if (typeof error === "string") return error;
-                  if (error?.Message) return error.Message;
-                  if (error?.message) return error.message;
-                  if (error?.data?.message) return error.data.message;
-                  if (error?.data?.Message) return error.data.Message;
+                  if (typeof error === "string") return error
+                  if (error?.Message) return error.Message
+                  if (error?.message) return error.message
+                  if (error?.data?.message) return error.data.message
+                  if (error?.data?.Message) return error.data.Message
                   if (error?.status === "FETCH_ERROR") {
-                    return "Unable to connect to server. Please check your internet connection.";
+                    return t("leaderboard.unableToConnect")
                   }
-                  return "An error occurred while loading data. Please try again later.";
+                  return t("leaderboard.errorLoadingData")
                 })()}
               </p>
             </div>
@@ -527,7 +552,7 @@ const Leaderboard = () => {
                           {entries[1]?.teamName || "—"}
                         </p>
                         <p className="text-2xl font-bold text-[#ff6b35]">
-                          {formatScore(entries[1]?.score)} pts
+                          {formatScore(entries[1]?.score)} {t("leaderboard.pts")}
                         </p>
                       </div>
                     </div>
@@ -557,7 +582,7 @@ const Leaderboard = () => {
                           {entries[0]?.teamName || "—"}
                         </p>
                         <p className="text-3xl font-bold text-[#ff6b35]">
-                          {formatScore(entries[0]?.score)} pts
+                          {formatScore(entries[0]?.score)} {t("leaderboard.pts")}
                         </p>
                       </div>
                     </div>
@@ -580,7 +605,7 @@ const Leaderboard = () => {
                           {entries[2]?.teamName || "—"}
                         </p>
                         <p className="text-2xl font-bold text-[#ff6b35]">
-                          {formatScore(entries[2]?.score)} pts
+                          {formatScore(entries[2]?.score)} {t("leaderboard.pts")}
                         </p>
                       </div>
                     </div>
@@ -626,11 +651,11 @@ const Leaderboard = () => {
             {entries.length > 3 && (
               <div className="space-y-3">
                 <h4 className="text-md font-semibold text-[#2d3748] mb-3">
-                  Other Rankings
+                  {t("leaderboard.otherRankings")}
                 </h4>
                 {entries.slice(3).map((entry, index) => {
-                  const actualRank = entry.rank || index + 4;
-                  const isExpanded = expandedTeamId === entry.teamId;
+                  const actualRank = entry.rank || index + 4
+                  const isExpanded = expandedTeamId === entry.teamId
 
                   return (
                     <div
@@ -656,8 +681,7 @@ const Leaderboard = () => {
                             </p>
                             {(entry.members?.length || 0) > 0 && (
                               <p className="text-xs text-[#7A7574]">
-                                {entry.members?.length || 0} member
-                                {(entry.members?.length || 0) !== 1 ? "s" : ""}
+                                {entry.members?.length || 0} {(entry.members?.length || 0) !== 1 ? t("leaderboard.members") : t("leaderboard.member")}
                               </p>
                             )}
                           </div>
@@ -667,7 +691,7 @@ const Leaderboard = () => {
                             <p className="text-xl font-bold text-[#13d45d]">
                               {formatScore(entry.score)}{" "}
                               <span className="text-xs text-[#13d45d]">
-                                pts
+                                {t("leaderboard.pts")}
                               </span>
                             </p>
                           </div>
@@ -711,7 +735,7 @@ const Leaderboard = () => {
                         )}
                       </AnimatePresence>
                     </div>
-                  );
+                  )
                 })}
               </div>
             )}
@@ -720,17 +744,17 @@ const Leaderboard = () => {
             {entries.length < 3 && (
               <div className="space-y-3">
                 {entries.map((entry, index) => {
-                  const actualRank = entry.rank || index + 1;
-                  const isExpanded = expandedTeamId === entry.teamId;
+                  const actualRank = entry.rank || index + 1
+                  const isExpanded = expandedTeamId === entry.teamId
                   const getRankIcon = () => {
                     if (actualRank === 1)
-                      return <Trophy className="text-yellow-500" size={20} />;
+                      return <Trophy className="text-yellow-500" size={20} />
                     if (actualRank === 2)
-                      return <Medal className="text-gray-400" size={20} />;
+                      return <Medal className="text-gray-400" size={20} />
                     if (actualRank === 3)
-                      return <Award className="text-amber-600" size={20} />;
-                    return null;
-                  };
+                      return <Award className="text-amber-600" size={20} />
+                    return null
+                  }
 
                   return (
                     <div
@@ -755,8 +779,7 @@ const Leaderboard = () => {
                             </p>
                             {(entry.members?.length || 0) > 0 && (
                               <p className="text-xs text-[#7A7574]">
-                                {entry.members?.length || 0} member
-                                {(entry.members?.length || 0) !== 1 ? "s" : ""}
+                                {entry.members?.length || 0} {(entry.members?.length || 0) !== 1 ? t("leaderboard.members") : t("leaderboard.member")}
                               </p>
                             )}
                           </div>
@@ -764,7 +787,7 @@ const Leaderboard = () => {
                             <p className="text-xl font-bold text-[#13d45d]">
                               {formatScore(entry.score)}{" "}
                               <span className="text-xs text-[#13d45d]">
-                                pts
+                                {t("leaderboard.pts")}
                               </span>
                             </p>
                           </div>
@@ -806,7 +829,7 @@ const Leaderboard = () => {
                         )}
                       </AnimatePresence>
                     </div>
-                  );
+                  )
                 })}
               </div>
             )}
@@ -819,16 +842,16 @@ const Leaderboard = () => {
               className="mx-auto mb-2 opacity-50"
             />
             <p className="text-lg font-medium mb-1">
-              No rankings available yet
+              {t("leaderboard.noRankingsAvailable")}
             </p>
             <p className="text-sm">
-              Leaderboard will appear once teams start participating
+              {t("leaderboard.leaderboardWillAppearOnceTeamsStart")}
             </p>
           </div>
         )}
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default Leaderboard;
+export default Leaderboard

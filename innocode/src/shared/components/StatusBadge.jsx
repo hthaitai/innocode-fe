@@ -63,7 +63,18 @@ const StatusBadge = ({ status, translate = false }) => {
   // Get display status
   let displayStatus;
   
-  if (translate) {
+  // Check if this is a role registration status (pending, approved, denied)
+  const roleRegistrationStatusMap = {
+    'pending': 'roleRegistrations.pending',
+    'approved': 'roleRegistrations.approved',
+    'denied': 'roleRegistrations.denied',
+  };
+  
+  const roleRegistrationKey = roleRegistrationStatusMap[safeStatus];
+  if (roleRegistrationKey) {
+    // Use translation for role registration status
+    displayStatus = t(roleRegistrationKey);
+  } else if (translate) {
     // Use translation for contest status
     // Map status to translation key
     const statusMap = {

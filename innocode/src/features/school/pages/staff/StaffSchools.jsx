@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { BREADCRUMBS } from "@/config/breadcrumbs";
 import PageContainer from "@/shared/components/PageContainer";
@@ -9,6 +10,7 @@ import StatusBadge from "@/shared/components/StatusBadge";
 import DropdownFluent from "@/shared/components/DropdownFluent";
 
 const StaffSchools = () => {
+  const { t } = useTranslation("pages");
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -57,7 +59,7 @@ const StaffSchools = () => {
   const columns = [
     {
       accessorKey: "name",
-      header: "School Name",
+      header: t("schools.schoolName"),
       cell: ({ row }) => {
         const name = row.original.name || row.original.Name || "—";
         return <span className="font-medium">{name}</span>;
@@ -66,7 +68,7 @@ const StaffSchools = () => {
     },
     {
       accessorKey: "provinceName",
-      header: "Province",
+      header: t("schools.province"),
       cell: ({ row }) => {
         const province = row.original.provinceName || row.original.ProvinceName || "—";
         return <span className="text-gray-700">{province}</span>;
@@ -75,7 +77,7 @@ const StaffSchools = () => {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("schools.status"),
       cell: ({ row }) => (
         <StatusBadge status={row.original.status || row.original.Status} />
       ),
@@ -83,7 +85,7 @@ const StaffSchools = () => {
     },
     {
       accessorKey: "createdAt",
-      header: "Created Date",
+      header: t("schools.createdDate"),
       cell: ({ row }) => {
         const date =
           row.original.createdAt ||
@@ -129,10 +131,10 @@ const StaffSchools = () => {
             <School size={20} className="text-gray-700" />
             <div>
               <p className="text-[14px] leading-[20px] font-semibold text-gray-800">
-                School Creation Requests Management
+                {t("schools.schoolCreationRequestsManagement")}
               </p>
               <p className="text-[12px] leading-[16px] text-[#7A7574] mt-0.5">
-                Review and manage school creation requests
+                {t("schools.reviewAndManageRequests")}
               </p>
             </div>
           </div>
@@ -140,7 +142,7 @@ const StaffSchools = () => {
             {/* Search Input */}
             <div className="flex gap-2 items-center">
               <label className="text-sm text-gray-600 font-medium">
-                Search:
+                {t("schools.search")}
               </label>
               <input
                 type="text"
@@ -151,7 +153,7 @@ const StaffSchools = () => {
                     handleSearch(searchTerm);
                   }
                 }}
-                placeholder="Search by name, address, contact..."
+                placeholder={t("schools.searchPlaceholder")}
                 className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 min-w-[250px]"
               />
             </div>
@@ -159,19 +161,19 @@ const StaffSchools = () => {
             {/* Status Filter */}
             <div className="flex gap-2 items-center">
               <label className="text-sm text-gray-600 font-medium">
-                Status:
+                {t("schools.status")}
               </label>
               <div className="min-w-[150px]">
                 <DropdownFluent
                   value={statusFilter}
                   onChange={setStatusFilter}
                   options={[
-                    { value: "", label: "All Status" },
-                    { value: "Pending", label: "Pending" },
-                    { value: "Approved", label: "Approved" },
-                    { value: "Denied", label: "Denied" },
+                    { value: "", label: t("schools.allStatus") },
+                    { value: "Pending", label: t("schools.pending") },
+                    { value: "Approved", label: t("schools.approved") },
+                    { value: "Denied", label: t("schools.denied") },
                   ]}
-                  placeholder="All Status"
+                  placeholder={t("schools.allStatus")}
                 />
               </div>
             </div>
