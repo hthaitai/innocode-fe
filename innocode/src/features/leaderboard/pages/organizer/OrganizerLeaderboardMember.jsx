@@ -156,6 +156,8 @@ const OrganizerLeaderboardMember = () => {
           </div>
         ))}
       </div>
+      </AnimatedSection>
+
     </PageContainer>
   )
 }

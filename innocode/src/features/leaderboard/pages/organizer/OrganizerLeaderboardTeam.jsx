@@ -156,6 +156,7 @@ const OrganizerLeaderboardTeam = () => {
           ))}
         </div>
       </div>
+      </AnimatedSection>
     </PageContainer>
   )
 }
