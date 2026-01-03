@@ -23,6 +23,7 @@ import { useAuth } from "@/context/AuthContext";
 import useTeams from "@/features/team/hooks/useTeams";
 import useCompletedQuizzes from "@/features/quiz/hooks/useCompletedQuizzes";
 import { formatDateTime } from "@/shared/utils/dateTime";
+import { formatScore } from "@/shared/utils/formatNumber";
 import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
 import { useGetRoundsByContestIdQuery } from "@/services/roundApi";
 import useCompletedAutoTests from "@/features/problem/hooks/useCompletedAutoTests";
@@ -323,9 +324,6 @@ const ContestDetail = () => {
     });
   };
 
-  const formatScore = (score) => {
-    return (score ?? 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
   // Determine countdown target and label based on contest status
   const getCountdownTarget = () => {
     if (!contest) return null;

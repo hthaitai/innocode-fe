@@ -10,8 +10,10 @@ import {
   ChevronUp,
   Wifi,
   WifiOff,
+  MedalIcon,
 } from "lucide-react";
 import { formatDateTime } from "@/shared/utils/dateTime";
+import { formatScore } from "@/shared/utils/formatNumber";
 import { BREADCRUMBS } from "@/config/breadcrumbs";
 import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
 import useContests from "../../../contest/hooks/useContests";
@@ -27,11 +29,6 @@ const Leaderboard = () => {
 
   const [expandedTeamId, setExpandedTeamId] = useState(null);
   const [liveData, setLiveData] = useState(null);
-
-  // Format score with commas
-  const formatScore = (score) => {
-    return (score ?? 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
 
   // Toggle team expansion
   const toggleTeamExpansion = (teamId) => {
@@ -259,7 +256,7 @@ const Leaderboard = () => {
       <div className="px-4 py-4">
         <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
           <Users size={16} />
-          Team Members
+          {entry.teamName}
         </h4>
         <div className="space-y-4">
           {members.map((member, idx) => (
@@ -284,7 +281,7 @@ const Leaderboard = () => {
                 <div className="text-right">
                   <p className="text-xs text-gray-500">Total Score</p>
                   <p className="text-lg font-bold text-blue-600">
-                    {formatScore(member.totalScore)}
+                    {formatScore(member.totalScore) || "0"}
                   </p>
                 </div>
               </div>
@@ -306,7 +303,7 @@ const Leaderboard = () => {
                             {round.roundName || "Round"}
                           </p>
                           <span className="text-xs font-bold text-blue-600 ml-2">
-                            {round.score?.toFixed(2) || "0.00"}
+                            {formatScore(round.score)}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 mt-1">
@@ -524,7 +521,7 @@ const Leaderboard = () => {
                     >
                       <div className="flex flex-col items-center">
                         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center mb-2">
-                          <Users size={24} className="text-gray-600" />
+                          <MedalIcon size={24} className="text-gray-600" />
                         </div>
                         <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full">
                           {entries[1]?.teamName || "—"}
@@ -576,7 +573,7 @@ const Leaderboard = () => {
                       onClick={() => toggleTeamExpansion(entries[2]?.teamId)}
                     >
                       <div className="flex flex-col items-center">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-200 to-amber-300 flex items-center justify-center mb-2">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mb-2">
                           <Award className="text-amber-700" size={24} />
                         </div>
                         <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full">

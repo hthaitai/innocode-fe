@@ -12,6 +12,7 @@ import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSectio
 import { MissingState } from "@/shared/components/ui/MissingState"
 import { LoadingState } from "@/shared/components/ui/LoadingState"
 import { ErrorState } from "@/shared/components/ui/ErrorState"
+import { formatScore } from "@/shared/utils/formatNumber"
 
 const OrganizerLeaderboardTeam = () => {
   const { contestId, teamId } = useParams()
@@ -143,19 +144,18 @@ const OrganizerLeaderboardTeam = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-5">
-                      <p className="text-[14px] leading-5 text-[#7A7574]">
-                        {member.totalScore} points
-                      </p>
-                      <ChevronRight size={20} className="text-[#7A7574]" />
-                    </div>
+                  <div className="flex items-center gap-5">
+                    <p className="text-[14px] leading-5 text-[#7A7574]">
+                      {formatScore(member.totalScore)} points
+                    </p>
+                    <ChevronRight size={20} className="text-[#7A7574]" />
                   </div>
-                </Link>
-              </div>
-            ))}
-          </div>
+                </div>
+              </Link>
+            </div>
+          ))}
         </div>
-      </AnimatedSection>
+      </div>
     </PageContainer>
   )
 }

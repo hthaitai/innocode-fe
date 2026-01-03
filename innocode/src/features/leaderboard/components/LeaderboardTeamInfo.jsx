@@ -1,6 +1,7 @@
 import React from "react"
 import InfoSection from "../../../shared/components/InfoSection"
 import DetailTable from "../../../shared/components/DetailTable"
+import { formatScore } from "@/shared/utils/formatNumber"
 
 const LeaderboardTeamInfo = ({ team }) => {
   if (!team) return null
@@ -14,7 +15,7 @@ const LeaderboardTeamInfo = ({ team }) => {
         data={[
           { label: "Team name", value: safe(team.teamName) },
           { label: "Rank", value: safe(team.rank) },
-          { label: "Team score", value: safe(team.score) },
+          { label: "Team score", value: formatScore(team.score) },
           { label: "Total members", value: safe(team.members?.length ?? 0) },
         ]}
       />

@@ -1,3 +1,5 @@
+import { formatScore } from "@/shared/utils/formatNumber"
+
 export const getContestLeaderboardColumns = () => [
   {
     accessorKey: "rank",
@@ -17,7 +19,7 @@ export const getContestLeaderboardColumns = () => [
     accessorKey: "score",
     header: "Team score",
     size: 140,
-    cell: ({ row }) => row.original?.score ?? "—",
+    cell: ({ row }) => formatScore(row.original?.score),
     meta: { className: "truncate max-w-[140px]" },
   },
 ]
