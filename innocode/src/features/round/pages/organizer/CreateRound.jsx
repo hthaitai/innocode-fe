@@ -19,6 +19,7 @@ import RoundsList from "../../components/organizer/RoundsList"
 import { EMPTY_ROUND } from "../../constants/roundConstants"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import { formatRoundError } from "@/features/round/utils/errorUtils"
 
 const CreateRound = () => {
   const { contestId } = useParams()
@@ -57,6 +58,7 @@ const CreateRound = () => {
     }
 
     setErrors(validationErrors)
+    console.log(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
       toast.error(`Please fix ${Object.keys(validationErrors).length} field(s)`)
       return
@@ -124,9 +126,11 @@ const CreateRound = () => {
       await createRound({ contestId, data: formPayload }).unwrap()
       toast.success("Round created successfully")
       navigate(`/organizer/contests/${contestId}`)
+      navigate(`/organizer/contests/${contestId}`)
     } catch (err) {
       console.error(err)
-      toast.error(err?.data?.errorMessage || "Failed to create round")
+      const errorMessage = err?.data?.errorMessage || "Failed to create round"
+      toast.error(formatRoundError(errorMessage))
     }
   }
 
