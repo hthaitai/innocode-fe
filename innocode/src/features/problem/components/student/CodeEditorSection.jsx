@@ -1,11 +1,10 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { Code, Play, CheckCircle, Upload, X } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "react-hot-toast";
 import CodeEditor from "./CodeEditor";
 import ErrorMessage from "./ErrorMessage";
-import { CODE_SNIPPETS } from "@/constants/constants";
 
 /**
  * Component chứa code editor và các controls
@@ -28,7 +27,33 @@ const CodeEditorSection = ({
   theme,
   setTheme,
   isTimeUp = false,
+  templateUrl,
 }) => {
+  const [templateCode, setTemplateCode] = useState("");
+  const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
+
+  // Fetch template code from URL
+  useEffect(() => {
+    if (templateUrl) {
+      setIsLoadingTemplate(true);
+      fetch(templateUrl)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch template");
+          }
+          return response.text();
+        })
+        .then((text) => {
+          setTemplateCode(text);
+          setIsLoadingTemplate(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching template:", error);
+          setIsLoadingTemplate(false);
+          // Keep templateCode as empty string if fetch fails
+        });
+    }
+  }, [templateUrl]);
   const handleFileRead = useCallback(
     async (file) => {
       try {
@@ -142,15 +167,28 @@ const CodeEditorSection = ({
         </div>
       </div>
 
-      <CodeEditor
-        value={code}
-        onChange={isTimeUp ? undefined : setCode}
-        language={language}
-        height="750px"
-        defaultValue={CODE_SNIPPETS.python}
-        theme={theme || "vs-dark"}
-        readOnly={isTimeUp}
-      />
+      {isLoadingTemplate ? (
+        <div className="flex items-center justify-center h-[750px] border border-[#E5E5E5] rounded-[8px]">
+          <div className="text-center">
+            <Icon
+              icon="mdi:loading"
+              width="32"
+              className="mx-auto mb-2 text-[#ff6b35] animate-spin"
+            />
+            <p className="text-[#7A7574]">Loading template...</p>
+          </div>
+        </div>
+      ) : (
+        <CodeEditor
+          value={code}
+          onChange={isTimeUp ? undefined : setCode}
+          language={language}
+          height="750px"
+          defaultValue={templateCode}
+          theme={theme || "vs-dark"}
+          readOnly={isTimeUp}
+        />
+      )}
 
       {/* Auto-save indicator */}
       {code && (
