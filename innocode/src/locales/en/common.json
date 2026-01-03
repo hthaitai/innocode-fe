@@ -69,7 +69,14 @@
     "saveChanges": "Save Changes",
     "areYouSure": "Are you sure?",
     "thisActionCannotBeUndone": "This action cannot be undone.",
-    "pageDeletedOrUnavailable": "This page has been deleted or is no longer available"
+    "pageDeletedOrUnavailable": "This page has been deleted or is no longer available",
+    "pagination": {
+      "pageOfItems": "Page {{page}} of {{totalPages}} — {{totalCount}} items",
+      "firstPage": "First page",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "lastPage": "Last page"
+    }
   },
   "home": {
     "welcome": "Welcome to InnoCode Platform",

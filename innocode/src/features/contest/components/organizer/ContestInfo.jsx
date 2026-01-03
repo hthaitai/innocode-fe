@@ -4,9 +4,11 @@ import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "../../../../shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import StatusBadge from "../../../../shared/components/StatusBadge"
+import { useTranslation } from "react-i18next"
 
 const ContestInfo = ({ contest }) => {
   const navigate = useNavigate()
+  const { t } = useTranslation("pages")
 
   const safe = (val, suffix = "") => {
     if (val === null || val === undefined || val === "") return "—"
@@ -14,7 +16,10 @@ const ContestInfo = ({ contest }) => {
     return `${val}${text}`
   }
 
-  const daysSuffix = (val) => (Number(val) === 1 ? " day" : " days")
+  const daysSuffix = (val) =>
+    Number(val) === 1
+      ? t("organizerContestDetail.info.labels.day")
+      : t("organizerContestDetail.info.labels.days")
 
   // Move edit logic here
   const handleEdit = () => {
@@ -23,60 +28,87 @@ const ContestInfo = ({ contest }) => {
   }
 
   return (
-    <InfoSection title="Contest Information" onEdit={handleEdit}>
+    <InfoSection
+      title={t("organizerContestDetail.info.title")}
+      onEdit={handleEdit}
+    >
       <DetailTable
         data={[
-          { label: "Name", value: safe(contest.name) },
           {
-            label: "Status",
+            label: t("organizerContestDetail.info.labels.name"),
+            value: safe(contest.name),
+          },
+          {
+            label: t("organizerContestDetail.info.labels.status"),
             value: <StatusBadge status={contest.status} translate={true} />,
           },
-          { label: "Year", value: safe(contest.year) },
+          {
+            label: t("organizerContestDetail.info.labels.year"),
+            value: safe(contest.year),
+          },
           { spacer: true },
           {
-            label: "Contest start date",
+            label: t("organizerContestDetail.info.labels.startDate"),
             value: safe(formatDateTime(contest.start)),
           },
           {
-            label: "Contest end date",
+            label: t("organizerContestDetail.info.labels.endDate"),
             value: safe(formatDateTime(contest.end)),
           },
           {
-            label: "Registration start date",
+            label: t("organizerContestDetail.info.labels.registrationStart"),
             value: contest.registrationStart
               ? safe(formatDateTime(contest.registrationStart))
-              : "Not set",
+              : t("organizerContestDetail.info.labels.notSet"),
           },
           {
-            label: "Registration end date",
+            label: t("organizerContestDetail.info.labels.registrationEnd"),
             value: contest.registrationEnd
               ? safe(formatDateTime(contest.registrationEnd))
-              : "Not set",
+              : t("organizerContestDetail.info.labels.notSet"),
           },
           { spacer: true },
-          { label: "Min team members", value: safe(contest.teamMembersMin) },
-          { label: "Max team members", value: safe(contest.teamMembersMax) },
-          { label: "Max teams", value: safe(contest.teamLimitMax) },
+          {
+            label: t("organizerContestDetail.info.labels.minTeamMembers"),
+            value: safe(contest.teamMembersMin),
+          },
+          {
+            label: t("organizerContestDetail.info.labels.maxTeamMembers"),
+            value: safe(contest.teamMembersMax),
+          },
+          {
+            label: t("organizerContestDetail.info.labels.maxTeams"),
+            value: safe(contest.teamLimitMax),
+          },
           { spacer: true },
           {
-            label: "Appeal submission deadline",
+            label: t("organizerContestDetail.info.labels.appealSubmitDeadline"),
             value: safe(contest.appealSubmitDays, daysSuffix),
           },
           {
-            label: "Appeal review deadline",
+            label: t("organizerContestDetail.info.labels.appealReviewDeadline"),
             value: safe(contest.appealReviewDays, daysSuffix),
           },
           {
-            label: "Judge rescore deadline",
+            label: t("organizerContestDetail.info.labels.judgeRescoreDeadline"),
             value: safe(contest.judgeRescoreDays, daysSuffix),
           },
           { spacer: true },
-          { label: "Rewards", value: safe(contest.rewardsText) },
-          { spacer: true },
-          { label: "Description", value: safe(contest.description) },
-          { label: "Image URL", value: safe(contest.imgUrl) },
           {
-            label: "Created at",
+            label: t("organizerContestDetail.info.labels.rewards"),
+            value: safe(contest.rewardsText),
+          },
+          { spacer: true },
+          {
+            label: t("organizerContestDetail.info.labels.description"),
+            value: safe(contest.description),
+          },
+          {
+            label: t("organizerContestDetail.info.labels.imageUrl"),
+            value: safe(contest.imgUrl),
+          },
+          {
+            label: t("organizerContestDetail.info.labels.createdAt"),
             value: safe(formatDateTime(contest.createdAt)),
           },
         ]}

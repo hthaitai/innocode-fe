@@ -65,7 +65,7 @@ const OrganizerAppealDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="contest" />
+        <ErrorState itemName="appeal details" />
       </PageContainer>
     )
   }

@@ -392,6 +392,175 @@
     "roleRegistrationDenied": "Từ chối đăng ký vai trò thành công",
     "failedToApprove": "Không thể phê duyệt đăng ký vai trò",
     "failedToDeny": "Không thể từ chối đăng ký vai trò"
+  },
+  "organizerContests": {
+    "searchPlaceholder": "Tìm kiếm cuộc thi...",
+    "addContest": "Thêm cuộc thi",
+    "table": {
+      "name": "Tên cuộc thi",
+      "year": "Năm",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "actions": "Hành động",
+      "edit": "Sửa",
+      "delete": "Xóa"
+    },
+    "filter": "Lọc"
+  },
+  "organizerContestDetail": {
+    "noImage": "Không có ảnh",
+    "sections": {
+      "rounds": "Quản lý vòng thi",
+      "relatedSettings": "Cài đặt liên quan",
+      "otherSettings": "Cài đặt khác"
+    },
+    "info": {
+      "title": "Thông tin cuộc thi",
+      "labels": {
+        "name": "Tên cuộc thi",
+        "status": "Trạng thái",
+        "year": "Năm",
+        "startDate": "Ngày bắt đầu",
+        "endDate": "Ngày kết thúc",
+        "registrationStart": "Ngày mở đăng ký",
+        "registrationEnd": "Ngày đóng đăng ký",
+        "notSet": "Chưa thiết lập",
+        "minTeamMembers": "Số thành viên tối thiểu",
+        "maxTeamMembers": "Số thành viên tối đa",
+        "maxTeams": "Số đội tối đa",
+        "appealSubmitDeadline": "Hạn nộp khiếu nại",
+        "appealReviewDeadline": "Hạn duyệt khiếu nại",
+        "judgeRescoreDeadline": "Hạn chấm lại",
+        "rewards": "Giải thưởng",
+        "description": "Mô tả",
+        "imageUrl": "URL ảnh",
+        "createdAt": "Ngày tạo",
+        "day": " ngày",
+        "days": " ngày"
+      }
+    },
+    "relatedSettings": {
+      "teams": {
+        "title": "Đội thi",
+        "subtitle": "Quản lý các đội và thành viên"
+      },
+      "judges": {
+        "title": "Ban giám khảo",
+        "subtitle": "Mời và quản lý giám khảo"
+      },
+      "activeJudges": {
+        "title": "Giám khảo hoạt động",
+        "subtitle": "Giám khảo hiện đang được phân công"
+      },
+      "leaderboard": {
+        "title": "Bảng xếp hạng",
+        "subtitle": "Xem và làm mới bảng xếp hạng"
+      },
+      "templateGallery": {
+        "title": "Thư viện mẫu",
+        "subtitle": "Duyệt mẫu chứng chỉ hoặc tải lên mẫu mới"
+      },
+      "issuedStudentCertificates": {
+        "title": "Chứng chỉ cá nhân",
+        "subtitle": "Chứng chỉ đã cấp cho học sinh"
+      },
+      "issuedTeamCertificates": {
+        "title": "Chứng chỉ đội",
+        "subtitle": "Chứng chỉ đã cấp cho đội"
+      },
+      "appeals": {
+        "title": "Khiếu nại",
+        "subtitle": "Xem xét và giải quyết khiếu nại"
+      },
+      "plagiarism": {
+        "title": "Đạo văn",
+        "subtitle": "Xem xét và giải quyết các trường hợp đạo văn"
+      }
+    },
+    "delete": {
+      "title": "Xóa cuộc thi",
+      "button": "Xóa cuộc thi",
+      "buttonLoading": "Đang xóa...",
+      "confirmMessage": "Bạn có chắc chắn muốn xóa \"{{name}}\" không?",
+      "success": "Xóa cuộc thi thành công!",
+      "error": "Xóa cuộc thi thất bại."
+    },
+    "control": {
+      "title": "Điều khiển cuộc thi",
+      "subtitle": "Bắt đầu hoặc kết thúc cuộc thi ngay lập tức",
+      "start": "Bắt đầu ngay",
+      "starting": "Đang bắt đầu...",
+      "end": "Kết thúc ngay",
+      "ending": "Đang kết thúc...",
+      "startSuccess": "Bắt đầu cuộc thi thành công",
+      "startError": "Không thể bắt đầu cuộc thi",
+      "endSuccess": "Kết thúc cuộc thi thành công",
+      "endError": "Không thể kết thúc cuộc thi"
+    },
+    "publish": {
+      "title": "Công khai cuộc thi",
+      "subtitleNotReady": "Cuộc thi chưa sẵn sàng để công khai.",
+      "subtitlePublished": "Cuộc thi này đã được công khai.",
+      "subtitleReady": "Hiển thị cuộc thi và kích hoạt cho người tham gia.",
+      "button": "Công khai",
+      "buttonLoading": "Đang xử lý...",
+      "buttonPublished": "Đã công khai",
+      "buttonNotReady": "Chưa sẵn sàng",
+      "confirmTitle": "Công khai cuộc thi",
+      "confirmMessage": "Bạn có chắc chắn muốn công khai \"{{name}}\" không?",
+      "success": "Công khai cuộc thi thành công!",
+      "error": "Không thể công khai cuộc thi",
+      "required": "Bắt buộc",
+      "cannotPublishTitle": "Không thể công khai"
+    },
+    "rounds": {
+      "title": "Quản lý vòng thi",
+      "subtitle": "Tạo và quản lý các vòng thi cho cuộc thi này",
+      "add": "Thêm vòng thi",
+      "error": "Lỗi tải vòng thi",
+      "empty": "Chưa có vòng thi nào.",
+      "untitled": "Vòng thi chưa có tên",
+      "retake": "Thi lại"
+    }
+  },
+  "organizerContestForm": {
+    "breadcrumb": "Chỉnh sửa cuộc thi",
+    "labels": {
+      "course": "Khóa học",
+      "name": "Tên cuộc thi",
+      "description": "Mô tả",
+      "rewards": "Phần thưởng",
+      "registrationStart": "Bắt đầu đăng ký",
+      "registrationEnd": "Kết thúc đăng ký",
+      "contestStart": "Ngày bắt đầu cuộc thi",
+      "contestEnd": "Ngày kết thúc cuộc thi",
+      "minTeamMembers": "Số thành viên tối thiểu",
+      "maxTeamMembers": "Số thành viên tối đa",
+      "maxTeams": "Số đội tối đa",
+      "appealSubmitDays": "Hạn nộp khiếu nại (ngày)",
+      "appealReviewDays": "Hạn duyệt khiếu nại (ngày)",
+      "judgeRescoreDays": "Hạn chấm lại (ngày)",
+      "imageUpload": "Tải lên hình ảnh"
+    },
+    "imageField": {
+      "preview": "Xem trước ảnh bìa",
+      "current": "Ảnh bìa hiện tại",
+      "helper": "Chỉ chấp nhận tệp PNG, JPG, JPEG.",
+      "change": "Thay đổi",
+      "browse": "Chọn ảnh"
+    },
+    "buttons": {
+      "create": "Tạo mới",
+      "creating": "Đang tạo...",
+      "save": "Lưu",
+      "saving": "Đang lưu..."
+    },
+    "messages": {
+      "validationError": "Vui lòng sửa {{count}} trường",
+      "createSuccess": "Tạo cuộc thi thành công!",
+      "createError": "Tạo cuộc thi thất bại.",
+      "updateSuccess": "Cập nhật cuộc thi thành công!",
+      "updateError": "Cập nhật cuộc thi thất bại."
+    }
   }
 }
-

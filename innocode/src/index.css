@@ -93,9 +93,7 @@ body {
   position: relative;
   z-index: 2;
 }
-.button-red {
-  @apply px-4 py-2 bg-red-600 text-white rounded-[5px] hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed;
-}
+
 .hero-content {
   display: flex;
   align-items: center;
@@ -443,6 +441,11 @@ body {
 }
 .button-gray {
   @apply bg-[#BFBFBF] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px];
+}
+.button-red {
+  @apply bg-[#DC2626] border border-[#B91C1C] border-b-[#991B1B] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] cursor-pointer
+  hover:bg-[#B91C1C]
+  active:bg-[#991B1B];
 }
 
 /* Auto-attach visual grouping for consecutive InfoSections */

@@ -20,6 +20,7 @@ import RoundsList from "../../components/organizer/RoundsList"
 import { useGetRoundsByContestIdQuery } from "../../../../services/roundApi"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { EMPTY_ROUND } from "../../constants/roundConstants"
+import { formatRoundError } from "@/features/round/utils/errorUtils"
 
 const EditRound = () => {
   const { contestId, roundId } = useParams()
@@ -162,7 +163,8 @@ const EditRound = () => {
       navigate(`/organizer/contests/${contestId}/rounds/${roundId}`)
     } catch (err) {
       console.error(err)
-      toast.error(err?.data?.errorMessage || "Failed to update round")
+      const errorMessage = err?.data?.errorMessage || "Failed to update round"
+      toast.error(formatRoundError(errorMessage))
     }
   }
 

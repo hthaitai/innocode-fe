@@ -14,6 +14,7 @@ import { useAuth } from "@/context/AuthContext"
 import TablePagination from "@/shared/components/TablePagination"
 import useNotificationNavigation from "../../notification/hooks/useNotificationNavigation"
 import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
+import { ChevronRight, Mail } from "lucide-react"
 
 const Notifications = () => {
   const navigate = useNavigate()
@@ -117,7 +118,7 @@ const Notifications = () => {
       loading={isLoading}
       error={error}
     >
-      <AnimatedSection>
+      <AnimatedSection direction="bottom">
         {" "}
         <div className="space-y-1">
           {/* Header */}
@@ -157,9 +158,8 @@ const Notifications = () => {
                 onClick={() => handleNotificationClick(notification)}
               >
                 <div className="flex items-center gap-5">
-                  <Icon
-                    icon={"mdi:information-outline"}
-                    width={20}
+                  <Mail
+                    size={20}
                     className={`${!notification.isRead ? "" : "text-gray-400"}`}
                   />
 
@@ -177,9 +177,12 @@ const Notifications = () => {
                   </div>
                 </div>
 
-                {!notification.isRead && (
-                  <div className="w-1.5 h-1.5 bg-[#E05307] rounded-full"></div>
-                )}
+                <div className="flex items-center gap-3">
+                  {!notification.isRead && (
+                    <div className="w-1.5 h-1.5 bg-[#E05307] rounded-full"></div>
+                  )}
+                  <ChevronRight size={20} className="text-[#7A7574]" />
+                </div>
               </div>
             ))}
           </div>

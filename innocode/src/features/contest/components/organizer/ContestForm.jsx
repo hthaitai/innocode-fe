@@ -5,6 +5,7 @@ import RegistrationPeriodSection from "./RegistrationPeriodSection"
 import ContestDurationSection from "./ContestDurationSection"
 import ParticipationLimitsSection from "./ParticipationLimitsSection"
 import ContestSettingsSection from "./ContestSettingsSection"
+import { useTranslation } from "react-i18next"
 
 const ContestForm = ({
   formData,
@@ -16,6 +17,8 @@ const ContestForm = ({
   mode = "create",
   hasChanges,
 }) => {
+  const { t } = useTranslation("pages")
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     const finalValue = type === "checkbox" ? checked : value
@@ -85,11 +88,11 @@ const ContestForm = ({
 
           {isSubmitting
             ? mode === "edit"
-              ? "Saving..."
-              : "Creating..."
+              ? t("organizerContestForm.buttons.saving")
+              : t("organizerContestForm.buttons.creating")
             : mode === "edit"
-            ? "Save"
-            : "Create"}
+            ? t("organizerContestForm.buttons.save")
+            : t("organizerContestForm.buttons.create")}
         </button>
       </div>
     </>

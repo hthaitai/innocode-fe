@@ -52,7 +52,7 @@ const useNotificationNavigation = (onClose) => {
       const inviteCode = notification.parsedPayload?.inviteCode
       const contestId = notification.parsedPayload?.contestId
       const email = notification.parsedPayload?.email || user?.email
-      
+
       if (inviteCode) {
         const params = new URLSearchParams({ inviteCode })
         if (contestId) {
@@ -67,10 +67,32 @@ const useNotificationNavigation = (onClose) => {
       }
       return
     }
+    // Appeal created for organizer
+    if (targetType === "appeal" && userRole === "organizer") {
+      if (onClose) onClose()
+      const { contestId, appealId } = notification.parsedPayload || {}
+      navigate(`/organizer/contests/${contestId}/appeals/${appealId}`)
+      return
+    }
+
+    // Contest updates for organizer
+    if (targetType === "contest" && userRole === "organizer") {
+      if (onClose) onClose()
+      const { contestId } = notification.parsedPayload || {}
+      navigate(`/organizer/contests/${contestId}`)
+      return
+    }
+
+    // Judge invitation updates for organizer
+    if (targetType === "judge_invite" && userRole === "organizer") {
+      if (onClose) onClose()
+      const { contestId } = notification.parsedPayload || {}
+      navigate(`/organizer/contests/${contestId}/judges`)
+      return
+    }
   }
 
   return handleNotificationClick
 }
 
 export default useNotificationNavigation
-

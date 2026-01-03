@@ -5,7 +5,7 @@ import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import ContestInfo from "../../components/organizer/ContestInfo"
 import PublishContestSection from "../../components/organizer/PublishContestSection"
 import ContestRelatedSettings from "../../components/organizer/ContestRelatedSettings"
-import RoundsList from "../../components/organizer/ManageRounds"
+import ManageRounds from "../../components/organizer/ManageRounds"
 import DeleteContestSection from "../../components/organizer/DeleteContestSection"
 import StartEndContestSection from "../../components/organizer/StartEndContestSection"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
@@ -14,9 +14,11 @@ import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSectio
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
+import { useTranslation } from "react-i18next"
 
 const OrganizerContestDetail = () => {
   const { contestId } = useParams()
+  const { t } = useTranslation("pages")
 
   const {
     data: contest,
@@ -76,7 +78,9 @@ const OrganizerContestDetail = () => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-[#7A7574] text-sm">No image</span>
+              <span className="text-[#7A7574] text-sm">
+                {t("organizerContestDetail.noImage")}
+              </span>
             )}
           </div>
 
@@ -89,15 +93,15 @@ const OrganizerContestDetail = () => {
           {/* Rounds */}
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-              Rounds management
+              {t("organizerContestDetail.sections.rounds")}
             </div>
-            <RoundsList contestId={contestId} />
+            <ManageRounds contestId={contestId} />
           </div>
 
           {/* Related Settings */}
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-              Related settings
+              {t("organizerContestDetail.sections.relatedSettings")}
             </div>
             <ContestRelatedSettings contestId={contestId} />
           </div>
@@ -105,7 +109,7 @@ const OrganizerContestDetail = () => {
           {/* Delete */}
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-              Other settings
+              {t("organizerContestDetail.sections.otherSettings")}
             </div>
 
             <div className="space-y-1">
