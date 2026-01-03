@@ -6,6 +6,11 @@ import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetContestByIdQuery } from "@/services/contestApi"
 import { useGetIssuedCertificatesQuery } from "@/services/certificateApi"
 import { getStudentIssuedCertificatesColumns } from "../../columns/issuedStudentColumns"
+import { LoadingState } from "@/shared/components/ui/LoadingState"
+import { ErrorState } from "@/shared/components/ui/ErrorState"
+import { MissingState } from "@/shared/components/ui/MissingState"
+import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
+import TablePagination from "@/shared/components/TablePagination"
 
 const OrganizerIssuedStudentCertificates = () => {
   const { contestId } = useParams()
@@ -23,38 +28,68 @@ const OrganizerIssuedStudentCertificates = () => {
     isLoading: issuedLoading,
     error: issuedError,
   } = useGetIssuedCertificatesQuery({
-    // contestId,
+    contestId,
     page,
     pageSize,
     types: "Student",
   })
 
   const certificates = issuedData?.data ?? []
-  const pagination = issuedData?.additionalData
+  const pagination = issuedData?.additionalData ?? {}
 
-  const contestName = contest?.name || "Contest"
-  const breadcrumbItems =
-    BREADCRUMBS.ORGANIZER_CERTIFICATE_ISSUED_STUDENT(contestName)
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CERTIFICATE_ISSUED_STUDENT(
+    contest?.name ?? "Contest"
+  )
   const breadcrumbPaths =
     BREADCRUMB_PATHS.ORGANIZER_CERTIFICATE_ISSUED_STUDENT(contestId)
 
   const columns = getStudentIssuedCertificatesColumns()
 
+  if (contestLoading || issuedLoading) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <LoadingState />
+      </PageContainer>
+    )
+  }
+
+  if (contestError || issuedError) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName="certificates" />
+      </PageContainer>
+    )
+  }
+
+  if (!contest) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <MissingState itemName="contest" />
+      </PageContainer>
+    )
+  }
+
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={contestLoading}
-      error={contestError}
     >
-      <TableFluent
-        data={certificates}
-        columns={columns}
-        loading={issuedLoading}
-        error={issuedError}
-        pagination={pagination}
-        onPageChange={setPage}
-      />
+      <AnimatedSection>
+        <TableFluent data={certificates} columns={columns} />
+
+        {certificates.length > 0 && (
+          <TablePagination pagination={pagination} onPageChange={setPage} />
+        )}
+      </AnimatedSection>
     </PageContainer>
   )
 }

@@ -2,6 +2,7 @@ import React from "react"
 import { Icon } from "@iconify/react"
 import { useTranslation } from "react-i18next"
 import PageContainer from "../../../shared/components/PageContainer"
+import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
 
 const Policy = () => {
   const { t } = useTranslation("policy")
@@ -50,7 +51,7 @@ const Policy = () => {
   ]
 
   return (
-    <PageContainer>
+    <AnimatedSection direction="bottom">
       <div className="border-b border-gray-300 ">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl md:text-4xl font-normal text-gray-900 mb-4">
@@ -65,10 +66,7 @@ const Policy = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {policySections.map((section) => (
-            <div
-              key={section.id}
-              className="   rounded-lg p-6 "
-            >
+            <div key={section.id} className="   rounded-lg p-6 ">
               <div className="flex items-start mb-4">
                 <div className="flex-shrink-0 mr-4">
                   <Icon
@@ -86,22 +84,22 @@ const Policy = () => {
                 {t(`sections.${section.key}.description`)}
               </p>
               <ul className="space-y-2 text-gray-700 text-sm">
-                {t(`sections.${section.key}.details`, { returnObjects: true }).map(
-                  (detail, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-orange-600 mr-2 mt-1 flex-shrink-0">
-                        •
-                      </span>
-                      <span className="leading-relaxed">{detail}</span>
-                    </li>
-                  )
-                )}
+                {t(`sections.${section.key}.details`, {
+                  returnObjects: true,
+                }).map((detail, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="text-orange-600 mr-2 mt-1 flex-shrink-0">
+                      •
+                    </span>
+                    <span className="leading-relaxed">{detail}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           ))}
         </div>
       </div>
-    </PageContainer>
+    </AnimatedSection>
   )
 }
 

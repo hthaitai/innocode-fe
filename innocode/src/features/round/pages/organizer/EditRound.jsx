@@ -51,6 +51,8 @@ const EditRound = () => {
     round?.roundId ?? roundId
   )
 
+  console.log(round)
+
   // Initialize form data once round is loaded
   useEffect(() => {
     if (!round) return
@@ -67,11 +69,13 @@ const EditRound = () => {
         ? {
             ...round.problem,
             type: round.problem?.type || round.problemType,
+            testType: round.problem?.testType || "InputOutput",
             templateUrl: round.problem?.templateUrl,
           }
         : null,
       TemplateFile: null,
       timeLimitSeconds: round.timeLimitSeconds,
+      rankCutoff: round.rankCutoff,
     }
 
     setFormData(formatted)
@@ -108,10 +112,10 @@ const EditRound = () => {
       formPayload.append("End", fromDatetimeLocal(formData.end))
       formPayload.append("ProblemType", formData.problemType)
       formPayload.append("TimeLimitSeconds", formData.timeLimitSeconds)
+      formPayload.append("RankCutoff", formData.rankCutoff)
 
       // Append MCQ config when editing MCQ rounds
       if (formData.problemType === "McqTest") {
-        formPayload.append("McqTestConfig.Name", formData.mcqTestConfig.name)
         formPayload.append(
           "McqTestConfig.Config",
           formData.mcqTestConfig.config
@@ -135,6 +139,13 @@ const EditRound = () => {
           "ProblemConfig.PenaltyRate",
           formData.problemConfig.penaltyRate
         )
+
+        if (formData.problemType === "AutoEvaluation") {
+          formPayload.append(
+            "ProblemConfig.TestType",
+            formData.problemConfig.testType || "InputOutput"
+          )
+        }
 
         // Only append TemplateFile if it's actually a File
         if (formData.TemplateFile) {

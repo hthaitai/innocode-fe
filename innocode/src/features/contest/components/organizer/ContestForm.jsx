@@ -4,6 +4,7 @@ import ContestDetailsSection from "./ContestDetailsSection"
 import RegistrationPeriodSection from "./RegistrationPeriodSection"
 import ContestDurationSection from "./ContestDurationSection"
 import ParticipationLimitsSection from "./ParticipationLimitsSection"
+import ContestSettingsSection from "./ContestSettingsSection"
 
 const ContestForm = ({
   formData,
@@ -13,7 +14,7 @@ const ContestForm = ({
   onSubmit,
   isSubmitting,
   mode = "create",
-  hasChanges
+  hasChanges,
 }) => {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -29,35 +30,39 @@ const ContestForm = ({
 
   return (
     <>
-      <ContestImageField
-        imgFile={formData.imgFile}
-        imgUrl={formData.imgUrl}
-        error={errors.imgFile}
-        onChange={(file) => setFormData((prev) => ({ ...prev, imgFile: file }))}
-      />
-
-      <div className="space-y-1 mt-1">
-        <ContestDetailsSection
-          formData={formData}
-          errors={errors}
-          onChange={handleChange}
-          setFormData={setFormData}
-          setErrors={setErrors}
+      <div className="space-y-1">
+        <ContestImageField
+          imgFile={formData.imgFile}
+          imgUrl={formData.imgUrl}
+          error={errors.imgFile}
+          onChange={(file) =>
+            setFormData((prev) => ({ ...prev, imgFile: file }))
+          }
         />
 
+        <ContestDetailsSection
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+          onChange={handleChange}
+        />
         <RegistrationPeriodSection
           formData={formData}
           errors={errors}
           onChange={handleChange}
         />
-
         <ContestDurationSection
           formData={formData}
           errors={errors}
           onChange={handleChange}
         />
-
         <ParticipationLimitsSection
+          formData={formData}
+          errors={errors}
+          onChange={handleChange}
+        />
+        <ContestSettingsSection
           formData={formData}
           errors={errors}
           onChange={handleChange}

@@ -2,13 +2,10 @@ import React, { useCallback } from "react"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
-import { useNavigate, useParams } from "react-router-dom"
-import { useGetRoundByIdQuery } from "@/services/roundApi"
+import { useNavigate } from "react-router-dom"
 
-const RoundInfo = () => {
+const RoundInfo = ({ round }) => {
   const navigate = useNavigate()
-  const { roundId } = useParams()
-  const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId)
 
   const handleEdit = useCallback(() => {
     if (!round) return
@@ -17,13 +14,17 @@ const RoundInfo = () => {
     )
   }, [round, navigate])
 
-  if (isLoading) return <div>Loading...</div>
-  if (isError || !round) return <div>Failed to load round information.</div>
+  const safe = (val, suffix = "") => {
+    if (val === null || val === undefined || val === "") return "—"
+    const text = typeof suffix === "function" ? suffix(val) : suffix
+    return `${val}${text}`
+  }
 
-  const safe = (val) =>
-    val === null || val === undefined || val === "" ? "—" : val
   const formatPenaltyRate = (rate) =>
     rate == null || rate === "" ? "—" : `${(rate * 100).toFixed(0)}%`
+
+  const secondsSuffix = (val) => (Number(val) === 1 ? " second" : " seconds")
+  const teamsSuffix = (val) => (Number(val) === 1 ? " team" : " teams")
 
   const details = []
 
@@ -49,7 +50,8 @@ const RoundInfo = () => {
   details.push(
     { label: "Start date", value: safe(formatDateTime(round.start)) },
     { label: "End date", value: safe(formatDateTime(round.end)) },
-    { label: "Time limit (seconds)", value: safe(round.timeLimitSeconds) },
+    { label: "Time limit", value: safe(round.timeLimitSeconds, secondsSuffix) },
+    { label: "Teams advancing", value: safe(round.rankCutoff, teamsSuffix) },
     { spacer: true }
   )
 
@@ -67,6 +69,18 @@ const RoundInfo = () => {
       },
       { label: "Problem description", value: safe(round.problem.description) }
     )
+
+    if (round.problemType === "AutoEvaluation") {
+      details.push({
+        label: "Test type",
+        value:
+          round.problem.testType === "MockTest"
+            ? "Mock Test"
+            : round.problem.testType === "InputOutput"
+            ? "Input/Output"
+            : "Input/Output", // default
+      })
+    }
   } else if (!round.mcqTest) {
     details.push({ label: "Problem configuration", value: "—" })
   }

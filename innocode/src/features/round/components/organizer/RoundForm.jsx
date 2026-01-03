@@ -74,6 +74,7 @@ export default function RoundForm({
     const mainRound = rounds.find(
       (r) => String(r.roundId) === String(mainRoundId)
     )
+
     if (!mainRound) return
 
     const prefill = {
@@ -94,6 +95,7 @@ export default function RoundForm({
           ? {
               ...mainRound.problem,
               type: mainRound.problem?.type || mainRound.problemType,
+              testType: mainRound.problem?.testType || "InputOutput",
               templateUrl: mainRound.problem?.templateUrl,
             }
           : {
@@ -101,6 +103,7 @@ export default function RoundForm({
               language: "Python 3",
               penaltyRate: 0.1,
               type: "",
+              testType: "InputOutput",
               templateUrl: "",
             },
       TemplateFile: null,
@@ -127,48 +130,51 @@ export default function RoundForm({
           />
         )}
 
-        <BasicInfoSection
-          formData={formData}
-          errors={errors}
-          onChange={handleChange}
-          isEditingRetakeRound={isEditingRetakeRound}
-          isRetakeRound={isRetakeRound}
-        />
+        {(!isRetakeRound || (isRetakeRound && formData?.mainRoundId)) && (
+          <>
+            <BasicInfoSection
+              formData={formData}
+              errors={errors}
+              onChange={handleChange}
+              isEditingRetakeRound={isEditingRetakeRound}
+              isRetakeRound={isRetakeRound}
+            />
 
-        {!isRetakeRound && (
-          <ProblemConfigurationSection
-            formData={formData}
-            setFormData={setFormData}
-            errors={errors}
-            setErrors={setErrors}
-            handleNestedChange={handleNestedChange}
-            handleFileChange={handleFileChange}
-            fileInputRef={fileInputRef}
-          />
+            <ProblemConfigurationSection
+              formData={formData}
+              setFormData={setFormData}
+              errors={errors}
+              setErrors={setErrors}
+              handleNestedChange={handleNestedChange}
+              handleFileChange={handleFileChange}
+              fileInputRef={fileInputRef}
+              isRetakeRound={isRetakeRound}
+            />
+          </>
         )}
-      </div>
 
-      <div className="flex justify-start mt-3">
-        <button
-          type="button"
-          onClick={onSubmit}
-          disabled={disabled}
-          className={`flex items-center justify-center gap-2 ${
-            disabled ? "button-gray" : "button-orange"
-          }`}
-        >
-          {isSubmitting && (
-            <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
-          )}
+        <div className="flex justify-start mt-3">
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={disabled}
+            className={`flex items-center justify-center gap-2 ${
+              disabled ? "button-gray" : "button-orange"
+            }`}
+          >
+            {isSubmitting && (
+              <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
+            )}
 
-          {isSubmitting
-            ? mode === "edit"
-              ? "Saving..."
-              : "Creating..."
-            : mode === "edit"
-            ? "Save"
-            : "Create"}
-        </button>
+            {isSubmitting
+              ? mode === "edit"
+                ? "Saving..."
+                : "Creating..."
+              : mode === "edit"
+              ? "Save"
+              : "Create"}
+          </button>
+        </div>
       </div>
     </div>
   )

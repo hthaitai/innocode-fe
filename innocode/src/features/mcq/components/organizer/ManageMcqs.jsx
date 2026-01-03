@@ -56,7 +56,9 @@ const ManageMcqs = ({ mcqs, pagination, setPage, testId }) => {
         getRowId={(row) => row.questionId}
       />
 
-      <TablePagination pagination={pagination} onPageChange={setPage} />
+      {mcqs.length > 0 && (
+        <TablePagination pagination={pagination} onPageChange={setPage} />
+      )}
     </div>
   )
 }

@@ -83,10 +83,7 @@ const OrganizerContestDetail = () => {
           {/* Contest Info*/}
           <div className="space-y-1">
             <ContestInfo contest={contest} />
-
             <PublishContestSection contest={contest} />
-
-            <StartEndContestSection contestId={contestId} />
           </div>
 
           {/* Rounds */}
@@ -110,7 +107,11 @@ const OrganizerContestDetail = () => {
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
               Other settings
             </div>
-            <DeleteContestSection contest={contest} />
+
+            <div className="space-y-1">
+              <StartEndContestSection contestId={contestId} />
+              <DeleteContestSection contest={contest} />
+            </div>
           </div>
         </div>
       </AnimatedSection>

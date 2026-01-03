@@ -7,12 +7,14 @@ import RoundOpenCodeSection from "../../components/organizer/RoundOpenCodeSectio
 import StartEndRoundSection from "../../components/organizer/StartEndRoundSection"
 import RoundRelatedSettings from "../../components/organizer/RoundRelatedSettings"
 import DeleteRoundSection from "../../components/organizer/DeleteRoundSection"
+import RoundMockTestUpload from "../../components/organizer/RoundMockTestUpload"
 import { useGetRoundByIdQuery } from "../../../../services/roundApi"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
+import RoundTimeTravelSection from "../../components/organizer/RoundTimeTravelSection"
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
@@ -71,21 +73,30 @@ const OrganizerRoundDetail = () => {
           <div className="space-y-1">
             <RoundInfo round={round} />
             <RoundOpenCodeSection roundId={roundId} />
-            <StartEndRoundSection roundId={roundId} />
           </div>
 
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">
               Related settings
             </div>
-            <RoundRelatedSettings contestId={contestId} round={round} />
+
+            <div className="space-y-1">
+              {round.problemType === "AutoEvaluation" && (
+                <RoundMockTestUpload roundId={round.roundId} />
+              )}
+
+              <RoundRelatedSettings contestId={contestId} round={round} />
+            </div>
           </div>
 
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
-            {round && (
+
+            <div className="space-y-1">
+              <StartEndRoundSection roundId={roundId} />
+              <RoundTimeTravelSection roundId={roundId} />
               <DeleteRoundSection round={round} contestId={contestId} />
-            )}
+            </div>
           </div>
         </div>
       </AnimatedSection>

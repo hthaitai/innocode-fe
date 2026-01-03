@@ -42,7 +42,20 @@ const CreateRound = () => {
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_CREATE(contestId)
 
   const handleSubmit = async () => {
-    const validationErrors = validateRound(form, contest)
+    let validationErrors = validateRound(form, contest)
+
+    // If sections are hidden, only show errors for visible fields (Round Type & Round to retake)
+    const isHidden = form.isRetakeRound && !form.mainRoundId
+    if (isHidden) {
+      // Allowed keys are only 'mainRoundId' (and maybe isRetakeRound if validation checks it?)
+      // Actually, if it's hidden, the only field visible is "Round to retake" (mainRoundId)
+      // So we should filter out everything else.
+      const visibleErrors = {}
+      if (validationErrors.mainRoundId)
+        visibleErrors.mainRoundId = validationErrors.mainRoundId
+      validationErrors = visibleErrors
+    }
+
     setErrors(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
       toast.error(`Please fix ${Object.keys(validationErrors).length} field(s)`)
@@ -75,10 +88,10 @@ const CreateRound = () => {
       formPayload.append("End", fromDatetimeLocal(form.end))
       formPayload.append("ProblemType", form.problemType)
       formPayload.append("TimeLimitSeconds", form.timeLimitSeconds)
+      formPayload.append("RankCutoff", form.rankCutoff)
 
       // Append MCQ config when problem type is McqTest
       if (form.problemType === "McqTest") {
-        formPayload.append("McqTestConfig.Name", form.mcqTestConfig.name)
         formPayload.append("McqTestConfig.Config", form.mcqTestConfig.config)
       }
 
@@ -97,13 +110,19 @@ const CreateRound = () => {
           "ProblemConfig.PenaltyRate",
           form.problemConfig.penaltyRate
         )
+        if (form.problemType === "AutoEvaluation") {
+          formPayload.append(
+            "ProblemConfig.TestType",
+            form.problemConfig.testType || "InputOutput"
+          )
+        }
         if (form.TemplateFile) {
           formPayload.append("ProblemConfig.TemplateFile", form.TemplateFile)
         }
       }
 
       await createRound({ contestId, data: formPayload }).unwrap()
-      toast.success("Round created")
+      toast.success("Round created successfully")
       navigate(`/organizer/contests/${contestId}`)
     } catch (err) {
       console.error(err)

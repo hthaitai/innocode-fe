@@ -89,6 +89,9 @@ export default function EditContest() {
     formPayload.append("teamMembersMin", formData.teamMembersMin)
     formPayload.append("teamMembersMax", formData.teamMembersMax)
     formPayload.append("teamLimitMax", formData.teamLimitMax)
+    formPayload.append("appealSubmitDays", formData.appealSubmitDays)
+    formPayload.append("appealReviewDays", formData.appealReviewDays)
+    formPayload.append("judgeRescoreDays", formData.judgeRescoreDays)
     formPayload.append("rewardsText", formData.rewardsText)
 
     if (formData.imgFile) {

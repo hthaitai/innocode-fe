@@ -32,8 +32,36 @@ const QuestionsPreviewSection = ({
     )
   }
 
+  // Check if all displayed questions are selected
+  const isAllSelected =
+    questions.length > 0 &&
+    questions.every((q) =>
+      selectedQuestions.some((sq) => sq.questionId === q.questionId)
+    )
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      // Unselect all questions visible in the preview table
+      const visibleIds = new Set(questions.map((q) => q.questionId))
+      setSelectedQuestions((prev) =>
+        prev.filter((q) => !visibleIds.has(q.questionId))
+      )
+    } else {
+      // Select all questions visible in the preview table
+      const newlySelected = questions.filter(
+        (q) => !selectedQuestions.some((sq) => sq.questionId === q.questionId)
+      )
+      setSelectedQuestions((prev) => [...prev, ...newlySelected])
+    }
+  }
+
   // Columns
-  const tableColumns = getMcqPreviewColumns(selectedQuestions, toggleSelect)
+  const tableColumns = getMcqPreviewColumns(
+    selectedQuestions,
+    toggleSelect,
+    toggleSelectAll,
+    isAllSelected
+  )
   const selectedColumns = getMcqSelectedColumns(deselectQuestion)
 
   return (

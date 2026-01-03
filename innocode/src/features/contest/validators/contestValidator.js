@@ -68,22 +68,45 @@ export const validateContest = (data, { isEdit = false } = {}) => {
   }
 
   // ---- Team Members ----
-  if (data.teamMembersMin == null || data.teamMembersMin === "") {
+  if (data.teamMembersMin === null || data.teamMembersMin === "") {
     errors.teamMembersMin = "Min team members is required"
-  } else if (data.teamMembersMin < 1 || data.teamMembersMin > 50) {
-    errors.teamMembersMin = "Min team members must be between 1 and 50"
+  } else if (!Number.isInteger(Number(data.teamMembersMin))) {
+    errors.teamMembersMin = "Min team members must be an integer"
+  } else if (data.teamMembersMin < 0) {
+    errors.teamMembersMin = "Min team members cannot be negative"
   }
 
-  if (data.teamMembersMax == null || data.teamMembersMax === "") {
+  if (data.teamMembersMax === null || data.teamMembersMax === "") {
     errors.teamMembersMax = "Max team members is required"
+  } else if (!Number.isInteger(Number(data.teamMembersMax))) {
+    errors.teamMembersMax = "Max team members must be an integer"
   } else if (data.teamMembersMax < 1 || data.teamMembersMax > 50) {
     errors.teamMembersMax = "Max team members must be between 1 and 50"
   } else if (
-    data.teamMembersMin &&
+    data.teamMembersMin !== "" &&
     Number(data.teamMembersMin) > Number(data.teamMembersMax)
   ) {
     errors.teamMembersMax = "Max team members must be >= Min team members"
   }
+
+  // ---- Settings: Appeal & Judge ----
+  const settingsFields = [
+    { key: "appealSubmitDays", label: "Appeal submit days" },
+    { key: "appealReviewDays", label: "Appeal review days" },
+    { key: "judgeRescoreDays", label: "Judge rescore days" },
+  ]
+
+  settingsFields.forEach(({ key, label }) => {
+    if (data[key] === null || data[key] === "") {
+      errors[key] = `${label} is required`
+    } else if (!Number.isInteger(Number(data[key]))) {
+      errors[key] = `${label} must be an integer`
+    } else if (Number(data[key]) < 0) {
+      errors[key] = `${label} cannot be negative`
+    } else if (Number(data[key]) > 365) {
+      errors[key] = `${label} cannot exceed 365 days`
+    }
+  })
 
   // ---- Team Limit ----
   if (data.teamLimitMax == null || data.teamLimitMax === "") {

@@ -8,8 +8,13 @@ import StatusBadge from "../../../../shared/components/StatusBadge"
 const ContestInfo = ({ contest }) => {
   const navigate = useNavigate()
 
-  const safe = (val) =>
-    val === null || val === undefined || val === "" ? "—" : val
+  const safe = (val, suffix = "") => {
+    if (val === null || val === undefined || val === "") return "—"
+    const text = typeof suffix === "function" ? suffix(val) : suffix
+    return `${val}${text}`
+  }
+
+  const daysSuffix = (val) => (Number(val) === 1 ? " day" : " days")
 
   // Move edit logic here
   const handleEdit = () => {
@@ -22,7 +27,10 @@ const ContestInfo = ({ contest }) => {
       <DetailTable
         data={[
           { label: "Name", value: safe(contest.name) },
-          { label: "Status", value: <StatusBadge status={contest.status} translate={true} /> },
+          {
+            label: "Status",
+            value: <StatusBadge status={contest.status} translate={true} />,
+          },
           { label: "Year", value: safe(contest.year) },
           { spacer: true },
           {
@@ -46,8 +54,23 @@ const ContestInfo = ({ contest }) => {
               : "Not set",
           },
           { spacer: true },
+          { label: "Min team members", value: safe(contest.teamMembersMin) },
           { label: "Max team members", value: safe(contest.teamMembersMax) },
           { label: "Max teams", value: safe(contest.teamLimitMax) },
+          { spacer: true },
+          {
+            label: "Appeal submission deadline",
+            value: safe(contest.appealSubmitDays, daysSuffix),
+          },
+          {
+            label: "Appeal review deadline",
+            value: safe(contest.appealReviewDays, daysSuffix),
+          },
+          {
+            label: "Judge rescore deadline",
+            value: safe(contest.judgeRescoreDays, daysSuffix),
+          },
+          { spacer: true },
           { label: "Rewards", value: safe(contest.rewardsText) },
           { spacer: true },
           { label: "Description", value: safe(contest.description) },
@@ -57,7 +80,7 @@ const ContestInfo = ({ contest }) => {
             value: safe(formatDateTime(contest.createdAt)),
           },
         ]}
-        labelWidth="162px"
+        labelWidth="198px"
       />
     </InfoSection>
   )

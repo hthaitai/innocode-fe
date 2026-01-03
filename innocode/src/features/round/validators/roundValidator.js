@@ -35,6 +35,19 @@ export const validateRound = (
     errors.end = "End time cannot be in the past"
   }
 
+  // ---- Rank Cutoff ----
+  if (
+    data.rankCutoff !== undefined &&
+    data.rankCutoff !== null &&
+    data.rankCutoff !== ""
+  ) {
+    if (!Number.isInteger(Number(data.rankCutoff))) {
+      errors.rankCutoff = "Rank cutoff must be an integer"
+    } else if (Number(data.rankCutoff) < 0) {
+      errors.rankCutoff = "Rank cutoff cannot be negative"
+    }
+  }
+
   // ---- Problem Type ----
   if (!data.isRetakeRound && !data.problemType) {
     errors.problemType = "Problem type is required"
@@ -77,6 +90,10 @@ export const validateRound = (
     // if (!data.problemConfig.language?.trim()) {
     //   errors.problemConfigLanguage = "Language is required"
     // }
+
+    if (data.problemType === "AutoEvaluation" && !data.problemConfig.testType) {
+      errors.problemConfigTestType = "Test type is required"
+    }
     // Template file validation
     if (!data.TemplateFile) {
       errors.templateFile = "Template file is required"

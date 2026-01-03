@@ -1,7 +1,7 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Icon } from "@iconify/react"
-import "./Sidebar.css"
+import { motion } from "framer-motion"
 import { useAuth } from "@/context/AuthContext"
 
 const allMenus = {
@@ -41,16 +41,6 @@ const allMenus = {
     label: "Contests",
     icon: "lucide:trophy",
   },
-  organizerProvinces: {
-    path: "/organizer/provinces",
-    label: "Provinces",
-    icon: "lucide:map-pin",
-  },
-  organizerSchools: {
-    path: "/organizer/schools",
-    label: "Schools",
-    icon: "lucide:school",
-  },
   organizerNotifications: {
     path: "/organizer/notifications",
     label: "Notifications",
@@ -58,6 +48,11 @@ const allMenus = {
   },
 
   //judge
+  judgeContests: {
+    path: "/judge/contests",
+    label: "Contests",
+    icon: "lucide:trophy",
+  },
   manualSubmissions: {
     path: "/judge/manual-submissions",
     label: "Submissions",
@@ -114,13 +109,7 @@ const menuByRole = {
     "certificate",
     "notifications",
   ],
-  organizer: [
-    "profile",
-    "organizerContests",
-    "organizerProvinces",
-    "organizerSchools",
-    "notifications",
-  ],
+  organizer: ["profile", "organizerContests", "notifications"],
   mentor: [
     "profile",
     "leaderboard",
@@ -139,7 +128,14 @@ const menuByRole = {
     "team",
     "notifications",
   ],
-  judge: ["profile", "dashboard", "manualSubmissions", "notifications", "help"],
+  judge: [
+    "profile",
+    "dashboard",
+    "judgeContests",
+    "manualSubmissions",
+    "notifications",
+    "help",
+  ],
   admin: ["profile", "dashboard", "leaderboard", "notifications", "help"],
   schoolmanager: [
     "profile",
@@ -155,7 +151,9 @@ const menuByRole = {
 const Sidebar = () => {
   const location = useLocation()
   const { user } = useAuth()
+
   const role = user?.role || "student" // Get role from AuthContext instead of localStorage
+
   const menuKeys = menuByRole[role] || menuByRole.student
   const menuItems = menuKeys
     .map((key) => {
@@ -176,15 +174,15 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="sidebar">
+    <div className="space-y-5">
       {/* User Profile Section */}
-      <div className="flex items-center gap-5 mb-5">
-        <div className="w-[60px] h-[60px]">
-          <div className="avatar-gradient"></div>
+      <div className="flex items-center gap-3">
+        <div className="w-[60px] h-[60px] rounded-full">
+          <div className="w-full h-full bg-[linear-gradient(135deg,#ff6b35_0%,#f7931e_100%)] rounded-full"></div>
         </div>
-        
+
         <div>
-          <div className="text-sm leading-5 font-bold">{user?.name || "User"}</div>
+          <div className="text-sm leading-5 font-medium">{user?.name}</div>
           <div className="text-xs leading-4">
             {role.charAt(0).toUpperCase() + role.slice(1)} account
           </div>
@@ -192,18 +190,33 @@ const Sidebar = () => {
       </div>
 
       {/* Menu Items */}
-      <nav className="sidebar-nav">
-        {menuItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={`nav-item ${isActive(item.path) ? "active" : ""}`}
-          >
-            <Icon icon={item.icon} className="nav-icon" />
-            <span className="nav-label">{item.label}</span>
-            {isActive(item.path) && <div className="active-indicator"></div>}
-          </Link>
-        ))}
+      <nav className="flex flex-col gap-1 w-full">
+        {menuItems.map((item) => {
+          const active = isActive(item.path)
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex items-center px-2.5 py-2 rounded-[5px] cursor-pointer transition-colors duration-200 relative text-sm no-underline ${
+                active ? "bg-[#EAEAEA]" : "hover:bg-[#EAEAEA]"
+              }`}
+            >
+              <div className="w-5 h-5 flex items-center justify-center mr-3.5 shrink-0">
+                <Icon icon={item.icon} className="w-5 h-5 fill-current" />
+              </div>
+              <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                {item.label}
+              </span>
+              {active && (
+                <motion.div
+                  layoutId="active-indicator"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-[#ff6b35] rounded-[5px]"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+              )}
+            </Link>
+          )
+        })}
       </nav>
     </div>
   )

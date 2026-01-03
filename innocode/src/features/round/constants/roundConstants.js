@@ -5,13 +5,15 @@ export const EMPTY_ROUND = {
   start: "",
   end: "",
   timeLimitSeconds: 0,
+  rankCutoff: 0,
   problemType: "",
-  mcqTestConfig: { name: "", config: "" },
+  mcqTestConfig: { config: "" },
   problemConfig: {
     type: "",
     description: "",
     language: "Python 3",
     penaltyRate: 0.1,
+    testType: "InputOutput",
   },
   TemplateFile: null,
 }

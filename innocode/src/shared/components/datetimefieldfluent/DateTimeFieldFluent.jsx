@@ -19,6 +19,12 @@ const DateTimeFieldFluent = ({
   const [selectedDate, setSelectedDate] = useState(value ? dayjs(value) : null)
   const [initialDate, setInitialDate] = useState(null) // Store initial date when picker opens
   const containerRef = useRef()
+  const pickerRef = useRef(null)
+
+  const [pickerPosition, setPickerPosition] = useState({
+    top: "100%",
+    left: 0,
+  })
 
   // Sync selectedDate with value prop when it changes externally (only when picker is closed)
   useEffect(() => {
@@ -56,6 +62,54 @@ const DateTimeFieldFluent = ({
       return () => document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [showPicker, initialDate])
+
+  useEffect(() => {
+    if (!showPicker) return
+
+    const calculatePosition = () => {
+      if (!containerRef.current) return
+
+      const rect = containerRef.current.getBoundingClientRect()
+      // Estimate picker dimensions if not yet rendered, or use ref if available
+      // Using generic max dimensions or actual if available
+      const pickerHeight = pickerRef.current?.offsetHeight || 300
+      const pickerWidth = pickerRef.current?.offsetWidth || 420
+
+      // Simple flip if touching edges
+      const vertical =
+        rect.bottom + pickerHeight > window.innerHeight ? "up" : "down"
+      const horizontal =
+        rect.left + pickerWidth > window.innerWidth ? "left" : "right"
+
+      // Set CSS position
+      const position = {
+        top: vertical === "down" ? "100%" : "auto",
+        bottom: vertical === "up" ? "100%" : "auto",
+        left: horizontal === "right" ? 0 : "auto",
+        right: horizontal === "left" ? 0 : "auto",
+      }
+
+      setPickerPosition(position)
+    }
+
+    // Initial calculation
+    calculatePosition()
+
+    // Recalculate on resize and scroll
+    window.addEventListener("resize", calculatePosition)
+    window.addEventListener("scroll", calculatePosition, true)
+
+    // Also try to recalculate after a short delay to ensure content is rendered
+    const rafId = requestAnimationFrame(() => {
+      calculatePosition()
+    })
+
+    return () => {
+      window.removeEventListener("resize", calculatePosition)
+      window.removeEventListener("scroll", calculatePosition, true)
+      cancelAnimationFrame(rafId)
+    }
+  }, [showPicker])
 
   // Handle date change without triggering onChange immediately
   // onChange will be triggered only when Save button is clicked
@@ -134,6 +188,10 @@ const DateTimeFieldFluent = ({
                 transition: { duration: 0.25, ease: EASING.fluentOut },
               }}
               className="min-w-[420px] absolute top-full bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg p-5 z-50"
+              style={{
+                ...pickerPosition,
+              }}
+              ref={pickerRef}
             >
               <div className="flex flex-col gap-4">
                 <div className="flex gap-5">
@@ -166,20 +224,13 @@ const DateTimeFieldFluent = ({
       </div>
 
       {helperText && (
-        <AnimatePresence>
-          <motion.div
-            key="helper-text"
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2 }}
-            className={`text-xs mt-1 ${
-              error ? "text-[#D32F2F]" : "text-[#7A7574]"
-            }`}
-          >
-            {helperText}
-          </motion.div>
-        </AnimatePresence>
+        <div
+          className={`text-xs mt-1 ${
+            error ? "text-[#D32F2F]" : "text-[#7A7574]"
+          }`}
+        >
+          {helperText}
+        </div>
       )}
     </div>
   )

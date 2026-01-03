@@ -52,20 +52,24 @@ const RoundRelatedSettings = ({ contestId, round }) => {
 
   // Auto Evaluation
   if (round.problemType === "AutoEvaluation") {
-    items.push(
-      {
-        title: "Manage auto test",
+    // Show 'Manage auto test' ONLY if testType is InputOutput (or null/default)
+    const isMockTest = round.problem?.testType === "MockTest"
+
+    if (!isMockTest) {
+      items.push({
+        title: "Manage test cases",
         subtitle: "View or edit auto test settings for this round",
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/auto-evaluation`,
         icon: Settings2,
-      },
-      {
-        title: "Auto test results",
-        subtitle: "View auto-scored submissions",
-        path: `/organizer/contests/${contestId}/rounds/${round.roundId}/auto-evaluation/results`,
-        icon: ClipboardList,
-      }
-    )
+      })
+    }
+
+    items.push({
+      title: "Auto test results",
+      subtitle: "View auto-scored submissions",
+      path: `/organizer/contests/${contestId}/rounds/${round.roundId}/auto-evaluation/results`,
+      icon: ClipboardList,
+    })
   }
 
   return (

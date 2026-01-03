@@ -27,7 +27,7 @@ const OrganizerMcq = () => {
   } = useGetRoundMcqsQuery({ roundId, pageNumber: page, pageSize })
 
   const testId = mcqData?.data?.testId
-  const mcqs = mcqData?.data?.questions ?? []
+  const mcqs = mcqData?.data?.mcqTest?.questions ?? []
   const pagination = mcqData?.additionalData ?? {}
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ(

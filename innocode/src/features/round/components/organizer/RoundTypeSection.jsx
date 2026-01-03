@@ -45,7 +45,7 @@ export default function RoundTypeSection({
           <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 flex flex-col gap-2">
             <Label required>Round to retake</Label>
 
-            <div className="max-w-fit">
+            <div className="min-w-[130px] w-max">
               <DropdownFluent
                 options={rounds.map((r) => ({
                   value: String(r.roundId),

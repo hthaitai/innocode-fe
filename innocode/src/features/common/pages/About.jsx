@@ -2,6 +2,7 @@ import React from "react"
 import { useTranslation } from "react-i18next"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import { Terminal, Trophy, Users, Globe, Code2, Zap } from "lucide-react"
+import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
 
 const About = () => {
   const { t } = useTranslation("about")
@@ -32,7 +33,7 @@ const About = () => {
     },
   ]
   return (
-    <>
+    <AnimatedSection direction="bottom">
       <div className="space-y-20 pb-16">
         {/* 1. Hero Section */}
         <section className="relative text-center max-w-4xl mx-auto pt-8 md:pt-16 px-4">
@@ -137,9 +138,7 @@ const About = () => {
             <h2 className="text-3xl font-bold text-gray-900">
               {t("features.title")}
             </h2>
-            <p className="text-gray-500 mt-2">
-              {t("features.subtitle")}
-            </p>
+            <p className="text-gray-500 mt-2">{t("features.subtitle")}</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -179,7 +178,7 @@ const About = () => {
           </div>
         </section>
       </div>
-    </>
+    </AnimatedSection>
   )
 }
 

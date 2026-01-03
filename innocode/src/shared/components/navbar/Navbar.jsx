@@ -17,7 +17,7 @@ const Navbar = () => {
   const [showNotifications, setShowNotifications] = useState(false)
   const dropdownRef = useRef(null)
   const notifRef = useRef(null)
-  const rolesToHideNav = [""] // hide nav links for students
+  const rolesToHideNav = ["organizer"] // hide nav links for students
 
   // Fetch notifications count for badge (get first page to count unread)
   const { data: notificationsData } = useGetNotificationsQuery(
@@ -109,7 +109,7 @@ const Navbar = () => {
   ]
 
   return (
-    <nav className="h-[64px] top-0 bg-white fixed z-20 w-full flex items-center justify-between px-5">
+    <nav className="h-[64px] top-0 bg-white fixed z-50 w-full flex items-center justify-between px-5">
       {/* Left side: Logo */}
       <div className="flex items-center gap-4">
         <div className="flex-shrink-0">
@@ -121,7 +121,6 @@ const Navbar = () => {
             />
           </Link>
         </div>
-        <LanguageSwitcher />
       </div>
 
       {/* Navigation Menu */}
@@ -143,99 +142,104 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Auth Button / User Menu */}
-      <div className="navbar-auth">
-        {isAuthenticated ? (
-          <div className="user-menu" ref={dropdownRef}>
-            {/* Notification Bell */}
-            <div className="notification-container flex" ref={notifRef}>
+      <div className="flex items-center gap-4">
+        <LanguageSwitcher />
+        {/* Auth Button / User Menu */}
+        <div className="navbar-auth">
+          {isAuthenticated ? (
+            <div className="user-menu" ref={dropdownRef}>
+              {/* Notification Bell */}
+              <div className="notification-container flex" ref={notifRef}>
+                <button
+                  className="hover:bg-[#F3f3f3] cursor-pointer p-1 border border-[#E5E5E5] rounded-[5px] bg-white"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowDropdown(false) // Tắt profile dropdown khi mở notification
+                    setShowNotifications(!showNotifications)
+                  }}
+                  aria-label="Notifications"
+                >
+                  <Icon icon="mdi:bell-outline" width="20" />
+                  {unreadCount > 0 && (
+                    <span className="notification-badge">{unreadCount}</span>
+                  )}
+                </button>
+
+                {/* Notification Dropdown */}
+                {showNotifications && (
+                  <div className="notification-dropdown-wrapper">
+                    <NotificationDropdown
+                      onClose={() => setShowNotifications(false)}
+                    />
+                  </div>
+                )}
+              </div>
+
               <button
-                className="hover:bg-[#F3f3f3] cursor-pointer p-1 border border-[#E5E5E5] rounded-[5px] bg-white"
                 onClick={(e) => {
                   e.stopPropagation()
-                  setShowDropdown(false) // Tắt profile dropdown khi mở notification
-                  setShowNotifications(!showNotifications)
+                  setShowNotifications(false) // Tắt notification dropdown khi mở profile
+                  setShowDropdown(!showDropdown)
                 }}
-                aria-label="Notifications"
               >
-                <Icon icon="mdi:bell-outline" width="20" />
-                {unreadCount > 0 && (
-                  <span className="notification-badge">{unreadCount}</span>
-                )}
+                <Icon
+                  icon="mdi:account-circle"
+                  width="32"
+                  className="cursor-pointer"
+                />
               </button>
 
-              {/* Notification Dropdown */}
-              {showNotifications && (
-                <div className="notification-dropdown-wrapper">
-                  <NotificationDropdown
-                    onClose={() => setShowNotifications(false)}
-                  />
+              {showDropdown && (
+                <div className="user-dropdown">
+                  <div className="user-dropdown-header">
+                    <div className="user-info">
+                      <div className="user-info-name">
+                        {getUserDisplayName()}
+                      </div>
+                      <div className="user-info-email">{user.email}</div>
+                      <span
+                        className={`role-badge ${getRoleBadgeClass(user.role)}`}
+                      >
+                        {t(`roles.${user.role}`)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="user-dropdown-divider"></div>
+
+                  <div className="user-dropdown-menu">
+                    <button
+                      className="dropdown-item"
+                      onClick={() => {
+                        navigate("/profile")
+                        setShowDropdown(false)
+                      }}
+                    >
+                      <Icon icon="mdi:account" width="18" />
+                      <span>{t("navbar.profile")}</span>
+                    </button>
+                  </div>
+
+                  <div className="user-dropdown-divider"></div>
+
+                  <div className="user-dropdown-menu">
+                    <button
+                      className="dropdown-item logout-item"
+                      onClick={handleLogout}
+                    >
+                      <Icon icon="mdi:logout" width="18" />
+                      <span>{t("navbar.logout")}</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                setShowNotifications(false) // Tắt notification dropdown khi mở profile
-                setShowDropdown(!showDropdown)
-              }}
-            >
-              <Icon
-                icon="mdi:account-circle"
-                width="32"
-                className="cursor-pointer"
-              />
+          ) : (
+            <button className="signin-btn" onClick={handleSignIn}>
+              {t("navbar.signIn")}
             </button>
-
-            {showDropdown && (
-              <div className="user-dropdown">
-                <div className="user-dropdown-header">
-                  <div className="user-info">
-                    <div className="user-info-name">{getUserDisplayName()}</div>
-                    <div className="user-info-email">{user.email}</div>
-                    <span
-                      className={`role-badge ${getRoleBadgeClass(user.role)}`}
-                    >
-                      {t(`roles.${user.role}`)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="user-dropdown-divider"></div>
-
-                <div className="user-dropdown-menu">
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      navigate("/profile")
-                      setShowDropdown(false)
-                    }}
-                  >
-                    <Icon icon="mdi:account" width="18" />
-                    <span>{t("navbar.profile")}</span>
-                  </button>
-                </div>
-
-                <div className="user-dropdown-divider"></div>
-
-                <div className="user-dropdown-menu">
-                  <button
-                    className="dropdown-item logout-item"
-                    onClick={handleLogout}
-                  >
-                    <Icon icon="mdi:logout" width="18" />
-                    <span>{t("navbar.logout")}</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <button className="signin-btn" onClick={handleSignIn}>
-            {t("navbar.signIn")}
-          </button>
-        )}
+          )}
+        </div>
       </div>
     </nav>
   )

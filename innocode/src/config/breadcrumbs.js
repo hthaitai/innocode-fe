@@ -81,7 +81,6 @@ export const BREADCRUMBS = {
     "Judge Invites",
   ],
 
-
   // Organizer rounds
   ORGANIZER_ROUND_DETAIL: (contestName, roundName) => [
     "Contests",
@@ -177,7 +176,7 @@ export const BREADCRUMBS = {
     contestName,
     roundName,
     "Test cases",
-    "Edit test case"
+    "Edit test case",
   ],
 
   ORGANIZER_AUTO_RESULTS: (contestName, roundName) => [
@@ -259,11 +258,7 @@ export const BREADCRUMBS = {
   ],
 
   // Organizer appeals
-  ORGANIZER_APPEALS: (contestName) => [
-    "Contests",
-    contestName,
-    "Appeals",
-  ],
+  ORGANIZER_APPEALS: (contestName) => ["Contests", contestName, "Appeals"],
   ORGANIZER_APPEAL_DETAIL: (contestName, studentName) => [
     "Contests",
     contestName,
@@ -301,6 +296,19 @@ export const BREADCRUMBS = {
   //Judge
   JUDGE_SUBMISSIONS: ["Submissions"],
   JUDGE_MANUAL_EVALUATION: ["Submissions", "Evaluation"],
+  JUDGE_CONTESTS: ["Contests"],
+  JUDGE_CONTEST_DETAIL: (contestName) => ["Contests", contestName],
+  JUDGE_ROUND_SUBMISSIONS: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+  ],
+  JUDGE_ROUND_SUBMISSION_EVALUATION: (contestName, roundName) => [
+    "Contests",
+    contestName,
+    roundName,
+    "Evaluation",
+  ],
   //Staff
   STAFF_PROVINCES: ["Provinces"],
   STAFF_SCHOOLS: ["Schools"],
@@ -308,7 +316,7 @@ export const BREADCRUMBS = {
   // Error pages
   NOT_FOUND: ["Not Found"],
   UNAUTHORIZED: ["Unauthorized"],
-};
+}
 
 // Breadcrumb paths configuration for navigation
 export const BREADCRUMB_PATHS = {
@@ -621,10 +629,26 @@ export const BREADCRUMB_PATHS = {
   STAFF_PROVINCES: ["/province-staff"],
   STAFF_SCHOOLS: ["/school-staff"],
   //Judge
-  JUDGE_SUBMISSIONS: ["/judge/manual-submissions"],
+  JUDGE_SUBMISSIONS: ["Submissions"],
   JUDGE_MANUAL_EVALUATION: (submissionId) => [
     "/judge/manual-submissions",
     `/judge/manual-submissions/${submissionId}/rubric-evaluation`,
+  ],
+  JUDGE_CONTESTS: ["/judge/contests"],
+  JUDGE_CONTEST_DETAIL: (contestId) => [
+    "/judge/contests",
+    `/judge/contests/${contestId}`,
+  ],
+  JUDGE_ROUND_SUBMISSIONS: (contestId, roundId) => [
+    "/judge/contests",
+    `/judge/contests/${contestId}`,
+    `/judge/contests/${contestId}/rounds/${roundId}/submissions`,
+  ],
+  JUDGE_ROUND_SUBMISSION_EVALUATION: (contestId, roundId, submissionId) => [
+    "/judge/contests",
+    `/judge/contests/${contestId}`,
+    `/judge/contests/${contestId}/rounds/${roundId}/submissions`,
+    `/judge/contests/${contestId}/rounds/${roundId}/submissions/${submissionId}/evaluation`,
   ],
 
   //Staff
@@ -634,27 +658,27 @@ export const BREADCRUMB_PATHS = {
   // Error pages
   NOT_FOUND: ["/"],
   UNAUTHORIZED: ["/"],
-};
+}
 
 // Helper function to create dynamic breadcrumb
 export const createBreadcrumb = (type, ...params) => {
   if (typeof BREADCRUMBS[type] === "function") {
-    return BREADCRUMBS[type](...params);
+    return BREADCRUMBS[type](...params)
   }
-  return BREADCRUMBS[type] || ["Home"];
-};
+  return BREADCRUMBS[type] || ["Home"]
+}
 
 // Helper function to create breadcrumb with paths for navigation
 export const createBreadcrumbWithPaths = (type, ...params) => {
   const items =
     typeof BREADCRUMBS[type] === "function"
       ? BREADCRUMBS[type](...params)
-      : BREADCRUMBS[type] || ["Home"];
+      : BREADCRUMBS[type] || ["Home"]
 
   const paths =
     typeof BREADCRUMB_PATHS[type] === "function"
       ? BREADCRUMB_PATHS[type](...params)
-      : BREADCRUMB_PATHS[type] || ["/"];
+      : BREADCRUMB_PATHS[type] || ["/"]
 
-  return { items, paths };
-};
+  return { items, paths }
+}

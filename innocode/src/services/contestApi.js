@@ -3,9 +3,9 @@ import { api } from "./api"
 export const contestApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getAllContests: builder.query({
-      query: ({ pageNumber = 1, pageSize = 10 } = {}) => ({
+      query: ({ pageNumber = 1, pageSize = 10, nameSearch }) => ({
         url: "contests",
-        params: { pageNumber, pageSize },
+        params: { pageNumber, pageSize, nameSearch },
       }),
       providesTags: (result) =>
         result?.items

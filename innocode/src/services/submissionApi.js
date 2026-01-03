@@ -4,19 +4,19 @@ import toast from "react-hot-toast"
 export const submissionApi = api.injectEndpoints({
   endpoints: (builder) => ({
     fetchManualSubmissions: builder.query({
-      query: ({ statusFilter = "Pending", pageNumber = 1, pageSize = 10 }) => ({
+      query: ({
+        statusFilter = "Pending",
+        pageNumber = 1,
+        pageSize = 10,
+        roundIdSearch,
+      }) => ({
         url: `/submissions`,
-        params: { statusFilter, pageNumber, pageSize },
-      }),
-      transformResponse: (response) => ({
-        submissions: response.data,
-        pagination: response.additionalData,
-        message: response.message,
+        params: { statusFilter, pageNumber, pageSize, roundIdSearch },
       }),
       providesTags: (result) =>
         result
           ? [
-              ...result.submissions.map((item) => ({
+              ...result.data.map((item) => ({
                 type: "ManualSubmissions",
                 id: item.submissionId,
               })),
@@ -53,7 +53,7 @@ export const submissionApi = api.injectEndpoints({
 
 export const {
   useFetchManualSubmissionsQuery,
-  useFetchSubmissionByIdQuery, 
+  useFetchSubmissionByIdQuery,
   useDownloadSubmissionQuery,
   useLazyDownloadSubmissionQuery,
   useEvaluateSubmissionMutation,

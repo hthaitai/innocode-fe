@@ -2,10 +2,24 @@ import { ChevronRight } from "lucide-react"
 import { ExpandColumn } from "../../../shared/components/ExpandColumn"
 import { formatDateTime } from "../../../shared/utils/dateTime"
 
-export const getMcqPreviewColumns = (selectedQuestions, toggleSelect) => [
+export const getMcqPreviewColumns = (
+  selectedQuestions,
+  toggleSelect,
+  toggleSelectAll,
+  isAllSelected
+) => [
   {
     id: "select",
-    header: "",
+    header: () => (
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          checked={isAllSelected}
+          onChange={toggleSelectAll}
+          className="text-[#E05307] accent-[#E05307]"
+        />
+      </div>
+    ),
     cell: ({ row }) => (
       <div className="flex items-center">
         <input

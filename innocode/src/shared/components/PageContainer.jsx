@@ -22,8 +22,8 @@ export default function PageContainer({
     <div className={`min-h-screen w-full ${className}`}>
       {/* Breadcrumb header */}
       {breadcrumb && (
-        <div className="bg-[#f3f3f3] sticky top-0 z-15 flex items-center justify-between pt-4 pb-5 px-4 md:px-0">
-          <div className="flex-1 min-w-0">
+        <div className="bg-[#f3f3f3] sticky top-16 z-10 flex items-center justify-between pt-4 pb-5 px-4 md:px-0 ">
+          <div className="flex-1 min-w-0 max-w-[1024px] mx-auto">
             <div className="flex items-center space-x-2 w-max max-w-full">
               <BreadcrumbTitle items={breadcrumb} paths={breadcrumbPaths} />
             </div>
@@ -72,7 +72,7 @@ export default function PageContainer({
           )}
         </>
       ) : (
-        <div className="w-full">{children}</div>
+        <div className="max-w-[1024px] mx-auto">{children}</div>
       )}
     </div>
   )

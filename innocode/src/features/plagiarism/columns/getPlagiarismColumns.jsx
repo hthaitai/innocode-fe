@@ -4,35 +4,28 @@ export const getPlagiarismColumns = () => [
   {
     accessorKey: "studentName",
     header: "Student",
-    size: 180,
+    size: 250,
     cell: ({ row }) => row.original.studentName || "—",
-    meta: { className: "truncate max-w-[180px]" },
+    meta: { className: "truncate max-w-[250px]" },
   },
   {
     accessorKey: "teamName",
     header: "Team",
-    size: 180,
+    size: 200,
     cell: ({ row }) => row.original.teamName || "—",
-    meta: { className: "truncate max-w-[180px]" },
-  },
-  {
-    accessorKey: "contestName",
-    header: "Contest",
-    size: 180,
-    cell: ({ row }) => row.original.contestName || "—",
-    meta: { className: "truncate max-w-[180px]" },
+    meta: { className: "truncate max-w-[200px]" },
   },
   {
     accessorKey: "roundName",
     header: "Round",
-    size: 150,
+    size: 200,
     cell: ({ row }) => row.original.roundName || "—",
-    meta: { className: "truncate max-w-[150px]" },
+    meta: { className: "truncate max-w-[200px]" },
   },
   {
     accessorKey: "score",
     header: "Score",
-    size: 120,
+    size: 100,
     cell: ({ row }) => {
       const score = row.original.score
       return score !== undefined && score !== null ? score.toString() : "—"
@@ -41,9 +34,8 @@ export const getPlagiarismColumns = () => [
   {
     accessorKey: "submittedAt",
     header: "Submitted at",
-    size: 180,
+    size: 200,
     cell: ({ row }) => formatDateTime(row.original.submittedAt),
-    meta: { className: "truncate max-w-[150px]" },
+    meta: { className: "truncate max-w-[200px]" },
   },
 ]
-

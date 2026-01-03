@@ -12,8 +12,10 @@ import { useParams, useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useModal } from "../../../shared/hooks/useModal"
-import { Spinner } from "../../../shared/components/SpinnerFluent"
-import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
+import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
+import { LoadingState } from "@/shared/components/ui/LoadingState"
+import { ErrorState } from "@/shared/components/ui/ErrorState"
+import { MissingState } from "@/shared/components/ui/MissingState"
 
 const OrganizerMcqCreate = () => {
   const { roundId, contestId } = useParams()
@@ -31,11 +33,11 @@ const OrganizerMcqCreate = () => {
     data: mcqData,
     isLoading: mcqLoading,
     isError: mcqError,
-  } = useGetRoundMcqsQuery({ roundId, pageNumber: 1, pageSize: 10 })
+  } = useGetRoundMcqsQuery({ roundId })
 
   const [createTest, { isLoading: createLoading }] = useCreateTestMutation()
 
-  const testId = mcqData?.data?.testId
+  const testId = mcqData?.data?.mcqTest?.testId
 
   // ===== LOCAL STATE =====
   const [uploadedQuestions, setUploadedQuestions] = useState([])
@@ -106,15 +108,35 @@ const OrganizerMcqCreate = () => {
     roundId
   )
 
-  if (mcqLoading) {
+  if (roundLoading || mcqLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="min-h-[70px] flex items-center justify-center">
-          <Spinner />
-        </div>
+        <LoadingState />
+      </PageContainer>
+    )
+  }
+
+  if (roundError || mcqError) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName="MCQ test" />
+      </PageContainer>
+    )
+  }
+
+  if (!round) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <MissingState itemName="round" />
       </PageContainer>
     )
   }
@@ -123,7 +145,6 @@ const OrganizerMcqCreate = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      error={roundError}
     >
       <AnimatedSection>
         <QuestionsPreviewSection

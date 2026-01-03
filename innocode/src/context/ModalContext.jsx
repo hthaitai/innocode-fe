@@ -18,13 +18,12 @@ import ReviewAppealModal from "../features/appeal/components/organizer/ReviewApp
 import OpenCodeModal from "../features/round/components/student/OpenCodeModal"
 import OrganizerOpenCodeModal from "../features/round/components/organizer/OrganizerOpenCodeModal"
 import InviteJudgeModal from "../features/invite-judge/components/organizer/InviteJudgeModal"
-import CertificateTemplateModal from "../features/certificate/components/organizer/CertificateTemplateModal"
+import CertificateTemplateModal from "../features/leaderboard/components/CertificateTemplateModal"
 import ContestFilterModal from "../features/contest/components/organizer/ContestFilterModal"
 import RoleRegistrationDetailsModal from "../features/role-registration/components/RoleRegistrationDetailsModal"
 import ApproveRoleRegistrationModal from "../features/role-registration/components/ApproveRoleRegistrationModal"
 import DenyRoleRegistrationModal from "../features/role-registration/components/DenyRoleRegistrationModal"
 import AddMentorModal from "../features/school/components/AddMentorModal"
-import ResolvePlagiarismModal from "../features/plagiarism/components/organizer/ResolvePlagiarismModal"
 
 const ModalContext = createContext({
   openModal: () => {}, // no-op default
@@ -76,7 +75,6 @@ export function ModalProvider({ children }) {
     approveRoleRegistration: ApproveRoleRegistrationModal,
     denyRoleRegistration: DenyRoleRegistrationModal,
     addMentor: AddMentorModal,
-    resolvePlagiarism: ResolvePlagiarismModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

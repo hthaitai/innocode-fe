@@ -1,5 +1,5 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../../../context/AuthContext';
+import { Navigate } from "react-router-dom"
+import { useAuth } from "../../../context/AuthContext"
 
 /**
  * PublicRoute - For pages that should only be accessible when NOT authenticated
@@ -7,7 +7,7 @@ import { useAuth } from '../../../context/AuthContext';
  * If user is already logged in, redirect to home
  */
 const PublicRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth()
 
   // Wait for auth check to complete
   if (loading) {
@@ -18,16 +18,19 @@ const PublicRoute = ({ children }) => {
           <p className="mt-4 text-[#7A7574]">Loading...</p>
         </div>
       </div>
-    );
+    )
   }
 
-  // If user is authenticated, redirect to home
+  // If user is authenticated, redirect based on role
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    if (user?.role === "organizer") {
+      return <Navigate to="/organizer/contests" replace />
+    }
+    return <Navigate to="/" replace />
   }
 
   // If not authenticated, show the public page (Login, Register, etc.)
-  return children;
-};
+  return children
+}
 
-export default PublicRoute;
+export default PublicRoute

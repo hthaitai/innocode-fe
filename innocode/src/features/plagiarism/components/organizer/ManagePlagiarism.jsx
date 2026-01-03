@@ -36,7 +36,9 @@ export default function ManagePlagiarism({
         onRowClick={handleRowClick}
       />
 
-      <TablePagination pagination={pagination} onPageChange={setPage} />
+      {plagiarismItems.length > 0 && (
+        <TablePagination pagination={pagination} onPageChange={setPage} />
+      )}
     </>
   )
 }

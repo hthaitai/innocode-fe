@@ -40,8 +40,6 @@ const OrganizerLeaderboard = () => {
     refetch: refetchLeaderboard,
   } = useGetLeaderboardByContestQuery({ contestId, pageNumber, pageSize })
 
-  console.log(leaderboardData)
-
   const entries = leaderboardData?.data?.teamIdList ?? []
   const pagination = leaderboardData?.additionalData ?? {}
 

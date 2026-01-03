@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Icon } from "@iconify/react"
+import { AnimatePresence, motion } from "framer-motion"
+import { EASING } from "./ui/easing"
 
 const LanguageSwitcher = () => {
   const { i18n } = useTranslation()
@@ -8,11 +10,12 @@ const LanguageSwitcher = () => {
   const dropdownRef = useRef(null)
 
   const languages = [
-    { code: "en", name: "English", icon: 'flag:us-4x3'  },
-    { code: "vi", name: "Tiếng Việt",  icon: "flag:vn-4x3" },
+    { code: "en", name: "English", icon: "flag:us-4x3" },
+    { code: "vi", name: "Tiếng Việt", icon: "flag:vn-4x3" },
   ]
 
-  const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0]
+  const currentLanguage =
+    languages.find((lang) => lang.code === i18n.language) || languages[0]
 
   const changeLanguage = (langCode) => {
     i18n.changeLanguage(langCode)
@@ -31,44 +34,76 @@ const LanguageSwitcher = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors"
+        className={`text-sm leading-5 flex gap-3 justify-between items-center cursor-pointer border rounded-[5px] px-3 min-h-[32px] min-w-[130px] w-max bg-white transition-colors duration-150 ${
+          isOpen
+            ? "border-[#ECECEC] border-b-[#D3D3D3]"
+            : "border-[#ECECEC] border-b-[#D3D3D3]"
+        }`}
         aria-label="Change language"
       >
-        <Icon icon={currentLanguage.icon} width="20" />
-        <span className="hidden sm:inline">{currentLanguage.name}</span>
+        <div className="flex items-center gap-2">
+          <Icon icon={currentLanguage.icon} width="20" />
+          <span className="hidden sm:inline truncate">
+            {currentLanguage.name}
+          </span>
+        </div>
         <Icon
           icon="mdi:chevron-down"
-          className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`transition-transform duration-200 flex-shrink-0 text-[#7A7574] ${
+            isOpen ? "rotate-180" : ""
+          }`}
           width="16"
         />
       </button>
 
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-          {languages.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => changeLanguage(lang.code)}
-              className={`w-full flex items-center gap-2 px-4 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
-                i18n.language === lang.code ? "bg-orange-50 text-orange-600" : "text-gray-700"
-              }`}
-            >
-              <Icon icon={lang.icon} width="20" />
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ y: -10, opacity: 0 }}
+            animate={{
+              y: 0,
+              opacity: 1,
+              transition: { duration: 0.3, ease: EASING.fluentOut },
+            }}
+            exit={{
+              y: -10,
+              opacity: 0,
+              transition: { duration: 0.2, ease: EASING.fluentOut },
+            }}
+            className="absolute right-0 w-40 bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg overflow-hidden py-1 z-150"
+          >
+            <div className="flex flex-col gap-1 p-1">
+              {languages.map((lang) => {
+                const isSelected = i18n.language === lang.code
+                return (
+                  <button
+                    key={lang.code}
+                    onClick={() => changeLanguage(lang.code)}
+                    className={`flex items-center gap-2 text-sm leading-5 py-1.5 px-3 cursor-pointer transition-colors duration-100 rounded-[5px] relative w-full text-left ${
+                      isSelected ? "bg-[#F0F0F0]" : "hover:bg-[#F0F0F0]"
+                    }`}
+                  >
+                    {isSelected && (
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[3px] bg-[#E05307] rounded-[5px]"></span>
+                    )}
 
-              <span>{lang.name}</span>
-              {i18n.language === lang.code && (
-                <Icon icon="mdi:check" className="ml-auto" width="16" />
-              )}
-            </button>
-          ))}
-        </div>
-      )}
+                    <Icon
+                      icon={lang.icon}
+                      width="20"
+                      className="flex-shrink-0"
+                    />
+                    <span className="truncate">{lang.name}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
 
 export default LanguageSwitcher
-

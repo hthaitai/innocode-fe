@@ -7,6 +7,7 @@ import {
   useEvaluateSubmissionMutation,
   useFetchSubmissionByIdQuery,
 } from "../../../../services/submissionApi"
+import { useGetRoundByIdQuery } from "../../../../services/roundApi"
 import { useFetchRubricQuery } from "../../../../services/manualProblemApi"
 import SubmissionInfoSection from "../../components/SubmissionInfoSection"
 import RubricList from "../../components/RubricList"
@@ -14,52 +15,57 @@ import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 import { validateScores } from "../../validators/evaluationValidator"
 import { AlertTriangle } from "lucide-react"
+import { LoadingState } from "../../../../shared/components/ui/LoadingState"
+import { ErrorState } from "../../../../shared/components/ui/ErrorState"
+import { MissingState } from "../../../../shared/components/ui/MissingState"
+import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 const JudgeManualEvaluationsPage = () => {
-  const { submissionId } = useParams()
+  const { contestId, roundId, submissionId } = useParams()
   const navigate = useNavigate()
 
-  const breadcrumbItems = BREADCRUMBS.JUDGE_MANUAL_EVALUATION
-  const breadcrumbPaths = BREADCRUMB_PATHS.JUDGE_MANUAL_EVALUATION(submissionId)
+  const { data: round } = useGetRoundByIdQuery(roundId)
 
-  // Fetch submission by ID
   const {
     data: submission,
     isLoading: submissionLoading,
     isError: submissionError,
-  } = useFetchSubmissionByIdQuery(submissionId, { skip: !submissionId })
+  } = useFetchSubmissionByIdQuery(submissionId)
 
-  const roundId = submission?.roundId
-
-  // Fetch rubric using the roundId
   const {
-    data: rubric,
+    data: rubricData,
     isLoading: rubricLoading,
     isError: rubricError,
-  } = useFetchRubricQuery(roundId, {
-    skip: !roundId,
-  })
+  } = useFetchRubricQuery(roundId)
 
-  // Download submission
   const {
     data: downloadData,
     isLoading: downloadLoading,
     isError: downloadError,
     refetch: fetchDownload,
-  } = useDownloadSubmissionQuery(submissionId, { skip: !submissionId })
+  } = useDownloadSubmissionQuery(submissionId)
 
-  // Evaluate submission
+  const breadcrumbItems = BREADCRUMBS.JUDGE_ROUND_SUBMISSION_EVALUATION(
+    round?.contestName ?? "Contest",
+    round?.name ?? "Round"
+  )
+  const breadcrumbPaths = BREADCRUMB_PATHS.JUDGE_ROUND_SUBMISSION_EVALUATION(
+    contestId,
+    roundId,
+    submissionId
+  )
+
+  const criteria = rubricData?.data?.criteria ?? []
+
   const [evaluateSubmission, { isLoading: evaluating }] =
     useEvaluateSubmissionMutation()
 
-  // Local state for scores
   const [scores, setScores] = useState([])
   const [errors, setErrors] = useState({})
 
-  // Initialize scores when rubric loads
   useEffect(() => {
-    if (rubric) {
-      const initialScores = rubric.map((c) => {
+    if (criteria.length > 0) {
+      const initialScores = criteria.map((c) => {
         const existingResult = submission?.criterionResults?.find(
           (r) => r.rubricId === c.rubricId
         )
@@ -71,15 +77,16 @@ const JudgeManualEvaluationsPage = () => {
       })
       setScores(initialScores)
     }
-  }, [rubric, submission])
+  }, [criteria, submission])
 
   if (submissionLoading || rubricLoading || downloadLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
-        loading
-      />
+      >
+        <LoadingState />
+      </PageContainer>
     )
   }
 
@@ -88,33 +95,19 @@ const JudgeManualEvaluationsPage = () => {
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
-        error={submissionError}
-      />
-    )
-  }
-
-  if (!submission) {
-    return (
-      <PageContainer
-        breadcrumb={breadcrumbItems}
-        breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          Submission not found.
-        </div>
+        <ErrorState itemName="submission or rubric" />
       </PageContainer>
     )
   }
 
-  if (!roundId) {
+  if (!round || !submission) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          This round has been deleted or is no longer available.
-        </div>
+        <MissingState itemName="submission" />
       </PageContainer>
     )
   }
@@ -135,7 +128,7 @@ const JudgeManualEvaluationsPage = () => {
 
   const handleSubmitEvaluation = async () => {
     // Run centralized validator
-    const errors = validateScores(scores, rubric)
+    const errors = validateScores(scores, criteria)
 
     // Stop submission if there are errors
     if (errors.length) {
@@ -148,7 +141,7 @@ const JudgeManualEvaluationsPage = () => {
     try {
       await evaluateSubmission(payload).unwrap()
       toast.success("Evaluation submitted successfully!")
-      navigate("/judge/manual-submissions")
+      navigate(`/judge/contests/${contestId}/rounds/${roundId}/submissions`)
     } catch (err) {
       const errorMessage =
         err?.data?.errorMessage || err?.error || "Failed to submit evaluation"
@@ -170,35 +163,37 @@ const JudgeManualEvaluationsPage = () => {
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
     >
-      <div className="space-y-5">
-        {!isEditable && (
-          <div className="flex items-center gap-5 border border-yellow-400 bg-yellow-100 text-yellow-800 rounded-[5px] px-5 min-h-[70px] text-sm leading-5">
-            <AlertTriangle className="w-5 h-5" />
-            <span>
-              This submission is{" "}
-              <span className="font-bold">
-                {submission.status.toLowerCase()}
-              </span>{" "}
-              and cannot be edited.
-            </span>
-          </div>
-        )}
+      <AnimatedSection>
+        <div className="space-y-5">
+          {!isEditable && (
+            <div className="flex items-center gap-5 border border-yellow-400 bg-yellow-100 text-yellow-800 rounded-[5px] px-5 min-h-[70px] text-sm leading-5">
+              <AlertTriangle className="w-5 h-5" />
+              <span>
+                This submission is{" "}
+                <span className="font-bold">
+                  {submission.status.toLowerCase()}
+                </span>{" "}
+                and cannot be edited.
+              </span>
+            </div>
+          )}
 
-        <SubmissionInfoSection
-          submission={submission}
-          onDownload={handleDownload}
-        />
+          <SubmissionInfoSection
+            submission={submission}
+            onDownload={handleDownload}
+          />
 
-        <RubricList
-          rubric={rubric}
-          scores={scores}
-          evaluating={evaluating}
-          onScoreChange={handleScoreChange}
-          onSubmit={handleSubmitEvaluation}
-          errors={errors}
-          readOnly={!isEditable}
-        />
-      </div>
+          <RubricList
+            rubric={criteria}
+            scores={scores}
+            evaluating={evaluating}
+            onScoreChange={handleScoreChange}
+            onSubmit={handleSubmitEvaluation}
+            errors={errors}
+            readOnly={!isEditable}
+          />
+        </div>
+      </AnimatedSection>
     </PageContainer>
   )
 }

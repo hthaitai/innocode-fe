@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from "react"
 import BaseModal from "@/shared/components/BaseModal"
-import { useGetCertificateTemplatesQuery } from "@/services/certificateApi"
-import { Check } from "lucide-react"
+import {
+  useGetCertificateTemplatesQuery,
+  useAwardCertificatesMutation,
+} from "@/services/certificateApi"
 import { Spinner } from "@/shared/components/SpinnerFluent"
-import TemplatePreviewCanvas from "./TemplatePreviewCanvas"
-import TablePagination from "../../../../shared/components/TablePagination"
+
+import TablePagination from "@/shared/components/TablePagination"
+import toast from "react-hot-toast"
+import TemplatePreviewCanvas from "../../certificate/components/organizer/TemplatePreviewCanvas"
 
 const CertificateTemplateModal = ({
   isOpen,
   onClose,
   contestId,
-  onAward,
-  awarding = false,
+  recipients = [],
 }) => {
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [page, setPage] = useState(1)
+  const [awarding, setAwarding] = useState(false)
   const pageSize = 8
+
+  const [awardCertificates] = useAwardCertificatesMutation()
 
   const {
     data: templatesData,
@@ -28,7 +34,7 @@ const CertificateTemplateModal = ({
   })
 
   const templates = templatesData?.data ?? []
-  const pagination = templatesData?.additionalData
+  const pagination = templatesData?.additionalData ?? {}
 
   useEffect(() => {
     if (!isOpen) {
@@ -40,9 +46,31 @@ const CertificateTemplateModal = ({
     setSelectedTemplate(template)
   }
 
-  const handleAward = () => {
-    if (selectedTemplate && onAward) {
-      onAward(selectedTemplate)
+  const handleAward = async () => {
+    if (!selectedTemplate) return
+
+    const payload = {
+      templateId: selectedTemplate.templateId,
+      recipients,
+      output: "pdf",
+      reissue: true,
+    }
+
+    setAwarding(true)
+    try {
+      await awardCertificates(payload).unwrap()
+      toast.success("Certificate issued successfully.")
+      onClose()
+      setSelectedTemplate(null)
+    } catch (err) {
+      console.error(err)
+      toast.error(
+        err?.data?.message ||
+          err?.data?.errorMessage ||
+          "Unable to issue certificate"
+      )
+    } finally {
+      setAwarding(false)
     }
   }
 
@@ -69,7 +97,7 @@ const CertificateTemplateModal = ({
           </button>
           <button
             type="button"
-            className="button-orange"
+            className={`${awarding ? "button-gray" : "button-orange"} px-3`}
             onClick={handleAward}
             disabled={!selectedTemplate || awarding}
           >

@@ -18,8 +18,11 @@ const EMPTY_CONTEST = {
   registrationStart: "",
   registrationEnd: "",
   teamMembersMax: "",
-  teamMembersMin: "",
+  teamMembersMin: 1,
   teamLimitMax: "",
+  appealSubmitDays: 2,
+  appealReviewDays: 1,
+  judgeRescoreDays: 1,
   rewardsText: "",
   saveAsDraft: true,
 }
@@ -61,6 +64,9 @@ export default function CreateContest() {
       formPayload.append("TeamMembersMin", formData.teamMembersMin)
       formPayload.append("TeamMembersMax", formData.teamMembersMax)
       formPayload.append("TeamLimitMax", formData.teamLimitMax)
+      formPayload.append("AppealSubmitDays", formData.appealSubmitDays)
+      formPayload.append("AppealReviewDays", formData.appealReviewDays)
+      formPayload.append("JudgeRescoreDays", formData.judgeRescoreDays)
       formPayload.append("RewardsText", formData.rewardsText)
 
       if (formData.imgFile) formPayload.append("ImageFile", formData.imgFile)
