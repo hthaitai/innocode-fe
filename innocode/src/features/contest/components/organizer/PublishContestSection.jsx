@@ -6,9 +6,11 @@ import {
   usePublishContestMutation,
 } from "@/services/contestApi"
 import DetailTable from "../../../../shared/components/DetailTable"
+import { useTranslation } from "react-i18next"
 
 const PublishContestSection = ({ contest }) => {
   const { openModal } = useModal()
+  const { t } = useTranslation("pages")
 
   const { data: publishCheck } = useCheckPublishReadyQuery(contest?.contestId, {
     skip: !contest?.contestId || contest?.status === "Published",
@@ -26,7 +28,7 @@ const PublishContestSection = ({ contest }) => {
   const handlePublish = () => {
     if (!isReady) {
       return openModal("alert", {
-        title: "Cannot Publish Contest",
+        title: t("organizerContestDetail.publish.cannotPublishTitle"),
         description: (
           <ul className="list-disc ml-4 text-[#7A7574]">
             {missingItems.map((item, idx) => (
@@ -38,8 +40,10 @@ const PublishContestSection = ({ contest }) => {
     }
 
     openModal("confirm", {
-      title: "Publish Contest",
-      description: `Are you sure you want to publish "${contest.name}"?`,
+      title: t("organizerContestDetail.publish.confirmTitle"),
+      description: t("organizerContestDetail.publish.confirmMessage", {
+        name: contest.name,
+      }),
       onConfirm: async (onClose) => {
         let hasShownToast = false // Prevent duplicate toasts
 
@@ -59,7 +63,7 @@ const PublishContestSection = ({ contest }) => {
             !responseData?.Message
           ) {
             if (!hasShownToast) {
-              toast.success("Contest published successfully!")
+              toast.success(t("organizerContestDetail.publish.success"))
               hasShownToast = true
             }
             onClose()
@@ -72,7 +76,7 @@ const PublishContestSection = ({ contest }) => {
             const errorMessage =
               responseData?.Message ||
               responseData?.message ||
-              "Failed to publish contest"
+              t("organizerContestDetail.publish.error")
 
             if (!hasShownToast) {
               if (missingFromError.length > 0) {
@@ -103,14 +107,14 @@ const PublishContestSection = ({ contest }) => {
               errorData?.Message ||
               errorData?.message ||
               errorData?.errorMessage ||
-              "Failed to publish contest"
+              t("organizerContestDetail.publish.error")
 
             // Double check: sometimes error response might actually indicate success
             if (
               errorData?.code === "SUCCESS" ||
               errorData?.status === "Published"
             ) {
-              toast.success("Contest published successfully!")
+              toast.success(t("organizerContestDetail.publish.success"))
               onClose()
               return
             }
@@ -136,12 +140,12 @@ const PublishContestSection = ({ contest }) => {
 
   const disabled = actionLoading || isPublished || !isReady
   const buttonText = isPublished
-    ? "Already Published"
+    ? t("organizerContestDetail.publish.buttonPublished")
     : actionLoading
-    ? "Publishing..."
+    ? t("organizerContestDetail.publish.buttonLoading")
     : isReady
-    ? "Publish"
-    : "Not Ready"
+    ? t("organizerContestDetail.publish.button")
+    : t("organizerContestDetail.publish.buttonNotReady")
 
   return (
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white overflow-hidden">
@@ -150,13 +154,15 @@ const PublishContestSection = ({ contest }) => {
         <div className="flex gap-5 items-center">
           <Upload size={20} />
           <div>
-            <p className="text-[14px] leading-[20px]">Publish contest</p>
+            <p className="text-[14px] leading-[20px]">
+              {t("organizerContestDetail.publish.title")}
+            </p>
             <p className="text-[12px] leading-[16px] text-[#7A7574]">
               {!isReady
-                ? "Contest is not ready to publish."
+                ? t("organizerContestDetail.publish.subtitleNotReady")
                 : isPublished
-                ? "This contest has already been published."
-                : "Make this contest visible and active for participants."}
+                ? t("organizerContestDetail.publish.subtitlePublished")
+                : t("organizerContestDetail.publish.subtitleReady")}
             </p>
           </div>
         </div>
@@ -182,7 +188,7 @@ const PublishContestSection = ({ contest }) => {
             >
               <div className="text-red-500">{item}</div>
               <div className="text-[#7A7574]">
-                Required
+                {t("organizerContestDetail.publish.required")}
               </div>
             </li>
           ))}

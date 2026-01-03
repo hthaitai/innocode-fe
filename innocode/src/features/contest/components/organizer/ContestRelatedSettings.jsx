@@ -1,110 +1,144 @@
 import { Link } from "react-router-dom"
-import { Users, Trophy, Award, ChevronRight, Scale, Mail, UserCheck, LayoutTemplate, FileBadge2, UsersRound, GraduationCap, Gavel } from "lucide-react"
+import {
+  Users,
+  Trophy,
+  Award,
+  ChevronRight,
+  Scale,
+  Mail,
+  UserCheck,
+  LayoutTemplate,
+  FileBadge2,
+  UsersRound,
+  GraduationCap,
+  Gavel,
+} from "lucide-react"
 import { Icon } from "@iconify/react"
+import { useTranslation } from "react-i18next"
+import { useMemo } from "react"
 
-const items = [
-  {
-    title: "Teams",
-    subtitle: "Manage registered teams and members",
-    icon: <Users size={20} />,
-    path: "teams",
-  },
-  {
-    title: "Judges",
-    subtitle: "Invite and manage contest judges",
-    icon: <Gavel size={20} />,
-    path: "judges",
-  },
-  // {
-  //   title: "Judge invites",
-  //   subtitle: "View invitations sent to judges",
-  //   icon: <Mail size={20} />,
-  //   path: "judges/invites",
-  // },
-  {
-    title: "Active judges",
-    subtitle: "Judges currently assigned to this contest",
-    icon: <UserCheck size={20} />,
-    path: "judges/active",
-  },
+const ContestRelatedSettings = ({ contestId }) => {
+  const { t } = useTranslation("pages")
 
-  {
-    title: "Leaderboard",
-    subtitle: "View and refresh contest leaderboard",
-    icon: <Trophy size={20} />,
-    path: "leaderboard",
-  },
-  {
-    title: "Template gallery",
-    subtitle: "Browse templates for this contest or upload new ones",
-    icon: <LayoutTemplate size={20} />,
-    path: "certificates/templates",
-  },
-  {
-    title: "Issued student certificates",
-    subtitle: "Certificates issued to individual students",
-    icon: <GraduationCap size={20} />,
-    path: "certificates/issued/students",
-  },
-  {
-    title: "Issued team certificates",
-    subtitle: "Certificates issued to teams",
-    icon: (
-      <Icon
-        icon="mdi:certificate-outline"
-        width={20}
-        height={20}
-      />
-    ),
-    path: "certificates/issued/teams",
-  },
-  {
-    title: "Appeals",
-    subtitle: "Review and resolve team appeals",
-    icon: <Scale size={20} />,
-    path: "appeals",
-  },
-  {
-    title: "Plagiarism",
-    subtitle: "Review and resolve plagiarism cases",
-    icon: <FileBadge2 size={20} />,
-    path: "plagiarism",
-  },
-  // {
-  //   title: "Activity Logs",
-  //   subtitle: "View contest-related user actions",
-  //   icon: <ListChecks size={20} />,
-  //   path: "activity",
-  // },
-  // {
-  //   title: "Notifications",
-  //   subtitle: "Manage notifications and announcements",
-  //   icon: <Bell size={20} />,
-  //   path: "notifications",
-  // },
-]
+  const items = useMemo(
+    () => [
+      {
+        title: t("organizerContestDetail.relatedSettings.teams.title"),
+        subtitle: t("organizerContestDetail.relatedSettings.teams.subtitle"),
+        icon: <Users size={20} />,
+        path: "teams",
+      },
+      {
+        title: t("organizerContestDetail.relatedSettings.judges.title"),
+        subtitle: t("organizerContestDetail.relatedSettings.judges.subtitle"),
+        icon: <Gavel size={20} />,
+        path: "judges",
+      },
+      // {
+      //   title: "Judge invites",
+      //   subtitle: "View invitations sent to judges",
+      //   icon: <Mail size={20} />,
+      //   path: "judges/invites",
+      // },
+      {
+        title: t("organizerContestDetail.relatedSettings.activeJudges.title"),
+        subtitle: t(
+          "organizerContestDetail.relatedSettings.activeJudges.subtitle"
+        ),
+        icon: <UserCheck size={20} />,
+        path: "judges/active",
+      },
 
-const ContestRelatedSettings = ({ contestId }) => (
-  <div className="flex flex-col gap-1">
-    {items.map((item) => (
-      <Link
-        key={item.path}
-        to={`/organizer/contests/${contestId}/${item.path}`}
-        className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors"
-      >
-        <div className="flex gap-5 items-center">
-          {item.icon}
-          <div>
-            <p className="text-[14px] leading-[20px]">{item.title}</p>
-            <p className="text-[12px] leading-[16px] text-[#7A7574]">
-              {item.subtitle}
-            </p>
+      {
+        title: t("organizerContestDetail.relatedSettings.leaderboard.title"),
+        subtitle: t(
+          "organizerContestDetail.relatedSettings.leaderboard.subtitle"
+        ),
+        icon: <Trophy size={20} />,
+        path: "leaderboard",
+      },
+      {
+        title: t(
+          "organizerContestDetail.relatedSettings.templateGallery.title"
+        ),
+        subtitle: t(
+          "organizerContestDetail.relatedSettings.templateGallery.subtitle"
+        ),
+        icon: <LayoutTemplate size={20} />,
+        path: "certificates/templates",
+      },
+      {
+        title: t(
+          "organizerContestDetail.relatedSettings.issuedStudentCertificates.title"
+        ),
+        subtitle: t(
+          "organizerContestDetail.relatedSettings.issuedStudentCertificates.subtitle"
+        ),
+        icon: <GraduationCap size={20} />,
+        path: "certificates/issued/students",
+      },
+      {
+        title: t(
+          "organizerContestDetail.relatedSettings.issuedTeamCertificates.title"
+        ),
+        subtitle: t(
+          "organizerContestDetail.relatedSettings.issuedTeamCertificates.subtitle"
+        ),
+        icon: <Icon icon="mdi:certificate-outline" width={20} height={20} />,
+        path: "certificates/issued/teams",
+      },
+      {
+        title: t("organizerContestDetail.relatedSettings.appeals.title"),
+        subtitle: t("organizerContestDetail.relatedSettings.appeals.subtitle"),
+        icon: <Scale size={20} />,
+        path: "appeals",
+      },
+      {
+        title: t("organizerContestDetail.relatedSettings.plagiarism.title"),
+        subtitle: t(
+          "organizerContestDetail.relatedSettings.plagiarism.subtitle"
+        ),
+        icon: <FileBadge2 size={20} />,
+        path: "plagiarism",
+      },
+      // {
+      //   title: "Activity Logs",
+      //   subtitle: "View contest-related user actions",
+      //   icon: <ListChecks size={20} />,
+      //   path: "activity",
+      // },
+      // {
+      //   title: "Notifications",
+      //   subtitle: "Manage notifications and announcements",
+      //   icon: <Bell size={20} />,
+      //   path: "notifications",
+      // },
+    ],
+    [t]
+  )
+
+  return (
+    <div className="flex flex-col gap-1">
+      {items.map((item) => (
+        <Link
+          key={item.path}
+          to={`/organizer/contests/${contestId}/${item.path}`}
+          className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors"
+        >
+          <div className="flex gap-5 items-center">
+            {item.icon}
+            <div>
+              <p className="text-[14px] leading-[20px]">{item.title}</p>
+              <p className="text-[12px] leading-[16px] text-[#7A7574]">
+                {item.subtitle}
+              </p>
+            </div>
           </div>
-        </div>
-        <ChevronRight size={20} className="text-[#7A7574]" />
-      </Link>
-    ))}
-  </div>
-)
+          <ChevronRight size={20} className="text-[#7A7574]" />
+        </Link>
+      ))}
+    </div>
+  )
+}
 
 export default ContestRelatedSettings

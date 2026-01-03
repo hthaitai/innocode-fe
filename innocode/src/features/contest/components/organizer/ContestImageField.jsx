@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from "react"
 import { FileDropzone } from "../../../../shared/components/dropzone/FileDropzone"
 import Label from "../../../../shared/components/form/Label"
 import { AnimatePresence, motion } from "framer-motion"
+import { useTranslation } from "react-i18next"
 
 const ContestImageField = ({ imgFile, imgUrl, error, onChange }) => {
   const inputRef = useRef(null)
   const [previewUrl, setPreviewUrl] = useState(null)
+  const { t } = useTranslation("pages")
 
   useEffect(() => {
     if (!imgFile) {
@@ -33,7 +35,7 @@ const ContestImageField = ({ imgFile, imgUrl, error, onChange }) => {
           <div className="mb-4 flex w-[335px] h-[188px] border border-[#E5E5E5]">
             <img
               src={previewUrl}
-              alt="Contest image preview"
+              alt={t("organizerContestForm.imageField.preview")}
               className="w-full h-full object-cover rounded-[5px]"
             />
           </div>
@@ -41,7 +43,7 @@ const ContestImageField = ({ imgFile, imgUrl, error, onChange }) => {
           <div className="mb-4 flex w-[335px] h-[188px] border border-[#E5E5E5]">
             <img
               src={imgUrl}
-              alt="Current contest image"
+              alt={t("organizerContestForm.imageField.current")}
               className="w-full h-full object-cover rounded-[5px]"
             />
           </div>
@@ -54,7 +56,7 @@ const ContestImageField = ({ imgFile, imgUrl, error, onChange }) => {
                 "image/png": [],
                 "image/jpeg": [],
               }}
-              helperText="Only PNG and JPG, JPEG files are allowed."
+              helperText={t("organizerContestForm.imageField.helper")}
             />
           </div>
         )}
@@ -64,7 +66,7 @@ const ContestImageField = ({ imgFile, imgUrl, error, onChange }) => {
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
         <div className="mb-2">
           <Label htmlFor="imgFile" required>
-            Image upload
+            {t("organizerContestForm.labels.imageUpload")}
           </Label>
         </div>
         <div className="flex items-center gap-2">
@@ -82,7 +84,9 @@ const ContestImageField = ({ imgFile, imgUrl, error, onChange }) => {
             onClick={() => inputRef.current?.click()}
             className="button-orange"
           >
-            {imgFile ? "Change" : "Browse"}
+            {imgFile
+              ? t("organizerContestForm.imageField.change")
+              : t("organizerContestForm.imageField.browse")}
           </button>
 
           {imgFile && (

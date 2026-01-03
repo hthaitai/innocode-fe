@@ -1,12 +1,15 @@
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import Label from "../../../../shared/components/form/Label"
+import { useTranslation } from "react-i18next"
 
 const ParticipationLimitsSection = ({ formData, errors, onChange }) => {
+  const { t } = useTranslation("pages")
+
   return (
     <div className="space-y-5 border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
       <div className="flex flex-col gap-2">
         <Label htmlFor="teamMembersMin" required>
-          Min team members
+          {t("organizerContestForm.labels.minTeamMembers")}
         </Label>
         <TextFieldFluent
           id="teamMembersMin"
@@ -21,7 +24,7 @@ const ParticipationLimitsSection = ({ formData, errors, onChange }) => {
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="teamMembersMax" required>
-          Max team members
+          {t("organizerContestForm.labels.maxTeamMembers")}
         </Label>
         <TextFieldFluent
           id="teamMembersMax"
@@ -36,7 +39,7 @@ const ParticipationLimitsSection = ({ formData, errors, onChange }) => {
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="teamLimitMax" required>
-          Max teams
+          {t("organizerContestForm.labels.maxTeams")}
         </Label>
         <TextFieldFluent
           id="teamLimitMax"

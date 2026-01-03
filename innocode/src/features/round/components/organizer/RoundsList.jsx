@@ -2,14 +2,16 @@ import React from "react"
 import { Calendar, ChevronRight } from "lucide-react"
 import { formatDateTime, toDatetimeLocal } from "@/shared/utils/dateTime"
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 const RoundsList = ({ contestId, rounds }) => {
   const navigate = useNavigate()
+  const { t } = useTranslation("pages")
 
   if (!rounds || rounds.length === 0) {
     return (
       <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-        No rounds created yet.
+        {t("organizerContestDetail.rounds.empty")}
       </div>
     )
   }
@@ -28,7 +30,7 @@ const RoundsList = ({ contestId, rounds }) => {
             <Calendar size={20} />
             <div>
               <p className="text-[14px] leading-[20px]">
-                {round.name ?? "Untitled Round"}
+                {round.name ?? t("organizerContestDetail.rounds.untitled")}
               </p>
               <p className="text-[12px] leading-[16px] text-[#7A7574]">
                 {formatDateTime(round.start)} - {formatDateTime(round.end)} |{" "}
@@ -41,7 +43,7 @@ const RoundsList = ({ contestId, rounds }) => {
             <div>
               {round.isRetakeRound && (
                 <span className="text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-700">
-                  Retake
+                  {t("organizerContestDetail.rounds.retake")}
                 </span>
               )}
             </div>

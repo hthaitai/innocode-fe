@@ -5,8 +5,10 @@ import {
   ChevronRight,
   ChevronsRight,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 const TablePagination = ({ pagination, onPageChange }) => {
+  const { t } = useTranslation("common")
   if (!pagination) return null
 
   const currentPage = pagination.pageNumber || pagination.currentPage
@@ -52,15 +54,19 @@ const TablePagination = ({ pagination, onPageChange }) => {
   return (
     <div className="flex justify-between items-center mt-3">
       <div className="text-sm leading-5 text-[#7A7574] mb-2">
-        Page {currentPage} of {totalPages} — {pagination.totalCount} items
+        {t("common.pagination.pageOfItems", {
+          page: currentPage,
+          totalPages: totalPages,
+          totalCount: pagination.totalCount,
+        })}
       </div>
-      
+
       <div className="flex gap-1 items-center">
         <button
           disabled={currentPage === 1}
           onClick={() => onPageChange(1)}
           className={buttonClass(currentPage === 1)}
-          title="First page"
+          title={t("common.pagination.firstPage")}
         >
           <ChevronsLeft className="w-4 h-4" />
         </button>
@@ -68,7 +74,7 @@ const TablePagination = ({ pagination, onPageChange }) => {
           disabled={!pagination.hasPreviousPage}
           onClick={() => onPageChange(currentPage - 1)}
           className={buttonClass(!pagination.hasPreviousPage)}
-          title="Previous page"
+          title={t("common.pagination.previousPage")}
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -87,7 +93,7 @@ const TablePagination = ({ pagination, onPageChange }) => {
           disabled={!pagination.hasNextPage}
           onClick={() => onPageChange(currentPage + 1)}
           className={buttonClass(!pagination.hasNextPage)}
-          title="Next page"
+          title={t("common.pagination.nextPage")}
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -95,7 +101,7 @@ const TablePagination = ({ pagination, onPageChange }) => {
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(totalPages)}
           className={buttonClass(currentPage === totalPages)}
-          title="Last page"
+          title={t("common.pagination.lastPage")}
         >
           <ChevronsRight className="w-4 h-4" />
         </button>

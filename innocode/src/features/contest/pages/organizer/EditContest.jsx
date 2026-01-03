@@ -14,10 +14,12 @@ import {
   toDatetimeLocal,
 } from "../../../../shared/utils/dateTime"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import { useTranslation } from "react-i18next"
 
 export default function EditContest() {
   const { contestId } = useParams()
   const navigate = useNavigate()
+  const { t } = useTranslation("pages")
 
   const {
     data: contest,
@@ -31,7 +33,7 @@ export default function EditContest() {
   const [errors, setErrors] = useState({})
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_EDIT(
-    contest?.name ?? "Edit Contest"
+    contest?.name ?? t("organizerContestForm.breadcrumb")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_EDIT(contestId)
 
@@ -66,7 +68,11 @@ export default function EditContest() {
     const validationErrors = validateContest(formData, { isEdit: true })
     setErrors(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
-      toast.error(`Please fix ${Object.keys(validationErrors).length} field(s)`)
+      toast.error(
+        t("organizerContestForm.messages.validationError", {
+          count: Object.keys(validationErrors).length,
+        })
+      )
       return
     }
 
@@ -102,7 +108,7 @@ export default function EditContest() {
 
     try {
       await updateContest({ id: contestId, data: formPayload }).unwrap()
-      toast.success("Contest updated successfully!")
+      toast.success(t("organizerContestForm.messages.updateSuccess"))
       navigate(`/organizer/contests/${contestId}`)
     } catch (err) {
       console.error(err)
@@ -119,7 +125,10 @@ export default function EditContest() {
         return
       }
 
-      toast.error(err?.data?.errorMessage || "Failed to update contest.")
+      toast.error(
+        err?.data?.errorMessage ||
+          t("organizerContestForm.messages.updateError")
+      )
     }
   }
 

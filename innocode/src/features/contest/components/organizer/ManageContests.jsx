@@ -12,11 +12,13 @@ import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import ContestsToolbar from "./ContestsToolbar"
 import TablePagination from "../../../../shared/components/TablePagination"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import { useTranslation } from "react-i18next"
 
 const ManageContests = ({ contests, pagination, setPage, setSearchName }) => {
   const navigate = useNavigate()
   const { confirmDeleteEntity } = useConfirmDelete()
   const [deleteContest] = useDeleteContestMutation()
+  const { t } = useTranslation("pages")
 
   // Handlers
   const handleSearch = (value) => {
@@ -48,7 +50,7 @@ const ManageContests = ({ contests, pagination, setPage, setSearchName }) => {
   }
 
   /** Table columns */
-  const columns = getContestColumns(handleEditContest, handleDeleteContest)
+  const columns = getContestColumns(handleEditContest, handleDeleteContest, t)
 
   return (
     <div>

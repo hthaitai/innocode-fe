@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom"
 import { Search, X } from "lucide-react"
 import TextFieldFluent from "../../../../shared/components/TextFieldFluent"
 import { useModal } from "../../../../shared/hooks/useModal"
+import { useTranslation } from "react-i18next"
 
 const ContestsToolbar = ({ onSearch, onFilter }) => {
   const navigate = useNavigate()
   const { openModal } = useModal()
   const [search, setSearch] = useState("")
+  const { t } = useTranslation("pages")
 
   const handleAddContest = () => {
     navigate("/organizer/contests/add")
@@ -35,7 +37,7 @@ const ContestsToolbar = ({ onSearch, onFilter }) => {
       <div className="flex items-center space-x-2">
         <div className="w-[280px]">
           <TextFieldFluent
-            placeholder="Search contests..."
+            placeholder={t("organizerContests.searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleSearchKeyDown}
@@ -59,13 +61,13 @@ const ContestsToolbar = ({ onSearch, onFilter }) => {
           className="button-white"
           onClick={handleFilterClick}
         >
-          Filter
+          {t("organizerContests.filter")}
         </button> */}
       </div>
 
       {/* Right section: add contest */}
       <button className="button-orange" onClick={handleAddContest}>
-        Add contest
+        {t("organizerContests.addContest")}
       </button>
     </div>
   )

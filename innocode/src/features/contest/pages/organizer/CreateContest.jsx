@@ -8,6 +8,7 @@ import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { fromDatetimeLocal } from "../../../../shared/utils/dateTime"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import { useTranslation } from "react-i18next"
 
 const EMPTY_CONTEST = {
   year: new Date().getFullYear(),
@@ -29,6 +30,7 @@ const EMPTY_CONTEST = {
 
 export default function CreateContest() {
   const navigate = useNavigate()
+  const { t } = useTranslation("pages")
   const [formData, setFormData] = useState(EMPTY_CONTEST)
   const [errors, setErrors] = useState({})
   const [addContest, { isLoading }] = useAddContestMutation()
@@ -41,7 +43,11 @@ export default function CreateContest() {
     const validationErrors = validateContest(formData, { isEdit: false })
     setErrors(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
-      toast.error(`Please fix ${Object.keys(validationErrors).length} field(s)`)
+      toast.error(
+        t("organizerContestForm.messages.validationError", {
+          count: Object.keys(validationErrors).length,
+        })
+      )
       return
     }
 
@@ -72,7 +78,7 @@ export default function CreateContest() {
       if (formData.imgFile) formPayload.append("ImageFile", formData.imgFile)
 
       await addContest(formPayload).unwrap()
-      toast.success("Contest created successfully!")
+      toast.success(t("organizerContestForm.messages.createSuccess"))
       navigate("/organizer/contests")
     } catch (err) {
       console.error(err)
@@ -89,7 +95,10 @@ export default function CreateContest() {
         return
       }
 
-      toast.error(err?.data?.errorMessage || "Failed to create contest.")
+      toast.error(
+        err?.data?.errorMessage ||
+          t("organizerContestForm.messages.createError")
+      )
     }
   }
 

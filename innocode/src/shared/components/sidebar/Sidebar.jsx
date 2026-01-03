@@ -53,11 +53,6 @@ const allMenus = {
     label: "Contests",
     icon: "lucide:trophy",
   },
-  manualSubmissions: {
-    path: "/judge/manual-submissions",
-    label: "Submissions",
-    icon: "lucide:file-text",
-  },
   //Mentor menus
   appeal: {
     path: "/appeal",
@@ -128,14 +123,7 @@ const menuByRole = {
     "team",
     "notifications",
   ],
-  judge: [
-    "profile",
-    "dashboard",
-    "judgeContests",
-    "manualSubmissions",
-    "notifications",
-    "help",
-  ],
+  judge: ["profile", "dashboard", "judgeContests", "notifications", "help"],
   admin: ["profile", "dashboard", "leaderboard", "notifications", "help"],
   schoolmanager: [
     "profile",

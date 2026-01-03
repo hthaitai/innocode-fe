@@ -1,12 +1,15 @@
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import Label from "../../../../shared/components/form/Label"
+import { useTranslation } from "react-i18next"
 
 const ContestSettingsSection = ({ formData, errors, onChange }) => {
+  const { t } = useTranslation("pages")
+
   return (
     <div className="space-y-5 border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
       <div className="flex flex-col gap-2">
         <Label htmlFor="appealSubmitDays" required>
-          Appeal submission deadline (days)
+          {t("organizerContestForm.labels.appealSubmitDays")}
         </Label>
         <TextFieldFluent
           id="appealSubmitDays"
@@ -21,7 +24,7 @@ const ContestSettingsSection = ({ formData, errors, onChange }) => {
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="appealReviewDays" required>
-          Appeal review deadline (days)
+          {t("organizerContestForm.labels.appealReviewDays")}
         </Label>
         <TextFieldFluent
           id="appealReviewDays"
@@ -36,7 +39,7 @@ const ContestSettingsSection = ({ formData, errors, onChange }) => {
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="judgeRescoreDays" required>
-          Judge rescore deadline (days)
+          {t("organizerContestForm.labels.judgeRescoreDays")}
         </Label>
         <TextFieldFluent
           id="judgeRescoreDays"

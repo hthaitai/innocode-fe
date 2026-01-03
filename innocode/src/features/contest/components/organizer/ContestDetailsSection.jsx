@@ -1,6 +1,7 @@
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import Label from "../../../../shared/components/form/Label"
 import NameSuggestion from "./NameSuggestion"
+import { useTranslation } from "react-i18next"
 
 const ContestDetailsSection = ({
   formData,
@@ -9,12 +10,14 @@ const ContestDetailsSection = ({
   setFormData,
   setErrors,
 }) => {
+  const { t } = useTranslation("pages")
+
   return (
     <div className="space-y-5 border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
       {/* Contest Name */}
       <div className="flex flex-col gap-2">
         <Label htmlFor="name" required>
-          Contest name
+          {t("organizerContestForm.labels.name")}
         </Label>
 
         <div className="flex flex-col w-full">
@@ -39,7 +42,9 @@ const ContestDetailsSection = ({
 
       {/* Description */}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">
+          {t("organizerContestForm.labels.description")}
+        </Label>
         <TextFieldFluent
           id="description"
           name="description"
@@ -54,7 +59,9 @@ const ContestDetailsSection = ({
 
       {/* Reward text */}
       <div className="flex flex-col gap-2">
-        <Label htmlFor="rewardsText">Rewards text</Label>
+        <Label htmlFor="rewardsText">
+          {t("organizerContestForm.labels.rewards")}
+        </Label>
         <TextFieldFluent
           id="rewardsText"
           name="rewardsText"

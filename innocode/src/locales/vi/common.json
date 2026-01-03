@@ -66,7 +66,14 @@
     "saveChanges": "Lưu thay đổi",
     "areYouSure": "Bạn có chắc chắn?",
     "thisActionCannotBeUndone": "Hành động này không thể hoàn tác.",
-    "pageDeletedOrUnavailable": "Trang này đã bị xóa hoặc không còn tồn tại"
+    "pageDeletedOrUnavailable": "Trang này đã bị xóa hoặc không còn tồn tại",
+    "pagination": {
+      "pageOfItems": "Trang {{page}} / {{totalPages}} — {{totalCount}} mục",
+      "firstPage": "Trang đầu",
+      "previousPage": "Trang trước",
+      "nextPage": "Trang sau",
+      "lastPage": "Trang cuối"
+    }
   },
   "home": {
     "welcome": "Chào mừng đến với Nền tảng InnoCode",
@@ -105,4 +112,3 @@
     "invalidFormat": "Định dạng không hợp lệ"
   }
 }
-

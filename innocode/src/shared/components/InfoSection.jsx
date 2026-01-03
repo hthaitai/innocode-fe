@@ -1,7 +1,11 @@
 import React from "react"
 import { Info } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
-const InfoSection = ({ title, onEdit, actionText = "Edit", children }) => {
+const InfoSection = ({ title, onEdit, actionText, children }) => {
+  const { t } = useTranslation("common")
+  const buttonText = actionText || t("buttons.edit")
+
   return (
     <div className="text-sm leading-5 border border-[#E5E5E5] rounded-[5px] bg-white">
       {/* Header */}
@@ -11,11 +15,8 @@ const InfoSection = ({ title, onEdit, actionText = "Edit", children }) => {
           <p>{title}</p>
         </div>
         {onEdit && (
-          <button
-            onClick={onEdit}
-            className="button-orange"
-          >
-            {actionText}
+          <button onClick={onEdit} className="button-orange">
+            {buttonText}
           </button>
         )}
       </div>
