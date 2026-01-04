@@ -124,7 +124,7 @@ export default function OrganizerCertificateTemplateEdit() {
       await editTemplate({ id: templateId, body: payload }).unwrap()
 
       toast.success("Certificate template updated successfully!")
-      navigate(`/organizer/contests/${contestId}//templates`)
+      navigate(`/organizer/contests/${contestId}/certificates/templates`)
     } catch (err) {
       console.error(err)
       toast.error(err?.data?.message || "Something went wrong.")

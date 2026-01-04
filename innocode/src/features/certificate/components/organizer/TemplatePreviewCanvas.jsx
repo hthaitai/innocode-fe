@@ -83,7 +83,7 @@ export default function TemplatePreviewCanvas({ template, zoom = 1 }) {
         drawWrappedText(
           ctx,
           t.value || "Nguyen Van A",
-          textX,
+          textX - maxWidthScaled / 2,
           textY,
           maxWidthScaled,
           fontSizeScaled,

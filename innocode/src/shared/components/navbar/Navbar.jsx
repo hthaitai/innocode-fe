@@ -17,7 +17,7 @@ const Navbar = () => {
   const [showNotifications, setShowNotifications] = useState(false)
   const dropdownRef = useRef(null)
   const notifRef = useRef(null)
-  const rolesToHideNav = ["organizer"] // hide nav links for students
+  const rolesToHideNav = [""] // hide nav links for students
 
   // Fetch notifications count for badge (get first page to count unread)
   const { data: notificationsData } = useGetNotificationsQuery(

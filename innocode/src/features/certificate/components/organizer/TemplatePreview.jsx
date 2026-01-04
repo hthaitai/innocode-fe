@@ -111,6 +111,7 @@ export default function TemplatePreview({ formData, setFormData, zoom }) {
             onDragEnd={handleDragEnd}
           >
             <Rect
+              x={-textToShow.maxWidth / 2}
               width={textToShow.maxWidth}
               height={textToShow.fontSize}
               stroke="red"
@@ -122,6 +123,7 @@ export default function TemplatePreview({ formData, setFormData, zoom }) {
               fill={textToShow.colorHex}
               width={textToShow.maxWidth}
               align={textToShow.align}
+              offsetX={textToShow.maxWidth / 2} // center horizontally
             />
           </Group>
         )}

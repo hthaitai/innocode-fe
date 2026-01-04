@@ -13,7 +13,7 @@ import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
 const OrganizerCertificateTemplates = () => {
   const { contestId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
-  const pageSize = 9
+  const pageSize = 6
 
   const {
     data: contest,
