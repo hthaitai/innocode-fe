@@ -1,5 +1,6 @@
 import React, { useMemo } from "react"
 import { useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import RoundInfo from "../../components/organizer/RoundInfo"
@@ -18,6 +19,7 @@ import RoundTimeTravelSection from "../../components/organizer/RoundTimeTravelSe
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
+  const { t } = useTranslation("round")
 
   const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId)
 
@@ -77,20 +79,23 @@ const OrganizerRoundDetail = () => {
 
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">
-              Related settings
+              {t("detail.relatedSettings")}
             </div>
 
             <div className="space-y-1">
-              {round.problemType === "AutoEvaluation" && (
-                <RoundMockTestUpload roundId={round.roundId} />
-              )}
+              {round.problemType === "AutoEvaluation" &&
+                round.problem?.testType === "MockTest" && (
+                  <RoundMockTestUpload roundId={round.roundId} />
+                )}
 
               <RoundRelatedSettings contestId={contestId} round={round} />
             </div>
           </div>
 
           <div>
-            <div className="text-sm font-semibold pt-3 pb-2">More Actions</div>
+            <div className="text-sm font-semibold pt-3 pb-2">
+              {t("detail.moreActions")}
+            </div>
 
             <div className="space-y-1">
               <StartEndRoundSection roundId={roundId} />

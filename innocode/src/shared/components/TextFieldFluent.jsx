@@ -37,9 +37,7 @@ const TextFieldFluent = ({
 
   return (
     <div className="flex flex-col w-full">
-      {label && (
-        <div className="text-xs leading-4 mb-2 capitalize">{label}</div>
-      )}
+      {label && <div className="text-xs leading-4 mb-2">{label}</div>}
 
       <div
         className={`flex items-center rounded-[5px] bg-white border transition-all duration-200

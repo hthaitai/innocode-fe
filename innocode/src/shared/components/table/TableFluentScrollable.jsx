@@ -54,7 +54,7 @@ const TableFluentScrollable = ({
         style={{ maxHeight: `${maxHeight}px`, overflowY: "auto" }}
       >
         <table className="table-fixed w-full border-collapse">
-          <thead className="sticky top-0 bg-white z-10 border-b border-[#E5E5E5]">
+          <thead className="sticky top-0 bg-white z-9 border-b border-[#E5E5E5]">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (

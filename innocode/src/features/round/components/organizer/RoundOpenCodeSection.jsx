@@ -1,9 +1,11 @@
 import React, { useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import { Icon } from "@iconify/react"
 import { useModal } from "@/shared/hooks/useModal"
 
 const RoundOpenCodeSection = ({ roundId }) => {
   const { openModal } = useModal()
+  const { t } = useTranslation("round")
 
   const handleOpen = useCallback(() => {
     openModal("organizerOpenCode", { roundId })
@@ -14,14 +16,14 @@ const RoundOpenCodeSection = ({ roundId }) => {
       <div className="flex gap-5 items-center">
         <Icon icon="mdi:code-braces-box" fontSize={20} />
         <div>
-          <p className="text-[14px] leading-[20px]">Open code</p>
+          <p className="text-[14px] leading-[20px]">{t("openCode.title")}</p>
           <p className="text-[12px] leading-[16px] text-[#7A7574]">
-            View, generate, and manage the open code for this round
+            {t("openCode.description")}
           </p>
         </div>
       </div>
       <button onClick={handleOpen} className="button-orange px-3">
-        Manage
+        {t("openCode.manage")}
       </button>
     </div>
   )

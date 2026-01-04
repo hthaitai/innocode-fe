@@ -18,6 +18,8 @@ import enPages from "../locales/en/pages.json"
 import viPages from "../locales/vi/pages.json"
 import enBreadcrumbs from "../locales/en/breadcrumbs.json"
 import viBreadcrumbs from "../locales/vi/breadcrumbs.json"
+import enRound from "../locales/en/round.json"
+import viRound from "../locales/vi/round.json"
 
 i18n
   .use(LanguageDetector) // Tự động detect ngôn ngữ từ browser
@@ -32,7 +34,9 @@ i18n
         errors: enErrors,
         about: enAbout,
         pages: enPages,
+        pages: enPages,
         breadcrumbs: enBreadcrumbs,
+        round: enRound,
       },
       vi: {
         common: viCommon,
@@ -42,7 +46,9 @@ i18n
         errors: viErrors,
         about: viAbout,
         pages: viPages,
+        pages: viPages,
         breadcrumbs: viBreadcrumbs,
+        round: viRound,
       },
     },
     fallbackLng: "en",

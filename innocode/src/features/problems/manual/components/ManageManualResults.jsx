@@ -7,6 +7,7 @@ import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import TablePagination from "../../../../shared/components/TablePagination"
 import ManualResultsToolbar from "./ManualResultsToolbar"
+import { useTranslation } from "react-i18next"
 
 const ManageManualResults = ({
   results,
@@ -15,6 +16,7 @@ const ManageManualResults = ({
   setStudentNameSearch,
   setTeamNameSearch,
 }) => {
+  const { t } = useTranslation("common")
   const { roundId, contestId } = useParams()
   const navigate = useNavigate()
 
@@ -33,13 +35,17 @@ const ManageManualResults = ({
     }
   }
 
-  const columns = getResultColumns()
+  const columns = getResultColumns(t)
 
   return (
     <div>
       <ManualResultsToolbar onSearch={handleSearch} />
 
-      <TableFluent data={results} columns={columns} onRowClick={handleRowClick} />
+      <TableFluent
+        data={results}
+        columns={columns}
+        onRowClick={handleRowClick}
+      />
 
       <TablePagination pagination={pagination} onPageChange={onPageChange} />
     </div>

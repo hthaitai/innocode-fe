@@ -1,0 +1,158 @@
+{
+  "create": {
+    "title": "Create a round",
+    "activeRounds": "Active rounds",
+    "submit": "Create",
+    "submitting": "Creating...",
+    "success": "Round created successfully",
+    "errorValidation": "Please fix {{count}} field(s)",
+    "errorGeneric": "Failed to create round"
+  },
+  "edit": {
+    "title": "Edit Round",
+    "activeRounds": "Active rounds",
+    "sectionTitle": "Edit round",
+    "submit": "Save",
+    "submitting": "Saving...",
+    "success": "Round updated successfully",
+    "errorGeneric": "Failed to update round"
+  },
+  "form": {
+    "roundType": "Round type",
+    "normalRound": "Normal round",
+    "retakeRound": "Retake round",
+    "roundToRetake": "Round to retake",
+    "selectRoundPlaceholder": "Select a round",
+    "roundName": "Round name",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "timeLimit": "Time limit (seconds)",
+    "teamsAdvancing": "Teams advancing",
+    "enableRankCutoff": "Enable rank cutoff",
+    "problemType": "Problem type",
+    "testType": "Test type",
+    "description": "Description",
+    "language": "Language",
+    "templateFile": "Template file",
+    "changeFile": "Change file",
+    "browse": "Browse",
+    "mcq": "Multiple choice questions",
+    "manual": "Manual test",
+    "auto": "Auto test",
+    "inputOutput": "Input/Output",
+    "mockTest": "Mock Test"
+  },
+  "contestPeriod": "Contest Period",
+  "errors": {
+    "templateFile": "Template file is required"
+  },
+  "detail": {
+    "relatedSettings": "Related settings",
+    "moreActions": "More Actions"
+  },
+  "info": {
+    "title": "Round information",
+    "roundName": "Round name",
+    "contestName": "Contest name",
+    "problemType": "Problem type",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "timeLimit": "Time limit",
+    "teamsAdvancing": "Teams advancing",
+    "mcqTestName": "MCQ test name",
+    "problemLanguage": "Problem language",
+    "penaltyRate": "Penalty rate",
+    "problemDescription": "Problem description",
+    "testType": "Test type",
+    "problemConfig": "Problem configuration",
+    "values": {
+      "mcq": "Multiple Choice Questions (MCQ)",
+      "auto": "Auto Evaluation (Auto-graded Coding)",
+      "manual": "Manual Evaluation (Judge Review)",
+      "mockTest": "Mock Test",
+      "inputOutput": "Input/Output"
+    },
+    "suffixes": {
+      "second": " second",
+      "seconds": " seconds",
+      "team": " team",
+      "teams": " teams"
+    }
+  },
+  "openCode": {
+    "title": "Open code",
+    "description": "View, generate, and manage the open code for this round",
+    "manage": "Manage"
+  },
+  "mockTest": {
+    "title": "Upload mock test",
+    "description": "Upload a python script for mock testing",
+    "upload": "Upload",
+    "changeFile": "Change file",
+    "download": "Download",
+    "errorExtension": "Only .py files are allowed",
+    "success": "Mock test uploaded successfully",
+    "errorGeneric": "Failed to upload mock test"
+  },
+  "settings": {
+    "rubric": "Manage rubric",
+    "rubricDesc": "Define scoring rules and judge guidelines",
+    "manualResults": "Manual results",
+    "manualResultsDesc": "View submissions and assign scores",
+    "mcq": "Multiple choice questions",
+    "mcqDesc": "View or edit the questions for this round's test",
+    "studentAttempts": "Student attempts",
+    "studentAttemptsDesc": "See all participant attempts for this MCQ test",
+    "manageTestCases": "Manage test cases",
+    "manageTestCasesDesc": "View or edit auto test settings for this round",
+    "autoResults": "Auto test results",
+    "autoResultsDesc": "View auto-scored submissions"
+  },
+  "actions": {
+    "roundControl": "Round control",
+    "roundControlDesc": "Start or end the round immediately",
+    "startNow": "Start now",
+    "starting": "Starting...",
+    "endNow": "End now",
+    "ending": "Ending...",
+    "startSuccess": "Round started successfully",
+    "startError": "Failed to start round",
+    "endSuccess": "Round ended successfully",
+    "endError": "Failed to end round"
+  },
+  "timeTravel": {
+    "appealSubmitEnd": "End appeal submission",
+    "appealSubmitEndDesc": "End the appeal submission phase immediately",
+    "endSubmit": "End submit",
+    "appealSubmitSuccess": "Appeal submission ended successfully",
+    "appealSubmitError": "Failed to end appeal submission",
+
+    "appealReviewEnd": "End appeal review",
+    "appealReviewEndDesc": "End the appeal review phase immediately",
+    "endReview": "End review",
+    "appealReviewSuccess": "Appeal review ended successfully",
+    "appealReviewError": "Failed to end appeal review",
+
+    "judgeDeadlineEnd": "End judge deadline",
+    "judgeDeadlineEndDesc": "End the judge grading deadline immediately",
+    "endDeadline": "End deadline",
+    "judgeDeadlineSuccess": "Judge deadline ended successfully",
+    "judgeDeadlineError": "Failed to end judge deadline",
+
+    "finalize": "Finalize round",
+    "finalizeDesc": "Finalize the round and publish results immediately",
+    "finalizeBtn": "Finalize",
+    "finalizeSuccess": "Round finalized successfully",
+    "finalizeError": "Failed to finalize round",
+
+    "processing": "Processing..."
+  },
+  "delete": {
+    "title": "Delete round",
+    "deleteBtn": "Delete Round",
+    "deleting": "Deleting...",
+    "confirmMessage": "Are you sure you want to delete \"{{name}}\"?",
+    "success": "Round deleted successfully!",
+    "error": "Failed to delete round."
+  }
+}

@@ -8,6 +8,7 @@ import TablePagination from "../../../../shared/components/TablePagination"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import AutoResultsToolbar from "./AutoResultsToolbar"
+import { useTranslation } from "react-i18next"
 
 const ManageAutoResults = ({
   results,
@@ -16,6 +17,7 @@ const ManageAutoResults = ({
   setTeamNameSearch,
   setStudentNameSearch,
 }) => {
+  const { t } = useTranslation("common")
   const { roundId, contestId } = useParams()
   const navigate = useNavigate()
 
@@ -34,7 +36,7 @@ const ManageAutoResults = ({
     }
   }
 
-  const columns = getAutoResultColumns()
+  const columns = getAutoResultColumns(t)
 
   return (
     <div>

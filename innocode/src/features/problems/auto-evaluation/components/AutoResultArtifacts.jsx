@@ -1,7 +1,9 @@
 import React from "react"
 import { FileCode, Download } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 const AutoResultArtifacts = ({ artifacts }) => {
+  const { t } = useTranslation("common")
   const handleDownload = async (fileUrl, filename) => {
     try {
       const res = await fetch(fileUrl)
@@ -20,7 +22,7 @@ const AutoResultArtifacts = ({ artifacts }) => {
       URL.revokeObjectURL(url) // cleanup
     } catch (error) {
       console.error("Download failed", error)
-      alert("Failed to download file.")
+      alert(t("common.failedToDownloadFile"))
     }
   }
 
@@ -28,7 +30,7 @@ const AutoResultArtifacts = ({ artifacts }) => {
     <div className="space-y-1">
       {!artifacts || artifacts.length === 0 ? (
         <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          No submitted files available.
+          {t("common.noSubmittedFilesAvailable")}
         </div>
       ) : (
         artifacts.map((artifact, index) => (
@@ -50,7 +52,7 @@ const AutoResultArtifacts = ({ artifacts }) => {
               }
               className="button-orange"
             >
-              Download
+              {t("buttons.download")}
             </button>
           </div>
         ))

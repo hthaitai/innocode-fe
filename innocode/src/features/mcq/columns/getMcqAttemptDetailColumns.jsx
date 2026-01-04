@@ -1,15 +1,8 @@
-export const getMcqAttemptDetailColumns = () => [
+export const getMcqAttemptDetailColumns = (t) => [
   {
-    header: "#",
-    accessorKey: "index",
-    size: 50,
-    cell: ({ row }) => row.index + 1,
-    meta: { className: "text-left w-[50px]" },
-  },
-  {
-    header: "Question",
+    header: t("common.question"),
     accessorKey: "questionText",
-    size: 500, 
+    size: 500,
     cell: ({ row }) => (
       <div className="truncate max-w-[500px]" title={row.original.questionText}>
         {row.original.questionText}
@@ -18,18 +11,20 @@ export const getMcqAttemptDetailColumns = () => [
     meta: { className: "truncate max-w-[500px]" },
   },
   {
-    header: "Selected answer",
+    header: t("common.selectedAnswer"),
     accessorKey: "selectedOptionText",
     size: 200,
     cell: ({ row }) => row.original.selectedOptionText ?? "—",
     meta: { className: "truncate max-w-[200px]" },
   },
   {
-    header: "Result",
+    header: t("common.result"),
     accessorKey: "isCorrect",
     size: 150,
     cell: ({ row }) => {
-      const status = row.original.isCorrect ? "Correct" : "Incorrect"
+      const status = row.original.isCorrect
+        ? t("common.correct")
+        : t("common.incorrect")
       return (
         <span className="flex items-center gap-2">
           <span

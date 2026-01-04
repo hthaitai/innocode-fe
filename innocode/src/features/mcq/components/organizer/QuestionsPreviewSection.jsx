@@ -5,6 +5,8 @@ import { getMcqSelectedColumns } from "../../columns/getMcqSelectedColumns"
 import { Loader2 } from "lucide-react"
 import SelectedQuestionExpanded from "./SelectedQuestionExpanded"
 
+import { useTranslation } from "react-i18next"
+
 const QuestionsPreviewSection = ({
   questions,
   selectedQuestions,
@@ -14,6 +16,7 @@ const QuestionsPreviewSection = ({
   onUploadCsv,
   onImportBanks,
 }) => {
+  const { t } = useTranslation("common")
   // Toggle selection from the main table
   const toggleSelect = (question) => {
     setSelectedQuestions((prev) => {
@@ -60,24 +63,25 @@ const QuestionsPreviewSection = ({
     selectedQuestions,
     toggleSelect,
     toggleSelectAll,
-    isAllSelected
+    isAllSelected,
+    t
   )
-  const selectedColumns = getMcqSelectedColumns(deselectQuestion)
+  const selectedColumns = getMcqSelectedColumns(deselectQuestion, t)
 
   return (
     <div className="space-y-5">
       <div>
         <div className="flex justify-between items-end mb-3">
           <div className="text-sm leading-5 font-semibold">
-            Preview questions
+            {t("common.previewQuestions")}
           </div>
 
           <div className="flex gap-2">
             <button className="button-orange" onClick={onUploadCsv}>
-              Upload CSV
+              {t("common.uploadCsv")}
             </button>
             <button className="button-orange px-3" onClick={onImportBanks}>
-              Import from banks
+              {t("common.importFromBanks")}
             </button>
           </div>
         </div>
@@ -94,8 +98,9 @@ const QuestionsPreviewSection = ({
       <div>
         <div className="flex justify-between items-end mb-3">
           <p className="text-[14px] leading-[20px] font-medium">
-            {selectedQuestions.length}{" "}
-            {selectedQuestions.length === 1 ? "question" : "questions"} selected
+            {t("common.selectedQuestionsCount", {
+              count: selectedQuestions.length,
+            })}
           </p>
 
           <button
@@ -108,7 +113,9 @@ const QuestionsPreviewSection = ({
             onClick={onChoose}
           >
             {loading && <Loader2 className="animate-spin w-4 h-4 text-white" />}
-            {loading ? "Adding questions..." : "Choose selected questions"}{" "}
+            {loading
+              ? t("common.addingQuestions")
+              : t("common.chooseSelectedQuestions")}{" "}
           </button>
         </div>
 

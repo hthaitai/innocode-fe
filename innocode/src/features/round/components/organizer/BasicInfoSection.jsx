@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import Label from "@/shared/components/form/Label"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import DateTimeFieldFluent from "@/shared/components/datetimefieldfluent/DateTimeFieldFluent"
@@ -10,6 +11,7 @@ export default function BasicInfoSection({
   isEditingRetakeRound,
   isRetakeRound,
 }) {
+  const { t } = useTranslation("round")
   const [isRankCutoffEnabled, setIsRankCutoffEnabled] = useState(
     (formData.rankCutoff ?? 0) > 0
   )
@@ -18,7 +20,7 @@ export default function BasicInfoSection({
     <div className="space-y-5 border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
       {!isRetakeRound && (
         <div className="flex flex-col gap-2">
-          <Label required>Round name</Label>
+          <Label required>{t("form.roundName")}</Label>
           <TextFieldFluent
             name="name"
             value={formData.name || ""}
@@ -30,7 +32,7 @@ export default function BasicInfoSection({
       )}
 
       <div className="flex flex-col gap-2">
-        <Label required>Start date</Label>
+        <Label required>{t("form.startDate")}</Label>
         <DateTimeFieldFluent
           name="start"
           type="datetime-local"
@@ -42,7 +44,7 @@ export default function BasicInfoSection({
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label required>End date</Label>
+        <Label required>{t("form.endDate")}</Label>
         <DateTimeFieldFluent
           name="end"
           type="datetime-local"
@@ -55,7 +57,7 @@ export default function BasicInfoSection({
 
       {!isEditingRetakeRound && (
         <div className="flex flex-col gap-2">
-          <Label>Time limit (seconds)</Label>
+          <Label>{t("form.timeLimit")}</Label>
           <TextFieldFluent
             name="timeLimitSeconds"
             type="number"
@@ -85,7 +87,9 @@ export default function BasicInfoSection({
               }}
               className="h-4 w-4 rounded border-gray-300 text-[#E05307] focus:ring-[#E05307]"
             />
-            <Label htmlFor="enable-rank-cutoff">Teams advancing</Label>
+            <Label htmlFor="enable-rank-cutoff">
+              {t("form.teamsAdvancing")}
+            </Label>
           </div>
 
           {(formData.rankCutoff > 0 || isRankCutoffEnabled) && (

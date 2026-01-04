@@ -10,8 +10,10 @@ import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSectio
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
+import { useTranslation } from "react-i18next"
 
 const ManualRubricPage = () => {
+  const { t } = useTranslation(["common", "breadcrumbs"])
   const { roundId, contestId } = useParams()
 
   const {
@@ -28,8 +30,8 @@ const ManualRubricPage = () => {
   const criteria = rubricData?.data?.criteria ?? []
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_RUBRIC_EDITOR(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round"
+    round?.contestName ?? t("common.contest"),
+    round?.roundName ?? t("common.round")
   )
 
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_RUBRIC_EDITOR(
@@ -54,7 +56,7 @@ const ManualRubricPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="contest" />
+        <ErrorState itemName={t("common.contest")} />
       </PageContainer>
     )
   }
@@ -65,7 +67,7 @@ const ManualRubricPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="round" />
+        <MissingState itemName={t("common.round")} />
       </PageContainer>
     )
   }

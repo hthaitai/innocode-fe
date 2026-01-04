@@ -15,8 +15,10 @@ import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
 import { LoadingState } from "../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../shared/components/ui/MissingState"
+import { useTranslation } from "react-i18next"
 
 const OrganizerMcqAttemptDetail = () => {
+  const { t } = useTranslation(["common", "breadcrumbs"])
   const { contestId, roundId, attemptId } = useParams()
 
   const {
@@ -31,9 +33,9 @@ const OrganizerMcqAttemptDetail = () => {
   } = useGetAttemptDetailQuery(attemptId)
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round",
-    attempt?.studentName ?? "Student name"
+    round?.contestName ?? t("common.contest"),
+    round?.roundName ?? t("common.round"),
+    attempt?.studentName ?? t("common.studentName")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
     contestId,
@@ -58,7 +60,7 @@ const OrganizerMcqAttemptDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="attempt" />
+        <ErrorState itemName={t("common.attempt")} />
       </PageContainer>
     )
   }
@@ -69,12 +71,18 @@ const OrganizerMcqAttemptDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="attempt" />
+        <MissingState itemName={t("common.attempt")} />
       </PageContainer>
     )
   }
 
-  const { totalQuestions, correctAnswers, score, answerResults } = attempt
+  const {
+    totalQuestions,
+    correctAnswers,
+    score,
+    totalPossibleScore,
+    answerResults,
+  } = attempt
 
   return (
     <PageContainer
@@ -87,22 +95,23 @@ const OrganizerMcqAttemptDetail = () => {
             totalQuestions={totalQuestions}
             correctAnswers={correctAnswers}
             score={score}
+            totalPossibleScore={totalPossibleScore}
           />
 
           <div>
-            <div className="text-sm font-semibold pt-3 pb-2">Information</div>
+            <div className="text-sm font-semibold pt-3 pb-2">
+              {t("common.information")}
+            </div>
             <AttemptInfo attemptDetail={attempt} />
           </div>
 
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">
-              Attempt review
+              {t("common.attemptReview")}
             </div>
             <TableFluentScrollable
-              data={
-                answerResults?.map((q, idx) => ({ ...q, index: idx })) || []
-              }
-              columns={getMcqAttemptDetailColumns()}
+              data={answerResults}
+              columns={getMcqAttemptDetailColumns(t)}
               maxHeight={400}
             />
           </div>

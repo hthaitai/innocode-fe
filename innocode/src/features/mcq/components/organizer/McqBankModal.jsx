@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react"
 import BaseModal from "@/shared/components/BaseModal"
 import { useGetBanksQuery } from "@/services/mcqApi"
-import { Check, Database } from "lucide-react"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { useTranslation } from "react-i18next"
 
 const McqBankModal = ({ isOpen, onClose, selectedBanks, setSelectedBanks }) => {
+  const { t } = useTranslation("common")
   const [localSelectedBanks, setLocalSelectedBanks] = useState(
     selectedBanks || []
   )
@@ -47,15 +48,15 @@ const McqBankModal = ({ isOpen, onClose, selectedBanks, setSelectedBanks }) => {
     <BaseModal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Choose a bank to import"
+      title={t("common.chooseBankToImport")}
       size="lg"
       footer={
         <div className="flex justify-end gap-2">
           <button type="button" className="button-white" onClick={handleClose}>
-            Cancel
+            {t("buttons.cancel")}
           </button>
           <button type="button" className="button-orange" onClick={handleSave}>
-            Import
+            {t("common.import")}
           </button>
         </div>
       }
@@ -64,12 +65,14 @@ const McqBankModal = ({ isOpen, onClose, selectedBanks, setSelectedBanks }) => {
         {isLoading && <Spinner />}
 
         {isError && (
-          <p className="text-red-500 text-center">Failed to load banks</p>
+          <p className="text-red-500 text-center">
+            {t("common.failedToLoadBanks")}
+          </p>
         )}
 
         {!isLoading && !isError && banks.length === 0 && (
           <p className="text-center text-[#7A7574]">
-            No banks available, import csv to add bank.
+            {t("common.noBanksAvailable")}
           </p>
         )}
 
@@ -108,7 +111,9 @@ const McqBankModal = ({ isOpen, onClose, selectedBanks, setSelectedBanks }) => {
                   </div>
 
                   <span className="text-[#7A7574]">
-                    {bank.totalQuestions ?? 0} questions
+                    {t("common.questionsCount", {
+                      count: bank.totalQuestions ?? 0,
+                    })}
                   </span>
                 </div>
               )

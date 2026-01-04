@@ -9,8 +9,10 @@ import { ErrorState } from "../../../shared/components/ui/ErrorState"
 import { useGetRoundMcqsQuery } from "../../../services/mcqApi"
 import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
 import { MissingState } from "../../../shared/components/ui/MissingState"
+import { useTranslation } from "react-i18next"
 
 const OrganizerMcq = () => {
+  const { t } = useTranslation(["common", "breadcrumbs"])
   const { contestId, roundId } = useParams()
   const [page, setPage] = useState(1)
   const pageSize = 10
@@ -26,13 +28,13 @@ const OrganizerMcq = () => {
     isError: mcqError,
   } = useGetRoundMcqsQuery({ roundId, pageNumber: page, pageSize })
 
-  const testId = mcqData?.data?.testId
+  const testId = mcqData?.data?.mcqTest?.testId
   const mcqs = mcqData?.data?.mcqTest?.questions ?? []
   const pagination = mcqData?.additionalData ?? {}
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round"
+    round?.contestName ?? t("common.contest"),
+    round?.roundName ?? t("common.round")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ(contestId, roundId)
 
@@ -53,7 +55,7 @@ const OrganizerMcq = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="questions" />
+        <ErrorState itemName={t("questions", { ns: "breadcrumbs" })} />
       </PageContainer>
     )
   }
@@ -64,7 +66,7 @@ const OrganizerMcq = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="round" />
+        <MissingState itemName={t("common.round")} />
       </PageContainer>
     )
   }

@@ -1,15 +1,15 @@
 import React from "react"
-import InfoSection from "@/shared/components/InfoSection"
-import { CheckCircle, Circle, ListCheck, ListChecks } from "lucide-react"
+import { ListCheck } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 const ManualResultRubricScores = ({ criteriaScores }) => {
-  if (!criteriaScores || criteriaScores.length === 0) return null
+  const { t } = useTranslation("common")
 
   return (
     <div className="space-y-1">
       {!criteriaScores || criteriaScores.length === 0 ? (
         <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          No rubric scores available.
+          {t("common.noRubricScoresAvailable")}
         </div>
       ) : (
         criteriaScores.map((criterion, index) => (
@@ -19,7 +19,7 @@ const ManualResultRubricScores = ({ criteriaScores }) => {
           >
             <div className="flex items-center gap-5">
               <ListCheck size={20} />
-              <span>{criterion.description || "Criterion"}</span>
+              <span>{criterion.description || t("common.criterion")}</span>
             </div>
 
             <div>

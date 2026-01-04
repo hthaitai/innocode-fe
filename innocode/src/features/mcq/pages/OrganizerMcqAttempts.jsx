@@ -12,8 +12,10 @@ import { Spinner } from "../../../shared/components/SpinnerFluent"
 import { LoadingState } from "../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../shared/components/ui/MissingState"
+import { useTranslation } from "react-i18next"
 
 const OrganizerMcqAttempts = () => {
+  const { t } = useTranslation(["common", "breadcrumbs"])
   const navigate = useNavigate()
   const { contestId, roundId } = useParams()
 
@@ -41,8 +43,8 @@ const OrganizerMcqAttempts = () => {
 
   // Breadcrumbs
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPTS(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round"
+    round?.contestName ?? t("common.contest"),
+    round?.roundName ?? t("common.round")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ_ATTEMPTS(
     contestId,
@@ -50,7 +52,7 @@ const OrganizerMcqAttempts = () => {
   )
 
   // Columns for the table
-  const columns = getMcqAttemptsColumns()
+  const columns = getMcqAttemptsColumns(t)
 
   const handleRowClick = (attemptId) => {
     navigate(
@@ -75,7 +77,7 @@ const OrganizerMcqAttempts = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="attempts" />
+        <ErrorState itemName={t("common.attempts")} />
       </PageContainer>
     )
   }
@@ -86,7 +88,7 @@ const OrganizerMcqAttempts = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="round" />
+        <MissingState itemName={t("common.round")} />
       </PageContainer>
     )
   }

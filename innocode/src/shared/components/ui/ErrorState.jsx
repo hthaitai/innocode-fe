@@ -1,14 +1,15 @@
-import React from "react"
+import { useTranslation } from "react-i18next"
 
 export function ErrorState({ itemName }) {
+  const { t } = useTranslation("common")
   return (
     <div
       className={`text-red-600 text-sm leading-5 border border-red-200 rounded-[5px] bg-red-50 flex items-center justify-center px-5 min-h-[70px]`}
     >
       <p className="text-xs leading-4">
         {itemName
-          ? `Failed to load ${itemName}. Please try again.`
-          : "Something went wrong. Please try again."}
+          ? t("common.failedToLoadItem", { item: itemName })
+          : t("common.somethingWentWrong")}
       </p>
     </div>
   )

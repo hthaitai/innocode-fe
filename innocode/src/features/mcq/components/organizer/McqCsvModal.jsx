@@ -5,8 +5,10 @@ import {
   useImportMcqCsvMutation,
   useGetMcqTemplateQuery,
 } from "@/services/mcqApi"
+import { useTranslation } from "react-i18next"
 
 export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
+  const { t } = useTranslation("common")
   const { data: templateData, isFetching: fetchingTemplate } =
     useGetMcqTemplateQuery()
   const templateUrl = templateData?.data
@@ -21,7 +23,7 @@ export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
     if (!file) return
 
     if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
-      setError("Please select a valid CSV file")
+      setError(t("common.validCsvError"))
       setSelectedFile(null)
       return
     }
@@ -32,7 +34,7 @@ export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
 
   const handleImport = async () => {
     if (!selectedFile) {
-      setError("Please select a CSV file first")
+      setError(t("common.selectCsvError"))
       return
     }
 
@@ -42,13 +44,13 @@ export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
       formData.append("bankStatus", "Public")
 
       const result = await importMcqCsv({ testId, formData }).unwrap()
-      toast.success("CSV imported successfully!")
+      toast.success(t("common.csvImportedSuccess"))
       setSelectedFile(null)
       onUpload?.(result?.data?.questions)
       onClose()
     } catch (err) {
       console.error(err)
-      toast.error(err?.data?.message || "Failed to import CSV")
+      toast.error(err?.data?.message || t("common.failedToImportCsv"))
     }
   }
 
@@ -66,7 +68,7 @@ export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
         onClick={handleClose}
         disabled={importing}
       >
-        Cancel
+        {t("buttons.cancel")}
       </button>
 
       <button
@@ -75,7 +77,7 @@ export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
         onClick={handleImport}
         disabled={importing}
       >
-        {importing ? "Importing..." : "Import CSV"}
+        {importing ? t("common.importing") : t("common.importCsv")}
       </button>
     </div>
   )
@@ -84,7 +86,7 @@ export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
     <BaseModal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Upload MCQ CSV"
+      title={t("common.uploadMcqCsv")}
       size="md"
       footer={footer}
     >
@@ -92,7 +94,9 @@ export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
         {/* Download Template */}
         {templateUrl && (
           <div className="flex flex-col gap-1">
-            <label className="text-xs leading-4 mb-1">Download Template</label>
+            <label className="text-xs leading-4 mb-1">
+              {t("common.downloadTemplate")}
+            </label>
             <div>
               <button
                 type="button"
@@ -107,7 +111,7 @@ export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
                 }}
                 disabled={fetchingTemplate}
               >
-                {fetchingTemplate ? "Fetching..." : "Download"}
+                {fetchingTemplate ? t("common.fetching") : t("common.download")}
               </button>
             </div>
           </div>
@@ -115,14 +119,16 @@ export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
 
         {/* File Input */}
         <div className="flex flex-col gap-1">
-          <label className="text-xs leading-4 mb-1">Select CSV File</label>
+          <label className="text-xs leading-4 mb-1">
+            {t("common.selectCsvFile")}
+          </label>
 
           <button
             type="button"
             className="button-orange w-max"
             onClick={() => document.getElementById("mcq-csv-input").click()}
           >
-            {selectedFile ? "Change CSV" : "Choose CSV"}
+            {selectedFile ? t("common.changeCsv") : t("common.chooseCsv")}
           </button>
 
           <input

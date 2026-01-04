@@ -1,6 +1,7 @@
 import React, { useEffect } from "react"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import Label from "../../../../shared/components/form/Label"
+import { useTranslation } from "react-i18next"
 
 export default function TestCaseForm({
   mode = "create",
@@ -12,6 +13,8 @@ export default function TestCaseForm({
   isSubmitting,
   hasChanges,
 }) {
+  const { t } = useTranslation("common")
+
   // Handle input changes
   const handleChange = (field) => (e) => {
     const value = e.target.value
@@ -38,7 +41,7 @@ export default function TestCaseForm({
       {/* Description */}
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 flex flex-col gap-2">
         <Label htmlFor="description" required>
-          Description
+          {t("common.description")}
         </Label>
         <TextFieldFluent
           id="description"
@@ -55,7 +58,7 @@ export default function TestCaseForm({
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 flex flex-col gap-2">
         {/* Input */}
         <Label htmlFor="input" required>
-          Input
+          {t("common.input")}
         </Label>
         <TextFieldFluent
           id="input"
@@ -72,7 +75,7 @@ export default function TestCaseForm({
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 flex flex-col gap-2">
         {/* Expected Output */}
         <Label htmlFor="expectedOutput" required>
-          Expected output
+          {t("common.expectedOutput")}
         </Label>
         <TextFieldFluent
           id="expectedOutput"
@@ -89,7 +92,7 @@ export default function TestCaseForm({
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 flex flex-col gap-2">
         {/* Weight */}
         <Label htmlFor="weight" required>
-          Weight
+          {t("common.weight")}
         </Label>
         <TextFieldFluent
           id="weight"
@@ -106,7 +109,7 @@ export default function TestCaseForm({
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 space-y-5">
         <div className="flex flex-col gap-2">
           {/* Time Limit */}
-          <Label htmlFor="timeLimitMs">Time limit (ms)</Label>
+          <Label htmlFor="timeLimitMs">{t("common.timeLimitMs")}</Label>
           <TextFieldFluent
             id="timeLimitMs"
             name="timeLimitMs"
@@ -119,7 +122,7 @@ export default function TestCaseForm({
 
         <div className="flex flex-col gap-2">
           {/* Memory */}
-          <Label htmlFor="memoryKb">Memory (KB)</Label>
+          <Label htmlFor="memoryKb">{t("common.memoryKb")}</Label>
           <TextFieldFluent
             id="memoryKb"
             name="memoryKb"
@@ -147,11 +150,11 @@ export default function TestCaseForm({
 
           {isSubmitting
             ? mode === "edit"
-              ? "Saving..."
-              : "Creating..."
+              ? t("common.saving")
+              : t("common.creating")
             : mode === "edit"
-            ? "Save"
-            : "Create"}
+            ? t("buttons.save")
+            : t("buttons.create")}
         </button>
       </div>
     </div>

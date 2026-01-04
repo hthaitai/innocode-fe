@@ -6,7 +6,8 @@ export const getMcqPreviewColumns = (
   selectedQuestions,
   toggleSelect,
   toggleSelectAll,
-  isAllSelected
+  isAllSelected,
+  t
 ) => [
   {
     id: "select",
@@ -37,7 +38,7 @@ export const getMcqPreviewColumns = (
     size: 50,
   },
   {
-    header: "Question text",
+    header: t("common.questionText"),
     accessorKey: "text",
     cell: ({ row, getValue }) => {
       const isExpanded = row.getIsExpanded()
@@ -53,27 +54,27 @@ export const getMcqPreviewColumns = (
             className={`flex items-center justify-center rounded select-none text-[#7A7574] hover:text-black ${
               isExpanded ? "rotate-90" : "rotate-0"
             }`}
-            aria-label={isExpanded ? "Collapse" : "Expand"}
+            aria-label={isExpanded ? t("common.collapse") : t("common.expand")}
             style={{ transition: "none" }}
           >
             <ChevronRight size={16} />
           </button>
 
           {/* Question text */}
-          <span>{getValue() || "Untitled Question"}</span>
+          <span>{getValue() || t("common.untitledQuestion")}</span>
         </div>
       )
     },
     size: 600,
   },
   {
-    header: "Options",
+    header: t("common.options"),
     accessorKey: "optionsCount",
-    cell: (info) => `${info.getValue()} options`,
+    cell: (info) => t("common.optionsCount", { count: info.getValue() }),
     size: 100,
   },
   {
-    header: "Created at",
+    header: t("common.createdAt"),
     accessorKey: "createdAt",
     cell: ({ row }) => formatDateTime(row.original?.createdAt),
     size: 180,

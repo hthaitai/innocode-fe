@@ -1,7 +1,9 @@
 import React from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 const McqTableToolbar = () => {
+  const { t } = useTranslation("common")
   const navigate = useNavigate()
   const { contestId, roundId } = useParams()
 
@@ -15,7 +17,7 @@ const McqTableToolbar = () => {
           )
         }
       >
-        Add questions
+        {t("common.addQuestions")}
       </button>
     </div>
   )

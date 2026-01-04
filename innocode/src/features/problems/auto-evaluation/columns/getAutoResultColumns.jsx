@@ -1,9 +1,9 @@
 import StatusBadge from "../../../../shared/components/StatusBadge"
 import { formatDateTime } from "../../../../shared/utils/dateTime"
 
-const getAutoResultColumns = () => [
+const getAutoResultColumns = (t) => [
   {
-    header: "Student",
+    header: t("common.student"),
     accessorKey: "submittedByStudentName",
     size: 200,
     meta: { className: "truncate max-w-[200px]" },
@@ -11,33 +11,33 @@ const getAutoResultColumns = () => [
   },
   {
     accessorKey: "teamName",
-    header: "Team name",
+    header: t("team.teamName"),
     size: 200,
     meta: { className: "truncate max-w-[200px]" },
     cell: ({ row }) => row.original.teamName || "—",
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: t("common.status"),
     size: 120,
     meta: { className: "truncate max-w-[120px]" },
     cell: ({ row }) => <StatusBadge status={row.original.status} />,
   },
   {
     accessorKey: "score",
-    header: "Score",
+    header: t("common.score"),
     size: 80,
     meta: { className: "" },
   },
   {
     accessorKey: "submissionAttemptNumber",
-    header: "Attempts",
-    size: 80,
+    header: t("common.attempts"),
+    size: 90,
     meta: { className: "" },
   },
   {
     accessorKey: "createdAt",
-    header: "Created at",
+    header: t("common.submittedAt"),
     size: 200,
     meta: { className: "truncate max-w-[200px]" },
     cell: ({ row }) => formatDateTime(row.original.createdAt),

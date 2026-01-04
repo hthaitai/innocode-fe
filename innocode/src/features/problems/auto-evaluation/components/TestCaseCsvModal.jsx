@@ -1,6 +1,7 @@
 import { useState } from "react"
 import BaseModal from "@/shared/components/BaseModal"
 import toast from "react-hot-toast"
+import { useTranslation } from "react-i18next"
 import {
   useGetTestCaseTemplateQuery,
   useImportTestCasesCsvMutation,
@@ -12,6 +13,7 @@ export default function TestCaseCsvModal({
   roundId,
   contestId,
 }) {
+  const { t } = useTranslation("common")
   const { data: templateResponse } = useGetTestCaseTemplateQuery()
   const templateUrl = templateResponse?.data
 
@@ -26,7 +28,7 @@ export default function TestCaseCsvModal({
     if (!file) return
 
     if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
-      setError("Please select a valid CSV file")
+      setError(t("common.validCsvError"))
       setSelectedFile(null)
       return
     }
@@ -37,7 +39,7 @@ export default function TestCaseCsvModal({
 
   const handleImport = async () => {
     if (!selectedFile) {
-      setError("Please select a CSV file first")
+      setError(t("common.selectCsvError"))
       return
     }
 
@@ -47,12 +49,12 @@ export default function TestCaseCsvModal({
         contestId,
         csvFile: selectedFile,
       }).unwrap()
-      toast.success("Test cases imported successfully")
+      toast.success(t("common.testCasesImportedSuccess"))
       setSelectedFile(null)
       onClose()
     } catch (err) {
       console.error(err)
-      toast.error(err?.data?.message || "Failed to import test cases")
+      toast.error(err?.data?.message || t("common.failedToImportTestCases"))
     }
   }
 
@@ -70,7 +72,7 @@ export default function TestCaseCsvModal({
         onClick={handleClose}
         disabled={importing}
       >
-        Cancel
+        {t("buttons.cancel")}
       </button>
 
       <button
@@ -79,7 +81,7 @@ export default function TestCaseCsvModal({
         onClick={handleImport}
         disabled={importing}
       >
-        {importing ? "Importing..." : "Import CSV"}
+        {importing ? t("common.importing") : t("common.importCsv")}
       </button>
     </div>
   )
@@ -88,7 +90,7 @@ export default function TestCaseCsvModal({
     <BaseModal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Upload Test Cases CSV"
+      title={t("common.uploadTestCaseCsv")}
       size="md"
       footer={footer}
     >
@@ -96,7 +98,9 @@ export default function TestCaseCsvModal({
         {/* Download Template */}
         {templateUrl && (
           <div className="flex flex-col gap-1">
-            <label className="text-xs leading-4 mb-1">Download Template</label>
+            <label className="text-xs leading-4 mb-1">
+              {t("common.downloadTemplate")}
+            </label>
 
             <div>
               <button
@@ -111,7 +115,7 @@ export default function TestCaseCsvModal({
                   document.body.removeChild(link)
                 }}
               >
-                Download
+                {t("common.download")}
               </button>
             </div>
           </div>
@@ -119,7 +123,9 @@ export default function TestCaseCsvModal({
 
         {/* File Input */}
         <div className="flex flex-col gap-1">
-          <label className="text-xs leading-4 mb-1">Select CSV File</label>
+          <label className="text-xs leading-4 mb-1">
+            {t("common.selectTestCaseCsvFile")}
+          </label>
 
           <button
             type="button"
@@ -128,7 +134,7 @@ export default function TestCaseCsvModal({
               document.getElementById("testcase-csv-input").click()
             }
           >
-            {selectedFile ? "Change CSV" : "Choose CSV"}
+            {selectedFile ? t("common.changeCsv") : t("common.chooseCsv")}
           </button>
 
           <input

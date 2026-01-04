@@ -4,8 +4,10 @@ import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { validateWeight } from "../../validators/weightValidator"
 import { useUpdateQuestionWeightMutation } from "@/services/mcqApi"
 import { toast } from "react-hot-toast"
+import { useTranslation } from "react-i18next"
 
 export default function McqWeightModal({ isOpen, question, testId, onClose }) {
+  const { t } = useTranslation("common")
   const [weight, setWeight] = useState("")
   const [error, setError] = useState("")
 
@@ -46,14 +48,14 @@ export default function McqWeightModal({ isOpen, question, testId, onClose }) {
         questions: [{ questionId: question.questionId, weight: numericWeight }],
       }).unwrap()
 
-      toast.success("Question weight updated successfully!")
+      toast.success(t("common.weightUpdatedSuccess"))
       onClose()
     } catch (err) {
       const errorMessage =
         err?.data?.message ||
         err?.data?.Message ||
         err?.error ||
-        "Failed to update weight"
+        t("common.failedToUpdateWeight")
       toast.error(errorMessage)
     }
   }
@@ -63,7 +65,7 @@ export default function McqWeightModal({ isOpen, question, testId, onClose }) {
   const footer = (
     <div className="flex justify-end gap-2">
       <button type="button" className="button-white" onClick={onClose}>
-        Cancel
+        {t("buttons.cancel")}
       </button>
       <button
         type="button"
@@ -71,7 +73,7 @@ export default function McqWeightModal({ isOpen, question, testId, onClose }) {
         onClick={handleSubmit}
         disabled={isLoading}
       >
-        {isLoading ? "Updating..." : "Update Weight"}
+        {isLoading ? t("common.updating") : t("common.updateWeight")}
       </button>
     </div>
   )
@@ -80,33 +82,31 @@ export default function McqWeightModal({ isOpen, question, testId, onClose }) {
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Update Weight: Question #${
-        question.displayId || question.questionId
-      }`}
+      title={t("common.updateWeightTitle", {
+        id: question.orderIndex || question.displayId,
+      })}
       size="md"
       footer={footer}
     >
       <div className="flex flex-col gap-4">
         {/* Question text display */}
-        <div>
-          <label className="text-xs leading-4 mb-2 capitalize text-[#7A7574]">
-            Question
-          </label>
-          <p className="text-sm leading-5 px-4 py-2 bg-[#F3F3F3] rounded-[5px] border border-[#ECECEC]">
-            {question.text || "Untitled Question"}
-          </p>
-        </div>
+        <TextFieldFluent
+          label={t("common.question")}
+          value={question.text || t("common.untitledQuestion")}
+          disabled={true}
+          multiline={true}
+        />
 
         {/* Weight input */}
         <TextFieldFluent
-          label="Weight"
+          label={t("common.weight")}
           name="weight"
           type="number"
           value={weight}
           onChange={handleWeightChange}
           error={!!error}
           helperText={error}
-          placeholder="Enter weight"
+          placeholder={t("common.enterWeight")}
         />
       </div>
     </BaseModal>

@@ -4,6 +4,7 @@ import { useModal } from "@/shared/hooks/useModal"
 import TableFluent from "@/shared/components/TableFluent"
 import getTestCaseColumns from "../columns/getTestCaseColumns"
 import { toast } from "react-hot-toast"
+import { useTranslation } from "react-i18next"
 
 import {
   useGetRoundTestCasesQuery,
@@ -21,6 +22,7 @@ const ManageTestCases = ({
   pagination,
   setPage,
 }) => {
+  const { t } = useTranslation("common")
   const navigate = useNavigate()
   const { openModal } = useModal()
   const [deleteTestCase] = useDeleteRoundTestCaseMutation()
@@ -30,7 +32,10 @@ const ManageTestCases = ({
     openModal("confirmDelete", {
       type: "test case",
       item: testCase,
-      message: `Are you sure you want to delete "${testCase.description}"?`,
+      message: t("common.deleteTestCaseConfirmMessage", {
+        name: testCase.description,
+      }),
+      title: t("common.deleteTestCaseConfirmTitle"),
       onConfirm: async (close) => {
         try {
           await deleteTestCase({
@@ -38,10 +43,10 @@ const ManageTestCases = ({
             testCaseId: testCase.testCaseId,
             contestId,
           }).unwrap()
-          toast.success("Test case deleted")
+          toast.success(t("common.testCaseDeletedSuccess"))
         } catch (err) {
           console.error(err)
-          toast.error("Failed to delete test case")
+          toast.error(t("common.failedToDeleteTestCase"))
         } finally {
           close()
         }
@@ -67,7 +72,11 @@ const ManageTestCases = ({
     )
   }
 
-  const columns = getTestCaseColumns(handleEditTestCase, handleDeleteTestCase)
+  const columns = getTestCaseColumns(
+    t,
+    handleEditTestCase,
+    handleDeleteTestCase
+  )
 
   return (
     <div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   useUpdateRoundMutation,
@@ -24,6 +25,7 @@ import { formatRoundError } from "@/features/round/utils/errorUtils"
 
 const EditRound = () => {
   const { contestId, roundId } = useParams()
+  const { t } = useTranslation("round")
   const navigate = useNavigate()
 
   // Fetch contest and round data
@@ -101,7 +103,11 @@ const EditRound = () => {
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length > 0) {
-      toast.error(`Please fix ${Object.keys(validationErrors).length} field(s)`)
+      toast.error(
+        t("create.errorValidation", {
+          count: Object.keys(validationErrors).length,
+        })
+      ) // reusing create's error message since logic is same
       return
     }
 
@@ -159,11 +165,11 @@ const EditRound = () => {
 
       await updateRound({ id: roundId, contestId, data: formPayload }).unwrap()
 
-      toast.success("Round updated successfully!")
+      toast.success(t("edit.success"))
       navigate(`/organizer/contests/${contestId}/rounds/${roundId}`)
     } catch (err) {
       console.error(err)
-      const errorMessage = err?.data?.errorMessage || "Failed to update round"
+      const errorMessage = err?.data?.errorMessage || t("edit.errorGeneric")
       toast.error(formatRoundError(errorMessage))
     }
   }
@@ -192,7 +198,7 @@ const EditRound = () => {
         <div className="space-y-5">
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-              Active rounds
+              {t("edit.activeRounds")}
             </div>
             {formData && (
               <RoundsList
@@ -205,7 +211,7 @@ const EditRound = () => {
 
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-              Create a round
+              {t("edit.sectionTitle")}
             </div>
             <RoundForm
               formData={formData}

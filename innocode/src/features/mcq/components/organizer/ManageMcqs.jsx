@@ -7,8 +7,10 @@ import { useUpdateQuestionWeightMutation } from "../../../../services/mcqApi"
 import { toast } from "react-hot-toast"
 import McqTableToolbar from "./McqTableToolbar"
 import TablePagination from "../../../../shared/components/TablePagination"
+import { useTranslation } from "react-i18next"
 
 const ManageMcqs = ({ mcqs, pagination, setPage, testId }) => {
+  const { t } = useTranslation("common")
   const { openModal } = useModalContext()
   const [updateQuestionWeight] = useUpdateQuestionWeightMutation()
 
@@ -42,7 +44,7 @@ const ManageMcqs = ({ mcqs, pagination, setPage, testId }) => {
   )
 
   /** Table Columns */
-  const columns = getMcqColumns(handleEditWeight)
+  const columns = getMcqColumns(handleEditWeight, t)
 
   return (
     <div>

@@ -1,4 +1,5 @@
 import React from "react"
+import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 import {
   Code2,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react"
 
 const RoundRelatedSettings = ({ contestId, round }) => {
+  const { t } = useTranslation("round")
   if (!round) return null
 
   const items = []
@@ -18,14 +20,14 @@ const RoundRelatedSettings = ({ contestId, round }) => {
   if (round.problemType === "Manual") {
     items.push(
       {
-        title: "Rubric / criteria",
-        subtitle: "Define scoring rules and judge guidelines",
+        title: t("settings.rubric"),
+        subtitle: t("settings.rubricDesc"),
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/manual/rubric`,
         icon: Code2,
       },
       {
-        title: "Manual results",
-        subtitle: "View submissions and assign scores",
+        title: t("settings.manualResults"),
+        subtitle: t("settings.manualResultsDesc"),
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/manual/results`,
         icon: ClipboardList,
       }
@@ -36,14 +38,14 @@ const RoundRelatedSettings = ({ contestId, round }) => {
   if (round.problemType === "McqTest") {
     items.push(
       {
-        title: "Multiple choice questions",
-        subtitle: "View or edit the questions for this round's test",
+        title: t("settings.mcq"),
+        subtitle: t("settings.mcqDesc"),
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/mcqs`,
         icon: ListChecks,
       },
       {
-        title: "Student attempts",
-        subtitle: "See all participant attempts for this MCQ test",
+        title: t("settings.studentAttempts"),
+        subtitle: t("settings.studentAttemptsDesc"),
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/attempts`,
         icon: ClipboardList,
       }
@@ -57,16 +59,16 @@ const RoundRelatedSettings = ({ contestId, round }) => {
 
     if (!isMockTest) {
       items.push({
-        title: "Manage test cases",
-        subtitle: "View or edit auto test settings for this round",
+        title: t("settings.manageTestCases"),
+        subtitle: t("settings.manageTestCasesDesc"),
         path: `/organizer/contests/${contestId}/rounds/${round.roundId}/auto-evaluation`,
         icon: Settings2,
       })
     }
 
     items.push({
-      title: "Auto test results",
-      subtitle: "View auto-scored submissions",
+      title: t("settings.autoResults"),
+      subtitle: t("settings.autoResultsDesc"),
       path: `/organizer/contests/${contestId}/rounds/${round.roundId}/auto-evaluation/results`,
       icon: ClipboardList,
     })

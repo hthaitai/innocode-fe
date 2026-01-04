@@ -3,9 +3,11 @@ import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 const RoundInfo = ({ round }) => {
   const navigate = useNavigate()
+  const { t } = useTranslation("round")
 
   const handleEdit = useCallback(() => {
     if (!round) return
@@ -23,24 +25,26 @@ const RoundInfo = ({ round }) => {
   const formatPenaltyRate = (rate) =>
     rate == null || rate === "" ? "—" : `${(rate * 100).toFixed(0)}%`
 
-  const secondsSuffix = (val) => (Number(val) === 1 ? " second" : " seconds")
-  const teamsSuffix = (val) => (Number(val) === 1 ? " team" : " teams")
+  const secondsSuffix = (val) =>
+    Number(val) === 1 ? t("info.suffixes.second") : t("info.suffixes.seconds")
+  const teamsSuffix = (val) =>
+    Number(val) === 1 ? t("info.suffixes.team") : t("info.suffixes.teams")
 
   const details = []
 
   // Core Round Info
   details.push(
-    { label: "Round name", value: safe(round.roundName) },
-    { label: "Contest name", value: safe(round.contestName) },
+    { label: t("info.roundName"), value: safe(round.roundName) },
+    { label: t("info.contestName"), value: safe(round.contestName) },
     {
-      label: "Problem type",
+      label: t("info.problemType"),
       value:
         round.problemType === "McqTest"
-          ? "Multiple Choice Questions (MCQ)"
+          ? t("info.values.mcq")
           : round.problemType === "AutoEvaluation"
-          ? "Auto Evaluation (Auto-graded Coding)"
+          ? t("info.values.auto")
           : round.problemType === "Manual"
-          ? "Manual Evaluation (Judge Review)"
+          ? t("info.values.manual")
           : safe(round.problemType),
     },
     { spacer: true }
@@ -48,41 +52,45 @@ const RoundInfo = ({ round }) => {
 
   // Timing
   details.push(
-    { label: "Start date", value: safe(formatDateTime(round.start)) },
-    { label: "End date", value: safe(formatDateTime(round.end)) },
-    { label: "Time limit", value: safe(round.timeLimitSeconds, secondsSuffix) },
-    { label: "Teams advancing", value: safe(round.rankCutoff, teamsSuffix) },
-    { spacer: true }
+    { label: t("info.startDate"), value: safe(formatDateTime(round.start)) },
+    { label: t("info.endDate"), value: safe(formatDateTime(round.end)) },
+    {
+      label: t("info.timeLimit"),
+      value: safe(round.timeLimitSeconds, secondsSuffix),
+    },
+    {
+      label: t("info.teamsAdvancing"),
+      value: safe(round.rankCutoff, teamsSuffix),
+    }
   )
-
-  // MCQ Test Info (simplified, remove config)
-  if (round.mcqTest) {
-    details.push({ label: "MCQ test name", value: safe(round.mcqTest.name) })
-  }
 
   if (round.problem) {
     details.push(
-      { label: "Problem language", value: safe(round.problem.language) },
+      { spacer: true },
+      { label: t("info.problemLanguage"), value: safe(round.problem.language) },
       {
-        label: "Penalty rate",
+        label: t("info.penaltyRate"),
         value: formatPenaltyRate(round.problem.penaltyRate),
       },
-      { label: "Problem description", value: safe(round.problem.description) }
+      {
+        label: t("info.problemDescription"),
+        value: safe(round.problem.description),
+      }
     )
 
     if (round.problemType === "AutoEvaluation") {
       details.push({
-        label: "Test type",
+        label: t("info.testType"),
         value:
           round.problem.testType === "MockTest"
-            ? "Mock Test"
+            ? t("info.values.mockTest")
             : round.problem.testType === "InputOutput"
-            ? "Input/Output"
-            : "Input/Output", // default
+            ? t("info.values.inputOutput")
+            : t("info.values.inputOutput"), // default
       })
     }
   } else if (!round.mcqTest) {
-    details.push({ label: "Problem configuration", value: "—" })
+    details.push({ label: t("info.problemConfig"), value: "—" })
   }
 
   const filteredDetails = details.filter(
@@ -90,7 +98,7 @@ const RoundInfo = ({ round }) => {
   )
 
   return (
-    <InfoSection title="Round information" onEdit={handleEdit}>
+    <InfoSection title={t("info.title")} onEdit={handleEdit}>
       <DetailTable data={filteredDetails} labelWidth="180px" />
     </InfoSection>
   )

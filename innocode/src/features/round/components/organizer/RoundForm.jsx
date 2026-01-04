@@ -1,4 +1,5 @@
 import React from "react"
+import { useTranslation } from "react-i18next"
 import { useGetRoundsByContestIdQuery } from "@/services/roundApi"
 import BasicInfoSection from "./BasicInfoSection"
 import RoundTypeSection from "./RoundTypeSection"
@@ -18,6 +19,7 @@ export default function RoundForm({
   hasChanges,
 }) {
   const { data: roundsData } = useGetRoundsByContestIdQuery(contestId)
+  const { t } = useTranslation("round")
   const rounds = roundsData?.data ?? []
   const nonRetakeRounds = React.useMemo(
     () => rounds.filter((r) => r.isRetakeRound === false),
@@ -168,11 +170,11 @@ export default function RoundForm({
 
             {isSubmitting
               ? mode === "edit"
-                ? "Saving..."
-                : "Creating..."
+                ? t("edit.submitting")
+                : t("create.submitting")
               : mode === "edit"
-              ? "Save"
-              : "Create"}
+              ? t("edit.submit")
+              : t("create.submit")}
           </button>
         </div>
       </div>

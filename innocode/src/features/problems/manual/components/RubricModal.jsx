@@ -8,6 +8,7 @@ import {
 } from "../../../../services/manualProblemApi"
 import { validateRubric } from "../validators/rubricValidator"
 import toast from "react-hot-toast"
+import { useTranslation } from "react-i18next"
 
 export default function RubricModal({
   isOpen,
@@ -16,6 +17,7 @@ export default function RubricModal({
   contestId,
   initialData = null,
 }) {
+  const { t } = useTranslation("common")
   const isEditMode = !!initialData
   const { data: rubricData } = useFetchRubricQuery(roundId)
   const criteria = rubricData?.data?.criteria ?? []
@@ -58,18 +60,19 @@ export default function RubricModal({
           c.rubricId === initialData.rubricId ? { ...c, ...formData } : c
         )
         await updateRubric({ roundId, criteria: updated, contestId }).unwrap()
-        toast.success("Criterion updated successfully")
+        toast.success(t("common.criterionUpdatedSuccess"))
       } else {
         await createRubric({
           roundId,
           criteria: [formData],
           contestId,
         }).unwrap()
-        toast.success("Criterion created successfully")
+        toast.success(t("common.criterionCreatedSuccess"))
       }
       onClose()
     } catch (err) {
       console.error("Failed to save rubric", err)
+      toast.error(t("common.failedToSaveRubric"))
     }
   }
 
@@ -81,7 +84,7 @@ export default function RubricModal({
         onClick={onClose}
         disabled={isSubmitting}
       >
-        Cancel
+        {t("buttons.cancel")}
       </button>
       <button
         type="button"
@@ -93,11 +96,11 @@ export default function RubricModal({
       >
         {isSubmitting
           ? isEditMode
-            ? "Updating..."
-            : "Creating..."
+            ? t("common.updating")
+            : t("common.creating")
           : isEditMode
-          ? "Update criterion"
-          : "Create criterion"}
+          ? t("common.updateCriterion")
+          : t("common.createCriterion")}
       </button>
     </div>
   )
@@ -106,13 +109,15 @@ export default function RubricModal({
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditMode ? "Edit criterion" : "Add new criterion"}
+      title={
+        isEditMode ? t("common.editCriterion") : t("common.addNewCriterion")
+      }
       size="md"
       footer={footer}
     >
       <div className="flex flex-col gap-3">
         <TextFieldFluent
-          label="Description"
+          label={t("common.description")}
           name="description"
           value={formData.description}
           onChange={handleChange}
@@ -124,7 +129,7 @@ export default function RubricModal({
         />
 
         <TextFieldFluent
-          label="Max score"
+          label={t("common.maxScore")}
           name="maxScore"
           type="number"
           value={formData.maxScore}

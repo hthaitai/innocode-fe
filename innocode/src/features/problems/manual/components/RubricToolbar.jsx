@@ -1,4 +1,5 @@
 import React from "react"
+import { useTranslation } from "react-i18next"
 
 const RubricToolbar = ({
   openModal,
@@ -7,11 +8,12 @@ const RubricToolbar = ({
   criteria,
   totalMaxScore,
 }) => {
+  const { t } = useTranslation(["common"])
   return (
     <div className="flex justify-between items-end mb-3">
       <div>
         <p className="text-sm leading-5 font-medium">
-          Total points: <span>{totalMaxScore || 0}</span>
+          {t("common.totalPoints")}: <span>{totalMaxScore || 0}</span>
         </p>
       </div>
 
@@ -20,14 +22,14 @@ const RubricToolbar = ({
           className="button-orange"
           onClick={() => openModal("rubricCsv", { roundId, contestId })}
         >
-          Upload CSV
+          {t("common.uploadCsv")}
         </button>
 
         <button
           className="button-white"
           onClick={() => openModal("rubric", { roundId, contestId, criteria })}
         >
-          Add critera
+          {t("common.addCriteria")}
         </button>
       </div>
     </div>

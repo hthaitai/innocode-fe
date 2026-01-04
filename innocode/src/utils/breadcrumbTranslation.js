@@ -74,7 +74,7 @@ export const translateBreadcrumb = (breadcrumbArray, language = "en") => {
     Questions: { vi: "Câu hỏi", en: "Questions" },
     "New questions": { vi: "Câu hỏi mới", en: "New questions" },
     "Quiz attempts": { vi: "Lượt làm bài", en: "Quiz attempts" },
-    "Rubric editor": { vi: "Biên tập rubric", en: "Rubric editor" },
+    "Rubric editor": { vi: "Tiêu chí đánh giá", en: "Rubric editor" },
     "Manual results": { vi: "Kết quả thủ công", en: "Manual results" },
     "Test cases": { vi: "Test cases", en: "Test cases" },
     "New test case": { vi: "Test case mới", en: "New test case" },

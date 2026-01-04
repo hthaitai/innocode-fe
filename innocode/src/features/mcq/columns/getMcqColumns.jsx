@@ -1,9 +1,15 @@
 import Actions from "@/shared/components/Actions"
 import { ChevronRight, Edit } from "lucide-react"
 
-export const getMcqColumns = (handleEditWeight) => [
+export const getMcqColumns = (handleEditWeight, t) => [
   {
-    header: "Question",
+    header: t("common.order"),
+    accessorKey: "orderIndex",
+    size: 100,
+    cell: (info) => info.getValue() ?? "-",
+  },
+  {
+    header: t("common.question"),
     accessorKey: "text",
     size: 700,
     cell: ({ row, getValue }) => {
@@ -18,18 +24,18 @@ export const getMcqColumns = (handleEditWeight) => [
             className={`p-0 flex items-center justify-center rounded select-none text-[#7A7574] hover:text-black ${
               isExpanded ? "rotate-90" : "rotate-0"
             }`}
-            aria-label={isExpanded ? "Collapse" : "Expand"}
+            aria-label={isExpanded ? t("common.collapse") : t("common.expand")}
             style={{ transition: "none" }}
           >
             <ChevronRight size={16} />
           </button>
-          <span>{getValue() || "Untitled Question"}</span>
+          <span>{getValue() || t("common.untitledQuestion")}</span>
         </div>
       )
     },
   },
   {
-    header: "Weight",
+    header: t("common.weight"),
     accessorKey: "weight",
     size: 120,
     cell: (info) => info.getValue() ?? "-",
@@ -46,14 +52,14 @@ export const getMcqColumns = (handleEditWeight) => [
         row={row.original}
         items={[
           {
-            label: "Edit Weight",
+            label: t("common.editWeight"),
             icon: Edit,
             onClick: (itemRow) => {
               handleEditWeight(itemRow)
             },
           },
         ]}
-        onClick={(e) => e.stopPropagation()} 
+        onClick={(e) => e.stopPropagation()}
       />
     ),
     meta: { className: "text-right w-[60px]" },

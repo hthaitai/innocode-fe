@@ -10,8 +10,10 @@ import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { useFetchOrganizerManualResultsQuery } from "../../../../services/manualProblemApi"
+import { useTranslation } from "react-i18next"
 
 const ManualResultsPage = () => {
+  const { t } = useTranslation(["common", "breadcrumbs"])
   const { contestId, roundId } = useParams()
 
   const [page, setPage] = useState(1)
@@ -42,8 +44,8 @@ const ManualResultsPage = () => {
 
   // Breadcrumbs
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MANUAL_RESULTS(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round"
+    round?.contestName ?? t("common.contest"),
+    round?.roundName ?? t("common.round")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MANUAL_RESULTS(
     contestId,
@@ -67,7 +69,7 @@ const ManualResultsPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="manual results" />
+        <ErrorState itemName={t("common.manualResults")} />
       </PageContainer>
     )
   }
@@ -78,7 +80,7 @@ const ManualResultsPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="round" />
+        <MissingState itemName={t("common.round")} />
       </PageContainer>
     )
   }

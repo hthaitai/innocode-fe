@@ -9,6 +9,7 @@ import { useGetRoundByIdQuery } from "../../../../services/roundApi"
 import { validateTestCase } from "../validators/testCaseValidator"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { useTranslation } from "react-i18next"
 
 const EMPTY_TEST_CASE = {
   description: "",
@@ -20,13 +21,16 @@ const EMPTY_TEST_CASE = {
 }
 
 export default function AddTestCase() {
+  const { t } = useTranslation(["common", "breadcrumbs"])
   const navigate = useNavigate()
   const { contestId, roundId } = useParams()
   const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId)
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEST_CASE_CREATE(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round"
+    round?.contestName ?? t("common.contest"),
+    round?.roundName ?? t("common.round"),
+    t("common.testCase"),
+    t("common.createTestCase")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEST_CASE_CREATE(
     contestId,
@@ -48,13 +52,13 @@ export default function AddTestCase() {
 
     try {
       await createTestCase({ roundId, payload: formData, contestId }).unwrap()
-      toast.success("Test case created successfully!")
+      toast.success(t("common.testCaseCreatedSuccess"))
       navigate(
         `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation`
       )
     } catch (err) {
       console.error(err)
-      toast.error(err?.data?.errorMessage || "Failed to create test case.")
+      toast.error(err?.data?.errorMessage || t("common.failedToCreateTestCase"))
     }
   }
 
@@ -78,7 +82,7 @@ export default function AddTestCase() {
         breadcrumbPaths={breadcrumbPaths}
       >
         <div className="text-red-600 text-sm leading-5 border border-red-200 rounded-[5px] bg-red-50 flex items-center px-5 min-h-[70px]">
-          Something went wrong while loading this round. Please try again.
+          {t("common.failedToLoadItem", { item: t("common.round") })}
         </div>
       </PageContainer>
     )
@@ -91,7 +95,7 @@ export default function AddTestCase() {
         breadcrumbPaths={breadcrumbPaths}
       >
         <div className="text-[#7A7574] text-sm leading-5 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          This round has been deleted or is no longer available.
+          {t("common.itemUnavailable", { item: t("common.round") })}
         </div>
       </PageContainer>
     )

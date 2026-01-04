@@ -1,4 +1,5 @@
 import React from "react"
+import { useTranslation } from "react-i18next"
 import { toast } from "react-hot-toast"
 import { Icon } from "@iconify/react"
 import {
@@ -7,18 +8,19 @@ import {
 } from "../../../../services/roundApi"
 
 const StartEndRoundSection = ({ roundId }) => {
+  const { t } = useTranslation("round")
   const [startRoundNow, { isLoading: isStarting }] = useStartRoundNowMutation()
   const [endRoundNow, { isLoading: isEnding }] = useEndRoundNowMutation()
 
   const handleStartNow = async () => {
     try {
       await startRoundNow(roundId).unwrap()
-      toast.success("Round started successfully")
+      toast.success(t("actions.startSuccess"))
     } catch (error) {
       const errorMessage =
         error?.data?.message ||
         error?.data?.errorMessage ||
-        "Failed to start round"
+        t("actions.startError")
       toast.error(errorMessage)
     }
   }
@@ -26,12 +28,12 @@ const StartEndRoundSection = ({ roundId }) => {
   const handleEndNow = async () => {
     try {
       await endRoundNow(roundId).unwrap()
-      toast.success("Round ended successfully")
+      toast.success(t("actions.endSuccess"))
     } catch (error) {
       const errorMessage =
         error?.data?.message ||
         error?.data?.errorMessage ||
-        "Failed to end round"
+        t("actions.endError")
       toast.error(errorMessage)
     }
   }
@@ -41,9 +43,11 @@ const StartEndRoundSection = ({ roundId }) => {
       <div className="flex gap-5 items-center">
         <Icon icon="mdi:play-pause" fontSize={20} />
         <div>
-          <p className="text-[14px] leading-[20px]">Round control</p>
+          <p className="text-[14px] leading-[20px]">
+            {t("actions.roundControl")}
+          </p>
           <p className="text-[12px] leading-[16px] text-[#7A7574]">
-            Start or end the round immediately
+            {t("actions.roundControlDesc")}
           </p>
         </div>
       </div>
@@ -60,11 +64,11 @@ const StartEndRoundSection = ({ roundId }) => {
           {isStarting ? (
             <>
               <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
-              <span>Starting...</span>
+              <span>{t("actions.starting")}</span>
             </>
           ) : (
             <>
-              <span>Start now</span>
+              <span>{t("actions.startNow")}</span>
             </>
           )}
         </button>
@@ -80,11 +84,11 @@ const StartEndRoundSection = ({ roundId }) => {
           {isEnding ? (
             <>
               <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
-              <span>Ending...</span>
+              <span>{t("actions.ending")}</span>
             </>
           ) : (
             <>
-              <span>End now</span>
+              <span>{t("actions.endNow")}</span>
             </>
           )}
         </button>

@@ -10,8 +10,10 @@ import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSectio
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
+import { useTranslation } from "react-i18next"
 
 const AutoTestResultsPage = () => {
+  const { t } = useTranslation(["common", "breadcrumbs"])
   const { contestId, roundId } = useParams()
 
   const [page, setPage] = useState(1)
@@ -43,8 +45,8 @@ const AutoTestResultsPage = () => {
 
   // Breadcrumbs
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_AUTO_RESULTS(
-    round?.contestName ?? "Contest",
-    round?.name ?? "Round"
+    round?.contestName ?? t("common.contest"),
+    round?.name ?? t("common.round")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_AUTO_RESULTS(
     contestId,
@@ -68,7 +70,7 @@ const AutoTestResultsPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="auto results" />
+        <ErrorState itemName={t("common.autoResults")} />
       </PageContainer>
     )
   }
@@ -79,7 +81,7 @@ const AutoTestResultsPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="round" />
+        <MissingState itemName={t("common.round")} />
       </PageContainer>
     )
   }

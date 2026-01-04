@@ -1,8 +1,10 @@
 import React, { useState } from "react"
 import { Search, X } from "lucide-react"
 import TextFieldFluent from "../../../../shared/components/TextFieldFluent"
+import { useTranslation } from "react-i18next"
 
 const AutoResultsToolbar = ({ onSearch }) => {
+  const { t } = useTranslation("common")
   const [search, setSearch] = useState("")
 
   const handleSearchKeyDown = (e) => {
@@ -22,7 +24,7 @@ const AutoResultsToolbar = ({ onSearch }) => {
       <div className="flex items-center space-x-2">
         <div className="w-[280px]">
           <TextFieldFluent
-            placeholder="Search student or team name..."
+            placeholder={t("common.searchStudentOrTeam")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleSearchKeyDown}
@@ -46,4 +48,3 @@ const AutoResultsToolbar = ({ onSearch }) => {
 }
 
 export default AutoResultsToolbar
-

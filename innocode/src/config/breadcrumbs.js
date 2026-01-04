@@ -169,26 +169,25 @@ export const BREADCRUMBS = {
   ],
 
   // auto evaluation
-  ORGANIZER_TEST_CASES: (contestName, roundName) => [
+  ORGANIZER_TEST_CASES: (contestName, roundName, testCasesLabel) => [
     "Contests",
     contestName,
     roundName,
-    "Test cases",
+    testCasesLabel,
   ],
-  ORGANIZER_TEST_CASE_CREATE: (contestName, roundName) => [
-    "Contests",
+  ORGANIZER_TEST_CASE_CREATE: (
     contestName,
     roundName,
-    "Test cases",
-    "New test case",
-  ],
-  ORGANIZER_TEST_CASE_EDIT: (contestName, roundName, testCaseName) => [
-    "Contests",
+    testCasesLabel,
+    createLabel
+  ) => ["Contests", contestName, roundName, testCasesLabel, createLabel],
+  ORGANIZER_TEST_CASE_EDIT: (
     contestName,
     roundName,
-    "Test cases",
-    "Edit test case",
-  ],
+    testCaseName,
+    testCasesLabel,
+    editLabel
+  ) => ["Contests", contestName, roundName, testCasesLabel, editLabel],
 
   ORGANIZER_AUTO_RESULTS: (contestName, roundName) => [
     "Contests",

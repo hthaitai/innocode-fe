@@ -11,8 +11,10 @@ import { MissingState } from "../../../../shared/components/ui/MissingState"
 import AutoResultInfo from "../components/AutoResultInfo"
 import AutoResultTestCases from "../components/AutoResultTestCases"
 import AutoResultArtifacts from "../components/AutoResultArtifacts"
+import { useTranslation } from "react-i18next"
 
 const AutoResultDetail = () => {
+  const { t } = useTranslation(["common", "breadcrumbs"])
   const { contestId, roundId, submissionId } = useParams()
 
   const {
@@ -33,9 +35,9 @@ const AutoResultDetail = () => {
   const artifacts = submission?.artifacts ?? []
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_AUTO_RESULT_DETAIL(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round",
-    submission?.submittedByStudentName ?? "Student name"
+    round?.contestName ?? t("common.contest"),
+    round?.roundName ?? t("common.round"),
+    submission?.submittedByStudentName ?? t("common.studentName")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_AUTO_RESULT_DETAIL(
     contestId,
@@ -60,7 +62,7 @@ const AutoResultDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="auto result detail" />
+        <ErrorState itemName={t("common.autoResultDetail")} />
       </PageContainer>
     )
   }
@@ -71,7 +73,7 @@ const AutoResultDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="auto result" />
+        <MissingState itemName={t("common.autoResult")} />
       </PageContainer>
     )
   }
@@ -87,14 +89,14 @@ const AutoResultDetail = () => {
 
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-              Test cases
+              {t("common.testCases")}
             </div>
             <AutoResultTestCases details={details} />
           </div>
 
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-              Submitted files
+              {t("common.submittedFiles")}
             </div>
             <AutoResultArtifacts artifacts={artifacts} />
           </div>

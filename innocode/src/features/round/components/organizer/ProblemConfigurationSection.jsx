@@ -1,4 +1,5 @@
 import Label from "@/shared/components/form/Label"
+import { useTranslation } from "react-i18next"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { AnimatePresence, motion } from "framer-motion"
@@ -14,6 +15,7 @@ export default function ProblemConfigurationSection({
   fileInputRef,
   isRetakeRound,
 }) {
+  const { t } = useTranslation("round")
   const handleProblemTypeChange = (val) => {
     const updated = { ...formData, problemType: val }
 
@@ -49,14 +51,14 @@ export default function ProblemConfigurationSection({
     <div className="space-y-1">
       {!isRetakeRound && (
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 flex flex-col gap-2">
-          <Label required>Problem type</Label>
+          <Label required>{t("form.problemType")}</Label>
 
           <div className="min-w-[130px] w-max">
             <DropdownFluent
               options={[
-                { value: "McqTest", label: "Multiple choice questions" },
-                { value: "Manual", label: "Manual test" },
-                { value: "AutoEvaluation", label: "Auto test" },
+                { value: "McqTest", label: t("form.mcq") },
+                { value: "Manual", label: t("form.manual") },
+                { value: "AutoEvaluation", label: t("form.auto") },
               ]}
               value={formData.problemType || ""}
               onChange={handleProblemTypeChange}
@@ -71,12 +73,12 @@ export default function ProblemConfigurationSection({
         {formData.problemType === "AutoEvaluation" && (
           <div className="space-y-5 border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
             <div className="flex flex-col gap-2">
-              <Label required>Test type</Label>
+              <Label required>{t("form.testType")}</Label>
               <div className="min-w-[150px] w-max">
                 <DropdownFluent
                   options={[
-                    { value: "InputOutput", label: "Input/Output" },
-                    { value: "MockTest", label: "Mock Test" },
+                    { value: "InputOutput", label: t("form.inputOutput") },
+                    { value: "MockTest", label: t("form.mockTest") },
                   ]}
                   value={formData.problemConfig?.testType || "InputOutput"}
                   onChange={(val) =>
@@ -89,7 +91,7 @@ export default function ProblemConfigurationSection({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label required>Description</Label>
+              <Label required>{t("form.description")}</Label>
               <TextFieldFluent
                 multiline
                 rows={4}
@@ -107,7 +109,7 @@ export default function ProblemConfigurationSection({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Language</Label>
+              <Label>{t("form.language")}</Label>
               <TextFieldFluent
                 value={formData.problemConfig?.language || ""}
                 disabled
@@ -115,7 +117,7 @@ export default function ProblemConfigurationSection({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Template file</Label>
+              <Label>{t("form.templateFile")}</Label>
               <div>
                 <input
                   type="file"
@@ -130,7 +132,9 @@ export default function ProblemConfigurationSection({
                   className="button-orange px-3"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  {formData.TemplateFile ? "Change file" : "Browse"}
+                  {formData.TemplateFile
+                    ? t("form.changeFile")
+                    : t("form.browse")}
                 </button>
 
                 {formData.TemplateFile && (
@@ -159,7 +163,7 @@ export default function ProblemConfigurationSection({
         {formData.problemType === "Manual" && (
           <div className="space-y-5 border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5">
             <div className="flex flex-col gap-2">
-              <Label required>Description</Label>
+              <Label required>{t("form.description")}</Label>
               <TextFieldFluent
                 multiline
                 rows={4}
@@ -177,7 +181,7 @@ export default function ProblemConfigurationSection({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Language</Label>
+              <Label>{t("form.language")}</Label>
               <TextFieldFluent
                 value={formData.problemConfig?.language || ""}
                 disabled
@@ -185,7 +189,7 @@ export default function ProblemConfigurationSection({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Template file</Label>
+              <Label>{t("form.templateFile")}</Label>
               <div>
                 <input
                   type="file"
@@ -200,7 +204,9 @@ export default function ProblemConfigurationSection({
                   className="button-orange px-3"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  {formData.TemplateFile ? "Change file" : "Browse"}
+                  {formData.TemplateFile
+                    ? t("form.changeFile")
+                    : t("form.browse")}
                 </button>
 
                 {formData.TemplateFile && (

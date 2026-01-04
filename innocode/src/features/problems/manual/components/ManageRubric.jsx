@@ -10,8 +10,10 @@ import toast from "react-hot-toast"
 import RubricToolbar from "./RubricToolbar"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { useTranslation } from "react-i18next"
 
 const ManageRubric = ({ roundId, contestId, criteria }) => {
+  const { t } = useTranslation("common")
   const [deleteCriterion] = useDeleteCriterionMutation()
   const { openModal } = useModal()
 
@@ -28,7 +30,10 @@ const ManageRubric = ({ roundId, contestId, criteria }) => {
     openModal("confirmDelete", {
       type: "Criterion",
       item: { id: criterion.rubricId, name: criterion.description },
-      message: `Are you sure you want to delete "${criterion.description}"?`,
+      title: t("common.deleteCriterionConfirmTitle"),
+      message: t("common.deleteCriterionConfirmMessage", {
+        name: criterion.description,
+      }),
       onConfirm: async (onClose) => {
         try {
           await deleteCriterion({
@@ -36,10 +41,10 @@ const ManageRubric = ({ roundId, contestId, criteria }) => {
             rubricId: criterion.rubricId,
             contestId,
           }).unwrap()
-          toast.success("Criterion deleted successfully")
+          toast.success(t("common.criterionDeletedSuccess"))
         } catch (err) {
           console.error("Failed to delete criterion", err)
-          toast.error("Failed to delete criterion")
+          toast.error(t("common.failedToDeleteCriterion"))
         } finally {
           onClose()
         }
@@ -47,7 +52,7 @@ const ManageRubric = ({ roundId, contestId, criteria }) => {
     })
   }
 
-  const columns = getRubricColumns(handleEdit, handleDelete)
+  const columns = getRubricColumns(t, handleEdit, handleDelete)
   const totalMaxScore = criteria.reduce((a, c) => a + c.maxScore, 0)
 
   return (

@@ -5,8 +5,15 @@ import {
   useImportRubricCsvMutation,
   useFetchRubricTemplateQuery,
 } from "../../../../services/manualProblemApi"
+import { useTranslation } from "react-i18next"
 
-export default function RubricCsvModal({ isOpen, onClose, roundId, contestId }) {
+export default function RubricCsvModal({
+  isOpen,
+  onClose,
+  roundId,
+  contestId,
+}) {
+  const { t } = useTranslation("common")
   const { data: templateUrl } = useFetchRubricTemplateQuery()
   const [importRubricCsv, { isLoading: importing }] =
     useImportRubricCsvMutation()
@@ -17,7 +24,7 @@ export default function RubricCsvModal({ isOpen, onClose, roundId, contestId }) 
     const file = e.target.files[0]
     if (!file) return
     if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
-      setError("Please select a valid CSV file")
+      setError(t("common.validCsvError"))
       setSelectedFile(null)
       return
     }
@@ -27,18 +34,18 @@ export default function RubricCsvModal({ isOpen, onClose, roundId, contestId }) 
 
   const handleImport = async () => {
     if (!selectedFile) {
-      setError("Please select a CSV file first")
+      setError(t("common.selectCsvError"))
       return
     }
 
     try {
       await importRubricCsv({ roundId, file: selectedFile, contestId }).unwrap()
-      toast.success("CSV imported successfully")
+      toast.success(t("common.csvImportedSuccess"))
       setSelectedFile(null)
       onClose()
     } catch (err) {
       console.error(err)
-      toast.error(err?.data?.message || "Failed to import CSV")
+      toast.error(err?.data?.message || t("common.failedToImportCsv"))
     }
   }
 
@@ -56,7 +63,7 @@ export default function RubricCsvModal({ isOpen, onClose, roundId, contestId }) 
         onClick={handleClose}
         disabled={importing}
       >
-        Cancel
+        {t("buttons.cancel")}
       </button>
       <button
         type="button"
@@ -64,7 +71,7 @@ export default function RubricCsvModal({ isOpen, onClose, roundId, contestId }) 
         onClick={handleImport}
         disabled={importing}
       >
-        {importing ? "Importing..." : "Import CSV"}
+        {importing ? t("common.importing") : t("common.importCsv")}
       </button>
     </div>
   )
@@ -73,7 +80,7 @@ export default function RubricCsvModal({ isOpen, onClose, roundId, contestId }) 
     <BaseModal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Upload CSV / Template"
+      title={t("common.uploadCsvTemplate")}
       size="md"
       footer={footer}
     >
@@ -81,7 +88,9 @@ export default function RubricCsvModal({ isOpen, onClose, roundId, contestId }) 
         {/* Download Template */}
         {templateUrl && (
           <div className="flex flex-col gap-1">
-            <label className="text-xs leading-4 mb-1">Select CSV File</label>
+            <label className="text-xs leading-4 mb-1">
+              {t("common.downloadTemplate")}
+            </label>
 
             <div>
               <button
@@ -96,7 +105,7 @@ export default function RubricCsvModal({ isOpen, onClose, roundId, contestId }) 
                   document.body.removeChild(link)
                 }}
               >
-                Download template
+                {t("common.downloadTemplate")}
               </button>
             </div>
           </div>
@@ -104,14 +113,16 @@ export default function RubricCsvModal({ isOpen, onClose, roundId, contestId }) 
 
         {/* Button-style File Input */}
         <div className="flex flex-col gap-1">
-          <label className="text-xs leading-4 mb-1">Select CSV File</label>
+          <label className="text-xs leading-4 mb-1">
+            {t("common.selectCsvFile")}
+          </label>
 
           <button
             type="button"
             className="button-orange w-max"
             onClick={() => document.getElementById("csv-file-input").click()}
           >
-            {selectedFile ? "Change CSV" : "Choose CSV"}
+            {selectedFile ? t("common.changeCsv") : t("common.chooseCsv")}
           </button>
 
           <input

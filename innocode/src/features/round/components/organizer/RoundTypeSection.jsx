@@ -1,4 +1,5 @@
 import Label from "@/shared/components/form/Label"
+import { useTranslation } from "react-i18next"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 import { EMPTY_ROUND } from "../../constants/roundConstants"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
@@ -11,10 +12,11 @@ export default function RoundTypeSection({
   errors,
   handleMainRoundSelect,
 }) {
+  const { t } = useTranslation("round")
   return (
     <div>
       <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 flex flex-col gap-2">
-        <Label required>Round type</Label>
+        <Label required>{t("form.roundType")}</Label>
 
         <label className="flex items-center gap-2">
           <input
@@ -22,7 +24,7 @@ export default function RoundTypeSection({
             checked={!formData.isRetakeRound}
             onChange={() => setFormData(EMPTY_ROUND)}
           />
-          Normal round
+          {t("form.normalRound")}
         </label>
 
         <label className="flex items-center gap-2">
@@ -36,14 +38,14 @@ export default function RoundTypeSection({
               }))
             }
           />
-          Retake round
+          {t("form.retakeRound")}
         </label>
       </div>
 
       <div className="mt-1">
         {formData.isRetakeRound && (
           <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 flex flex-col gap-2">
-            <Label required>Round to retake</Label>
+            <Label required>{t("form.roundToRetake")}</Label>
 
             <div className="min-w-[130px] w-max">
               <DropdownFluent
@@ -53,7 +55,7 @@ export default function RoundTypeSection({
                 }))}
                 value={String(formData.mainRoundId || "")}
                 onChange={handleMainRoundSelect}
-                placeholder="Select a round"
+                placeholder={t("form.selectRoundPlaceholder")}
                 error={!!errors.mainRoundId}
                 helperText={errors.mainRoundId}
               />

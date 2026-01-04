@@ -1,4 +1,5 @@
 import React, { useRef } from "react"
+import { useTranslation } from "react-i18next"
 import { FileUp, FileCode } from "lucide-react"
 import {
   useUploadMockTestMutation,
@@ -9,6 +10,7 @@ import { Spinner } from "@/shared/components/SpinnerFluent"
 
 const RoundMockTestUpload = ({ roundId }) => {
   const fileInputRef = useRef(null)
+  const { t } = useTranslation("round")
   const [uploadMockTest, { isLoading }] = useUploadMockTestMutation()
   const { data: mockTestUrl } = useGetRoundMockTestUrlQuery(roundId, {
     skip: !roundId,
@@ -19,16 +21,16 @@ const RoundMockTestUpload = ({ roundId }) => {
     if (!file) return
 
     if (!file.name.endsWith(".py")) {
-      toast.error("Only .py files are allowed")
+      toast.error(t("mockTest.errorExtension"))
       return
     }
 
     try {
       await uploadMockTest({ roundId, file }).unwrap()
-      toast.success("Mock test uploaded successfully")
+      toast.success(t("mockTest.success"))
     } catch (error) {
       console.error("Upload failed", error)
-      toast.error("Failed to upload mock test")
+      toast.error(t("mockTest.errorGeneric"))
     } finally {
       // Reset input so same file can be selected again
       if (fileInputRef.current) {
@@ -53,9 +55,11 @@ const RoundMockTestUpload = ({ roundId }) => {
           >
             <FileCode size={20} />
             <div>
-              <p className="text-[14px] leading-[20px]">Upload mock test</p>
+              <p className="text-[14px] leading-[20px]">
+                {t("mockTest.title")}
+              </p>
               <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                Upload a python script for mock testing
+                {t("mockTest.description")}
               </p>
             </div>
           </div>
@@ -67,7 +71,7 @@ const RoundMockTestUpload = ({ roundId }) => {
           className={`${isLoading ? "button-gray" : "button-orange"} px-3`}
           disabled={isLoading}
         >
-          {mockTestUrl ? "Change file" : "Upload"}
+          {mockTestUrl ? t("mockTest.changeFile") : t("mockTest.upload")}
         </button>
       </div>
 
@@ -92,7 +96,7 @@ const RoundMockTestUpload = ({ roundId }) => {
               document.body.removeChild(link)
             }}
           >
-            Download
+            {t("mockTest.download")}
           </button>
         </div>
       )}

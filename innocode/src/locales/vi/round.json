@@ -1,0 +1,158 @@
+{
+  "create": {
+    "title": "Tạo vòng thi",
+    "activeRounds": "Các vòng thi đang hoạt động",
+    "submit": "Tạo",
+    "submitting": "Đang tạo...",
+    "success": "Tạo vòng thi thành công",
+    "errorValidation": "Vui lòng sửa {{count}} trường",
+    "errorGeneric": "Tạo vòng thi thất bại"
+  },
+  "edit": {
+    "title": "Chỉnh sửa vòng thi",
+    "activeRounds": "Các vòng thi đang hoạt động",
+    "sectionTitle": "Chỉnh sửa vòng thi",
+    "submit": "Lưu",
+    "submitting": "Đang lưu...",
+    "success": "Cập nhật vòng thi thành công",
+    "errorGeneric": "Cập nhật vòng thi thất bại"
+  },
+  "form": {
+    "roundType": "Loại vòng thi",
+    "normalRound": "Vòng thi thường",
+    "retakeRound": "Vòng thi lại",
+    "roundToRetake": "Vòng thi cần thi lại",
+    "selectRoundPlaceholder": "Chọn một vòng thi",
+    "roundName": "Tên vòng thi",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "timeLimit": "Thời gian làm bài (giây)",
+    "teamsAdvancing": "Số đội đi tiếp",
+    "enableRankCutoff": "Bật giới hạn đi tiếp",
+    "problemType": "Loại đề thi",
+    "testType": "Loại kiểm thử",
+    "description": "Mô tả",
+    "language": "Ngôn ngữ",
+    "templateFile": "File mẫu",
+    "changeFile": "Thay đổi file",
+    "browse": "Chọn file",
+    "mcq": "Trắc nghiệm",
+    "manual": "Chấm thủ công",
+    "auto": "Chấm tự động",
+    "inputOutput": "Input/Output",
+    "mockTest": "Thi thử"
+  },
+  "contestPeriod": "Thời gian cuộc thi",
+  "errors": {
+    "templateFile": "File mẫu là bắt buộc"
+  },
+  "detail": {
+    "relatedSettings": "Cài đặt liên quan",
+    "moreActions": "Thao tác khác"
+  },
+  "info": {
+    "title": "Thông tin vòng thi",
+    "roundName": "Tên vòng thi",
+    "contestName": "Tên cuộc thi",
+    "problemType": "Loại đề thi",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "timeLimit": "Thời gian làm bài",
+    "teamsAdvancing": "Số đội đi tiếp",
+    "mcqTestName": "Tên bài trắc nghiệm",
+    "problemLanguage": "Ngôn ngữ",
+    "penaltyRate": "Tỉ lệ phạt",
+    "problemDescription": "Mô tả đề bài",
+    "testType": "Loại kiểm thử",
+    "problemConfig": "Cấu hình đề bài",
+    "values": {
+      "mcq": "Trắc nghiệm (MCQ)",
+      "auto": "Chấm tự động (Coding)",
+      "manual": "Chấm thủ công (Review)",
+      "mockTest": "Thi thử (Mock Test)",
+      "inputOutput": "Input/Output"
+    },
+    "suffixes": {
+      "second": " giây",
+      "seconds": " giây",
+      "team": " đội",
+      "teams": " đội"
+    }
+  },
+  "openCode": {
+    "title": "Open code",
+    "description": "Xem, tạo và quản lý mã open code cho vòng thi này",
+    "manage": "Quản lý"
+  },
+  "mockTest": {
+    "title": "Tải lên đề thi thử",
+    "description": "Tải lên script python cho thi thử",
+    "upload": "Tải lên",
+    "changeFile": "Thay đổi file",
+    "download": "Tải xuống",
+    "errorExtension": "Chỉ chấp nhận file .py",
+    "success": "Tải lên đề thi thử thành công",
+    "errorGeneric": "Tải lên thất bại"
+  },
+  "settings": {
+    "rubric": "Tiêu chí đánh giá",
+    "rubricDesc": "Định nghĩa quy tắc chấm điểm và hướng dẫn",
+    "manualResults": "Kết quả thủ công",
+    "manualResultsDesc": "Xem bài nộp và chấm điểm",
+    "mcq": "Câu hỏi trắc nghiệm",
+    "mcqDesc": "Xem hoặc chỉnh sửa câu hỏi cho bài kiểm tra này",
+    "studentAttempts": "Lượt làm bài",
+    "studentAttemptsDesc": "Xem tất cả các lượt làm bài của thí sinh",
+    "manageTestCases": "Quản lý trường hợp kiểm thử",
+    "manageTestCasesDesc": "Xem hoặc chỉnh sửa cài đặt chấm tự động",
+    "autoResults": "Kết quả chấm tự động",
+    "autoResultsDesc": "Xem các bài nộp được chấm tự động"
+  },
+  "actions": {
+    "roundControl": "Điều khiển vòng thi",
+    "roundControlDesc": "Bắt đầu hoặc kết thúc vòng thi ngay lập tức",
+    "startNow": "Bắt đầu ngay",
+    "starting": "Đang bắt đầu...",
+    "endNow": "Kết thúc ngay",
+    "ending": "Đang kết thúc...",
+    "startSuccess": "Bắt đầu vòng thi thành công",
+    "startError": "Bắt đầu vòng thi thất bại",
+    "endSuccess": "Kết thúc vòng thi thành công",
+    "endError": "Kết thúc vòng thi thất bại"
+  },
+  "timeTravel": {
+    "appealSubmitEnd": "Kết thúc nộp phúc khảo",
+    "appealSubmitEndDesc": "Kết thúc giai đoạn nộp phúc khảo ngay lập tức",
+    "endSubmit": "Dừng nộp",
+    "appealSubmitSuccess": "Đã kết thúc nộp phúc khảo",
+    "appealSubmitError": "Thất bại khi kết thúc nộp phúc khảo",
+
+    "appealReviewEnd": "Kết thúc duyệt phúc khảo",
+    "appealReviewEndDesc": "Kết thúc giai đoạn duyệt phúc khảo ngay lập tức",
+    "endReview": "Dừng duyệt",
+    "appealReviewSuccess": "Đã kết thúc duyệt phúc khảo",
+    "appealReviewError": "Thất bại khi kết thúc duyệt phúc khảo",
+
+    "judgeDeadlineEnd": "Kết thúc hạn chấm thi",
+    "judgeDeadlineEndDesc": "Kết thúc hạn chấm thi của giám khảo ngay lập tức",
+    "endDeadline": "Dừng chấm",
+    "judgeDeadlineSuccess": "Đã kết thúc hạn chấm thi",
+    "judgeDeadlineError": "Thất bại khi kết thúc hạn chấm thi",
+
+    "finalize": "Hoàn tất vòng thi",
+    "finalizeDesc": "Hoàn tất vòng thi và công bố kết quả ngay lập tức",
+    "finalizeBtn": "Hoàn tất",
+    "finalizeSuccess": "Hoàn tất vòng thi thành công",
+    "finalizeError": "Thất bại khi hoàn tất vòng thi",
+
+    "processing": "Đang xử lý..."
+  },
+  "delete": {
+    "title": "Xóa vòng thi",
+    "deleteBtn": "Xóa vòng thi",
+    "deleting": "Đang xóa...",
+    "confirmMessage": "Bạn có chắc chắn muốn xóa \"{{name}}\"?",
+    "success": "Xóa vòng thi thành công!",
+    "error": "Xóa vòng thi thất bại."
+  }
+}

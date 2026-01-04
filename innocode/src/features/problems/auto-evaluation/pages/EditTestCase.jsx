@@ -12,8 +12,10 @@ import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { validateTestCase } from "../validators/testCaseValidator"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { useTranslation } from "react-i18next"
 
 export default function EditTestCase() {
+  const { t } = useTranslation(["common", "breadcrumbs"])
   const navigate = useNavigate()
   const { contestId, roundId, testCaseId } = useParams()
 
@@ -35,8 +37,11 @@ export default function EditTestCase() {
   const [errors, setErrors] = useState({})
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEST_CASE_EDIT(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round"
+    round?.contestName ?? t("common.contest"),
+    round?.roundName ?? t("common.round"),
+    testCaseId, // Note: The 3rd param is testCaseName/testCaseId, 4th is label, 5th is edit label
+    t("common.testCase"),
+    t("common.updateTestCase")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEST_CASE_EDIT(
     contestId,
@@ -84,13 +89,13 @@ export default function EditTestCase() {
         contestId,
       }).unwrap()
 
-      toast.success("Test case updated successfully!")
+      toast.success(t("common.testCaseUpdatedSuccess"))
       navigate(
         `/organizer/contests/${round?.contestId}/rounds/${roundId}/auto-evaluation`
       )
     } catch (err) {
       console.error(err)
-      toast.error(err?.data?.errorMessage || "Failed to update test case.")
+      toast.error(err?.data?.errorMessage || t("common.failedToUpdateTestCase"))
     }
   }
 
@@ -115,7 +120,7 @@ export default function EditTestCase() {
         breadcrumbPaths={breadcrumbPaths}
       >
         <div className="text-red-600 text-sm leading-5 border border-red-200 rounded-[5px] bg-red-50 flex items-center px-5 min-h-[70px]">
-          Something went wrong while loading this test case. Please try again.
+          {t("common.testCaseLoadError")}
         </div>
       </PageContainer>
     )
@@ -128,7 +133,7 @@ export default function EditTestCase() {
         breadcrumbPaths={breadcrumbPaths}
       >
         <div className="text-[#7A7574] text-sm leading-5 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          This round has been deleted or is no longer available.
+          {t("common.itemUnavailable", { item: t("common.round") })}
         </div>
       </PageContainer>
     )

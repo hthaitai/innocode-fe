@@ -3,30 +3,56 @@ import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { formatScore } from "../../../../shared/utils/formatNumber"
+import { useTranslation } from "react-i18next"
 
 const AttemptInfo = ({ attemptDetail }) => {
-  const safe = (val) =>
-    val === null || val === undefined || val === "" ? "—" : val
+  console.log(attemptDetail)
+  const { t } = useTranslation("common")
+
+  const safe = (val, suffix = "") => {
+    if (val === null || val === undefined || val === "") return "—"
+    const text = typeof suffix === "function" ? suffix(val) : suffix
+    return `${val}${text}`
+  }
+
+  const questionsSuffix = (val) =>
+    Number(val) === 1
+      ? t("common.suffixes.question")
+      : t("common.suffixes.questions")
+
+  const pointsSuffix = (val) => {
+    // val is a formatted string, try to parse it
+    const num = parseFloat(String(val).replace(/,/g, ""))
+    return num === 1 ? t("common.suffixes.point") : t("common.suffixes.points")
+  }
 
   return (
-    <InfoSection title="Attempt Information">
+    <InfoSection title={t("common.attemptInformation")}>
       <DetailTable
         data={[
-          { label: "Test name", value: safe(attemptDetail.testName) },
-          { label: "Student name", value: safe(attemptDetail.studentName) },
           {
-            label: "Submitted at",
+            label: t("common.studentName"),
+            value: safe(attemptDetail.studentName),
+          },
+          {
+            label: t("common.submittedAt"),
             value: safe(formatDateTime(attemptDetail.submittedAt)),
           },
           {
-            label: "Total questions",
-            value: safe(attemptDetail.totalQuestions),
+            label: t("common.totalQuestions"),
+            value: safe(attemptDetail.totalQuestions, questionsSuffix),
           },
           {
-            label: "Correct answers",
-            value: safe(attemptDetail.correctAnswers),
+            label: t("common.correctAnswers"),
+            value: safe(
+              attemptDetail.correctAnswers,
+              t("common.suffixes.correct")
+            ),
           },
-          { label: "Score", value: safe(formatScore(attemptDetail.score)) },
+          {
+            label: t("common.score"),
+            value: safe(formatScore(attemptDetail.score), pointsSuffix),
+          },
         ]}
         labelWidth="124px"
       />

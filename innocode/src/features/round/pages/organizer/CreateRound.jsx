@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react"
+import { useTranslation } from "react-i18next"
 import { useNavigate, useParams } from "react-router-dom"
 import { useCreateRoundMutation } from "@/services/roundApi"
 import { useGetContestByIdQuery } from "@/services/contestApi"
@@ -23,6 +24,7 @@ import { formatRoundError } from "@/features/round/utils/errorUtils"
 
 const CreateRound = () => {
   const { contestId } = useParams()
+  const { t } = useTranslation("round")
   const navigate = useNavigate()
   const [createRound, { isLoading }] = useCreateRoundMutation()
 
@@ -60,7 +62,11 @@ const CreateRound = () => {
     setErrors(validationErrors)
     console.log(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
-      toast.error(`Please fix ${Object.keys(validationErrors).length} field(s)`)
+      toast.error(
+        t("create.errorValidation", {
+          count: Object.keys(validationErrors).length,
+        })
+      )
       return
     }
 
@@ -124,12 +130,12 @@ const CreateRound = () => {
       }
 
       await createRound({ contestId, data: formPayload }).unwrap()
-      toast.success("Round created successfully")
+      toast.success(t("create.success"))
       navigate(`/organizer/contests/${contestId}`)
       navigate(`/organizer/contests/${contestId}`)
     } catch (err) {
       console.error(err)
-      const errorMessage = err?.data?.errorMessage || "Failed to create round"
+      const errorMessage = err?.data?.errorMessage || t("create.errorGeneric")
       toast.error(formatRoundError(errorMessage))
     }
   }
@@ -158,7 +164,7 @@ const CreateRound = () => {
         <div className="space-y-5">
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-              Active rounds
+              {t("create.activeRounds")}
             </div>
             <RoundsList
               rounds={rounds}
@@ -169,7 +175,7 @@ const CreateRound = () => {
 
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-              Create a round
+              {t("create.title")}
             </div>
             <RoundForm
               contestId={contestId}

@@ -1,17 +1,17 @@
 import Actions from "@/shared/components/Actions"
 import { Edit2, Trash2 } from "lucide-react"
 
-export const getRubricColumns = (handleEdit, handleDelete) => [
+export const getRubricColumns = (t, handleEdit, handleDelete) => [
   {
     accessorKey: "description",
-    header: "Description",
+    header: t("common.description"),
     size: 600,
     cell: ({ row }) => row.original?.description || "—",
     meta: { className: "truncate max-w-[360px]" },
   },
   {
     accessorKey: "maxScore",
-    header: "Max score",
+    header: t("common.maxScore"),
     size: 120,
     cell: ({ row }) => row.original?.maxScore ?? "—",
     meta: { className: "truncate max-w-[120px]" },
@@ -27,12 +27,12 @@ export const getRubricColumns = (handleEdit, handleDelete) => [
         row={row.original}
         items={[
           {
-            label: "Edit",
+            label: t("buttons.edit"),
             icon: Edit2,
             onClick: () => handleEdit(row.original),
           },
           {
-            label: "Delete",
+            label: t("buttons.delete"),
             icon: Trash2,
             className: "text-red-500",
             onClick: () => handleDelete(row.original),

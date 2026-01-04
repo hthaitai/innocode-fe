@@ -1,4 +1,5 @@
 import React from "react"
+import { useTranslation } from "react-i18next"
 import { toast } from "react-hot-toast"
 import { FastForward, CheckCircle, Gavel, Flag } from "lucide-react"
 import {
@@ -9,6 +10,7 @@ import {
 } from "@/services/roundApi"
 
 const RoundTimeTravelSection = ({ roundId }) => {
+  const { t } = useTranslation("round")
   const [appealSubmitEnd, { isLoading: isAppealSubmitEnding }] =
     useAppealSubmitEndMutation()
   const [appealReviewEnd, { isLoading: isAppealReviewEnding }] =
@@ -31,55 +33,55 @@ const RoundTimeTravelSection = ({ roundId }) => {
 
   const actions = [
     {
-      title: "End appeal submission",
-      subtitle: "End the appeal submission phase immediately",
-      buttonText: "End submit",
+      title: t("timeTravel.appealSubmitEnd"),
+      subtitle: t("timeTravel.appealSubmitEndDesc"),
+      buttonText: t("timeTravel.endSubmit"),
       icon: FastForward,
       isLoading: isAppealSubmitEnding,
       onClick: () =>
         handleAction(
           appealSubmitEnd,
-          "Appeal submission ended successfully",
-          "Failed to end appeal submission"
+          t("timeTravel.appealSubmitSuccess"),
+          t("timeTravel.appealSubmitError")
         ),
     },
     {
-      title: "End appeal review",
-      subtitle: "End the appeal review phase immediately",
-      buttonText: "End review",
+      title: t("timeTravel.appealReviewEnd"),
+      subtitle: t("timeTravel.appealReviewEndDesc"),
+      buttonText: t("timeTravel.endReview"),
       icon: CheckCircle,
       isLoading: isAppealReviewEnding,
       onClick: () =>
         handleAction(
           appealReviewEnd,
-          "Appeal review ended successfully",
-          "Failed to end appeal review"
+          t("timeTravel.appealReviewSuccess"),
+          t("timeTravel.appealReviewError")
         ),
     },
     {
-      title: "End judge deadline",
-      subtitle: "End the judge grading deadline immediately",
-      buttonText: "End deadline",
+      title: t("timeTravel.judgeDeadlineEnd"),
+      subtitle: t("timeTravel.judgeDeadlineEndDesc"),
+      buttonText: t("timeTravel.endDeadline"),
       icon: Gavel,
       isLoading: isJudgeDeadlineEnding,
       onClick: () =>
         handleAction(
           judgeDeadlineEnd,
-          "Judge deadline ended successfully",
-          "Failed to end judge deadline"
+          t("timeTravel.judgeDeadlineSuccess"),
+          t("timeTravel.judgeDeadlineError")
         ),
     },
     {
-      title: "Finalize round",
-      subtitle: "Finalize the round and publish results immediately",
-      buttonText: "Finalize",
+      title: t("timeTravel.finalize"),
+      subtitle: t("timeTravel.finalizeDesc"),
+      buttonText: t("timeTravel.finalizeBtn"),
       icon: Flag,
       isLoading: isFinalizing,
       onClick: () =>
         handleAction(
           finalizeRound,
-          "Round finalized successfully",
-          "Failed to finalize round"
+          t("timeTravel.finalizeSuccess"),
+          t("timeTravel.finalizeError")
         ),
     },
   ]
@@ -114,7 +116,7 @@ const RoundTimeTravelSection = ({ roundId }) => {
               {action.isLoading ? (
                 <>
                   <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
-                  <span>Processing...</span>
+                  <span>{t("timeTravel.processing")}</span>
                 </>
               ) : (
                 <span>{action.buttonText}</span>

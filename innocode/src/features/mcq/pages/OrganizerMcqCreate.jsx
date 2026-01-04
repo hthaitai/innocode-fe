@@ -16,8 +16,10 @@ import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
 import { LoadingState } from "@/shared/components/ui/LoadingState"
 import { ErrorState } from "@/shared/components/ui/ErrorState"
 import { MissingState } from "@/shared/components/ui/MissingState"
+import { useTranslation } from "react-i18next"
 
 const OrganizerMcqCreate = () => {
+  const { t } = useTranslation(["common"])
   const { roundId, contestId } = useParams()
   const navigate = useNavigate()
   const { openModal } = useModal()
@@ -73,8 +75,9 @@ const OrganizerMcqCreate = () => {
 
   // ===== HANDLE CHOOSE QUESTIONS =====
   const handleChoose = useCallback(async () => {
-    if (!testId) return toast.error("Test not initialized.")
-    if (!selectedQuestions.length) return toast.error("No questions selected.")
+    if (!testId) return toast.error(t("common.testNotInitialized"))
+    if (!selectedQuestions.length)
+      return toast.error(t("common.noQuestionsSelected"))
 
     try {
       // Extract question IDs only
@@ -82,11 +85,11 @@ const OrganizerMcqCreate = () => {
 
       await createTest({ testId, questionIds, contestId }).unwrap()
 
-      toast.success("Selected questions added to the test successfully")
+      toast.success(t("common.selectedQuestionsAdded"))
       navigate(`/organizer/contests/${contestId}/rounds/${roundId}/mcqs`)
     } catch (err) {
       console.error("Failed to add questions:", err)
-      toast.error(err?.Message || "Failed to add questions")
+      toast.error(err?.Message || t("common.failedToAddQuestions"))
     }
   }, [selectedQuestions, testId, createTest, roundId, contestId, navigate])
 
@@ -100,8 +103,8 @@ const OrganizerMcqCreate = () => {
   }, [openModal, selectedBanks])
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_NEW(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round"
+    round?.contestName ?? t("common.contest"),
+    round?.roundName ?? t("common.round")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ_NEW(
     round?.contestId,
@@ -125,7 +128,7 @@ const OrganizerMcqCreate = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="MCQ test" />
+        <ErrorState itemName={t("common.mcqTest")} />
       </PageContainer>
     )
   }
@@ -136,7 +139,7 @@ const OrganizerMcqCreate = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="round" />
+        <MissingState itemName={t("common.round")} />
       </PageContainer>
     )
   }
