@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Icon } from "@iconify/react";
-import { toast } from "react-hot-toast";
-import { useUpdateUserMeMutation } from "../../../../services/userApi";
+import React, { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Icon } from "@iconify/react"
+import { toast } from "react-hot-toast"
+import { useUpdateUserMeMutation } from "../../../../services/userApi"
 
 const InfoField = ({
   label,
@@ -15,59 +16,60 @@ const InfoField = ({
   onSave,
   isLoading,
 }) => {
-  const [editValue, setEditValue] = useState(value || "");
-  const [error, setError] = useState("");
+  const { t } = useTranslation("pages")
+  const [editValue, setEditValue] = useState(value || "")
+  const [error, setError] = useState("")
 
   React.useEffect(() => {
     if (isEditing) {
-      setEditValue(value || "");
-      setError("");
+      setEditValue(value || "")
+      setError("")
     }
-  }, [isEditing, value]);
+  }, [isEditing, value])
 
-  if (!value && !isEditing) return null;
+  if (!value && !isEditing) return null
 
   const validate = () => {
     if (!editValue || editValue.trim() === "") {
-      setError(`${label} is required`);
-      return false;
+      setError(t("profile.about.fieldRequired", { field: label }))
+      return false
     }
 
     if (field === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(editValue.trim())) {
-        setError("Please enter a valid email address");
-        return false;
+        setError(t("profile.about.emailInvalid"))
+        return false
       }
     }
 
     if (field === "fullName" && editValue.trim().length < 2) {
-      setError("Full name must be at least 2 characters");
-      return false;
+      setError(t("profile.about.fullNameMinLength"))
+      return false
     }
 
-    return true;
-  };
+    return true
+  }
 
   const handleSave = () => {
     if (validate()) {
-      onSave(editValue.trim());
+      onSave(editValue.trim())
     }
-  };
+  }
 
   const handleCancel = () => {
-    setEditValue(value || "");
-    setError("");
-    onCancel();
-  };
+    setEditValue(value || "")
+    setError("")
+    onCancel()
+  }
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      handleSave();
+      handleSave()
     } else if (e.key === "Escape") {
-      handleCancel();
+      handleCancel()
     }
-  };
+  }
 
   return (
     <div className="group">
@@ -89,13 +91,15 @@ const InfoField = ({
                 type={field === "email" ? "email" : "text"}
                 value={editValue}
                 onChange={(e) => {
-                  setEditValue(e.target.value);
-                  setError("");
+                  setEditValue(e.target.value)
+                  setError("")
                 }}
                 onKeyDown={handleKeyDown}
                 autoFocus
                 className="flex-1 text-base text-gray-800 font-medium bg-transparent border-none outline-none focus:outline-none"
-                placeholder={`Enter ${label.toLowerCase()}`}
+                placeholder={t("profile.about.enterPlaceholder", {
+                  field: label.toLowerCase(),
+                })}
               />
             </div>
             {error && <p className="text-sm text-red-500 ml-8">{error}</p>}
@@ -105,7 +109,7 @@ const InfoField = ({
                 disabled={isLoading}
                 className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
               >
-                Cancel
+                {t("profile.about.cancel")}
               </button>
               <button
                 onClick={handleSave}
@@ -116,7 +120,9 @@ const InfoField = ({
                     : "bg-orange-500 hover:bg-orange-600"
                 }`}
               >
-                {isLoading ? "Saving..." : "Save"}
+                {isLoading
+                  ? t("profile.about.saving")
+                  : t("profile.about.save")}
               </button>
             </div>
           </div>
@@ -140,50 +146,58 @@ const InfoField = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 export default function AboutTab({ user }) {
-  const details = user?.details || {};
-  const [editingField, setEditingField] = useState(null);
-  const [updateUserMe, { isLoading }] = useUpdateUserMeMutation();
+  const { t } = useTranslation("pages")
+  const details = user?.details || {}
+  const [editingField, setEditingField] = useState(null)
+  const [updateUserMe, { isLoading }] = useUpdateUserMeMutation()
 
   const handleEdit = (field) => {
-    setEditingField(field);
-  };
+    setEditingField(field)
+  }
 
   const handleCancel = () => {
-    setEditingField(null);
-  };
+    setEditingField(null)
+  }
 
   const handleSave = async (newValue) => {
     try {
       const payload = {
         [editingField]: newValue,
-      };
+      }
 
-      await updateUserMe(payload).unwrap();
-      toast.success(
-        `${
-          editingField === "fullName" ? "Full Name" : "Email"
-        } updated successfully`
-      );
-      setEditingField(null);
+      await updateUserMe(payload).unwrap()
+      const fieldName =
+        editingField === "fullName"
+          ? t("profile.about.fullName")
+          : t("profile.about.emailAddress")
+      toast.success(t("profile.about.updateSuccess", { field: fieldName }))
+      setEditingField(null)
     } catch (error) {
-      toast.error(error?.data?.message || `Failed to update ${editingField}`);
+      const fieldName =
+        editingField === "fullName"
+          ? t("profile.about.fullName")
+          : t("profile.about.emailAddress")
+      toast.error(
+        error?.data?.message ||
+          t("profile.about.updateFailed", { field: fieldName })
+      )
     }
-  };
+  }
 
   return (
     <div className="p-8">
       <div className="mb-6">
         <h3 className="text-2xl font-bold text-gray-800 mb-2">
-          Personal Information
+          {t("profile.about.title")}
         </h3>
       </div>
       <div className="grid grid-cols-2 gap-6">
         <InfoField
-          label="Full Name"
+          label={t("profile.about.fullName")}
           value={user?.fullName}
           icon="mdi:account-box-outline"
           field="fullName"
@@ -195,7 +209,7 @@ export default function AboutTab({ user }) {
         />
 
         <InfoField
-          label="Email Address"
+          label={t("profile.about.emailAddress")}
           value={user?.email}
           icon="mdi:email-outline"
           isLoading={isLoading}
@@ -204,8 +218,8 @@ export default function AboutTab({ user }) {
 
         {details.grade && (
           <InfoField
-            label="Grade"
-            value={`Grade ${details.grade}`}
+            label={t("profile.about.grade")}
+            value={`${t("profile.about.grade")} ${details.grade}`}
             icon="mdi:school-outline"
             showEdit={false}
           />
@@ -213,7 +227,7 @@ export default function AboutTab({ user }) {
 
         {details.province && (
           <InfoField
-            label="Province"
+            label={t("profile.about.province")}
             value={details.province}
             icon="mdi:map-marker-outline"
             showEdit={false}
@@ -222,7 +236,7 @@ export default function AboutTab({ user }) {
 
         {details.schoolName && (
           <InfoField
-            label="School"
+            label={t("profile.about.school")}
             value={details.schoolName}
             icon="mdi:school"
             showEdit={false}
@@ -230,5 +244,5 @@ export default function AboutTab({ user }) {
         )}
       </div>
     </div>
-  );
+  )
 }

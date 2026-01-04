@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { AnimatePresence } from "framer-motion"
 import PageContainer from "@/shared/components/PageContainer"
 import TabNavigation from "@/shared/components/TabNavigation"
@@ -11,13 +12,14 @@ import { useGetUserMeQuery } from "../../../../services/userApi"
 import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
 
 export default function Profile() {
+  const { t } = useTranslation("pages")
   const [tab, setTab] = useState("about")
   const { data: userMe, isLoading: isLoadingUserMe } = useGetUserMeQuery()
   const role = userMe?.role || "student"
 
   const tabs = [
-    { id: "about", label: "About" },
-    { id: "password", label: "Change Password" },
+    { id: "about", label: t("profile.tabs.about") },
+    { id: "password", label: t("profile.tabs.changePassword") },
   ]
 
   return (

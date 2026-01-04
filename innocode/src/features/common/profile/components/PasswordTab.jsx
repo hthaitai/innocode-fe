@@ -1,18 +1,20 @@
 import React, { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Icon } from "@iconify/react"
 import { authApi } from "../../../../api/authApi"
 
 export default function PasswordTab() {
+  const { t } = useTranslation("pages")
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  
+
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmNewPassword: "",
   })
-  
+
   const [errors, setErrors] = useState({})
   const [successMessage, setSuccessMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -23,7 +25,7 @@ export default function PasswordTab() {
       ...prev,
       [field]: value,
     }))
-    
+
     // Clear error and success message when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }))
@@ -37,23 +39,28 @@ export default function PasswordTab() {
     const newErrors = {}
 
     if (!formData.currentPassword) {
-      newErrors.currentPassword = "Current password is required"
+      newErrors.currentPassword = t("profile.password.currentPasswordRequired")
     }
 
     if (!formData.newPassword) {
-      newErrors.newPassword = "New password is required"
+      newErrors.newPassword = t("profile.password.newPasswordRequired")
     } else if (formData.newPassword.length < 8) {
-      newErrors.newPassword = "Password must be at least 8 characters"
+      newErrors.newPassword = t("profile.password.passwordMinLength")
     }
 
     if (!formData.confirmNewPassword) {
-      newErrors.confirmNewPassword = "Please confirm your new password"
+      newErrors.confirmNewPassword = t(
+        "profile.password.confirmPasswordRequired"
+      )
     } else if (formData.newPassword !== formData.confirmNewPassword) {
-      newErrors.confirmNewPassword = "Passwords do not match"
+      newErrors.confirmNewPassword = t("profile.password.passwordsNotMatch")
     }
 
-    if (formData.currentPassword && formData.newPassword === formData.currentPassword) {
-      newErrors.newPassword = "New password must be different from current password"
+    if (
+      formData.currentPassword &&
+      formData.newPassword === formData.currentPassword
+    ) {
+      newErrors.newPassword = t("profile.password.passwordMustDiffer")
     }
 
     setErrors(newErrors)
@@ -63,7 +70,7 @@ export default function PasswordTab() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSuccessMessage("")
-    
+
     if (!validate()) {
       return
     }
@@ -77,9 +84,9 @@ export default function PasswordTab() {
         newPassword: formData.newPassword,
         confirmNewPassword: formData.confirmNewPassword,
       })
-      
-      setSuccessMessage("Password updated successfully!")
-      
+
+      setSuccessMessage(t("profile.password.passwordUpdatedSuccess"))
+
       // Reset form
       setFormData({
         currentPassword: "",
@@ -91,12 +98,14 @@ export default function PasswordTab() {
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.errorMessage ||
-        "Failed to update password. Please check your current password."
-      
+        t("profile.password.passwordUpdateFailed")
+
       // Set error to currentPassword field if it's about authentication
-      if (errorMessage.toLowerCase().includes("current") || 
-          errorMessage.toLowerCase().includes("password") ||
-          errorMessage.toLowerCase().includes("incorrect")) {
+      if (
+        errorMessage.toLowerCase().includes("current") ||
+        errorMessage.toLowerCase().includes("password") ||
+        errorMessage.toLowerCase().includes("incorrect")
+      ) {
         setErrors({ currentPassword: errorMessage })
       } else {
         // Set as general error on newPassword field
@@ -111,13 +120,13 @@ export default function PasswordTab() {
     <div className="p-8">
       <div className="mb-6">
         <h3 className="text-2xl font-bold text-gray-800 mb-2">
-          Security Settings
+          {t("profile.password.title")}
         </h3>
       </div>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="group">
           <label className="block text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-            Current Password
+            {t("profile.password.currentPassword")}
           </label>
           <div
             className={`relative bg-gray-50 border-2 rounded-xl p-2 transition-all duration-200 ${
@@ -127,15 +136,12 @@ export default function PasswordTab() {
             }`}
           >
             <div className="flex items-center space-x-3">
-              <Icon
-                icon="mdi:lock-outline"
-                className="h-5 w-5 text-gray-400"
-              />
+              <Icon icon="mdi:lock-outline" className="h-5 w-5 text-gray-400" />
               <input
                 type={showCurrentPassword ? "text" : "password"}
                 value={formData.currentPassword}
                 onChange={handleChange("currentPassword")}
-                placeholder="Enter your current password"
+                placeholder={t("profile.password.enterCurrentPassword")}
                 className="flex-1 outline-none bg-transparent text-base text-gray-800 placeholder-gray-400"
                 disabled={isSubmitting}
               />
@@ -153,13 +159,15 @@ export default function PasswordTab() {
             </div>
           </div>
           {errors.currentPassword && (
-            <p className="text-sm text-red-500 mt-1 ml-1">{errors.currentPassword}</p>
+            <p className="text-sm text-red-500 mt-1 ml-1">
+              {errors.currentPassword}
+            </p>
           )}
         </div>
 
         <div className="group">
           <label className="block text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-            New Password
+            {t("profile.password.newPassword")}
           </label>
           <div
             className={`relative bg-gray-50 border-2 rounded-xl p-2 transition-all duration-200 ${
@@ -177,7 +185,7 @@ export default function PasswordTab() {
                 type={showNewPassword ? "text" : "password"}
                 value={formData.newPassword}
                 onChange={handleChange("newPassword")}
-                placeholder="Enter your new password"
+                placeholder={t("profile.password.enterNewPassword")}
                 className="flex-1 outline-none bg-transparent text-base text-gray-800 placeholder-gray-400"
                 disabled={isSubmitting}
               />
@@ -195,13 +203,15 @@ export default function PasswordTab() {
             </div>
           </div>
           {errors.newPassword && (
-            <p className="text-sm text-red-500 mt-1 ml-1">{errors.newPassword}</p>
+            <p className="text-sm text-red-500 mt-1 ml-1">
+              {errors.newPassword}
+            </p>
           )}
         </div>
 
         <div className="group">
           <label className="block text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-            Confirm New Password
+            {t("profile.password.confirmNewPassword")}
           </label>
           <div
             className={`relative bg-gray-50 border-2 rounded-xl p-2 transition-all duration-200 ${
@@ -219,7 +229,9 @@ export default function PasswordTab() {
                 type={showConfirmPassword ? "text" : "password"}
                 value={formData.confirmNewPassword}
                 onChange={handleChange("confirmNewPassword")}
-                placeholder="Confirm your new password"
+                placeholder={t(
+                  "profile.password.confirmNewPasswordPlaceholder"
+                )}
                 className="flex-1 outline-none bg-transparent text-base text-gray-800 placeholder-gray-400"
                 disabled={isSubmitting}
               />
@@ -237,14 +249,18 @@ export default function PasswordTab() {
             </div>
           </div>
           {errors.confirmNewPassword && (
-            <p className="text-sm text-red-500 mt-1 ml-1">{errors.confirmNewPassword}</p>
+            <p className="text-sm text-red-500 mt-1 ml-1">
+              {errors.confirmNewPassword}
+            </p>
           )}
         </div>
 
         {successMessage && (
           <div className="flex items-center space-x-2 p-4 bg-green-50 border-2 border-green-400 rounded-xl">
             <Icon icon="mdi:check-circle" className="h-5 w-5 text-green-600" />
-            <p className="text-sm text-green-700 font-medium">{successMessage}</p>
+            <p className="text-sm text-green-700 font-medium">
+              {successMessage}
+            </p>
           </div>
         )}
 
@@ -262,12 +278,12 @@ export default function PasswordTab() {
               {isSubmitting ? (
                 <>
                   <span className="w-4 h-4 border-2 border-t-white border-orange-300 rounded-full animate-spin"></span>
-                  <span>Updating...</span>
+                  <span>{t("profile.password.updating")}</span>
                 </>
               ) : (
                 <>
                   <Icon icon="mdi:check" className="h-5 w-5" />
-                  <span>Update Password</span>
+                  <span>{t("profile.password.updatePassword")}</span>
                 </>
               )}
             </div>
@@ -277,4 +293,3 @@ export default function PasswordTab() {
     </div>
   )
 }
-

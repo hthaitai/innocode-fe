@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react"
 import { useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
@@ -11,6 +12,7 @@ const ContestJudgeInvitesPage = () => {
   const { contestId } = useParams()
   const [page, setPage] = useState(1)
   const pageSize = 20
+  const { t } = useTranslation("pages")
 
   const { data: contest, isLoading: isContestLoading } =
     useGetContestByIdQuery(contestId)
@@ -47,7 +49,7 @@ const ContestJudgeInvitesPage = () => {
           pagination={pagination}
           renderActions={() => (
             <div className="text-sm leading-5 font-semibold px-5 flex items-center min-h-[70px]">
-              Invitation list
+              {t("judge.invitationList")}
             </div>
           )}
         />

@@ -1,70 +1,71 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import translateApiError from "@/shared/utils/translateApiError";
-import "./Login.css";
-import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg";
-import { useAuth } from "@/context/AuthContext";
+import React, { useState, useEffect } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import translateApiError from "@/shared/utils/translateApiError"
+import "./Login.css"
+import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg"
+import { useAuth } from "@/context/AuthContext"
 const Login = () => {
-  const { t } = useTranslation(["auth", "common"]);
-  const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [typedText, setTypedText] = useState("");
+  const { t } = useTranslation(["auth", "common"])
+  const { login } = useAuth()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState("")
+  const navigate = useNavigate()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [typedText, setTypedText] = useState("")
 
-  const fullText = t("common:home.welcome");
+  const fullText = t("common:home.welcome")
 
   // Typing animation effect
   useEffect(() => {
-    let currentIndex = 0;
+    let currentIndex = 0
     const typingInterval = setInterval(() => {
       if (currentIndex <= fullText.length) {
-        setTypedText(fullText.slice(0, currentIndex));
-        currentIndex++;
+        setTypedText(fullText.slice(0, currentIndex))
+        currentIndex++
       } else {
         // Reset animation after a pause
         setTimeout(() => {
-          currentIndex = 0;
-        }, 2000);
+          currentIndex = 0
+        }, 2000)
       }
-    }, 100);
+    }, 100)
 
-    return () => clearInterval(typingInterval);
-  }, []);
+    return () => clearInterval(typingInterval)
+  }, [])
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setIsSubmitting(true);
+    e.preventDefault()
+    setError("")
+    setIsSubmitting(true)
 
     try {
-      await login({ email, password });
-      navigate("/");
+      await login({ email, password })
+      navigate("/")
     } catch (err) {
       // Log error theo cấu trúc backend
       if (import.meta.env.VITE_ENV === "development") {
-        const errorData = err?.response?.data || {};
+        const errorData = err?.response?.data || {}
         console.error("❌ Login error:", {
           status: err?.response?.status,
           code: errorData?.errorCode || errorData?.Code,
-          message: errorData?.errorMessage || errorData?.Message || errorData?.message,
+          message:
+            errorData?.errorMessage || errorData?.Message || errorData?.message,
           url: err?.config?.url,
           data: errorData,
-        });
+        })
       }
 
       // Xử lý các loại lỗi khác nhau
       // Use translateApiError to handle all error cases
-      const translatedError = translateApiError(err, 'errors')
+      const translatedError = translateApiError(err, "errors")
       setError(translatedError)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="login-container relative">
@@ -129,10 +130,10 @@ const Login = () => {
             </div>
 
             {error && (
-              <div 
+              <div
                 className="error-message"
-                style={{ 
-                  color: "#ef4444", 
+                style={{
+                  color: "#ef4444",
                   marginBottom: "1rem",
                   padding: "0.75rem",
                   backgroundColor: "#fef2f2",
@@ -141,26 +142,26 @@ const Login = () => {
                   fontSize: "0.875rem",
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.5rem"
+                  gap: "0.5rem",
                 }}
               >
-                <svg 
-                  width="20" 
-                  height="20" 
-                  viewBox="0 0 20 20" 
-                  fill="none" 
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                   style={{ flexShrink: 0 }}
                 >
-                  <path 
-                    d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z" 
-                    stroke="#ef4444" 
+                  <path
+                    d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z"
+                    stroke="#ef4444"
                     strokeWidth="2"
                   />
-                  <path 
-                    d="M10 6V10M10 14H10.01" 
-                    stroke="#ef4444" 
-                    strokeWidth="2" 
+                  <path
+                    d="M10 6V10M10 14H10.01"
+                    stroke="#ef4444"
+                    strokeWidth="2"
                     strokeLinecap="round"
                   />
                 </svg>
@@ -192,33 +193,21 @@ const Login = () => {
           </form>
 
           <div className="divider">
-            <span className="divider-text">OR</span>
+            <span className="divider-text">{t("auth:or")}</span>
           </div>
 
           <div className="signup-link">
-         <p> Student please sign up using the Sign Up option above. </p> 
+            <p>{t("auth:studentSignUpPrompt")}</p>
             <a href="/register" className="signup-text">
-              Sign Up
+              {t("auth:signUp")}
             </a>
           </div>
 
           <div className="signup-link" style={{ marginTop: "0.5rem" }}>
-            Register for a role {" "}
+            {t("auth:registerForRole")}{" "}
             <Link to="/role-registration" className="signup-text">
-              Sign up here
+              {t("auth:signUpHere")}
             </Link>
-          </div>
-
-          <div className="legal-text">
-            By continuing, you agree to the{" "}
-            <a href="#terms" className="legal-link">
-              Terms of use
-            </a>{" "}
-            and{" "}
-            <a href="#privacy" className="legal-link">
-              Privacy Policy
-            </a>
-            .
           </div>
         </div>
       </div>
@@ -228,13 +217,11 @@ const Login = () => {
             {typedText}
             <span className="typing-cursor">|</span>
           </h1>
-          <p className="typing-subtitle">
-            High School Programming Contest Platform
-          </p>
+          <p className="typing-subtitle">{t("auth:loginSubtitle")}</p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

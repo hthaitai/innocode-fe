@@ -1,19 +1,21 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import PageContainer from "@/shared/components/PageContainer";
-import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs";
-import { ArrowLeft, FileText, UserPlus } from "lucide-react";
-import { useGetSchoolCreationRequestByIdQuery } from "@/services/schoolApi";
-import InfoSection from "@/shared/components/InfoSection";
-import DetailTable from "@/shared/components/DetailTable";
-import StatusBadge from "@/shared/components/StatusBadge";
-import { formatDateTime } from "@/shared/utils/dateTime";
-import { useModalContext } from "@/context/ModalContext";
+import React from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import PageContainer from "@/shared/components/PageContainer"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { ArrowLeft, FileText, UserPlus } from "lucide-react"
+import { useGetSchoolCreationRequestByIdQuery } from "@/services/schoolApi"
+import InfoSection from "@/shared/components/InfoSection"
+import DetailTable from "@/shared/components/DetailTable"
+import StatusBadge from "@/shared/components/StatusBadge"
+import { formatDateTime } from "@/shared/utils/dateTime"
+import { useModalContext } from "@/context/ModalContext"
 
 const SchoolCreationRequestDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { openModal } = useModalContext();
+  const { t } = useTranslation("pages")
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const { openModal } = useModalContext()
 
   const {
     data: request,
@@ -21,8 +23,8 @@ const SchoolCreationRequestDetail = () => {
     error,
   } = useGetSchoolCreationRequestByIdQuery(id, {
     skip: !id,
-  });
-console.log(request);
+  })
+  console.log(request)
   if (isLoading) {
     return (
       <PageContainer
@@ -34,100 +36,98 @@ console.log(request);
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   if (error) {
     return (
-      <PageContainer 
+      <PageContainer
         breadcrumb={BREADCRUMBS.SCHOOL_MANAGEMENT}
         breadcrumbPaths={BREADCRUMB_PATHS.SCHOOL_MANAGEMENT}
         error={error}
       >
         <div className="text-center py-8">
-          <p className="text-red-500 mb-2">Error loading request details</p>
+          <p className="text-red-500 mb-2">
+            {t("schools.errorLoadingDetails")}
+          </p>
           <p className="text-sm text-gray-500">
             {error?.data?.errorMessage ||
               error?.data?.message ||
               error?.message ||
-              "Please try again later"}
+              t("schools.pleaseTryAgain")}
           </p>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   if (!request) {
     return (
-      <PageContainer 
+      <PageContainer
         breadcrumb={BREADCRUMBS.SCHOOL_MANAGEMENT}
         breadcrumbPaths={BREADCRUMB_PATHS.SCHOOL_MANAGEMENT}
       >
         <div className="text-center py-8 text-gray-500">
-          School creation request not found
+          {t("schools.requestNotFound")}
         </div>
       </PageContainer>
-    );
+    )
   }
 
   // Prepare request data for DetailTable
   const requestData = [
     {
-      label: "School Name",
+      label: t("schools.schoolName"),
       value: request?.name || request?.Name || "—",
     },
     {
-      label: "Province",
+      label: t("schools.province"),
       value: request?.provinceName || request?.ProvinceName || "—",
     },
     {
-      label: "Address",
+      label: t("schools.address"),
       value: request?.address || request?.Address || "—",
     },
     {
-      label: "Contact",
+      label: t("schools.contact"),
       value: request?.contact || request?.Contact || "—",
     },
     {
-      label: "Status",
+      label: t("schools.status"),
       value: <StatusBadge status={request?.status || request?.Status} />,
     },
     {
-      label: "Requested By",
+      label: t("schools.requestedBy"),
       value: request?.requestedByName || request?.requestedByEmail || "—",
     },
     {
-      label: "Requested Email",
+      label: t("schools.requestedEmail"),
       value: request?.requestedByEmail || "—",
     },
     {
-      label: "Created Date",
-      value: request?.createdAt || request?.CreatedAt
-        ? formatDateTime(request.createdAt || request.CreatedAt)
-        : "—",
+      label: t("schools.createdDate"),
+      value:
+        request?.createdAt || request?.CreatedAt
+          ? formatDateTime(request.createdAt || request.CreatedAt)
+          : "—",
     },
-  ];
+  ]
 
   // Prepare review data
   const reviewData = request?.reviewedBy
     ? [
         {
-          label: "Reviewed By",
-          value:
-            request.reviewedByName ||
-            request.reviewedByEmail ||
-            "—",
+          label: t("schools.reviewedBy"),
+          value: request.reviewedByName || request.reviewedByEmail || "—",
         },
         {
-          label: "Reviewed At",
-          value: request.reviewedAt
-            ? formatDateTime(request.reviewedAt)
-            : "—",
+          label: t("schools.reviewedAt"),
+          value: request.reviewedAt ? formatDateTime(request.reviewedAt) : "—",
         },
         ...(request.denyReason
           ? [
               {
-                label: "Deny Reason",
+                label: t("schools.denyReason"),
                 value: (
                   <div className="whitespace-pre-wrap bg-red-50 p-3 rounded border border-red-200 text-gray-900">
                     {request.denyReason}
@@ -137,19 +137,18 @@ console.log(request);
             ]
           : []),
       ]
-    : [];
+    : []
 
   // Breadcrumb for detail page
-  const schoolName = request?.name || request?.Name || "Request";
-  const breadcrumbItems = ["School Requests", schoolName];
-  const breadcrumbPaths = ["/school-requests", `/school-requests/${id}`];
+  const schoolName = request?.name || request?.Name || "Request"
+  const breadcrumbItems = ["School Requests", schoolName]
+  const breadcrumbPaths = ["/school-requests", `/school-requests/${id}`]
 
   // Check if status is approved
-  const status = request?.status || request?.Status || "";
-
+  const status = request?.status || request?.Status || ""
 
   return (
-    <PageContainer 
+    <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
     >
@@ -161,34 +160,36 @@ console.log(request);
             className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft size={16} />
-            <span>Back to School Management</span>
+            <span>{t("schools.backToSchoolManagement")}</span>
           </button>
-        
         </div>
 
         {/* Request Information */}
-        <InfoSection title="School Creation Request Information">
+        <InfoSection title={t("schools.requestInformation")}>
           <DetailTable data={requestData} labelWidth="180px" />
         </InfoSection>
 
         {/* Review Information */}
         {reviewData.length > 0 && (
-          <InfoSection title="Review Information">
+          <InfoSection title={t("schools.reviewInformation")}>
             <DetailTable data={reviewData} labelWidth="180px" />
           </InfoSection>
         )}
 
         {/* Evidence Documents */}
         {request?.evidences && request.evidences.length > 0 && (
-          <InfoSection title="Evidence Documents">
+          <InfoSection title={t("schools.evidenceDocuments")}>
             <div className="space-y-2">
               {request.evidences.map((evidence, index) => {
-                const evidenceUrl = evidence.url;
+                const evidenceUrl = evidence.url
                 // Extract filename from URL if name not provided
-                const evidenceName = evidence.name || 
-                  (evidenceUrl ? evidenceUrl.split('/').pop() : `Document ${index + 1}`);
-                const evidenceType = evidence.type || "";
-                const evidenceDate = evidence.createdAt;
+                const evidenceName =
+                  evidence.name ||
+                  (evidenceUrl
+                    ? evidenceUrl.split("/").pop()
+                    : `${t("schools.document")} ${index + 1}`)
+                const evidenceType = evidence.type || ""
+                const evidenceDate = evidence.createdAt
 
                 return (
                   <div
@@ -213,21 +214,21 @@ console.log(request);
                         )}
                         {evidenceDate && (
                           <span>
-                            Uploaded: {formatDateTime(evidenceDate)}
+                            {t("schools.uploaded")}:{" "}
+                            {formatDateTime(evidenceDate)}
                           </span>
                         )}
                       </div>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           </InfoSection>
         )}
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default SchoolCreationRequestDetail;
-
+export default SchoolCreationRequestDetail

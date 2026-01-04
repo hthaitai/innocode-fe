@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { BreadcrumbTitle } from "./breadcrumb"
 import { Spinner } from "./SpinnerFluent"
 import { AnimatedSection } from "./ui/AnimatedSection"
+import { translateBreadcrumb } from "../../utils/breadcrumbTranslation"
 
 export default function PageContainer({
   breadcrumb,
@@ -15,8 +16,13 @@ export default function PageContainer({
   error = null,
   missing = false,
 }) {
-  const { t } = useTranslation("common")
+  const { t, i18n } = useTranslation("common")
   const hasState = loading || error || missing
+
+  // Automatically translate breadcrumbs based on current language
+  const translatedBreadcrumb = breadcrumb
+    ? translateBreadcrumb(breadcrumb, i18n.language)
+    : breadcrumb
 
   return (
     <div className={`min-h-screen w-full ${className}`}>
@@ -25,7 +31,10 @@ export default function PageContainer({
         <div className="bg-[#f3f3f3] sticky top-16 z-10 flex items-center justify-between pt-4 pb-5 px-4 md:px-0 ">
           <div className="flex-1 min-w-0 max-w-[1024px] mx-auto">
             <div className="flex items-center space-x-2 w-max max-w-full">
-              <BreadcrumbTitle items={breadcrumb} paths={breadcrumbPaths} />
+              <BreadcrumbTitle
+                items={translatedBreadcrumb}
+                paths={breadcrumbPaths}
+              />
             </div>
           </div>
           {actions && <div className="ml-4 flex-shrink-0">{actions}</div>}

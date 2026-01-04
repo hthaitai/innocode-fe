@@ -1,48 +1,56 @@
 import React from "react"
+import { useTranslation } from "react-i18next"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import StatusBadge from "@/shared/components/StatusBadge"
 
 const AppealInfo = ({ appeal }) => {
+  const { t } = useTranslation("pages")
   const safe = (val) =>
     val === null || val === undefined || val === "" ? "—" : val
 
   const data = [
     // Appeal specifics
-    { label: "Status", value: <StatusBadge status={appeal.state} /> },
-    { label: "Student name", value: safe(appeal.ownerName) },
-    { label: "Student reason", value: safe(appeal.reason) },
+    { label: t("appeal.status"), value: <StatusBadge status={appeal.state} /> },
+    { label: t("appeal.studentName"), value: safe(appeal.ownerName) },
+    { label: t("appeal.studentReason"), value: safe(appeal.reason) },
     { spacer: true },
 
     // Decision info
-    { label: "Mentor name", value: safe(appeal.mentorName) },
-    { label: "Mentor decision", value: safe(appeal.decision) },
-    { label: "Mentor reason", value: safe(appeal.decisionReason) },
-    { label: "Appeal resolution", value: safe(appeal.appealResolution) },
+    { label: t("appeal.mentorName"), value: safe(appeal.mentorName) },
+    { label: t("appeal.mentorDecision"), value: safe(appeal.decision) },
+    { label: t("appeal.mentorReason"), value: safe(appeal.decisionReason) },
+    {
+      label: t("appeal.appealResolution"),
+      value: safe(appeal.appealResolution),
+    },
     { spacer: true },
 
     // Identifiers / Context
-    { label: "Team name", value: safe(appeal.teamName) },
-    { label: "Contest name", value: safe(appeal.contestName) },
-    { label: "Round name", value: safe(appeal.roundName) },
-    { label: "Problem type", value: safe(appeal.targetType) },
+    { label: t("appeal.teamName"), value: safe(appeal.teamName) },
+    { label: t("appeal.contestName"), value: safe(appeal.contestName) },
+    { label: t("appeal.roundName"), value: safe(appeal.roundName) },
+    { label: t("appeal.problemType"), value: safe(appeal.targetType) },
     { spacer: true },
 
     // Miscellaneous
-    { label: "Created at", value: safe(formatDateTime(appeal.createdAt)) },
     {
-      label: "Evidences",
+      label: t("appeal.created"),
+      value: safe(formatDateTime(appeal.createdAt)),
+    },
+    {
+      label: t("appeal.evidences"),
       value: appeal.evidences?.length
-        ? `${appeal.evidences.length} file${
-            appeal.evidences.length > 1 ? "s" : ""
+        ? `${appeal.evidences.length} ${
+            appeal.evidences.length > 1 ? t("appeal.files") : t("appeal.file")
           }`
         : "—",
     },
   ]
 
   return (
-    <InfoSection title="Appeal Information">
+    <InfoSection title={t("appeal.appealInformation")}>
       <DetailTable data={data} labelWidth="134px" />
     </InfoSection>
   )

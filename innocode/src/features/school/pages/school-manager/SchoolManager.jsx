@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs";
-import PageContainer from "@/shared/components/PageContainer";
-import TableFluent from "@/shared/components/TableFluent";
-import { School } from "lucide-react";
-import { useGetMySchoolCreationRequestsQuery } from "@/services/schoolApi";
-import StatusBadge from "@/shared/components/StatusBadge";
-import DropdownFluent from "@/shared/components/DropdownFluent";
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import PageContainer from "@/shared/components/PageContainer"
+import TableFluent from "@/shared/components/TableFluent"
+import { School } from "lucide-react"
+import { useGetMySchoolCreationRequestsQuery } from "@/services/schoolApi"
+import StatusBadge from "@/shared/components/StatusBadge"
+import DropdownFluent from "@/shared/components/DropdownFluent"
 
 const SchoolManager = () => {
-  const navigate = useNavigate();
-  const [statusFilter, setStatusFilter] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [pageNumber, setPageNumber] = useState(1);
-  const pageSize = 10;
+  const { t } = useTranslation("pages")
+  const navigate = useNavigate()
+  const [statusFilter, setStatusFilter] = useState("")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [pageNumber, setPageNumber] = useState(1)
+  const pageSize = 10
 
   // Fetch data
   const {
@@ -26,62 +28,62 @@ const SchoolManager = () => {
     Search: searchTerm || undefined,
     Page: pageNumber,
     PageSize: pageSize,
-  });
+  })
 
   // Reset to page 1 when filters change
   useEffect(() => {
-    setPageNumber(1);
-    refetch();
-  }, [statusFilter, searchTerm, refetch]);
+    setPageNumber(1)
+    refetch()
+  }, [statusFilter, searchTerm, refetch])
 
   // Handle search
   const handleSearch = (value) => {
-    setSearchTerm(value);
-  };
+    setSearchTerm(value)
+  }
 
   // Helper function to format date
   const formatDate = (dateString) => {
-    if (!dateString) return "—";
+    if (!dateString) return "—"
     try {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
+      const date = new Date(dateString)
+      const day = String(date.getDate()).padStart(2, "0")
+      const month = String(date.getMonth() + 1).padStart(2, "0")
+      const year = date.getFullYear()
+      return `${day}/${month}/${year}`
     } catch (error) {
-      return "—";
+      return "—"
     }
-  };
+  }
 
   // Table Columns
   const columns = [
     {
       accessorKey: "name",
-      header: "School Name",
+      header: t("schools.schoolName"),
       cell: ({ row }) => row.original.name || "—",
     },
     {
       accessorKey: "provinceName",
-      header: "Province",
+      header: t("schools.province"),
       cell: ({ row }) => row.original.provinceName || "—",
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("schools.status"),
       cell: ({ row }) => (
         <StatusBadge status={row.original.status || row.original.Status} />
       ),
     },
     {
       accessorKey: "createdAt",
-      header: "Created Date",
+      header: t("schools.createdDate"),
       cell: ({ row }) => formatDate(row.original.createdAt),
     },
-  ];
+  ]
 
   // Extract data from response
-  const requests = requestsData?.requests || [];
-  const paginationData = requestsData?.pagination || {};
+  const requests = requestsData?.requests || []
+  const paginationData = requestsData?.pagination || {}
   const pagination = {
     pageNumber: pageNumber,
     pageSize: pageSize,
@@ -89,18 +91,18 @@ const SchoolManager = () => {
     totalCount: paginationData.totalCount || 0,
     hasPreviousPage: paginationData.hasPreviousPage || false,
     hasNextPage: paginationData.hasNextPage || false,
-  };
+  }
 
   // Handle row click
   const handleRowClick = (request) => {
-    const requestId = request.requestId || request.id;
-    navigate(`/school-requests/${requestId}`);
-  };
+    const requestId = request.requestId || request.id
+    navigate(`/school-requests/${requestId}`)
+  }
 
   return (
     <PageContainer
-      breadcrumb={BREADCRUMBS.SCHOOL_MANAGEMENT}
-      breadcrumbPaths={BREADCRUMB_PATHS.SCHOOL_MANAGEMENT}
+      breadcrumb={BREADCRUMBS.SCHOOL_REQUESTS}
+      breadcrumbPaths={BREADCRUMB_PATHS.SCHOOL_REQUESTS}
       loading={loading}
       error={error}
     >
@@ -111,10 +113,10 @@ const SchoolManager = () => {
             <School size={20} className="text-gray-700" />
             <div>
               <p className="text-[14px] leading-[20px] font-semibold text-gray-800">
-                School Management
+                {t("schools.schoolManagement")}
               </p>
               <p className="text-[12px] leading-[16px] text-[#7A7574] mt-0.5">
-                Manage your school creation requests
+                {t("schools.manageRequests")}
               </p>
             </div>
           </div>
@@ -122,7 +124,7 @@ const SchoolManager = () => {
             {/* Search Input */}
             <div className="flex gap-2 items-center">
               <label className="text-sm text-gray-600 font-medium">
-                Search:
+                {t("schools.search")}:
               </label>
               <input
                 type="text"
@@ -130,10 +132,10 @@ const SchoolManager = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    handleSearch(searchTerm);
+                    handleSearch(searchTerm)
                   }
                 }}
-                placeholder="Search by name, address, contact..."
+                placeholder={t("schools.searchPlaceholder")}
                 className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 min-w-[250px]"
               />
             </div>
@@ -141,19 +143,19 @@ const SchoolManager = () => {
             {/* Status Filter */}
             <div className="flex gap-2 items-center">
               <label className="text-sm text-gray-600 font-medium">
-                Status:
+                {t("schools.status")}:
               </label>
               <div className="min-w-[150px]">
                 <DropdownFluent
                   value={statusFilter}
                   onChange={setStatusFilter}
                   options={[
-                    { value: "", label: "All Status" },
-                    { value: "Pending", label: "Pending" },
-                    { value: "Approved", label: "Approved" },
-                    { value: "Denied", label: "Denied" },
+                    { value: "", label: t("schools.allStatus") },
+                    { value: "Pending", label: t("schools.pending") },
+                    { value: "Approved", label: t("schools.approved") },
+                    { value: "Denied", label: t("schools.denied") },
                   ]}
-                  placeholder="All Status"
+                  placeholder={t("schools.allStatus")}
                 />
               </div>
             </div>
@@ -163,7 +165,7 @@ const SchoolManager = () => {
               className="button-orange"
               onClick={() => navigate("/school-requests/create")}
             >
-              Create School
+              {t("schools.createSchool")}
             </button>
           </div>
         </div>
@@ -179,7 +181,7 @@ const SchoolManager = () => {
         />
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default SchoolManager;
+export default SchoolManager

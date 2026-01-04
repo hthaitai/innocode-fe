@@ -1,244 +1,229 @@
-import React, { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
-import "./Login.css";
-import "./RoleRegistration.css";
-import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg";
-import { useCreateRoleRegistrationMutation } from "@/services/roleRegistrationApi";
-import { Icon } from "@iconify/react";
-import DropdownFluent from "@/shared/components/DropdownFluent";
+import React, { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
+import { Link, useNavigate } from "react-router-dom"
+import "./Login.css"
+import "./RoleRegistration.css"
+import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg"
+import { useCreateRoleRegistrationMutation } from "@/services/roleRegistrationApi"
+import { Icon } from "@iconify/react"
+import DropdownFluent from "@/shared/components/DropdownFluent"
 
 const RoleRegistration = () => {
-  const { t } = useTranslation("pages");
-  const navigate = useNavigate();
-  const [requestedRole, setRequestedRole] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [payload, setPayload] = useState("");
-  const [evidenceFiles, setEvidenceFiles] = useState([]);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [validationErrors, setValidationErrors] = useState({});
-  const [typedText, setTypedText] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const { t } = useTranslation("pages")
+  const navigate = useNavigate()
+  const [requestedRole, setRequestedRole] = useState("")
+  const [fullName, setFullName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [phone, setPhone] = useState("")
+  const [payload, setPayload] = useState("")
+  const [evidenceFiles, setEvidenceFiles] = useState([])
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [error, setError] = useState("")
+  const [validationErrors, setValidationErrors] = useState({})
+  const [typedText, setTypedText] = useState("")
+  const [successMessage, setSuccessMessage] = useState("")
 
   // RTK Query mutation
   const [createRoleRegistration, { isLoading: isSubmitting }] =
-    useCreateRoleRegistrationMutation();
+    useCreateRoleRegistrationMutation()
 
-  const fullText = t("roleRegistrations.registerAsProfessional");
+  const fullText = t("roleRegistrations.registerAsProfessional")
 
   const roles = [
     { value: "judge", label: t("roleRegistrations.judge") },
     { value: "organizer", label: t("roleRegistrations.organizer") },
     { value: "schoolManager", label: t("roleRegistrations.schoolManager") },
     { value: "staff", label: t("roleRegistrations.staff") },
-  ];
+  ]
 
   useEffect(() => {
-    let currentIndex = 0;
+    let currentIndex = 0
     const typingInterval = setInterval(() => {
       if (currentIndex <= fullText.length) {
-        setTypedText(fullText.slice(0, currentIndex));
-        currentIndex++;
+        setTypedText(fullText.slice(0, currentIndex))
+        currentIndex++
       } else {
         setTimeout(() => {
-          currentIndex = 0;
-        }, 2000);
+          currentIndex = 0
+        }, 2000)
       }
-    }, 100);
+    }, 100)
 
-    return () => clearInterval(typingInterval);
-  }, []);
+    return () => clearInterval(typingInterval)
+  }, [])
 
   const validateForm = () => {
-    const errors = {};
+    const errors = {}
 
     if (!requestedRole) {
-      errors.requestedRole = t("roleRegistrations.pleaseSelectRole");
+      errors.requestedRole = t("roleRegistrations.pleaseSelectRole")
     }
 
     if (!fullName.trim()) {
-      errors.fullName = t("roleRegistrations.fullNameRequired");
+      errors.fullName = t("roleRegistrations.fullNameRequired")
     } else if (fullName.trim().length < 2) {
-      errors.fullName = t("roleRegistrations.fullNameMinLength");
+      errors.fullName = t("roleRegistrations.fullNameMinLength")
     }
 
     if (!email) {
-      errors.email = t("roleRegistrations.emailRequired");
+      errors.email = t("roleRegistrations.emailRequired")
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.email = t("roleRegistrations.invalidEmailFormat");
+      errors.email = t("roleRegistrations.invalidEmailFormat")
     }
 
     if (!password) {
-      errors.password = t("roleRegistrations.passwordRequired");
+      errors.password = t("roleRegistrations.passwordRequired")
     } else if (password.length < 8) {
-      errors.password = t("roleRegistrations.passwordMinLength");
+      errors.password = t("roleRegistrations.passwordMinLength")
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      errors.password = t("roleRegistrations.passwordRequirements");
+      errors.password = t("roleRegistrations.passwordRequirements")
     }
 
     if (!confirmPassword) {
-      errors.confirmPassword = t("roleRegistrations.confirmPasswordRequired");
+      errors.confirmPassword = t("roleRegistrations.confirmPasswordRequired")
     } else if (password !== confirmPassword) {
-      errors.confirmPassword = t("roleRegistrations.passwordsDoNotMatch");
+      errors.confirmPassword = t("roleRegistrations.passwordsDoNotMatch")
     }
 
     if (evidenceFiles.length === 0) {
-      errors.evidenceFiles = t("roleRegistrations.atLeastOneFileRequired");
+      errors.evidenceFiles = t("roleRegistrations.atLeastOneFileRequired")
     }
 
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+    setValidationErrors(errors)
+    return Object.keys(errors).length === 0
+  }
 
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setEvidenceFiles(files);
+    const files = Array.from(e.target.files)
+    setEvidenceFiles(files)
     if (validationErrors.evidenceFiles) {
       setValidationErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors.evidenceFiles;
-        return newErrors;
-      });
+        const newErrors = { ...prev }
+        delete newErrors.evidenceFiles
+        return newErrors
+      })
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setValidationErrors({});
-    setSuccessMessage("");
+    e.preventDefault()
+    setError("")
+    setValidationErrors({})
+    setSuccessMessage("")
 
     if (!validateForm()) {
-      return;
+      return
     }
 
     try {
-      const formData = new FormData();
-      formData.append("RequestedRole", requestedRole);
-      formData.append("FullName", fullName.trim());
-      formData.append("Email", email.trim());
-      formData.append("Password", password);
-      formData.append("ConfirmPassword", confirmPassword);
+      const formData = new FormData()
+      formData.append("RequestedRole", requestedRole)
+      formData.append("FullName", fullName.trim())
+      formData.append("Email", email.trim())
+      formData.append("Password", password)
+      formData.append("ConfirmPassword", confirmPassword)
 
       if (phone.trim()) {
-        formData.append("Phone", phone.trim());
+        formData.append("Phone", phone.trim())
       }
 
       if (payload.trim()) {
-        formData.append("Payload", payload.trim());
+        formData.append("Payload", payload.trim())
       }
 
       // Append evidence files
       evidenceFiles.forEach((file) => {
-        formData.append("EvidenceFiles", file);
-      });
+        formData.append("EvidenceFiles", file)
+      })
 
-      const response = await createRoleRegistration(formData).unwrap();
-      console.log("Registration response:", response);
+      const response = await createRoleRegistration(formData).unwrap()
+      console.log("Registration response:", response)
 
-      setSuccessMessage(
-        t("roleRegistrations.registrationSuccessMessage")
-      );
+      setSuccessMessage(t("roleRegistrations.registrationSuccessMessage"))
 
       // Reset form
-      setRequestedRole("");
-      setFullName("");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-      setPhone("");
-      setPayload("");
-      setEvidenceFiles([]);
+      setRequestedRole("")
+      setFullName("")
+      setEmail("")
+      setPassword("")
+      setConfirmPassword("")
+      setPhone("")
+      setPayload("")
+      setEvidenceFiles([])
     } catch (err) {
-      console.error("Registration error:", err);
+      console.error("Registration error:", err)
 
       // RTK Query error structure: err.data, err.status, err.originalStatus
-      const errorData = err?.data || err?.response?.data;
-      const status = err?.status || err?.originalStatus || err?.response?.status;
-      
+      const errorData = err?.data || err?.response?.data
+      const status = err?.status || err?.originalStatus || err?.response?.status
+
       // Lấy các thông báo lỗi từ nhiều nguồn khác nhau
-      const errorMessage = errorData?.errorMessage;
-      const message = errorData?.message;
-      const error = errorData?.error;
-      const errors = errorData?.errors;
+      const errorMessage = errorData?.errorMessage
+      const message = errorData?.message
+      const error = errorData?.error
+      const errors = errorData?.errors
 
       // Hiển thị lỗi validation từ server (có thể là object hoặc array)
       if (errors) {
         if (typeof errors === "object" && !Array.isArray(errors)) {
           // Merge với validation errors hiện tại
-          setValidationErrors((prev) => ({ ...prev, ...errors }));
+          setValidationErrors((prev) => ({ ...prev, ...errors }))
         } else if (Array.isArray(errors)) {
           // Nếu là array, chuyển thành object với key là field name
-          const errorsObj = {};
+          const errorsObj = {}
           errors.forEach((errorItem) => {
             if (errorItem.field) {
-              errorsObj[errorItem.field] = errorItem.message || errorItem;
+              errorsObj[errorItem.field] = errorItem.message || errorItem
             }
-          });
+          })
           if (Object.keys(errorsObj).length > 0) {
-            setValidationErrors((prev) => ({ ...prev, ...errorsObj }));
+            setValidationErrors((prev) => ({ ...prev, ...errorsObj }))
           }
         }
       }
 
       // Xử lý các loại lỗi khác nhau
       if (err?.code === "ECONNABORTED" || err?.message?.includes("timeout")) {
-        setError(
-          t("roleRegistrations.requestTimeout")
-        );
+        setError(t("roleRegistrations.requestTimeout"))
       } else if (status) {
         // Ưu tiên hiển thị errorMessage từ API
-        let displayError = errorMessage || message || error;
-        
+        let displayError = errorMessage || message || error
+
         switch (status) {
           case 400:
             setError(
-              displayError ||
-                t("roleRegistrations.invalidRegistrationData")
-            );
-            break;
+              displayError || t("roleRegistrations.invalidRegistrationData")
+            )
+            break
           case 409:
             // Xử lý lỗi email đã tồn tại
             if (errorData?.errorCode === "EMAIL_EXISTS" || errorMessage) {
-              const emailErrorMsg = errorMessage || t("roleRegistrations.emailAlreadyExists");
-              setError(emailErrorMsg);
+              const emailErrorMsg =
+                errorMessage || t("roleRegistrations.emailAlreadyExists")
+              setError(emailErrorMsg)
               // Cũng hiển thị lỗi ở field email
               setValidationErrors((prev) => ({
                 ...prev,
                 email: emailErrorMsg,
-              }));
+              }))
             } else {
-              setError(t("roleRegistrations.emailAlreadyExists"));
+              setError(t("roleRegistrations.emailAlreadyExists"))
             }
-            break;
+            break
           case 422:
-            setError(
-              displayError ||
-                t("roleRegistrations.validationFailed")
-            );
-            break;
+            setError(displayError || t("roleRegistrations.validationFailed"))
+            break
           case 500:
-            setError(
-              displayError ||
-                t("roleRegistrations.serverError")
-            );
-            break;
+            setError(displayError || t("roleRegistrations.serverError"))
+            break
           default:
-            setError(
-              displayError ||
-                t("roleRegistrations.errorOccurred")
-            );
+            setError(displayError || t("roleRegistrations.errorOccurred"))
         }
       } else if (err?.request || err?.message?.includes("Network")) {
-        setError(
-          t("roleRegistrations.cannotConnectToServer")
-        );
+        setError(t("roleRegistrations.cannotConnectToServer"))
       } else {
         // Hiển thị bất kỳ thông báo lỗi nào có sẵn
         setError(
@@ -247,10 +232,10 @@ const RoleRegistration = () => {
             error ||
             err?.message ||
             t("roleRegistrations.unexpectedError")
-        );
+        )
       }
     }
-  };
+  }
 
   return (
     <div className="login-container relative">
@@ -308,19 +293,20 @@ const RoleRegistration = () => {
             {/* Role Selection */}
             <div className="form-group">
               <label htmlFor="requestedRole" className="form-label">
-                {t("roleRegistrations.role")} <span style={{ color: "red" }}>*</span>
+                {t("roleRegistrations.role")}{" "}
+                <span style={{ color: "red" }}>*</span>
               </label>
               <DropdownFluent
                 id="requestedRole"
                 value={requestedRole}
                 onChange={(value) => {
-                  setRequestedRole(value);
+                  setRequestedRole(value)
                   if (validationErrors.requestedRole) {
                     setValidationErrors((prev) => {
-                      const newErrors = { ...prev };
-                      delete newErrors.requestedRole;
-                      return newErrors;
-                    });
+                      const newErrors = { ...prev }
+                      delete newErrors.requestedRole
+                      return newErrors
+                    })
                   }
                 }}
                 options={roles}
@@ -333,31 +319,38 @@ const RoleRegistration = () => {
             {/* Full Name */}
             <div className="form-group">
               <label htmlFor="fullName" className="form-label">
-                {t("roleRegistrations.fullName")} <span style={{ color: "red" }}>*</span>
+                {t("roleRegistrations.fullName")}{" "}
+                <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 type="text"
                 id="fullName"
                 value={fullName}
                 onChange={(e) => {
-                  setFullName(e.target.value);
+                  setFullName(e.target.value)
                   if (validationErrors.fullName) {
                     setValidationErrors((prev) => {
-                      const newErrors = { ...prev };
-                      delete newErrors.fullName;
-                      return newErrors;
-                    });
+                      const newErrors = { ...prev }
+                      delete newErrors.fullName
+                      return newErrors
+                    })
                   }
                 }}
                 className={`form-input ${
-                  validationErrors.fullName ? "border-red-500 ring-1 ring-red-200" : ""
+                  validationErrors.fullName
+                    ? "border-red-500 ring-1 ring-red-200"
+                    : ""
                 }`}
                 autoComplete="name"
                 required
               />
               {validationErrors.fullName && (
                 <div className="flex items-center gap-1 mt-1">
-                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
+                  <Icon
+                    icon="mdi:alert-circle"
+                    className="text-red-500 text-sm"
+                    width="16"
+                  />
                   <p className="text-red-500 text-xs">
                     {validationErrors.fullName}
                   </p>
@@ -368,31 +361,38 @@ const RoleRegistration = () => {
             {/* Email */}
             <div className="form-group">
               <label htmlFor="email" className="form-label">
-                {t("roleRegistrations.email")} <span style={{ color: "red" }}>*</span>
+                {t("roleRegistrations.email")}{" "}
+                <span style={{ color: "red" }}>*</span>
               </label>
               <input
                 type="email"
                 id="email"
                 value={email}
                 onChange={(e) => {
-                  setEmail(e.target.value);
+                  setEmail(e.target.value)
                   if (validationErrors.email) {
                     setValidationErrors((prev) => {
-                      const newErrors = { ...prev };
-                      delete newErrors.email;
-                      return newErrors;
-                    });
+                      const newErrors = { ...prev }
+                      delete newErrors.email
+                      return newErrors
+                    })
                   }
                 }}
                 className={`form-input ${
-                  validationErrors.email ? "border-red-500 ring-1 ring-red-200" : ""
+                  validationErrors.email
+                    ? "border-red-500 ring-1 ring-red-200"
+                    : ""
                 }`}
                 autoComplete="email"
                 required
               />
               {validationErrors.email && (
                 <div className="flex items-center gap-1 mt-1">
-                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
+                  <Icon
+                    icon="mdi:alert-circle"
+                    className="text-red-500 text-sm"
+                    width="16"
+                  />
                   <p className="text-red-500 text-xs">
                     {validationErrors.email}
                   </p>
@@ -419,7 +419,8 @@ const RoleRegistration = () => {
             <div className="form-group">
               <div className="password-header">
                 <label htmlFor="password" className="form-label">
-                  {t("roleRegistrations.password")} <span style={{ color: "red" }}>*</span>
+                  {t("roleRegistrations.password")}{" "}
+                  <span style={{ color: "red" }}>*</span>
                 </label>
                 <button
                   type="button"
@@ -438,24 +439,30 @@ const RoleRegistration = () => {
                 id="password"
                 value={password}
                 onChange={(e) => {
-                  setPassword(e.target.value);
+                  setPassword(e.target.value)
                   if (validationErrors.password) {
                     setValidationErrors((prev) => {
-                      const newErrors = { ...prev };
-                      delete newErrors.password;
-                      return newErrors;
-                    });
+                      const newErrors = { ...prev }
+                      delete newErrors.password
+                      return newErrors
+                    })
                   }
                 }}
                 className={`form-input ${
-                  validationErrors.password ? "border-red-500 ring-1 ring-red-200" : ""
+                  validationErrors.password
+                    ? "border-red-500 ring-1 ring-red-200"
+                    : ""
                 }`}
                 autoComplete="new-password"
                 required
               />
               {validationErrors.password && (
                 <div className="flex items-center gap-1 mt-1">
-                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
+                  <Icon
+                    icon="mdi:alert-circle"
+                    className="text-red-500 text-sm"
+                    width="16"
+                  />
                   <p className="text-red-500 text-xs">
                     {validationErrors.password}
                   </p>
@@ -470,7 +477,8 @@ const RoleRegistration = () => {
             <div className="form-group">
               <div className="password-header">
                 <label htmlFor="confirmPassword" className="form-label">
-                  {t("roleRegistrations.confirmPassword")} <span style={{ color: "red" }}>*</span>
+                  {t("roleRegistrations.confirmPassword")}{" "}
+                  <span style={{ color: "red" }}>*</span>
                 </label>
                 <button
                   type="button"
@@ -489,24 +497,30 @@ const RoleRegistration = () => {
                 id="confirmPassword"
                 value={confirmPassword}
                 onChange={(e) => {
-                  setConfirmPassword(e.target.value);
+                  setConfirmPassword(e.target.value)
                   if (validationErrors.confirmPassword) {
                     setValidationErrors((prev) => {
-                      const newErrors = { ...prev };
-                      delete newErrors.confirmPassword;
-                      return newErrors;
-                    });
+                      const newErrors = { ...prev }
+                      delete newErrors.confirmPassword
+                      return newErrors
+                    })
                   }
                 }}
                 className={`form-input ${
-                  validationErrors.confirmPassword ? "border-red-500 ring-1 ring-red-200" : ""
+                  validationErrors.confirmPassword
+                    ? "border-red-500 ring-1 ring-red-200"
+                    : ""
                 }`}
                 autoComplete="new-password"
                 required
               />
               {validationErrors.confirmPassword && (
                 <div className="flex items-center gap-1 mt-1">
-                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
+                  <Icon
+                    icon="mdi:alert-circle"
+                    className="text-red-500 text-sm"
+                    width="16"
+                  />
                   <p className="text-red-500 text-xs">
                     {validationErrors.confirmPassword}
                   </p>
@@ -532,7 +546,8 @@ const RoleRegistration = () => {
             {/* Evidence Files */}
             <div className="form-group">
               <label htmlFor="evidenceFiles" className="form-label">
-                {t("roleRegistrations.evidenceDocuments")} <span style={{ color: "red" }}>*</span>
+                {t("roleRegistrations.evidenceDocuments")}{" "}
+                <span style={{ color: "red" }}>*</span>
               </label>
               <div className="file-input-wrapper">
                 <input
@@ -541,7 +556,9 @@ const RoleRegistration = () => {
                   multiple
                   onChange={handleFileChange}
                   className={`file-input ${
-                    validationErrors.evidenceFiles ? "border-red-500 ring-1 ring-red-200" : ""
+                    validationErrors.evidenceFiles
+                      ? "border-red-500 ring-1 ring-red-200"
+                      : ""
                   }`}
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   required
@@ -553,13 +570,19 @@ const RoleRegistration = () => {
                     style={{ marginRight: "0.5rem" }}
                   />
                   {evidenceFiles.length > 0
-                    ? `${evidenceFiles.length} ${t("roleRegistrations.filesSelected")}`
+                    ? `${evidenceFiles.length} ${t(
+                        "roleRegistrations.filesSelected"
+                      )}`
                     : t("roleRegistrations.chooseFiles")}
                 </label>
               </div>
               {validationErrors.evidenceFiles && (
                 <div className="flex items-center gap-1 mt-1">
-                  <Icon icon="mdi:alert-circle" className="text-red-500 text-sm" width="16" />
+                  <Icon
+                    icon="mdi:alert-circle"
+                    className="text-red-500 text-sm"
+                    width="16"
+                  />
                   <p className="text-red-500 text-xs">
                     {validationErrors.evidenceFiles}
                   </p>
@@ -587,9 +610,15 @@ const RoleRegistration = () => {
             {error && (
               <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
                 <div className="flex items-start gap-2">
-                  <Icon icon="mdi:alert-circle" className="text-red-600 mt-0.5 flex-shrink-0" width="20" />
+                  <Icon
+                    icon="mdi:alert-circle"
+                    className="text-red-600 mt-0.5 flex-shrink-0"
+                    width="20"
+                  />
                   <div className="flex-1">
-                    <p className="font-semibold text-red-800 mb-1">{t("roleRegistrations.error")}</p>
+                    <p className="font-semibold text-red-800 mb-1">
+                      {t("roleRegistrations.error")}
+                    </p>
                     <p className="text-red-700">{error}</p>
                   </div>
                   <button
@@ -636,18 +665,6 @@ const RoleRegistration = () => {
               {t("roleRegistrations.signIn")}
             </Link>
           </div>
-
-          <div className="legal-text">
-            {t("roleRegistrations.termsAndPrivacy")}{" "}
-            <a href="#terms" className="legal-link">
-              {t("roleRegistrations.termsOfUse")}
-            </a>{" "}
-            {t("roleRegistrations.and")}{" "}
-            <a href="#privacy" className="legal-link">
-              {t("roleRegistrations.privacyPolicy")}
-            </a>
-            .
-          </div>
         </div>
       </div>
       <div className="login-background">
@@ -656,11 +673,13 @@ const RoleRegistration = () => {
             {typedText}
             <span className="typing-cursor">|</span>
           </h1>
-          <p className="typing-subtitle">{t("roleRegistrations.joinProfessionalCommunity")}</p>
+          <p className="typing-subtitle">
+            {t("roleRegistrations.joinProfessionalCommunity")}
+          </p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RoleRegistration;
+export default RoleRegistration

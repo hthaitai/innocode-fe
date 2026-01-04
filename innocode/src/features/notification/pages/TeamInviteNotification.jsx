@@ -1,164 +1,142 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Icon } from "@iconify/react";
-import PageContainer from "@/shared/components/PageContainer";
-import { BREADCRUMBS } from "@/config/breadcrumbs";
+import React, { useState, useEffect } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import { Icon } from "@iconify/react"
+import PageContainer from "@/shared/components/PageContainer"
+import { BREADCRUMBS } from "@/config/breadcrumbs"
 import {
   useGetNotificationByIdQuery,
   useGetNotificationsQuery,
   useReadNotificationMutation,
-} from "@/services/notificationApi";
+} from "@/services/notificationApi"
 import {
   useAcceptInviteMutation,
   useDeclineInviteMutation,
-} from "@/services/teamInviteApi";
-import { toast } from "react-hot-toast";
+} from "@/services/teamInviteApi"
+import { toast } from "react-hot-toast"
 
 const TeamInviteNotification = () => {
-  const { notificationId } = useParams();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("idle");
-  const [message, setMessage] = useState("");
+  const { notificationId } = useParams()
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const [status, setStatus] = useState("idle")
+  const [message, setMessage] = useState("")
 
   // Try to get notification by ID first
-  const { 
-    data: notificationByIdData, 
-    isLoading: isLoadingById
-  } = useGetNotificationByIdQuery(
-    notificationId,
-    { skip: !notificationId }
-  );
+  const { data: notificationByIdData, isLoading: isLoadingById } =
+    useGetNotificationByIdQuery(notificationId, { skip: !notificationId })
 
-  const { 
-    data: notificationsListData, 
-    isLoading: isLoadingList 
-  } = useGetNotificationsQuery(
-    { pageNumber: 1, pageSize: 50 },
-    {
-      skip: !!notificationByIdData,
-    }
-  );
+  const { data: notificationsListData, isLoading: isLoadingList } =
+    useGetNotificationsQuery(
+      { pageNumber: 1, pageSize: 50 },
+      {
+        skip: !!notificationByIdData,
+      }
+    )
 
-  const [readNotification] = useReadNotificationMutation();
-  const [acceptInvite, { isLoading: isAccepting }] = useAcceptInviteMutation();
-  const [declineInvite, { isLoading: isDeclining }] = useDeclineInviteMutation();
+  const [readNotification] = useReadNotificationMutation()
+  const [acceptInvite, { isLoading: isAccepting }] = useAcceptInviteMutation()
+  const [declineInvite, { isLoading: isDeclining }] = useDeclineInviteMutation()
 
   const notificationData = React.useMemo(() => {
     if (notificationByIdData) {
-      return notificationByIdData;
+      return notificationByIdData
     }
-    
+
     if (notificationsListData?.items) {
       return notificationsListData.items.find(
         (notif) => notif.notificationId === notificationId
-      );
+      )
     }
-    
-    return null;
-  }, [notificationByIdData, notificationsListData, notificationId]);
 
-  const isLoading = isLoadingById || isLoadingList;
+    return null
+  }, [notificationByIdData, notificationsListData, notificationId])
+
+  const isLoading = isLoadingById || isLoadingList
 
   const parsedPayload = React.useMemo(() => {
-    if (!notificationData) return null;
-    
-    const notification = notificationData?.data || notificationData;
-    const payload = notification?.payload;
+    if (!notificationData) return null
 
-    if (!payload) return null;
+    const notification = notificationData?.data || notificationData
+    const payload = notification?.payload
+
+    if (!payload) return null
 
     try {
-      return typeof payload === "string" ? JSON.parse(payload) : payload;
+      return typeof payload === "string" ? JSON.parse(payload) : payload
     } catch {
-      return null;
+      return null
     }
-  }, [notificationData]);
+  }, [notificationData])
 
   // Mark notification as read when component mounts
   useEffect(() => {
     if (notificationId) {
-      readNotification(notificationId);
+      readNotification(notificationId)
     }
-  }, [notificationId, readNotification]);
+  }, [notificationId, readNotification])
 
   const handleInviteAction = async (actionType) => {
-    const action = parsedPayload?.actions?.[actionType];
-    if (!action || loading || isAccepting || isDeclining) return;
+    const action = parsedPayload?.actions?.[actionType]
+    if (!action || loading || isAccepting || isDeclining) return
 
-    setLoading(true);
-    setStatus("processing");
+    setLoading(true)
+    setStatus("processing")
 
     try {
-      const { query } = action;
-      const token = query?.token;
-      const email = query?.email;
+      const { query } = action
+      const token = query?.token
+      const email = query?.email
 
       if (!token || !email) {
-        throw new Error("Missing token or email in invitation");
+        throw new Error("Missing token or email in invitation")
       }
 
-      const result = actionType === "accept" 
-        ? await acceptInvite({ token, email }).unwrap()
-        : await declineInvite({ token, email }).unwrap();
+      const result =
+        actionType === "accept"
+          ? await acceptInvite({ token, email }).unwrap()
+          : await declineInvite({ token, email }).unwrap()
 
       // Handle success response
-      const responseData = result?.data || result;
+      const responseData = result?.data || result
       const successMessage =
         responseData?.message ||
         result?.message ||
         (actionType === "accept"
           ? "Invitation accepted successfully. You are now a member of the team."
-          : "Invitation declined successfully.");
+          : "Invitation declined successfully.")
 
-      setStatus("success");
-      setMessage(successMessage);
-      toast.success(successMessage);
+      setStatus("success")
+      setMessage(successMessage)
+      toast.success(successMessage)
 
-      setTimeout(() => navigate("/notifications"), 2000);
+      setTimeout(() => navigate("/notifications"), 2000)
     } catch (error) {
-      console.error(`❌ ${actionType} invite error:`, error);
-      
-      setStatus("error");
-      
+      console.error(`❌ ${actionType} invite error:`, error)
+
+      setStatus("error")
+
       // Extract error information
-      const errorData = error?.data || error?.response?.data;
-      const errorCode = errorData?.errorCode;
-      const statusCode = error?.status || error?.response?.status;
-      
+      const errorData = error?.data || error?.response?.data
+      const errorCode = errorData?.errorCode
+      const statusCode = error?.status || error?.response?.status
+
       // Build user-friendly error message
-      let errorMessage = errorData?.errorMessage || 
-                        errorData?.message || 
-                        errorData?.data?.message ||
-                        error?.message;
+      let errorMessage =
+        errorData?.errorMessage ||
+        errorData?.message ||
+        errorData?.data?.message ||
+        error?.message
 
-      // Handle specific error cases
-      if (statusCode === 400 || errorCode === "VALIDATION_ERROR") {
-        errorMessage = "Invalid request. The invitation may have expired or already been processed.";
-      } else if (statusCode === 404 || errorCode === "NOT_FOUND") {
-        errorMessage = "Invitation not found. It may have been cancelled or already processed.";
-      } else if (statusCode === 409 || errorCode === "CONFLICT") {
-        errorMessage = "This invitation has already been processed. Please check your team status.";
-      } else if (statusCode === 403 || errorCode === "FORBIDDEN") {
-        errorMessage = "You don't have permission to perform this action. The invitation may be for a different user.";
-      } else if (statusCode === 500 || errorCode === "INTERNAL_SERVER_ERROR") {
-        errorMessage = "Server error occurred. Please try again later or contact support.";
-      } else if (statusCode === 401 || errorCode === "UNAUTHORIZED") {
-        errorMessage = "Authentication failed. Please try again.";
-      } else if (!errorMessage) {
-        errorMessage = `Failed to ${actionType} invitation. ${statusCode ? `(Error ${statusCode})` : "Please try again."}`;
-      }
-
-      setMessage(errorMessage);
-      toast.error(errorMessage);
+      setMessage(errorMessage)
+      toast.error(errorMessage)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const handleAcceptInvite = () => handleInviteAction("accept");
+  const handleAcceptInvite = () => handleInviteAction("accept")
 
-  const handleDeclineInvite = () => handleInviteAction("decline");
+  const handleDeclineInvite = () => handleInviteAction("decline")
 
   if (isLoading) {
     return (
@@ -170,7 +148,7 @@ const TeamInviteNotification = () => {
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   if (!parsedPayload || parsedPayload.targetType !== "team_invite") {
@@ -198,7 +176,7 @@ const TeamInviteNotification = () => {
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   return (
@@ -217,7 +195,9 @@ const TeamInviteNotification = () => {
               </h2>
               <p className="text-gray-600 mb-6">
                 {parsedPayload.message ||
-                  `You have been invited to join team '${parsedPayload.teamName || "Team"}'`}
+                  `You have been invited to join team '${
+                    parsedPayload.teamName || "Team"
+                  }'`}
               </p>
               {parsedPayload.contestName && (
                 <p className="text-sm text-gray-500 mb-6">
@@ -269,7 +249,9 @@ const TeamInviteNotification = () => {
                 Success!
               </h2>
               <p className="text-gray-600 mb-4">{message}</p>
-              <p className="text-sm text-gray-500">Redirecting to notifications...</p>
+              <p className="text-sm text-gray-500">
+                Redirecting to notifications...
+              </p>
             </div>
           )}
 
@@ -295,8 +277,7 @@ const TeamInviteNotification = () => {
         </div>
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default TeamInviteNotification;
-
+export default TeamInviteNotification

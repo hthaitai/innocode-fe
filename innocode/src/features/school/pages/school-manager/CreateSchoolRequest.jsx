@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "../../../../config/breadcrumbs"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
@@ -11,6 +12,7 @@ import { toast } from "react-hot-toast"
 import { Icon } from "@iconify/react"
 
 const CreateSchoolRequest = () => {
+  const { t } = useTranslation("pages")
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     Name: "",
@@ -73,11 +75,11 @@ const CreateSchoolRequest = () => {
     const newErrors = {}
 
     if (!formData.Name.trim()) {
-      newErrors.Name = "School name is required"
+      newErrors.Name = t("schoolRequest.schoolNameRequired")
     }
 
     if (!formData.ProvinceId) {
-      newErrors.ProvinceId = "Province is required"
+      newErrors.ProvinceId = t("schoolRequest.provinceRequired")
     }
 
     setErrors(newErrors)
@@ -97,7 +99,7 @@ const CreateSchoolRequest = () => {
           formData.Evidences.length > 0 ? formData.Evidences : undefined,
       }).unwrap()
 
-      toast.success("School creation request submitted successfully!")
+      toast.success(t("schoolRequest.requestSubmitted"))
 
       // Navigate back to list page
       navigate("/school-manager")
@@ -106,7 +108,8 @@ const CreateSchoolRequest = () => {
       const errorMessage =
         error?.data?.errorMessage ||
         error?.data?.message ||
-        "Failed to submit school creation request"
+        t("schoolRequest.requestFailed")
+      toast.error(errorMessage)
     }
   }
 
@@ -121,20 +124,20 @@ const CreateSchoolRequest = () => {
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-5 text-sm leading-5 grid grid-cols-[max-content_1fr] gap-x-[28px] gap-y-5 items-start">
           {/* School Name */}
           <Label htmlFor="Name" required>
-            School name
+            {t("schoolRequest.schoolName")}
           </Label>
           <TextFieldFluent
             id="Name"
             name="Name"
             value={formData.Name}
             onChange={handleChange}
-            placeholder="Enter school name"
+            placeholder={t("schoolRequest.enterSchoolName")}
             error={!!errors.Name}
             helperText={errors.Name}
           />
           {/* Province Dropdown */}
           <Label htmlFor="ProvinceId" required>
-            Province
+            {t("schoolRequest.province")}
           </Label>
           <DropdownFluent
             id="ProvinceId"
@@ -142,36 +145,40 @@ const CreateSchoolRequest = () => {
             value={formData.ProvinceId}
             onChange={handleProvinceSelect}
             placeholder={
-              isLoadingProvinces ? "Loading provinces..." : "Select a province"
+              isLoadingProvinces
+                ? t("schoolRequest.loadingProvinces")
+                : t("schoolRequest.selectProvince")
             }
             error={!!errors.ProvinceId}
             helperText={errors.ProvinceId}
             disabled={isLoadingProvinces}
           />
           {/* Address */}
-          <Label htmlFor="Address">Address</Label>
+          <Label htmlFor="Address">{t("schoolRequest.address")}</Label>
           <TextFieldFluent
             id="Address"
             name="Address"
             value={formData.Address}
             onChange={handleChange}
-            placeholder="Enter school address"
+            placeholder={t("schoolRequest.enterAddress")}
             error={!!errors.Address}
             helperText={errors.Address}
           />
           {/* Contact */}
-          <Label htmlFor="Contact">Contact</Label>
+          <Label htmlFor="Contact">{t("schoolRequest.contact")}</Label>
           <TextFieldFluent
             id="Contact"
             name="Contact"
             value={formData.Contact}
             onChange={handleChange}
-            placeholder="Enter contact information"
+            placeholder={t("schoolRequest.enterContact")}
             error={!!errors.Contact}
             helperText={errors.Contact}
           />
           {/* Evidence Files */}
-          <Label htmlFor="evidence-upload">Evidence files</Label>
+          <Label htmlFor="evidence-upload">
+            {t("schoolRequest.evidenceFiles")}
+          </Label>
           <div className="flex flex-col w-full">
             <div className="border border-[#E5E5E5] rounded-[5px] bg-white p-4">
               <input
@@ -189,8 +196,10 @@ const CreateSchoolRequest = () => {
                 <Icon icon="mdi:paperclip" width={20} />
                 <span>
                   {formData.Evidences.length > 0
-                    ? `${formData.Evidences.length} file(s) selected`
-                    : "Click to upload evidence files"}
+                    ? t("schoolRequest.filesSelected", {
+                        count: formData.Evidences.length,
+                      })
+                    : t("schoolRequest.clickToUpload")}
                 </span>
               </label>
               {formData.Evidences.length > 0 && (
@@ -221,7 +230,7 @@ const CreateSchoolRequest = () => {
               )}
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              Supported formats: Images, PDF, Word documents
+              {t("schoolRequest.supportedFormats")}
             </p>
             {errors.Evidences && (
               <p className="text-xs text-red-500 mt-1">{errors.Evidences}</p>
@@ -245,7 +254,7 @@ const CreateSchoolRequest = () => {
               }}
               disabled={disabled}
             >
-              Reset
+              {t("schoolRequest.reset")}
             </button>
             <button
               type="submit"
@@ -257,7 +266,9 @@ const CreateSchoolRequest = () => {
               {isLoading && (
                 <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
               )}
-              {isLoading ? "Submitting..." : "Submit Request"}
+              {isLoading
+                ? t("schoolRequest.submitting")
+                : t("schoolRequest.submitRequest")}
             </button>
           </div>
         </div>
