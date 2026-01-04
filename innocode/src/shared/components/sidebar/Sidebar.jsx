@@ -6,7 +6,11 @@ import { useTranslation } from "react-i18next"
 import { useAuth } from "@/context/AuthContext"
 
 const allMenus = {
-  profile: { path: "/profile", labelKey: "sidebar.profile", icon: "lucide:user" },
+  profile: {
+    path: "/profile",
+    labelKey: "sidebar.profile",
+    icon: "lucide:user",
+  },
   dashboard: {
     path: "/dashboard",
     labelKey: "sidebar.dashboard",
@@ -14,7 +18,11 @@ const allMenus = {
   },
 
   // Student menus
-  contests: { path: "/contests", labelKey: "sidebar.contests", icon: "lucide:trophy" },
+  contests: {
+    path: "/contests",
+    labelKey: "sidebar.contests",
+    icon: "lucide:trophy",
+  },
   practice: {
     path: "/practice",
     labelKey: "sidebar.practice",
@@ -104,13 +112,7 @@ const menuByRole = {
     "notifications",
   ],
   organizer: ["profile", "organizerContests", "notifications"],
-  mentor: [
-    "profile",
-    "contests",
-    "team",
-    "notifications",
-    "appeal",
-  ],
+  mentor: ["profile", "contests", "team", "notifications", "appeal"],
   staff: [
     "profile",
     "provinceStaff",
@@ -127,7 +129,6 @@ const menuByRole = {
     "schoolManager",
     "schoolManagerRequests",
     "contests",
-    "team",
     "notifications",
   ],
 }
@@ -169,7 +170,8 @@ const Sidebar = () => {
         <div>
           <div className="text-sm leading-5 font-medium">{user?.name}</div>
           <div className="text-xs leading-4">
-            {t(`roles.${role}`, role.charAt(0).toUpperCase() + role.slice(1))} {t("sidebar.account")}
+            {t(`roles.${role}`, role.charAt(0).toUpperCase() + role.slice(1))}{" "}
+            {t("sidebar.account")}
           </div>
         </div>
       </div>

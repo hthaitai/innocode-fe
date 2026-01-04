@@ -105,7 +105,11 @@
     "requestTimeout": "Request timeout. Please check your connection and try again.",
     "serverError": "Server error. Please try again later.",
     "loginSuccess": "Login successful",
-    "logoutSuccess": "Logout successful"
+    "logoutSuccess": "Logout successful",
+    "logoutConfirmation": {
+      "title": "Logout Confirmation",
+      "message": "Are you sure you want to log out of your account?"
+    }
   },
   "validation": {
     "required": "This field is required",

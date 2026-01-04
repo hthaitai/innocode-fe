@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { ArrowLeft, School, UserPlus } from "lucide-react"
@@ -14,6 +15,7 @@ import AddMentorModal from "@/features/school/components/AddMentorModal"
 import { formatDateTime } from "@/shared/utils/dateTime"
 
 const SchoolDetail = () => {
+  const { t } = useTranslation("pages")
   const { id } = useParams()
   const navigate = useNavigate()
   const [isAddMentorModalOpen, setIsAddMentorModalOpen] = useState(false)
@@ -56,12 +58,14 @@ const SchoolDetail = () => {
         error={error}
       >
         <div className="text-center py-8">
-          <p className="text-red-500 mb-2">Error loading school details</p>
+          <p className="text-red-500 mb-2">
+            {t("schoolDetail.errorLoadingSchool")}
+          </p>
           <p className="text-sm text-gray-500">
             {error?.data?.errorMessage ||
               error?.data?.message ||
               error?.message ||
-              "Please try again later"}
+              t("schools.pleaseTryAgain")}
           </p>
         </div>
       </PageContainer>
@@ -74,7 +78,9 @@ const SchoolDetail = () => {
         breadcrumb={BREADCRUMBS.SCHOOL_MANAGEMENT}
         breadcrumbPaths={BREADCRUMB_PATHS.SCHOOL_MANAGEMENT}
       >
-        <div className="text-center py-8 text-gray-500">School not found</div>
+        <div className="text-center py-8 text-gray-500">
+          {t("schoolDetail.schoolNotFound")}
+        </div>
       </PageContainer>
     )
   }
@@ -82,28 +88,28 @@ const SchoolDetail = () => {
   // Prepare school data for DetailTable
   const schoolData = [
     {
-      label: "School Name",
+      label: t("schools.schoolName"),
       value: school?.name || school?.Name || "—",
     },
 
     {
-      label: "Province",
+      label: t("schools.province"),
       value: school?.provinceName || school?.ProvinceName || "—",
     },
     {
-      label: "Address",
+      label: t("schools.address"),
       value: school?.address || school?.Address || "—",
     },
     {
-      label: "Contact",
+      label: t("schools.contact"),
       value: school?.contact || school?.Contact || "—",
     },
     {
-      label: "Manager",
+      label: t("schools.manager"),
       value: school?.managerUsername || school?.ManagerUsername || "—",
     },
     {
-      label: "Created Date",
+      label: t("schools.createdDate"),
       value:
         school?.createdAt || school?.CreatedAt
           ? formatDateTime(school.createdAt || school.CreatedAt)
@@ -120,7 +126,7 @@ const SchoolDetail = () => {
   const mentorColumns = [
     {
       accessorKey: "fullname",
-      header: "Full Name",
+      header: t("schoolDetail.fullName"),
       cell: ({ row }) => {
         const mentor = row.original
         return (
@@ -138,7 +144,7 @@ const SchoolDetail = () => {
     },
     {
       accessorKey: "email",
-      header: "Email",
+      header: t("schoolDetail.email"),
       cell: ({ row }) => {
         const mentor = row.original
         return (
@@ -151,7 +157,7 @@ const SchoolDetail = () => {
     },
     {
       accessorKey: "phone",
-      header: "Phone",
+      header: t("schoolDetail.phone"),
       cell: ({ row }) => (
         <span className="text-gray-700">{row.original.phone || "—"}</span>
       ),
@@ -159,7 +165,7 @@ const SchoolDetail = () => {
     },
     {
       accessorKey: "createdAt",
-      header: "Created Date",
+      header: t("schools.createdDate"),
       cell: ({ row }) => {
         const date =
           row.original.createdAt ||
@@ -194,7 +200,7 @@ const SchoolDetail = () => {
             className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft size={16} />
-            <span>Back to My Managed Schools</span>
+            <span>{t("schoolDetail.backToMyManagedSchools")}</span>
           </button>
         </div>
 
@@ -207,14 +213,14 @@ const SchoolDetail = () => {
                 {schoolName}
               </h1>
               <p className="text-sm text-gray-500 mt-1">
-                School Information Details
+                {t("schoolDetail.schoolInformationDetails")}
               </p>
             </div>
           </div>
         </div>
 
         {/* School Information */}
-        <InfoSection title="School Information">
+        <InfoSection title={t("schoolDetail.schoolInformation")}>
           <DetailTable data={schoolData} labelWidth="180px" />
         </InfoSection>
 
@@ -222,14 +228,14 @@ const SchoolDetail = () => {
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white">
           <div className="px-5 py-4 border-b border-[#E5E5E5] flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-800">
-              Mentors ({mentors.length})
+              {t("schoolDetail.mentors")} ({mentors.length})
             </h2>
             <button
               onClick={() => setIsAddMentorModalOpen(true)}
               className="button-orange flex justify-center items-center gap-2"
             >
               <UserPlus size={20} />
-              <span>Add Mentor</span>
+              <span>{t("schoolDetail.addMentor")}</span>
             </button>
           </div>
           <div>
@@ -239,7 +245,7 @@ const SchoolDetail = () => {
               </div>
             ) : mentors.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                <p>No mentors found for this school.</p>
+                <p>{t("schoolDetail.noMentorsFound")}</p>
               </div>
             ) : (
               <TableFluent

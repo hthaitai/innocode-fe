@@ -298,7 +298,9 @@ const Leaderboard = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-gray-500">{t("leaderboard.totalScore")}</p>
+                  <p className="text-xs text-gray-500">
+                    {t("leaderboard.totalScore")}
+                  </p>
                   <p className="text-lg font-bold text-blue-600">
                     {formatScore(member.totalScore) || "0"}
                   </p>
@@ -379,7 +381,9 @@ const Leaderboard = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">{t("leaderboard.loading")}</p>
+            <p className="text-gray-600 font-medium">
+              {t("leaderboard.loading")}
+            </p>
           </div>
         </div>
       </PageContainer>
@@ -423,7 +427,8 @@ const Leaderboard = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl font-semibold text-gray-900">
-                    {contestInfo.contestName || t("leaderboard.contestLeaderboard")}
+                    {contestInfo.contestName ||
+                      t("leaderboard.contestLeaderboard")}
                   </h2>
                   {/* Live indicator */}
                   {selectedContestId && (
@@ -431,12 +436,16 @@ const Leaderboard = () => {
                       {isConnected ? (
                         <div className="flex items-center gap-1 text-green-600">
                           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                          <span className="text-xs font-medium">{t("leaderboard.live")}</span>
+                          <span className="text-xs font-medium">
+                            {t("leaderboard.live")}
+                          </span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1 text-gray-400">
                           <WifiOff size={14} />
-                          <span className="text-xs">{t("leaderboard.offline")}</span>
+                          <span className="text-xs">
+                            {t("leaderboard.offline")}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -449,19 +458,23 @@ const Leaderboard = () => {
                   {!isConnected && contestInfo.snapshotAt && (
                     <span>
                       {" "}
-                      • {t("leaderboard.lastUpdated")} {formatDateTime(contestInfo.snapshotAt)}
+                      • {t("leaderboard.lastUpdated")}{" "}
+                      {formatDateTime(contestInfo.snapshotAt)}
                     </span>
                   )}
                   {isConnected && liveData && (
-                    <span className="text-green-600"> • {t("leaderboard.updatedJustNow")}</span>
+                    <span className="text-green-600">
+                      {" "}
+                      • {t("leaderboard.updatedJustNow")}
+                    </span>
                   )}
                 </p>
               </div>
             </div>
             {/* Contest Selector */}
             {availableContests.length > 1 && (
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-700">
+              <div className="flex items-center gap-2 max-w-[400px]">
+                <label className="text-sm text-nowrap font-medium text-gray-700">
                   {t("leaderboard.contest")}
                 </label>
                 <DropdownFluent
@@ -482,7 +495,9 @@ const Leaderboard = () => {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-              <p className="text-gray-600">{t("leaderboard.loadingLeaderboard")}</p>
+              <p className="text-gray-600">
+                {t("leaderboard.loadingLeaderboard")}
+              </p>
             </div>
           </div>
         ) : error ? (
@@ -540,76 +555,94 @@ const Leaderboard = () => {
                 <div className="flex items-end justify-center gap-2">
                   {/* Rank 2 - Left */}
                   <div className="flex-1 max-w-[200px] flex flex-col items-center">
-                    <div
-                      className="w-full bg-white rounded-lg shadow-md p-4 mb-2 border border-[#E5E5E5] cursor-pointer hover:shadow-lg transition-shadow"
+                    <motion.div
+                      whileHover={{ scale: 1.03, y: -8 }}
+                      className="w-full bg-white rounded-lg shadow-md p-4 mb-2 border border-[#E5E5E5] cursor-pointer hover:shadow-xl transition-shadow duration-300 group"
                       onClick={() => toggleTeamExpansion(entries[1]?.teamId)}
                     >
                       <div className="flex flex-col items-center">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center mb-2">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center mb-2 group-hover:from-gray-100 group-hover:to-gray-200 transition-colors">
                           <MedalIcon size={24} className="text-gray-600" />
                         </div>
-                        <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full">
+                        <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full group-hover:text-[#ff6b35] transition-colors">
                           {entries[1]?.teamName || "—"}
                         </p>
                         <p className="text-2xl font-bold text-[#ff6b35]">
-                          {formatScore(entries[1]?.score)} {t("leaderboard.pts")}
+                          {formatScore(entries[1]?.score)}{" "}
+                          {t("leaderboard.pts")}
                         </p>
                       </div>
-                    </div>
-                    <div className="w-full bg-yellow-400 rounded-t-lg flex items-center justify-center py-4">
+                    </motion.div>
+                    <div className="w-full bg-yellow-400 rounded-t-lg flex items-center justify-center py-4 shadow-sm">
                       <span className="text-white font-bold text-lg">2</span>
                     </div>
                   </div>
 
                   {/* Rank 1 - Center (Tallest) */}
                   <div className="flex-1 max-w-[220px] flex flex-col items-center relative">
-                    <div className="absolute -top-2 right-2 z-10">
-                      <Icon
-                        icon="mdi:star"
-                        className="text-yellow-400"
-                        width={32}
-                      />
+                    <div className="absolute -top-4 right-0 z-10">
+                      <motion.div
+                        animate={{
+                          rotate: [0, 10, -10, 0],
+                          scale: [1, 1.1, 1],
+                        }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 3,
+                          ease: "easeInOut",
+                        }}
+                      >
+                        <Icon
+                          icon="mdi:star"
+                          className="text-yellow-400 drop-shadow-md"
+                          width={40}
+                        />
+                      </motion.div>
                     </div>
-                    <div
-                      className="w-full bg-white rounded-lg shadow-lg p-5 mb-2 border-2 border-yellow-300 cursor-pointer hover:shadow-xl transition-shadow"
+                    <motion.div
+                      whileHover={{ scale: 1.05, y: -12 }}
+                      className="w-full bg-white rounded-lg shadow-lg p-5 mb-2 border-2 border-yellow-300 cursor-pointer hover:shadow-2xl transition-shadow duration-300 group"
                       onClick={() => toggleTeamExpansion(entries[0]?.teamId)}
                     >
                       <div className="flex flex-col items-center">
-                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 flex items-center justify-center mb-3">
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 flex items-center justify-center mb-3 group-hover:from-yellow-200 group-hover:to-yellow-400 transition-colors">
                           <Trophy className="text-yellow-700" size={32} />
                         </div>
-                        <p className="text-base font-bold text-[#2d3748] text-center mb-2 truncate w-full">
+                        <p className="text-base font-bold text-[#2d3748] text-center mb-2 truncate w-full group-hover:text-yellow-600 transition-colors">
                           {entries[0]?.teamName || "—"}
                         </p>
                         <p className="text-3xl font-bold text-[#ff6b35]">
-                          {formatScore(entries[0]?.score)} {t("leaderboard.pts")}
+                          {formatScore(entries[0]?.score)}{" "}
+                          {t("leaderboard.pts")}
                         </p>
                       </div>
-                    </div>
-                    <div className="w-full bg-yellow-500 rounded-t-lg flex items-center justify-center py-6">
+                    </motion.div>
+                    <div className="w-full bg-yellow-500 rounded-t-lg flex items-center justify-center py-6 shadow-md border-x border-t border-yellow-600">
                       <span className="text-white font-bold text-xl">1</span>
                     </div>
                   </div>
 
                   {/* Rank 3 - Right */}
                   <div className="flex-1 max-w-[200px] flex flex-col items-center">
-                    <div
-                      className="w-full bg-white rounded-lg shadow-md p-4 mb-2 border border-[#E5E5E5] cursor-pointer hover:shadow-lg transition-shadow"
+                    <motion.div
+                      whileHover={{ scale: 1.03, y: -8 }}
+                      className="w-full bg-white rounded-lg shadow-md p-4 mb-2 border border-[#E5E5E5] cursor-pointer hover:shadow-xl transition-shadow duration-300 group"
                       onClick={() => toggleTeamExpansion(entries[2]?.teamId)}
                     >
                       <div className="flex flex-col items-center">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mb-2">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mb-2 group-hover:from-amber-300 group-hover:to-amber-500 transition-colors">
                           <Award className="text-amber-700" size={24} />
                         </div>
-                        <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full">
+                        <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full group-hover:text-amber-600 transition-colors">
                           {entries[2]?.teamName || "—"}
                         </p>
                         <p className="text-2xl font-bold text-[#ff6b35]">
-                          {formatScore(entries[2]?.score)} {t("leaderboard.pts")}
+                          {formatScore(entries[2]?.score)}{" "}
+                          {t("leaderboard.pts")}
                         </p>
                       </div>
-                    </div>
-                    <div className="w-full bg-amber-400 rounded-t-lg flex items-center justify-center py-3">
+                    </motion.div>
+                    <div className="w-full bg-amber-400 rounded-t-lg flex items-center justify-center py-3 shadow-sm">
                       <span className="text-white font-bold text-lg">3</span>
                     </div>
                   </div>
@@ -681,7 +714,10 @@ const Leaderboard = () => {
                             </p>
                             {(entry.members?.length || 0) > 0 && (
                               <p className="text-xs text-[#7A7574]">
-                                {entry.members?.length || 0} {(entry.members?.length || 0) !== 1 ? t("leaderboard.members") : t("leaderboard.member")}
+                                {entry.members?.length || 0}{" "}
+                                {(entry.members?.length || 0) !== 1
+                                  ? t("leaderboard.members")
+                                  : t("leaderboard.member")}
                               </p>
                             )}
                           </div>
@@ -779,7 +815,10 @@ const Leaderboard = () => {
                             </p>
                             {(entry.members?.length || 0) > 0 && (
                               <p className="text-xs text-[#7A7574]">
-                                {entry.members?.length || 0} {(entry.members?.length || 0) !== 1 ? t("leaderboard.members") : t("leaderboard.member")}
+                                {entry.members?.length || 0}{" "}
+                                {(entry.members?.length || 0) !== 1
+                                  ? t("leaderboard.members")
+                                  : t("leaderboard.member")}
                               </p>
                             )}
                           </div>

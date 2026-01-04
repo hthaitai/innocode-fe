@@ -1,15 +1,17 @@
 import React from "react"
+import { useTranslation } from "react-i18next"
 import PageContainer from "../../../../shared/components/PageContainer"
 import { BREADCRUMBS } from "../../../../config/breadcrumbs"
 import { useGetMyCertificatesQuery } from "../../../../services/certificateApi"
 import { useEffect } from "react"
 import { Download } from "lucide-react"
 
-// Format date in UTC+7 (Asia/Bangkok)
-const formatDateToUTC7 = (iso) => {
+// Format date based on current language
+const formatDateByLanguage = (iso, language) => {
   if (!iso) return ""
   try {
-    return new Date(iso).toLocaleDateString("en-US", {
+    const locale = language === "vi" ? "vi-VN" : "en-US"
+    return new Date(iso).toLocaleDateString(locale, {
       timeZone: "Asia/Bangkok",
       year: "numeric",
       month: "short",
@@ -23,6 +25,7 @@ const formatDateToUTC7 = (iso) => {
     })
   }
 }
+
 const handleDownload = async (url, filename) => {
   const res = await fetch(url)
   const blob = await res.blob()
@@ -34,17 +37,26 @@ const handleDownload = async (url, filename) => {
 }
 
 function StudentCertificate() {
+  const { t, i18n } = useTranslation("pages")
   const { data: certificates, isLoading, error } = useGetMyCertificatesQuery()
+
+  const breadcrumb = [
+    i18n.language === "vi" ? "Chứng chỉ học sinh" : "Student Certificate",
+  ]
+
   useEffect(() => {
     console.log(certificates)
   }, [certificates])
+
   if (isLoading) {
     return (
-      <PageContainer breadcrumb={BREADCRUMBS.STUDENT_CERTIFICATE}>
+      <PageContainer breadcrumb={breadcrumb}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading...</p>
+            <p className="text-gray-600 font-medium">
+              {t("certificate.loadingCertificates")}
+            </p>
           </div>
         </div>
       </PageContainer>
@@ -60,7 +72,7 @@ function StudentCertificate() {
               ? error
               : error?.data?.errorMessage ||
                 error?.message ||
-                "Something went wrong"}
+                t("common.somethingWentWrong")}
           </div>
         </div>
       </PageContainer>
@@ -74,7 +86,7 @@ function StudentCertificate() {
       <PageContainer breadcrumb={BREADCRUMBS.STUDENT_CERTIFICATE}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center text-gray-500">
-            Student have no certificate
+            {t("certificate.noCertificatesIssued")}
           </div>
         </div>
       </PageContainer>
@@ -88,9 +100,10 @@ function StudentCertificate() {
           {/* Header */}
           <div className="mb-8">
             <h3 className="text-3xl font-semi-bold text-gray-900 mb-2">
-              {" "}
-              You have earned {certificateList.length} certificate
-              {certificateList.length !== 1 ? "s" : ""}
+              {t("certificate.youHaveEarned", {
+                count: certificateList.length,
+                plural: certificateList.length !== 1 ? "s" : "",
+              })}
             </h3>
           </div>
 
@@ -99,13 +112,15 @@ function StudentCertificate() {
             {certificateList.map((certificate) => (
               <div
                 key={certificate.certificateId}
-                className="w-full  bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-row"
+                className="w-full bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-row"
               >
                 {/* Image (left on md+, top on mobile) */}
                 <div className="md:w-56 w-full h-44 md:h-auto bg-gray-200 overflow-hidden flex-shrink-0">
                   <img
                     src={certificate.fileUrl}
-                    alt={`Certificate - ${certificate.templateName}`}
+                    alt={`${t("certificate.certificate")} - ${
+                      certificate.templateName
+                    }`}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -117,7 +132,7 @@ function StudentCertificate() {
                       {certificate.templateName}
                     </h3>
                     <p className="text-sm text-gray-600 mb-3">
-                      by{" "}
+                      {t("certificate.by")}{" "}
                       <span className="font-medium">
                         {certificate.studentName}
                       </span>
@@ -126,7 +141,9 @@ function StudentCertificate() {
                     <div className="flex flex-wrap gap-6 text-sm text-gray-600">
                       {certificate.teamName && (
                         <div>
-                          <p className="text-xs text-gray-500">Team</p>
+                          <p className="text-xs text-gray-500">
+                            {t("certificate.team")}
+                          </p>
                           <p className="text-gray-900 font-medium">
                             {certificate.teamName}
                           </p>
@@ -134,9 +151,14 @@ function StudentCertificate() {
                       )}
 
                       <div>
-                        <p className="text-xs text-gray-500">Issued</p>
+                        <p className="text-xs text-gray-500">
+                          {t("certificate.issued")}
+                        </p>
                         <p className="text-gray-900 font-medium">
-                          {formatDateToUTC7(certificate.issuedAt)}
+                          {formatDateByLanguage(
+                            certificate.issuedAt,
+                            i18n.language
+                          )}
                         </p>
                       </div>
                     </div>
@@ -149,7 +171,7 @@ function StudentCertificate() {
                       rel="noopener noreferrer"
                       className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
                     >
-                      View Certificate
+                      {t("certificate.viewCertificate")}
                     </a>
                     <button
                       onClick={() =>
@@ -160,7 +182,8 @@ function StudentCertificate() {
                       }
                       className="flex-1 cursor-pointer flex items-center justify-center gap-2 border-2 border-gray-300 hover:border-orange-500 text-gray-700 hover:text-orange-500 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
                     >
-                      <Download size={16} /> Download Certificate
+                      <Download size={16} />{" "}
+                      {t("certificate.downloadCertificate")}
                     </button>
                   </div>
                 </div>

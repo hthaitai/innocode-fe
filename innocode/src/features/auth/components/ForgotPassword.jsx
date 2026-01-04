@@ -1,88 +1,68 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './Login.css';
-import InnoCodeLogo from '@/assets/InnoCode_Logo.jpg';
-import { authApi } from '@/api/authApi';
-import { sendResetPasswordEmail } from '@/shared/services/emailService';
+import React, { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import "./Login.css"
+import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg"
+import { authApi } from "@/api/authApi"
+import { sendResetPasswordEmail } from "@/shared/services/emailService"
+import translateApiError from "@/shared/utils/translateApiError"
 
 const ForgotPassword = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useTranslation(["auth", "common"])
+  const navigate = useNavigate()
+  const [email, setEmail] = useState("")
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    
+    e.preventDefault()
+    setError("")
+    setSuccess("")
+
     if (!email.trim()) {
-      setError('Please enter your email address');
-      return;
+      setError(t("pages:register.emailRequired"))
+      return
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setError('Please enter a valid email address');
-      return;
+      setError(t("pages:register.emailInvalid"))
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
-      const response = await authApi.forgotPassword(email.trim());
-      const resetToken = response.data?.data?.token;
-      
+      const response = await authApi.forgotPassword(email.trim())
+      const resetToken = response.data?.data?.token
+
       if (resetToken) {
         // Send reset password email with token
         try {
           await sendResetPasswordEmail({
             toEmail: email.trim(),
             resetToken: resetToken,
-            fullName: '', // Could be fetched if needed
-          });
-          setSuccess('Password reset instructions have been sent to your email. Please check your inbox.');
-          setEmail('');
+            fullName: "", // Could be fetched if needed
+          })
+          setSuccess(t("auth:resetIndicator"))
+          setEmail("")
         } catch (emailError) {
-          console.error('Error sending reset password email:', emailError);
-          setError('Password reset token generated, but we couldn\'t send the email. Please contact support.');
+          console.error("Error sending reset password email:", emailError)
+          setError(t("auth:errors.emailError"))
         }
       } else {
         // Even if token is null, show success message (security best practice)
-        setSuccess('If the account exists, a reset token has been generated. Please check your email.');
-        setEmail('');
+        setSuccess(t("auth:genericSuccess"))
+        setEmail("")
       }
     } catch (err) {
-      console.error('Forgot password error:', err);
-      
-      if (err.code === 'ECONNABORTED' || err.message.includes('timeout')) {
-        setError('Request timeout. Please check your connection and try again.');
-      } else if (err.response) {
-        const status = err.response.status;
-        const message = err.response.data?.message || err.response.data?.errorMessage;
-
-        switch (status) {
-          case 404:
-            setError('Email not found. Please check your email address.');
-            break;
-          case 429:
-            setError('Too many requests. Please try again later.');
-            break;
-          case 500:
-            setError('Server error. Please try again later.');
-            break;
-          default:
-            setError(message || 'An error occurred. Please try again.');
-        }
-      } else if (err.request) {
-        setError('Cannot connect to server. Please check your internet connection.');
-      } else {
-        setError('An unexpected error occurred. Please try again.');
-      }
+      console.error("Forgot password error:", err)
+      const translatedError = translateApiError(err, "auth:errors")
+      setError(translatedError)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="login-container relative">
@@ -95,7 +75,7 @@ const ForgotPassword = () => {
           />
         </Link>
         <div className="login-form">
-          <h1 className="login-title">Forgot Password</h1>
+          <h1 className="login-title">{t("auth:forgotPasswordTitle")}</h1>
 
           {success ? (
             <div className="login-form-content">
@@ -103,28 +83,28 @@ const ForgotPassword = () => {
                 {success}
               </div>
               <button
-                onClick={() => navigate('/login')}
+                onClick={() => navigate("/login")}
                 className="signin-button"
               >
-                Back to Login
+                {t("auth:backToLogin")}
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="login-form-content">
               <p className="text-sm text-[#7A7574] mb-4">
-                Enter your email address and we'll send you instructions to reset your password.
+                {t("auth:forgotPasswordPrompt")}
               </p>
-              
+
               <div className="form-group">
                 <label htmlFor="email" className="form-label">
-                  Email
+                  {t("auth:email")}
                 </label>
                 <input
                   type="email"
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`form-input ${error ? 'border-red-500' : ''}`}
+                  className={`form-input ${error ? "border-red-500" : ""}`}
                   autoComplete="email"
                   required
                   disabled={isSubmitting}
@@ -143,25 +123,32 @@ const ForgotPassword = () => {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Sending...</span>
+                    <span>{t("auth:sending")}</span>
                   </div>
                 ) : (
-                  'Send Reset Link'
+                  t("auth:sendResetLink")
                 )}
               </button>
             </form>
           )}
 
           <div className="divider">
-            <span className="divider-text">OR</span>
+            <span className="divider-text">{t("auth:or")}</span>
           </div>
 
           <div className="signup-link">
-            Remember your password?{' '}
+            {t("auth:rememberPasswordPrompt")}{" "}
             <Link to="/login" className="signup-text">
-              Sign In
+              {t("auth:signIn")}
             </Link>
           </div>
         </div>
@@ -169,16 +156,15 @@ const ForgotPassword = () => {
       <div className="login-background">
         <div className="typing-container">
           <h1 className="typing-text">
-            Reset Your Password
+            {t("auth:resetPasswordAnimationTitle")}
           </h1>
           <p className="typing-subtitle">
-            We'll help you get back into your account
+            {t("auth:resetPasswordAnimationSubtitle")}
           </p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ForgotPassword;
-
+export default ForgotPassword

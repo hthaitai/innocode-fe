@@ -21,6 +21,17 @@ export const BREADCRUMBS = {
   STUDENT_CERTIFICATE: ["Student Certificate"],
   SCHOOL_MANAGEMENT: ["School Management"],
   MY_SCHOOL_MANAGEMENT: ["My School Management"],
+  MY_MANAGED_SCHOOLS: ["My Managed Schools"],
+  SCHOOL_REQUESTS: ["School Requests"],
+  SCHOOL_CREATE_REQUEST: ["School Requests", "Create Request"],
+  // Sub-pages
+  PROFILE_ABOUT: ["Profile", "Personal Information"],
+  PROFILE_PASSWORD: ["Profile", "Change Password"],
+  CONTEST_CREATE: ["Contests", "Create Contest"],
+  CONTEST_EDIT: (contestTitle) => ["Contests", contestTitle, "Edit"],
+  STUDENT_CERTIFICATE: ["Student Certificate"],
+  SCHOOL_MANAGEMENT: ["School Management"],
+  MY_SCHOOL_MANAGEMENT: ["My School Management"],
   SCHOOL_CREATE_REQUEST: ["School Management", "Create Request"],
   // Sub-pages
   PROFILE_ABOUT: ["Profile", "Personal Information"],

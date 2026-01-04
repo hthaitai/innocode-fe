@@ -1,209 +1,228 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import translateApiError from "@/shared/utils/translateApiError";
-import "./Login.css";
-import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg";
-import { useAuth } from "@/context/AuthContext";
-import { schoolApi } from "@/api/schoolApi";
-import { authService } from "../services/authService";
+import React, { useState, useEffect } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import translateApiError from "@/shared/utils/translateApiError"
+import "./Login.css"
+import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg"
+import { useAuth } from "@/context/AuthContext"
+import { schoolApi } from "@/api/schoolApi"
+import { authService } from "../services/authService"
 import {
   sendVerificationEmail,
   initEmailJs,
-} from "@/shared/services/emailService";
-import { Icon } from "@iconify/react";
-import DropdownFluent from "@/shared/components/DropdownFluent";
+} from "@/shared/services/emailService"
+import { Icon } from "@iconify/react"
+import DropdownFluent from "@/shared/components/DropdownFluent"
 
 const Register = () => {
-  const { t } = useTranslation(["pages", "common", "validation"]);
-  const { register, clearAuth } = useAuth(); // Dùng clearAuth thay vì logout
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [schoolId, setSchoolId] = useState("");
-  const [grade, setGrade] = useState("");
-  const [schools, setSchools] = useState([]);
-  const [loadingSchools, setLoadingSchools] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [validationErrors, setValidationErrors] = useState({});
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [typedText, setTypedText] = useState("");
-  const [successMessage, setSuccessMessage] = useState(''); 
+  const { t } = useTranslation(["pages", "common", "validation"])
+  const { register, clearAuth } = useAuth() // Dùng clearAuth thay vì logout
+  const [fullName, setFullName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [schoolId, setSchoolId] = useState("")
+  const [grade, setGrade] = useState("")
+  const [schools, setSchools] = useState([])
+  const [loadingSchools, setLoadingSchools] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [error, setError] = useState("")
+  const [validationErrors, setValidationErrors] = useState({})
+  const navigate = useNavigate()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [typedText, setTypedText] = useState("")
+  const [successMessage, setSuccessMessage] = useState("")
 
-  const fullText = t("pages:register.title");
+  const fullText = t("pages:register.title")
 
   useEffect(() => {
     const fetchSchools = async () => {
-      setLoadingSchools(true);
+      setLoadingSchools(true)
       try {
-        const response = await schoolApi.getAll();
+        const response = await schoolApi.getAll()
         // Handle different response structures
-        const schoolsData = response.data?.data || response.data || [];
-        console.log("Schools data:", schoolsData);
+        const schoolsData = response.data?.data || response.data || []
+        console.log("Schools data:", schoolsData)
         if (schoolsData.length > 0) {
-          console.log("First school structure:", schoolsData[0]);
+          console.log("First school structure:", schoolsData[0])
         }
-        setSchools(schoolsData);
+        setSchools(schoolsData)
       } catch (error) {
-        console.error("Error fetching schools:", error);
-        setError(t("pages:register.failedToLoadSchools"));
+        console.error("Error fetching schools:", error)
+        setError(t("pages:register.failedToLoadSchools"))
       } finally {
-        setLoadingSchools(false);
+        setLoadingSchools(false)
       }
-    };
+    }
 
-    fetchSchools();
-  }, []);
-
-  useEffect(() => {
-    initEmailJs();
-  }, []);
+    fetchSchools()
+  }, [])
 
   useEffect(() => {
-    let currentIndex = 0;
+    initEmailJs()
+  }, [])
+
+  useEffect(() => {
+    let currentIndex = 0
     const typingInterval = setInterval(() => {
       if (currentIndex <= fullText.length) {
-        setTypedText(fullText.slice(0, currentIndex));
-        currentIndex++;
+        setTypedText(fullText.slice(0, currentIndex))
+        currentIndex++
       } else {
         setTimeout(() => {
-          currentIndex = 0;
-        }, 2000);
+          currentIndex = 0
+        }, 2000)
       }
-    }, 100);
+    }, 100)
 
-    return () => clearInterval(typingInterval);
-  }, []);
+    return () => clearInterval(typingInterval)
+  }, [])
 
   const validateForm = () => {
-    const errors = {};
+    const errors = {}
 
     if (!fullName.trim()) {
-      errors.fullName = "Full name is required";
+      errors.fullName = t("pages:register.fullNameRequired")
     } else if (fullName.trim().length < 2) {
-      errors.fullName = "Full name must be at least 2 characters";
+      errors.fullName = t("pages:register.fullNameMinLength")
     }
 
     // Email validation
     if (!email) {
-      errors.email = "Email is required";
+      errors.email = t("pages:register.emailRequired")
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.email = "Invalid email format";
+      errors.email = t("pages:register.emailInvalid")
     }
 
     if (!password) {
-      errors.password = "Password is required";
+      errors.password = t("pages:register.passwordRequired")
     } else if (password.length < 8) {
-      errors.password = "Password must be at least 8 characters";
+      errors.password = t("pages:register.passwordMinLength")
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
-      errors.password = "Password must contain uppercase, lowercase and number";
+      errors.password = t("pages:register.passwordRequirements")
     }
 
     if (!confirmPassword) {
-      errors.confirmPassword = "Please confirm your password";
+      errors.confirmPassword = t("pages:register.confirmPasswordRequired")
     } else if (password !== confirmPassword) {
-      errors.confirmPassword = "Passwords do not match";
+      errors.confirmPassword = t("pages:register.passwordsNotMatch")
     }
 
     if (!schoolId) {
-      errors.schoolId = "School is required";
+      errors.schoolId = t("pages:register.schoolRequired")
     }
 
     if (!grade) {
-      errors.grade = "Grade is required";
+      errors.grade = t("pages:register.gradeRequired")
     }
 
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+    setValidationErrors(errors)
+    return Object.keys(errors).length === 0
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setValidationErrors({});
-    setSuccessMessage(""); 
+    e.preventDefault()
+    setError("")
+    setValidationErrors({})
+    setSuccessMessage("")
 
     // Validate form
     if (!validateForm()) {
-      return;
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
-      const registerResult = await register({
-        fullName: fullName.trim(),
-        email: email.trim(),
-        password,
-        confirmPassword,
-        schoolId: schoolId,
-        grade: grade.trim(),
-      }, false); 
+      const registerResult = await register(
+        {
+          fullName: fullName.trim(),
+          email: email.trim(),
+          password,
+          confirmPassword,
+          schoolId: schoolId,
+          grade: grade.trim(),
+        },
+        false
+      )
 
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token")
       if (!token || token === "null") {
-        throw new Error("Token not found after registration");
+        throw new Error("Token not found after registration")
       }
 
-      let verificationToken;
+      let verificationToken
       try {
-        verificationToken = await authService.generateVerificationToken();
+        verificationToken = await authService.generateVerificationToken()
       } catch (verifyError) {
-        clearAuth();
-        console.error("❌ Error generating verification token:", verifyError);
+        clearAuth()
+        console.error("❌ Error generating verification token:", verifyError)
         const errorMessage =
           verifyError.response?.data?.message ||
           verifyError.response?.data?.errorMessage ||
-          "Couldn't generate verification token";
-        console.error("Error details:", errorMessage);
-        setError(`Registration successful! However, we couldn't generate verification token: ${errorMessage}. Please contact support.`);
-        return; 
+          "Couldn't generate verification token"
+        console.error("Error details:", errorMessage)
+        setError(
+          `${t("pages:register.success")} ${t(
+            "auth:errors.tokenError",
+            "However, we couldn't generate verification token"
+          )}: ${errorMessage}.`
+        )
+        return
       }
 
-      clearAuth();
+      clearAuth()
 
       try {
         await sendVerificationEmail({
           toEmail: email.trim(),
           verificationToken: verificationToken,
           fullName: fullName.trim(),
-        });
-        console.log("✅ Verification email sent successfully");
+        })
+        console.log("✅ Verification email sent successfully")
 
-        setSuccessMessage(t("pages:register.successMessage"));
+        setSuccessMessage(t("pages:register.successMessage"))
         // Reset form
-        setFullName("");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        setSchoolId("");
-        setGrade("");
+        setFullName("")
+        setEmail("")
+        setPassword("")
+        setConfirmPassword("")
+        setSchoolId("")
+        setGrade("")
       } catch (emailError) {
-        console.error("❌ Error sending verification email:", emailError);
-        setError("Registration successful! However, we couldn't send verification email. Please contact support or try to resend verification email.");
+        console.error("❌ Error sending verification email:", emailError)
+        setError(
+          `${t("pages:register.success")} ${t(
+            "auth:errors.emailError",
+            "However, we couldn't send verification email. Please contact support or try to resend verification email."
+          )}`
+        )
       }
-      } catch (err) {
-      console.error("Registration error:", err);
+    } catch (err) {
+      console.error("Registration error:", err)
       // Use translateApiError to handle all error cases
-      const translatedError = translateApiError(err, 'errors')
+      const translatedError = translateApiError(err, "errors")
       setError(translatedError)
-      
+
       // Handle validation errors from backend
-      if (err.response?.data?.errors && typeof err.response.data.errors === "object") {
+      if (
+        err.response?.data?.errors &&
+        typeof err.response.data.errors === "object"
+      ) {
         const translatedErrors = {}
-        Object.keys(err.response.data.errors).forEach(key => {
-          translatedErrors[key] = translateApiError(err.response.data.errors[key], 'errors')
+        Object.keys(err.response.data.errors).forEach((key) => {
+          translatedErrors[key] = translateApiError(
+            err.response.data.errors[key],
+            "errors"
+          )
         })
         setValidationErrors(translatedErrors)
       }
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="login-container relative">
@@ -234,14 +253,20 @@ const Register = () => {
                   />
                 </svg>
                 <div>
-                  <p className="font-semibold text-green-800">{t("pages:register.success")}</p>
+                  <p className="font-semibold text-green-800">
+                    {t("pages:register.success")}
+                  </p>
                   <p className="text-green-700 mt-1">{successMessage}</p>
                 </div>
               </div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="login-form-content" style={{ display: successMessage ? 'none' : 'block' }}>
+          <form
+            onSubmit={handleSubmit}
+            className="login-form-content"
+            style={{ display: successMessage ? "none" : "block" }}
+          >
             {/* Full Name */}
             <div className="form-group">
               <label htmlFor="fullName" className="form-label">
@@ -301,7 +326,11 @@ const Register = () => {
                   value: school.id || school.schoolId || school.school_id,
                   label: school.name,
                 }))}
-                placeholder={loadingSchools ? t("common:common.loading") : t("pages:register.selectSchool")}
+                placeholder={
+                  loadingSchools
+                    ? t("common:common.loading")
+                    : t("pages:register.selectSchool")
+                }
                 disabled={loadingSchools}
                 error={!!validationErrors.schoolId}
                 helperText={validationErrors.schoolId}
@@ -344,11 +373,11 @@ const Register = () => {
                   type="button"
                   className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: "pointer" }}
                 >
-                  <Icon 
-                    icon={showPassword ? 'mdi:eye-off' : 'mdi:eye'} 
-                    width="20" 
+                  <Icon
+                    icon={showPassword ? "mdi:eye-off" : "mdi:eye"}
+                    width="20"
                   />
                 </button>
               </div>
@@ -369,7 +398,7 @@ const Register = () => {
                 </p>
               )}
               <p className="text-xs text-gray-500 mt-1">
-                Min 8 characters with uppercase, lowercase and number
+                {t("pages:register.passwordHint")}
               </p>
             </div>
 
@@ -383,11 +412,11 @@ const Register = () => {
                   type="button"
                   className="password-toggle"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: "pointer" }}
                 >
-                  <Icon 
-                    icon={showConfirmPassword ? 'mdi:eye-off' : 'mdi:eye'} 
-                    width="20" 
+                  <Icon
+                    icon={showConfirmPassword ? "mdi:eye-off" : "mdi:eye"}
+                    width="20"
                   />
                 </button>
               </div>
@@ -421,30 +450,20 @@ const Register = () => {
               className="signin-button"
               disabled={isSubmitting}
             >
-              {isSubmitting ? t("pages:register.signingUp") : t("pages:register.submit")}
+              {isSubmitting
+                ? t("pages:register.signingUp")
+                : t("pages:register.submit")}
             </button>
           </form>
 
           <div className="divider">
-            <span className="divider-text">OR</span>
+            <span className="divider-text">{t("auth:or")}</span>
           </div>
           <div className="signup-link">
             {t("pages:register.alreadyHaveAccount")}{" "}
             <Link to="/login" className="signup-text">
               {t("pages:register.signIn")}
             </Link>
-          </div>
-
-          <div className="legal-text">
-            By continuing, you agree to the{" "}
-            <a href="#terms" className="legal-link">
-              Terms of use
-            </a>{" "}
-            and{" "}
-            <a href="#privacy" className="legal-link">
-              Privacy Policy
-            </a>
-            .
           </div>
         </div>
       </div>
@@ -454,13 +473,11 @@ const Register = () => {
             {typedText}
             <span className="typing-cursor">|</span>
           </h1>
-          <p className="typing-subtitle">
-            Start Your Programming Journey Today
-          </p>
+          <p className="typing-subtitle">{t("auth:registerSubtitle")}</p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

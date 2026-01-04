@@ -105,7 +105,11 @@
     "requestTimeout": "Hết thời gian chờ. Vui lòng kiểm tra kết nối và thử lại.",
     "serverError": "Lỗi máy chủ. Vui lòng thử lại sau.",
     "loginSuccess": "Đăng nhập thành công",
-    "logoutSuccess": "Đăng xuất thành công"
+    "logoutSuccess": "Đăng xuất thành công",
+    "logoutConfirmation": {
+      "title": "Xác nhận đăng xuất",
+      "message": "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?"
+    }
   },
   "validation": {
     "required": "Trường này là bắt buộc",

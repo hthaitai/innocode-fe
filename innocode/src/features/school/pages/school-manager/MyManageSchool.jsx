@@ -1,37 +1,40 @@
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import PageContainer from "@/shared/components/PageContainer";
-import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs";
-import { useGetMyManageSchoolQuery } from "@/services/schoolApi";
-import TableFluent from "@/shared/components/TableFluent";
-import { School } from "lucide-react";
+import React, { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+import PageContainer from "@/shared/components/PageContainer"
+import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
+import { useGetMyManageSchoolQuery } from "@/services/schoolApi"
+import TableFluent from "@/shared/components/TableFluent"
+import { School } from "lucide-react"
 
 const MyManageSchool = () => {
-  const { t } = useTranslation("pages");
-  const navigate = useNavigate();
-  const [pageNumber, setPageNumber] = useState(1);
-  const pageSize = 20;
+  const { t } = useTranslation("pages")
+  const navigate = useNavigate()
+  const [pageNumber, setPageNumber] = useState(1)
+  const pageSize = 20
 
-  const { data: schoolsData, isLoading: loading, error } =
-    useGetMyManageSchoolQuery({
-      Page: pageNumber,
-      PageSize: pageSize,
-    });
+  const {
+    data: schoolsData,
+    isLoading: loading,
+    error,
+  } = useGetMyManageSchoolQuery({
+    Page: pageNumber,
+    PageSize: pageSize,
+  })
 
   // Helper function to format date
   const formatDate = (dateString) => {
-    if (!dateString) return "—";
+    if (!dateString) return "—"
     try {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
+      const date = new Date(dateString)
+      const day = String(date.getDate()).padStart(2, "0")
+      const month = String(date.getMonth() + 1).padStart(2, "0")
+      const year = date.getFullYear()
+      return `${day}/${month}/${year}`
     } catch (error) {
-      return "—";
+      return "—"
     }
-  };
+  }
 
   // Table Columns
   const columns = [
@@ -47,7 +50,9 @@ const MyManageSchool = () => {
       accessorKey: "provinceName",
       header: t("schools.province"),
       cell: ({ row }) => (
-        <span className="text-gray-700">{row.original.provinceName || "—"}</span>
+        <span className="text-gray-700">
+          {row.original.provinceName || "—"}
+        </span>
       ),
       size: 150,
     },
@@ -87,11 +92,11 @@ const MyManageSchool = () => {
       ),
       size: 130,
     },
-  ];
+  ]
 
   // Extract data from response
-  const schools = schoolsData?.schools || [];
-  const paginationData = schoolsData?.pagination || {};
+  const schools = schoolsData?.schools || []
+  const paginationData = schoolsData?.pagination || {}
   const pagination = {
     pageNumber: pageNumber,
     pageSize: pageSize,
@@ -99,20 +104,20 @@ const MyManageSchool = () => {
     totalCount: paginationData.totalCount || 0,
     hasPreviousPage: paginationData.hasPreviousPage || false,
     hasNextPage: paginationData.hasNextPage || false,
-  };
+  }
 
   // Handle row click - navigate to school detail
   const handleRowClick = (school) => {
-    const schoolId = school.schoolId || school.id;
+    const schoolId = school.schoolId || school.id
     if (schoolId) {
-      navigate(`/schools/${schoolId}`);
+      navigate(`/schools/${schoolId}`)
     }
-  };
+  }
 
   return (
     <PageContainer
-      breadcrumb={BREADCRUMBS.SCHOOL_MANAGEMENT}
-      breadcrumbPaths={BREADCRUMB_PATHS.SCHOOL_MANAGEMENT}
+      breadcrumb={BREADCRUMBS.MY_MANAGED_SCHOOLS}
+      breadcrumbPaths={BREADCRUMB_PATHS.MY_MANAGED_SCHOOLS}
       loading={loading}
       error={error}
     >
@@ -143,7 +148,7 @@ const MyManageSchool = () => {
         />
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default MyManageSchool;
+export default MyManageSchool
