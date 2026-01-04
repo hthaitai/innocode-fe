@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import PageContainer from "@/shared/components/PageContainer"
 import TabNavigation from "@/shared/components/TabNavigation"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
@@ -24,25 +24,28 @@ export default function Profile() {
 
   return (
     <PageContainer breadcrumb={BREADCRUMBS.PROFILE}>
-      <AnimatedSection direction="bottom">
-        <div>
-          <ProfileHeader user={userMe} role={role} />
+      <div className="max-w-4xl mx-auto">
+        <ProfileHeader user={userMe} role={role} />
+
+        <div className="mb-6">
           <TabNavigation tabs={tabs} activeTab={tab} onTabChange={setTab} />
         </div>
 
-        <div className="bg-white rounded-[5px] border border-[#E5E5E5] overflow-hidden relative">
-          {tab === "about" && (
-            <div key="about" direction="bottom">
-              <AboutTab user={userMe} />
-            </div>
-          )}
-          {tab === "password" && (
-            <div key="password" direction="bottom">
-              <PasswordTab />
-            </div>
-          )}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden relative min-h-[400px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={tab}
+              initial={{ opacity: 0, x: tab === "about" ? -20 : 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: tab === "about" ? 20 : -20 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              {tab === "about" && <AboutTab user={userMe} />}
+              {tab === "password" && <PasswordTab />}
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </AnimatedSection>
+      </div>
     </PageContainer>
   )
 }

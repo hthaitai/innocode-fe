@@ -124,7 +124,7 @@ const DropdownFluent = ({
       <div className="relative w-full" ref={dropdownRef}>
         <div
           onClick={toggleDropdown}
-          className={`text-sm leading-5 flex gap-3 justify-between items-center cursor-pointer border rounded-[5px] px-3 min-h-[32px] bg-white transition-colors duration-150 ${borderClass} ${
+          className={`text-sm leading-5 flex gap-3 justify-between items-center cursor-pointer border rounded-[5px] px-3 py-1.5 min-h-[32px] bg-white transition-colors duration-150 ${borderClass} ${
             disabled
               ? "opacity-60 cursor-not-allowed"
               : isOpen
@@ -132,7 +132,7 @@ const DropdownFluent = ({
               : ""
           }`}
         >
-          <span className="truncate">{selectedLabel}</span>
+          <span className="break-words whitespace-normal">{selectedLabel}</span>
           <ChevronDown
             size={16}
             className={`text-[#7A7574] transition-transform duration-200 flex-shrink-0 ${
@@ -179,22 +179,24 @@ const DropdownFluent = ({
                         if (el) itemRefs.current[option.value] = el
                       }}
                       onClick={() => handleSelect(option.value)}
-                      className={`flex items-center gap-2 text-sm leading-5 py-1.5 px-3 cursor-pointer transition-colors duration-100 rounded-[5px] relative ${
+                      className={`flex items-start gap-2 text-sm leading-5 py-1.5 px-3 cursor-pointer transition-colors duration-100 rounded-[5px] relative ${
                         value === option.value
                           ? "bg-[#F0F0F0]"
                           : "hover:bg-[#F0F0F0]"
                       }`}
                     >
                       {value === option.value && (
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[3px] bg-[#E05307] rounded-[5px]"></span>
+                        <span className="absolute left-0 top-2.5 h-3 w-[3px] bg-[#E05307] rounded-[5px]"></span>
                       )}
 
                       {option.icon && (
-                        <span className="text-[#7A7574] flex-shrink-0">
+                        <span className="text-[#7A7574] flex-shrink-0 mt-0.5">
                           {option.icon}
                         </span>
                       )}
-                      <span className="truncate">{option.label}</span>
+                      <span className="break-words whitespace-normal">
+                        {option.label}
+                      </span>
                     </div>
                   ))
                 )}

@@ -8,6 +8,8 @@ import { Icon } from "@iconify/react"
 import NotificationDropdown from "@/features/notification/components/user/NotificationDropdown"
 import { useGetNotificationsQuery } from "@/services/notificationApi"
 import LanguageSwitcher from "@/shared/components/LanguageSwitcher"
+import ConfirmModal from "@/shared/components/ConfirmModal"
+import { toast } from "react-hot-toast"
 
 const Navbar = () => {
   const navigate = useNavigate()
@@ -15,6 +17,7 @@ const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth()
   const [showDropdown, setShowDropdown] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
   const dropdownRef = useRef(null)
   const notifRef = useRef(null)
   const rolesToHideNav = ["organizer"] // hide nav links for students
@@ -41,10 +44,25 @@ const Navbar = () => {
     navigate("/login")
   }
 
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
   const handleLogout = () => {
     setShowDropdown(false)
     setShowNotifications(false)
-    logout()
+    setShowLogoutModal(true)
+  }
+
+  const handleConfirmLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await logout()
+      toast.success(t("auth.logoutSuccess"))
+    } catch (error) {
+      toast.error(t("common.error"))
+    } finally {
+      setIsLoggingOut(false)
+      setShowLogoutModal(false)
+    }
   }
 
   // Close dropdown when clicking outside
@@ -241,6 +259,15 @@ const Navbar = () => {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleConfirmLogout}
+        isLoading={isLoggingOut}
+        title={t("auth.logoutConfirmation.title")}
+        description={t("auth.logoutConfirmation.message")}
+      />
     </nav>
   )
 }

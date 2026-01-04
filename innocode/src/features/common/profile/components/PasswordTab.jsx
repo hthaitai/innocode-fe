@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Icon } from "@iconify/react"
 import { authApi } from "../../../../api/authApi"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function PasswordTab() {
   const { t } = useTranslation("pages")
@@ -118,171 +119,136 @@ export default function PasswordTab() {
 
   return (
     <div className="p-8">
-      <div className="mb-6">
-        <h3 className="text-2xl font-bold text-gray-800 mb-2">
+      <div className="mb-8">
+        <h3 className="text-2xl font-bold text-gray-800 mb-2 tracking-tight">
           {t("profile.password.title")}
         </h3>
+        <p className="text-sm text-gray-400 font-medium">
+          Secure your account by updating your password regularly.
+        </p>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="group">
-          <label className="block text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-            {t("profile.password.currentPassword")}
-          </label>
-          <div
-            className={`relative bg-gray-50 border-2 rounded-xl p-2 transition-all duration-200 ${
-              errors.currentPassword
-                ? "border-red-400 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-100"
-                : "border-gray-200 hover:border-orange-300 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 group-hover:shadow-md"
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Icon icon="mdi:lock-outline" className="h-5 w-5 text-gray-400" />
-              <input
-                type={showCurrentPassword ? "text" : "password"}
-                value={formData.currentPassword}
-                onChange={handleChange("currentPassword")}
-                placeholder={t("profile.password.enterCurrentPassword")}
-                className="flex-1 outline-none bg-transparent text-base text-gray-800 placeholder-gray-400"
-                disabled={isSubmitting}
-              />
-              <button
-                type="button"
-                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="p-2 hover:bg-orange-100 rounded-lg transition-all duration-200"
-                disabled={isSubmitting}
-              >
-                <Icon
-                  icon={showCurrentPassword ? "mdi:eye-off" : "mdi:eye"}
-                  className="h-5 w-5 text-gray-500 hover:text-orange-500"
+
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-xl mx-auto">
+        {[
+          {
+            id: "currentPassword",
+            label: t("profile.password.currentPassword"),
+            placeholder: t("profile.password.enterCurrentPassword"),
+            icon: "mdi:lock-outline",
+            show: showCurrentPassword,
+            setShow: setShowCurrentPassword,
+          },
+          {
+            id: "newPassword",
+            label: t("profile.password.newPassword"),
+            placeholder: t("profile.password.enterNewPassword"),
+            icon: "mdi:lock-plus-outline",
+            show: showNewPassword,
+            setShow: setShowNewPassword,
+          },
+          {
+            id: "confirmNewPassword",
+            label: t("profile.password.confirmNewPassword"),
+            placeholder: t("profile.password.confirmNewPasswordPlaceholder"),
+            icon: "mdi:lock-check-outline",
+            show: showConfirmPassword,
+            setShow: setShowConfirmPassword,
+          },
+        ].map((field) => (
+          <div key={field.id} className="group">
+            <label className="block text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-[0.1em] ml-1">
+              {field.label}
+            </label>
+            <div
+              className={`relative bg-gray-50/50 border rounded-2xl p-1 transition-all duration-300 ${
+                errors[field.id]
+                  ? "border-red-400 bg-red-50/30"
+                  : "border-gray-100 focus-within:border-orange-400 focus-within:ring-4 focus-within:ring-orange-50 focus-within:bg-white hover:border-orange-200"
+              }`}
+            >
+              <div className="flex items-center gap-3 px-3">
+                <div
+                  className={`p-2 rounded-lg transition-colors ${
+                    errors[field.id]
+                      ? "bg-red-50 text-red-500"
+                      : "bg-white shadow-sm text-gray-400 group-focus-within:text-orange-500"
+                  }`}
+                >
+                  <Icon icon={field.icon} className="h-5 w-5" />
+                </div>
+                <input
+                  type={field.show ? "text" : "password"}
+                  value={formData[field.id]}
+                  onChange={handleChange(field.id)}
+                  placeholder={field.placeholder}
+                  className="flex-1 py-3 outline-none bg-transparent text-base text-gray-800 font-semibold placeholder-gray-300"
+                  disabled={isSubmitting}
                 />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => field.setShow(!field.show)}
+                  className="p-2 hover:bg-orange-50 rounded-xl transition-all text-gray-400 hover:text-orange-500"
+                  disabled={isSubmitting}
+                >
+                  <Icon
+                    icon={field.show ? "mdi:eye-off" : "mdi:eye"}
+                    className="h-5 w-5"
+                  />
+                </button>
+              </div>
             </div>
+            <AnimatePresence>
+              {errors[field.id] && (
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="text-xs text-red-500 font-medium mt-2 ml-2"
+                >
+                  {errors[field.id]}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
-          {errors.currentPassword && (
-            <p className="text-sm text-red-500 mt-1 ml-1">
-              {errors.currentPassword}
-            </p>
+        ))}
+
+        <AnimatePresence>
+          {successMessage && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl shadow-sm shadow-green-100/50"
+            >
+              <div className="p-2 bg-white rounded-xl shadow-sm text-green-500">
+                <Icon icon="mdi:check-circle" className="h-5 w-5" />
+              </div>
+              <p className="text-sm text-green-700 font-bold">
+                {successMessage}
+              </p>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
 
-        <div className="group">
-          <label className="block text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-            {t("profile.password.newPassword")}
-          </label>
-          <div
-            className={`relative bg-gray-50 border-2 rounded-xl p-2 transition-all duration-200 ${
-              errors.newPassword
-                ? "border-red-400 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-100"
-                : "border-gray-200 hover:border-orange-300 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 group-hover:shadow-md"
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Icon
-                icon="mdi:lock-plus-outline"
-                className="h-5 w-5 text-gray-400"
-              />
-              <input
-                type={showNewPassword ? "text" : "password"}
-                value={formData.newPassword}
-                onChange={handleChange("newPassword")}
-                placeholder={t("profile.password.enterNewPassword")}
-                className="flex-1 outline-none bg-transparent text-base text-gray-800 placeholder-gray-400"
-                disabled={isSubmitting}
-              />
-              <button
-                type="button"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-                className="p-2 hover:bg-orange-100 rounded-lg transition-all duration-200"
-                disabled={isSubmitting}
-              >
-                <Icon
-                  icon={showNewPassword ? "mdi:eye-off" : "mdi:eye"}
-                  className="h-5 w-5 text-gray-500 hover:text-orange-500"
-                />
-              </button>
-            </div>
-          </div>
-          {errors.newPassword && (
-            <p className="text-sm text-red-500 mt-1 ml-1">
-              {errors.newPassword}
-            </p>
-          )}
-        </div>
-
-        <div className="group">
-          <label className="block text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-            {t("profile.password.confirmNewPassword")}
-          </label>
-          <div
-            className={`relative bg-gray-50 border-2 rounded-xl p-2 transition-all duration-200 ${
-              errors.confirmNewPassword
-                ? "border-red-400 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-100"
-                : "border-gray-200 hover:border-orange-300 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 group-hover:shadow-md"
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Icon
-                icon="mdi:lock-check-outline"
-                className="h-5 w-5 text-gray-400"
-              />
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                value={formData.confirmNewPassword}
-                onChange={handleChange("confirmNewPassword")}
-                placeholder={t(
-                  "profile.password.confirmNewPasswordPlaceholder"
-                )}
-                className="flex-1 outline-none bg-transparent text-base text-gray-800 placeholder-gray-400"
-                disabled={isSubmitting}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="p-2 hover:bg-orange-100 rounded-lg transition-all duration-200"
-                disabled={isSubmitting}
-              >
-                <Icon
-                  icon={showConfirmPassword ? "mdi:eye-off" : "mdi:eye"}
-                  className="h-5 w-5 text-gray-500 hover:text-orange-500"
-                />
-              </button>
-            </div>
-          </div>
-          {errors.confirmNewPassword && (
-            <p className="text-sm text-red-500 mt-1 ml-1">
-              {errors.confirmNewPassword}
-            </p>
-          )}
-        </div>
-
-        {successMessage && (
-          <div className="flex items-center space-x-2 p-4 bg-green-50 border-2 border-green-400 rounded-xl">
-            <Icon icon="mdi:check-circle" className="h-5 w-5 text-green-600" />
-            <p className="text-sm text-green-700 font-medium">
-              {successMessage}
-            </p>
-          </div>
-        )}
-
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-center pt-4">
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-xl text-base font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${
+            className={`w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-2xl text-base font-bold shadow-lg shadow-orange-200 transition-all transform active:scale-[0.98] relative overflow-hidden group ${
               isSubmitting
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:from-orange-600 hover:to-orange-700"
+                : "hover:shadow-orange-300 hover:-translate-y-0.5"
             }`}
           >
-            <div className="flex items-center space-x-2">
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="flex items-center justify-center gap-3 relative z-10">
               {isSubmitting ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-t-white border-orange-300 rounded-full animate-spin"></span>
+                  <span className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></span>
                   <span>{t("profile.password.updating")}</span>
                 </>
               ) : (
                 <>
-                  <Icon icon="mdi:check" className="h-5 w-5" />
+                  <Icon icon="mdi:shield-check" className="h-6 w-6" />
                   <span>{t("profile.password.updatePassword")}</span>
                 </>
               )}
