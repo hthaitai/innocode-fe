@@ -12,7 +12,10 @@ import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
+import { useTranslation } from "react-i18next"
+
 export default function OrganizerAppeals() {
+  const { t } = useTranslation(["appeal"])
   const { contestId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
@@ -39,7 +42,7 @@ export default function OrganizerAppeals() {
   const pagination = appealsData?.additionalData ?? {}
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_APPEALS(
-    contest?.name ?? "Contest"
+    contest?.name ?? t("appeal:contest")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_APPEALS(contestId)
 
@@ -60,7 +63,7 @@ export default function OrganizerAppeals() {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="appeals" />
+        <ErrorState itemName={t("appeal:appeals")} />
       </PageContainer>
     )
   }
@@ -71,7 +74,7 @@ export default function OrganizerAppeals() {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="contest" />
+        <MissingState itemName={t("appeal:contest")} />
       </PageContainer>
     )
   }

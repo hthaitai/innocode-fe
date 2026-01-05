@@ -6,12 +6,15 @@ import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
 import { getContestLeaderboardColumns } from "../columns/getContestLeaderboardColumns"
 import LeaderboardToolbar from "./LeaderboardToolbar"
 
+import { useTranslation } from "react-i18next"
+
 const ManageLeaderboard = ({
   contestId,
   entries,
   pagination,
   setPageNumber,
 }) => {
+  const { t } = useTranslation(["leaderboard", "pages"])
   const navigate = useNavigate()
 
   const handleRowClick = useCallback(
@@ -23,7 +26,7 @@ const ManageLeaderboard = ({
     [navigate, contestId]
   )
 
-  const columns = getContestLeaderboardColumns()
+  const columns = getContestLeaderboardColumns(t)
 
   return (
     <>

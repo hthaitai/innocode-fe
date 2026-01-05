@@ -1,69 +1,87 @@
-import React, { useMemo, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import { Users } from "lucide-react"
+import React, { useState } from "react"
+import { useParams } from "react-router-dom"
 
 import PageContainer from "@/shared/components/PageContainer"
-import TableFluent from "@/shared/components/TableFluent"
-import TablePagination from "@/shared/components/TablePagination"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetContestByIdQuery } from "@/services/contestApi"
 import { useGetTeamsQuery } from "@/services/teamApi"
-import { getTeamColumns } from "../../columns/teamColumns"
+import ManageTeams from "../../components/organizer/ManageTeams"
+import { LoadingState } from "@/shared/components/ui/LoadingState"
+import { ErrorState } from "@/shared/components/ui/ErrorState"
+import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
+import { useTranslation } from "react-i18next"
 
 const OrganizerTeams = () => {
   const { contestId } = useParams()
+  const { t } = useTranslation("common")
   const [page, setPage] = useState(1)
   const pageSize = 10
-  const navigate = useNavigate()
+  const [searchName, setSearchName] = useState("")
 
   const {
     data: contest,
     isLoading: contestLoading,
-    error: contestError,
+    isError: contestError,
   } = useGetContestByIdQuery(contestId)
 
   const {
     data: teamsResponse,
     isLoading: teamsLoading,
-    error: teamsError,
+    isError: teamsError,
   } = useGetTeamsQuery({
     contestId,
     pageNumber: page,
     pageSize,
+    search: searchName,
   })
 
-  const columns = getTeamColumns()
+  // Derive loading and error states
+  const isLoading = contestLoading || teamsLoading
+  const isError = contestError || teamsError
 
-  const teams = teamsResponse?.data || []
-  const pagination = teamsResponse?.additionalData
+  const teams = teamsResponse?.data ?? []
+  const pagination = teamsResponse?.additionalData ?? {}
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEAMS(
-    contest?.name || "Contest"
+    contest?.name ?? t("common.contest")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEAMS(contestId)
 
-  const handleRowClick = (team) => {
-    navigate(`/organizer/contests/${contestId}/teams/${team.teamId}`)
+  if (isLoading) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <LoadingState />
+      </PageContainer>
+    )
+  }
+
+  if (isError) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName="teams" />
+      </PageContainer>
+    )
   }
 
   return (
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={contestLoading}
-      error={contestError}
     >
-      <TableFluent
-        data={teams}
-        columns={columns}
-        loading={teamsLoading}
-        error={teamsError}
-        onRowClick={handleRowClick}
-      />
-
-      {pagination && (
-        <TablePagination pagination={pagination} onPageChange={setPage} />
-      )}
+      <AnimatedSection>
+        <ManageTeams
+          teams={teams}
+          pagination={pagination}
+          setPage={setPage}
+          setSearchName={setSearchName}
+        />
+      </AnimatedSection>
     </PageContainer>
   )
 }

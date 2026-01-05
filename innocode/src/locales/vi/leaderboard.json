@@ -1,0 +1,44 @@
+{
+  "leaderboardTitle": "Bảng xếp hạng",
+  "awardTeamCertificate": "Trao chứng chỉ đội",
+  "issueTeamCertificate": "Cấp chứng chỉ cho toàn bộ đội",
+  "award": "Trao",
+  "points": "điểm",
+  "member": "Thành viên",
+  "awardMemberCertificate": "Trao chứng chỉ thành viên",
+  "issueMemberCertificate": "Cấp chứng chỉ cho thành viên này",
+  "notCompleted": "Chưa hoàn thành",
+  "contest": "Cuộc thi",
+  "team": "Đội",
+  "modal": {
+    "title": "Chọn mẫu chứng chỉ",
+    "cancel": "Hủy",
+    "awarding": "Đang trao...",
+    "award": "Trao",
+    "failedToLoadTemplates": "Không thể tải mẫu",
+    "noTemplates": "Không có mẫu nào cho cuộc thi này.",
+    "untitled": "Mẫu không tên",
+    "success": "Cấp chứng chỉ thành công.",
+    "error": "Không thể cấp chứng chỉ"
+  },
+  "columns": {
+    "rank": "#",
+    "teamName": "Tên đội",
+    "teamScore": "Điểm đội"
+  },
+  "actions": {
+    "freeze": "Tạm dừng",
+    "unfreeze": "Tiếp tục",
+    "frozenSuccess": "Tạm dừng bảng xếp hạng thành công",
+    "unfrozenSuccess": "Bảng xếp hạng tiếp tục thành công",
+    "toggleFreezeError": "Không thể thay đổi trạng thái tạm dừng",
+    "live": "Trực tiếp",
+    "offline": "Ngoại tuyến"
+  },
+  "toolbar": {
+    "download": "Tải xuống",
+    "reportDownloading": "Đang tải báo cáo...",
+    "reportUrlNotFound": "Không tìm thấy URL báo cáo",
+    "downloadError": "Không thể tải báo cáo"
+  }
+}

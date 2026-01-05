@@ -11,8 +11,10 @@ import {
 import useImage from "use-image"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { FileDropzone } from "../../../../shared/components/dropzone/FileDropzone"
+import { useTranslation } from "react-i18next"
 
 export default function TemplatePreview({ formData, setFormData, zoom }) {
+  const { t } = useTranslation(["certificate"])
   const fileInputRef = useRef(null)
   const groupRef = useRef(null)
   const [imageUrl, setImageUrl] = useState(null)
@@ -75,7 +77,7 @@ export default function TemplatePreview({ formData, setFormData, zoom }) {
         <FileDropzone
           selectedFile={formData.file}
           onFileSelected={(file) => setFormData((prev) => ({ ...prev, file }))}
-          label="Drag and drop your template image here, or click to select a file. Supported formats: PNG, JPG, JPEG."
+          label={t("certificate:dropzoneLabel")}
           accept={{ "image/png": [".png"], "image/jpeg": [".jpg", ".jpeg"] }}
           noBorder
         />
@@ -88,7 +90,7 @@ export default function TemplatePreview({ formData, setFormData, zoom }) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-3">
         <Spinner />
-        <p className="text-sm leading-4">Loading image...</p>
+        <p className="text-sm leading-4">{t("certificate:loadingImage")}</p>
       </div>
     )
   }

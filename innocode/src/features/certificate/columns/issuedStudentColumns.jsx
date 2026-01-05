@@ -2,24 +2,24 @@ import React from "react"
 import { formatDateTime } from "../../../shared/utils/dateTime"
 import { EyeIcon } from "lucide-react"
 
-export const getStudentIssuedCertificatesColumns = () => [
+export const getStudentIssuedCertificatesColumns = (t) => [
   {
     accessorKey: "templateName",
-    header: "Template name",
+    header: t("certificate:issued.templateName"),
     size: 320,
     cell: ({ row }) => row.original?.templateName || "—",
     meta: { className: "truncate max-w-[320px]" },
   },
   {
     accessorKey: "studentName",
-    header: "Student name",
+    header: t("certificate:issued.studentName"),
     size: 320,
     cell: ({ row }) => row.original?.studentName || "—",
     meta: { className: "truncate max-w-[320px]" },
   },
   {
     accessorKey: "issuedAt",
-    header: "Issued at",
+    header: t("certificate:issued.issuedAt"),
     size: 180,
     cell: ({ row }) =>
       row.original?.issuedAt ? formatDateTime(row.original.issuedAt) : "—",
@@ -38,7 +38,7 @@ export const getStudentIssuedCertificatesColumns = () => [
             rel="noopener noreferrer"
             className="text-[#E05307] hover:underline"
           >
-            View
+            {t("certificate:issued.view")}
           </a>
         ) : (
           "—"

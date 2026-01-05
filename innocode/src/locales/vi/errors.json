@@ -93,11 +93,12 @@
     "invalidCode": "Mã lời mời không hợp lệ"
   },
   "leaderboard": {
-    "frozen": "Bảng xếp hạng đã bị đóng băng và không thể cập nhật",
+    "frozen": "Bảng xếp hạng đã được tạm dừng và không thể cập nhật",
     "entryNotFound": "Không tìm thấy mục bảng xếp hạng",
     "teamExists": "Đội đã tồn tại trong bảng xếp hạng",
     "teamEliminated": "Đội này đã bị loại và không thể nhận điểm mới",
-    "invalidEliminationRule": "Quy tắc loại trừ không hợp lệ"
+    "invalidEliminationRule": "Quy tắc loại trừ không hợp lệ",
+    "toggleFreezeInvalidStatus": "Không thể thay đổi trạng thái đóng băng. Cuộc thi phải đang diễn ra hoặc tạm dừng"
   },
   "mcq": {
     "testNotFound": "Không tìm thấy bài kiểm tra trắc nghiệm",

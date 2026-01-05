@@ -1,6 +1,8 @@
 import React, { useRef } from "react"
+import { useTranslation } from "react-i18next"
 
 export default function TemplateFileUpload({ formData, setFormData, errors }) {
+  const { t } = useTranslation(["certificate"])
   const fileInputRef = useRef(null)
 
   const handleFileButtonClick = () => {
@@ -17,14 +19,18 @@ export default function TemplateFileUpload({ formData, setFormData, errors }) {
 
   return (
     <div>
-      <label className="block text-xs leading-4 mb-2">Template file</label>
+      <label className="block text-xs leading-4 mb-2">
+        {t("certificate:fileUpload.label")}
+      </label>
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={handleFileButtonClick}
           className="button-orange"
         >
-          {formData.file ? "Change" : "Choose File"}
+          {formData.file
+            ? t("certificate:fileUpload.change")
+            : t("certificate:fileUpload.choose")}
         </button>
 
         {formData.file && (
@@ -34,7 +40,7 @@ export default function TemplateFileUpload({ formData, setFormData, errors }) {
         )}
         {!formData.file && formData.fileUrl && (
           <span className="text-sm leading-5 text-[#7A7574] truncate max-w-[200px]">
-            Current template
+            {t("certificate:fileUpload.current")}
           </span>
         )}
       </div>

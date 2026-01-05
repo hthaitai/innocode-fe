@@ -2,6 +2,7 @@ import { useCallback } from "react"
 import { useDropzone } from "react-dropzone"
 import { Upload } from "lucide-react"
 import toast from "react-hot-toast"
+import { useTranslation } from "react-i18next"
 
 export function FileDropzone({
   onFileSelected,
@@ -12,6 +13,7 @@ export function FileDropzone({
   selectedFile, // new prop
   noBorder = false,
 }) {
+  const { t } = useTranslation(["common"])
   const onDrop = useCallback(
     (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
@@ -34,13 +36,13 @@ export function FileDropzone({
 
       switch (error.code) {
         case "file-invalid-type":
-          toast.error("This file type is not allowed.")
+          toast.error(t("common:dropzone.invalidType"))
           break
         case "file-too-large":
-          toast.error("File is too large.")
+          toast.error(t("common:dropzone.fileTooLarge"))
           break
         case "too-many-files":
-          toast.error("Only one file can be uploaded.")
+          toast.error(t("common:dropzone.tooManyFiles"))
           break
         default:
           toast.error(error.message)
@@ -77,7 +79,7 @@ export function FileDropzone({
           </p>
         ) : (
           <p className="mt-3 text-sm leading-5 text-[#7A7574] text-center">
-            {label || "Drag & drop your file here or click to select"}
+            {label || t("common:dropzone.defaultLabel")}
           </p>
         )}
       </div>

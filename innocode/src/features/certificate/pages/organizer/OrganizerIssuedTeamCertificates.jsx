@@ -12,7 +12,10 @@ import { MissingState } from "@/shared/components/ui/MissingState"
 import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
 import TablePagination from "@/shared/components/TablePagination"
 
+import { useTranslation } from "react-i18next"
+
 const OrganizerIssuedTeamCertificates = () => {
+  const { t } = useTranslation(["certificate"])
   const { contestId } = useParams()
   const [page, setPage] = useState(1)
   const pageSize = 10
@@ -43,7 +46,7 @@ const OrganizerIssuedTeamCertificates = () => {
   const breadcrumbPaths =
     BREADCRUMB_PATHS.ORGANIZER_CERTIFICATE_ISSUED_TEAM(contestId)
 
-  const columns = getTeamIssuedCertificatesColumns()
+  const columns = getTeamIssuedCertificatesColumns(t)
 
   if (contestLoading || issuedLoading) {
     return (

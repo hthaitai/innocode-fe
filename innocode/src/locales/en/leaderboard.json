@@ -1,0 +1,44 @@
+{
+  "leaderboardTitle": "Leaderboard",
+  "awardTeamCertificate": "Award team certificate",
+  "issueTeamCertificate": "Issue a certificate for the entire team",
+  "award": "Award",
+  "points": "points",
+  "member": "Member",
+  "awardMemberCertificate": "Award member certificate",
+  "issueMemberCertificate": "Issue a certificate for this member",
+  "notCompleted": "Not completed",
+  "contest": "Contest",
+  "team": "Team",
+  "modal": {
+    "title": "Choose a certificate template",
+    "cancel": "Cancel",
+    "awarding": "Awarding...",
+    "award": "Award",
+    "failedToLoadTemplates": "Failed to load templates",
+    "noTemplates": "No templates available for this contest.",
+    "untitled": "Untitled Template",
+    "success": "Certificate issued successfully.",
+    "error": "Unable to issue certificate"
+  },
+  "columns": {
+    "rank": "#",
+    "teamName": "Team name",
+    "teamScore": "Team score"
+  },
+  "actions": {
+    "freeze": "Freeze",
+    "unfreeze": "Unfreeze",
+    "frozenSuccess": "Leaderboard frozen successfully",
+    "unfrozenSuccess": "Leaderboard unfrozen successfully",
+    "toggleFreezeError": "Failed to toggle freeze",
+    "live": "Live",
+    "offline": "Offline"
+  },
+  "toolbar": {
+    "download": "Download",
+    "reportDownloading": "Report downloading...",
+    "reportUrlNotFound": "Report URL not found",
+    "downloadError": "Failed to download report"
+  }
+}

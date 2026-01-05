@@ -1,8 +1,10 @@
+import { useTranslation } from "react-i18next"
 import TableFluentScrollable from "@/shared/components/table/TableFluentScrollable"
 import { getMatchedSubmissionsColumns } from "../../columns/getMatchedSubmissionsColumns"
 
 const MatchedSubmissions = ({ matches }) => {
-  const columns = getMatchedSubmissionsColumns()
+  const { t } = useTranslation(["plagiarism"])
+  const columns = getMatchedSubmissionsColumns(t)
 
   return (
     <div>
@@ -17,4 +19,3 @@ const MatchedSubmissions = ({ matches }) => {
 }
 
 export default MatchedSubmissions
-

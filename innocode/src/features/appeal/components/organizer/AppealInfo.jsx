@@ -6,52 +6,52 @@ import { formatDateTime } from "@/shared/utils/dateTime"
 import StatusBadge from "@/shared/components/StatusBadge"
 
 const AppealInfo = ({ appeal }) => {
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["appeal"])
   const safe = (val) =>
     val === null || val === undefined || val === "" ? "—" : val
 
   const data = [
     // Appeal specifics
-    { label: t("appeal.status"), value: <StatusBadge status={appeal.state} /> },
-    { label: t("appeal.studentName"), value: safe(appeal.ownerName) },
-    { label: t("appeal.studentReason"), value: safe(appeal.reason) },
+    { label: t("appeal:status"), value: <StatusBadge status={appeal.state} /> },
+    { label: t("appeal:student"), value: safe(appeal.ownerName) },
+    { label: t("appeal:reason"), value: safe(appeal.reason) },
     { spacer: true },
 
     // Decision info
-    { label: t("appeal.mentorName"), value: safe(appeal.mentorName) },
-    { label: t("appeal.mentorDecision"), value: safe(appeal.decision) },
-    { label: t("appeal.mentorReason"), value: safe(appeal.decisionReason) },
+    { label: t("appeal:mentor"), value: safe(appeal.mentorName) },
+    { label: t("appeal:decision"), value: safe(appeal.decision) },
+    { label: t("appeal:mentorReason"), value: safe(appeal.decisionReason) },
     {
-      label: t("appeal.appealResolution"),
+      label: t("appeal:resolution"),
       value: safe(appeal.appealResolution),
     },
     { spacer: true },
 
     // Identifiers / Context
-    { label: t("appeal.teamName"), value: safe(appeal.teamName) },
-    { label: t("appeal.contestName"), value: safe(appeal.contestName) },
-    { label: t("appeal.roundName"), value: safe(appeal.roundName) },
-    { label: t("appeal.problemType"), value: safe(appeal.targetType) },
+    { label: t("appeal:team"), value: safe(appeal.teamName) },
+    { label: t("appeal:contest"), value: safe(appeal.contestName) },
+    { label: t("appeal:round"), value: safe(appeal.roundName) },
+    { label: t("appeal:type"), value: safe(appeal.targetType) },
     { spacer: true },
 
     // Miscellaneous
     {
-      label: t("appeal.created"),
+      label: t("appeal:createdAt"),
       value: safe(formatDateTime(appeal.createdAt)),
     },
     {
-      label: t("appeal.evidences"),
+      label: t("appeal:evidences"),
       value: appeal.evidences?.length
         ? `${appeal.evidences.length} ${
-            appeal.evidences.length > 1 ? t("appeal.files") : t("appeal.file")
+            appeal.evidences.length > 1 ? t("appeal:files") : t("appeal:file")
           }`
         : "—",
     },
   ]
 
   return (
-    <InfoSection title={t("appeal.appealInformation")}>
-      <DetailTable data={data} labelWidth="134px" />
+    <InfoSection title={t("appealInfo")}>
+      <DetailTable data={data} labelWidth="154px" />
     </InfoSection>
   )
 }

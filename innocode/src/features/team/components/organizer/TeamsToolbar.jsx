@@ -1,35 +1,33 @@
 import React, { useState } from "react"
-import { useTranslation } from "react-i18next"
 import { Search, X } from "lucide-react"
-import TextFieldFluent from "@/shared/components/TextFieldFluent"
+import TextFieldFluent from "../../../../shared/components/TextFieldFluent"
+import { useTranslation } from "react-i18next"
 
-const PlagiarismToolbar = ({ onSearch }) => {
-  const { t } = useTranslation(["plagiarism"])
+const TeamsToolbar = ({ onSearch }) => {
   const [search, setSearch] = useState("")
+  const { t } = useTranslation("common")
 
   const handleSearchKeyDown = (e) => {
     if (e.key === "Enter") {
-      onSearch?.({
-        studentName: search,
-        teamName: search,
-      })
+      if (onSearch) onSearch(search)
     }
   }
 
   const handleClearSearch = () => {
     setSearch("")
-    onSearch?.({
-      studentName: "",
-      teamName: "",
-    })
+    if (onSearch) onSearch("")
   }
+
+  // Note: Add Team button is omitted for now as it wasn't in the original page
+  // logic, but the structure is here if needed.
 
   return (
     <div className="flex justify-between items-center mb-3">
+      {/* Left section: search */}
       <div className="flex items-center space-x-2">
         <div className="w-[280px]">
           <TextFieldFluent
-            placeholder={t("searchPlaceholder")}
+            placeholder={t("common.search")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleSearchKeyDown}
@@ -52,4 +50,4 @@ const PlagiarismToolbar = ({ onSearch }) => {
   )
 }
 
-export default PlagiarismToolbar
+export default TeamsToolbar

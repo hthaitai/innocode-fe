@@ -1,8 +1,10 @@
 import React from "react"
 import { useNavigate } from "react-router-dom"
 import { Plus } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 const CertificateTemplatesToolbar = ({ contestId }) => {
+  const { t } = useTranslation(["certificate"])
   const navigate = useNavigate()
 
   return (
@@ -15,7 +17,7 @@ const CertificateTemplatesToolbar = ({ contestId }) => {
         }
         className="button-orange"
       >
-        <span>Add template</span>
+        <span>{t("certificate:addTemplate")}</span>
       </button>
     </div>
   )

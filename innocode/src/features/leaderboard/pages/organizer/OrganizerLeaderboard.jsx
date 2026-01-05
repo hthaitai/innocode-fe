@@ -24,7 +24,7 @@ import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 
 const OrganizerLeaderboard = () => {
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["leaderboard", "pages"])
   const { contestId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
@@ -97,7 +97,7 @@ const OrganizerLeaderboard = () => {
 
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
-              {t("leaderboard.leaderboardTitle")}
+              {t("leaderboard:leaderboardTitle")}
             </div>
             <ManageLeaderboard
               contestId={contestId}

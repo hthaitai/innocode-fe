@@ -1,8 +1,10 @@
 import React from "react"
+import { useTranslation } from "react-i18next"
 import { Scale } from "lucide-react"
 import { useModal } from "@/shared/hooks/useModal"
 
 const AppealActions = ({ appeal }) => {
+  const { t } = useTranslation(["appeal"])
   const { openModal } = useModal()
 
   const handleReviewModal = () => {
@@ -14,15 +16,15 @@ const AppealActions = ({ appeal }) => {
       <div className="flex items-center gap-5">
         <Scale size={20} />
         <div className="flex flex-col justify-center">
-          <p className="text-[14px] leading-[20px]">Review appeal</p>
+          <p className="text-[14px] leading-[20px]">{t("reviewAppealTitle")}</p>
           <p className="text-[12px] leading-[16px] text-[#7A7574]">
-            Open a modal to approve or reject this appeal and provide a reason
+            {t("reviewAppealDescription")}
           </p>
         </div>
       </div>
 
       <button className="button-orange" onClick={handleReviewModal}>
-        Review
+        {t("review")}
       </button>
     </div>
   )

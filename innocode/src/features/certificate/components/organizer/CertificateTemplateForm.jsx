@@ -5,6 +5,7 @@ import TemplateFileUpload from "./TemplateFileUpload"
 import TextOverlaySettings from "./TextOverlaySettings"
 import { ArrowLeft, ZoomIn, ZoomOut } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 export default function CertificateTemplateForm({
   formData,
@@ -15,6 +16,7 @@ export default function CertificateTemplateForm({
   mode = "create",
   hasChanges = true,
 }) {
+  const { t } = useTranslation(["certificate"])
   const { contestId } = useParams()
   const navigate = useNavigate()
   const [zoom, setZoom] = useState(1)
@@ -36,7 +38,7 @@ export default function CertificateTemplateForm({
           >
             <ArrowLeft size={16} />
           </button>
-          <span className="text-sm">Back to templates</span>
+          <span className="text-sm">{t("certificate:backToTemplates")}</span>
         </div>
 
         {/* Preview fills remaining space */}
@@ -103,17 +105,17 @@ export default function CertificateTemplateForm({
               )}
               {submitting
                 ? mode === "edit"
-                  ? "Updating..."
-                  : "Creating..."
+                  ? t("certificate:updating")
+                  : t("certificate:creating")
                 : mode === "edit"
-                ? "Update"
-                : "Create"}
+                ? t("certificate:update")
+                : t("certificate:create")}
             </button>
           </div>
 
           <div className="space-y-3 border-t border-[#E5E5E5] p-5">
             <TextFieldFluent
-              label="Template name"
+              label={t("certificate:templateName")}
               name="name"
               value={formData.name || ""}
               onChange={(e) =>

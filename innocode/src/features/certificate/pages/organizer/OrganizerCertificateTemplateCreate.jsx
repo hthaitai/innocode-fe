@@ -9,6 +9,7 @@ import { useUploadCertificateTemplateMutation } from "../../../../services/certi
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { validateTemplate } from "../../validators/templateValidator"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { useTranslation } from "react-i18next"
 
 const EMPTY_TEMPLATE = {
   name: "",
@@ -26,6 +27,7 @@ const EMPTY_TEMPLATE = {
 }
 
 export default function OrganizerCertificateTemplateCreate() {
+  const { t } = useTranslation(["certificate"])
   const { contestId } = useParams()
   const navigate = useNavigate()
 
@@ -47,7 +49,6 @@ export default function OrganizerCertificateTemplateCreate() {
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
-      toast.error("Please fix form errors.")
       return
     }
 
@@ -78,11 +79,11 @@ export default function OrganizerCertificateTemplateCreate() {
 
       await uploadTemplate(payload).unwrap()
 
-      toast.success("Certificate template created successfully!")
+      toast.success(t("certificate:createSuccess"))
       navigate(`/organizer/contests/${contestId}/certificates/templates`)
     } catch (err) {
       console.error(err)
-      toast.error("Something went wrong.")
+      toast.error(t("certificate:somethingWrong"))
     } finally {
       setSubmitting(false)
     }
@@ -92,7 +93,7 @@ export default function OrganizerCertificateTemplateCreate() {
     return (
       <div className="h-screen flex items-center justify-center flex-col gap-3">
         <Spinner />
-        <p className="text-sm leading-5">Loading...</p>
+        <p className="text-sm leading-5">{t("certificate:loading")}</p>
       </div>
     )
 
@@ -100,10 +101,10 @@ export default function OrganizerCertificateTemplateCreate() {
     return (
       <div className="h-screen flex flex-col items-center justify-center gap-3">
         <p className="text-red-500 text-sm leading-5">
-          Error: Contest not found or failed to load.
+          {t("certificate:errorContestNotFound")}
         </p>
         <button onClick={() => navigate("/")} className="button-orange">
-          Back to Home
+          {t("certificate:backToHome")}
         </button>
       </div>
     )

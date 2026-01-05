@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import TableFluent from "@/shared/components/TableFluent"
 import TablePagination from "@/shared/components/TablePagination"
 import { getPlagiarismColumns } from "../../columns/getPlagiarismColumns"
@@ -12,6 +13,7 @@ export default function ManagePlagiarism({
   setTeamNameSearch,
   setStudentNameSearch,
 }) {
+  const { t } = useTranslation(["plagiarism"])
   const navigate = useNavigate()
 
   const handleSearch = ({ studentName, teamName }) => {
@@ -24,7 +26,7 @@ export default function ManagePlagiarism({
     navigate(`/organizer/contests/${contestId}/plagiarism/${item.submissionId}`)
   }
 
-  const columns = getPlagiarismColumns()
+  const columns = getPlagiarismColumns(t)
 
   return (
     <>

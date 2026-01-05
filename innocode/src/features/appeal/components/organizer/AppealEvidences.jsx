@@ -1,7 +1,10 @@
+import { useTranslation } from "react-i18next"
 import { FileText } from "lucide-react"
 import { formatDateTime } from "@/shared/utils/dateTime"
 
 export default function AppealEvidences({ evidences }) {
+  const { t } = useTranslation(["appeal"])
+
   return (
     <div className="flex flex-col gap-1">
       {evidences?.length ? (
@@ -26,13 +29,13 @@ export default function AppealEvidences({ evidences }) {
                 window.open(evidence.url, "_blank", "noopener,noreferrer")
               }
             >
-              Download
+              {t("download")}
             </button>
           </div>
         ))
       ) : (
         <p className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          No evidences uploaded
+          {t("noEvidences")}
         </p>
       )}
     </div>

@@ -1,22 +1,22 @@
 import { formatDateTime } from "@/shared/utils/dateTime"
 
-export const getTestCaseDetailColumns = () => [
+export const getTestCaseDetailColumns = (t) => [
   {
     accessorKey: "weight",
-    header: "Weight",
+    header: t("plagiarism:weight"),
     size: 100,
     cell: ({ row }) => row.original.weight || "—",
   },
   {
     accessorKey: "note",
-    header: "Note",
+    header: t("plagiarism:note"),
     size: 200,
     cell: ({ row }) => row.original.note || "—",
     meta: { className: "truncate max-w-[200px]" },
   },
   {
     accessorKey: "runtimeMs",
-    header: "Runtime",
+    header: t("plagiarism:runtime"),
     size: 120,
     cell: ({ row }) => {
       const runtime = row.original.runtimeMs
@@ -25,7 +25,7 @@ export const getTestCaseDetailColumns = () => [
   },
   {
     accessorKey: "memoryKb",
-    header: "Memory",
+    header: t("plagiarism:memory"),
     size: 120,
     cell: ({ row }) => {
       const memory = row.original.memoryKb
@@ -34,10 +34,9 @@ export const getTestCaseDetailColumns = () => [
   },
   {
     accessorKey: "createdAt",
-    header: "Created at",
+    header: t("plagiarism:createdAt"),
     size: 180,
     cell: ({ row }) => formatDateTime(row.original.createdAt),
     meta: { className: "truncate max-w-[150px]" },
   },
 ]
-

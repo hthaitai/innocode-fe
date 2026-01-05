@@ -39,6 +39,7 @@
     "schoolmanager": "School Manager"
   },
   "common": {
+    "contest": "Contest",
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
@@ -152,7 +153,9 @@
       "attempts": " attempts",
       "correct": " correct",
       "point": " point",
-      "points": " points"
+      "points": " points",
+      "member": " member",
+      "members": " members"
     },
     "totalPoints": "Total points",
     "addCriteria": "Add criteria",
@@ -375,5 +378,46 @@
     "failedToSendInvitation": "Failed to send invitation",
     "registrationWindowClosed": "Registration window is closed. You cannot invite members at this time.",
     "studentAlreadyInvited": "{{studentName}} has already been invited or is already a member of this team."
+  },
+  "teams": {
+    "noAvailable": "This team has been deleted or is no longer available.",
+    "memberRole": "Role",
+    "memberEmail": "Email",
+    "joinedAt": "Joined",
+    "noMembers": "No members in this team.",
+    "memberList": "Members",
+    "coach": "Coach",
+    "memberCount": "Member Count",
+    "teamInfo": "Team Information",
+    "teamName": "Team Name",
+    "table": {
+      "team": "Team",
+      "school": "School",
+      "mentor": "Mentor",
+      "created": "Created",
+      "members": "Members"
+    },
+    "roles": {
+      "Leader": "Leader",
+      "Member": "Member"
+    }
+  },
+  "organizerContests": {
+    "table": {
+      "name": "Contest name",
+      "createdAt": "Created at"
+    }
+  },
+  "schools": {
+    "schoolName": "School Name"
+  },
+  "appeal": {
+    "mentorName": "Mentor Name"
+  },
+  "dropzone": {
+    "invalidType": "This file type is not allowed.",
+    "fileTooLarge": "File is too large.",
+    "tooManyFiles": "Only one file can be uploaded.",
+    "defaultLabel": "Drag & drop your file here or click to select"
   }
 }

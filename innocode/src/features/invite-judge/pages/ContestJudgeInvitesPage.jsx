@@ -12,7 +12,7 @@ const ContestJudgeInvitesPage = () => {
   const { contestId } = useParams()
   const [page, setPage] = useState(1)
   const pageSize = 20
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["judge", "pages"])
 
   const { data: contest, isLoading: isContestLoading } =
     useGetContestByIdQuery(contestId)
@@ -32,7 +32,7 @@ const ContestJudgeInvitesPage = () => {
   const breadcrumbPaths =
     BREADCRUMB_PATHS.ORGANIZER_CONTEST_JUDGE_INVITES(contestId)
 
-  const columns = getJudgeInviteColumns()
+  const columns = getJudgeInviteColumns(t)
 
   return (
     <PageContainer
@@ -49,7 +49,7 @@ const ContestJudgeInvitesPage = () => {
           pagination={pagination}
           renderActions={() => (
             <div className="text-sm leading-5 font-semibold px-5 flex items-center min-h-[70px]">
-              {t("judge.invitationList")}
+              {t("invitationList")}
             </div>
           )}
         />

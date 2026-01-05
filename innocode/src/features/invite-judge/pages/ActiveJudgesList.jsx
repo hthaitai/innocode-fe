@@ -11,7 +11,10 @@ import { ErrorState } from "@/shared/components/ui/ErrorState"
 import { MissingState } from "@/shared/components/ui/MissingState"
 import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
 
+import { useTranslation } from "react-i18next"
+
 const ActiveJudgesList = () => {
+  const { t } = useTranslation("judge")
   const { contestId } = useParams()
 
   const {
@@ -73,10 +76,10 @@ const ActiveJudgesList = () => {
       breadcrumbPaths={breadcrumbPaths}
     >
       <AnimatedSection>
-        <div className="space-y-3">
+        <div className="space-y-1">
           {judges.length === 0 ? (
             <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-              No judges have been assigned to this contest.
+              {t("activeJudges.noJudgesAssigned")}
             </div>
           ) : (
             judges.map((judge) => (
@@ -88,15 +91,22 @@ const ActiveJudgesList = () => {
                   <User size={20} />
                   <div>
                     <p className="text-[14px] leading-5">
-                      {judge.fullName || "Unnamed Judge"}
+                      {judge.fullName || t("activeJudges.unnamed")}
                     </p>
                     <p className="text-[12px] leading-4 text-[#7A7574]">
-                      {judge.email || "Email not provided"}
+                      {judge.email || t("activeJudges.noEmail")}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <StatusBadge status={judge.status || "Pending"} />
+                  <StatusBadge
+                    status={judge.status || "Pending"}
+                    label={
+                      judge.status
+                        ? t(`status.${judge.status.toLowerCase()}`)
+                        : t("status.pending")
+                    }
+                  />
                 </div>
               </div>
             ))

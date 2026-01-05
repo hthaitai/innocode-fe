@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import BaseModal from "@/shared/components/BaseModal"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { useReviewAppealMutation } from "../../../../services/appealApi"
 import DropdownFluent from "@/shared/components/DropdownFluent"
-import { Check, X } from "lucide-react"
 import Label from "../../../../shared/components/form/Label"
 
 export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
+  const { t } = useTranslation(["appeal"])
   const [decision, setDecision] = useState("Approved")
   const [decisionReason, setDecisionReason] = useState("")
   const [error, setError] = useState("")
@@ -25,7 +26,7 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
 
   const handleSubmit = async () => {
     if (!decisionReason.trim()) {
-      setError("Please provide a reason for your decision.")
+      setError(t("errorReasonRequired"))
       return
     }
 
@@ -42,7 +43,7 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
         err?.data?.message ||
         err?.data?.Message ||
         err?.error ||
-        "Failed to review appeal"
+        t("errorReviewFailed")
       setError(errorMessage)
     }
   }
@@ -50,7 +51,7 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
   const footer = (
     <div className="flex justify-end gap-2">
       <button type="button" className="button-white" onClick={onClose}>
-        Cancel
+        {t("cancel")}
       </button>
       <button
         type="button"
@@ -58,39 +59,39 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
         onClick={handleSubmit}
         disabled={isLoading}
       >
-        {isLoading ? "Submitting..." : "Submit Review"}
+        {isLoading ? t("submitting") : t("submitReview")}
       </button>
     </div>
   )
 
   const decisionOptions = [
-    { label: "Approved", value: "Approved" },
-    { label: "Rejected", value: "Rejected" },
+    { label: t("approved"), value: "Approved" },
+    { label: t("rejected"), value: "Rejected" },
   ]
 
   return (
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Review Appeal: ${appeal.teamName}`}
+      title={t("reviewAppealWithTeam", { teamName: appeal.teamName })}
       size="md"
       footer={footer}
     >
       <div className="flex flex-col gap-5 text-sm leading-5">
         {/* Decision dropdown */}
         <div className="flex flex-col gap-2">
-          <Label>Decision</Label>
+          <Label>{t("decision")}</Label>
           <DropdownFluent
             options={decisionOptions}
             value={decision}
             onChange={setDecision}
-            placeholder="Select decision"
+            placeholder={t("selectDecision")}
           />
         </div>
 
         {/* Decision reason input */}
         <div className="flex flex-col gap-2">
-          <Label required>Decision reason</Label>
+          <Label required>{t("mentorReason")}</Label>
           <TextFieldFluent
             name="decisionReason"
             value={decisionReason}
@@ -100,7 +101,7 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
             }}
             error={!!error}
             helperText={error}
-            placeholder="Provide reason for your decision"
+            placeholder={t("decisionReasonPlaceholder")}
             multiline
           />
         </div>

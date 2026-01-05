@@ -67,7 +67,7 @@ export const translateBreadcrumb = (breadcrumbArray, language = "en") => {
     "New contest": { vi: "Cuộc thi mới", en: "New contest" },
     "Edit contest": { vi: "Chỉnh sửa cuộc thi", en: "Edit contest" },
     Judges: { vi: "Ban giám khảo", en: "Judges" },
-    "Active Judges": { vi: "Giám khảo hoạt động", en: "Active Judges" },
+    "Active Judges": { vi: "Giám khảo đang hoạt động", en: "Active Judges" },
     "Judge Invites": { vi: "Lời mời giám khảo", en: "Judge Invites" },
     "New round": { vi: "Vòng thi mới", en: "New round" },
     "Edit round": { vi: "Chỉnh sửa vòng thi", en: "Edit round" },

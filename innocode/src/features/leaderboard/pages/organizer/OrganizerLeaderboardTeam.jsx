@@ -16,7 +16,7 @@ import { ErrorState } from "@/shared/components/ui/ErrorState"
 import { formatScore } from "@/shared/utils/formatNumber"
 
 const OrganizerLeaderboardTeam = () => {
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["leaderboard", "pages"])
   const { contestId, teamId } = useParams()
   const { openModal } = useModal()
 
@@ -32,8 +32,9 @@ const OrganizerLeaderboardTeam = () => {
   const team = leaderboardData?.data?.teamIdList?.find(
     (t) => t.teamId === teamId
   )
-  const contestName = leaderboardData?.data?.contestName ?? t("pages.contest.contest")
-  const teamName = team?.teamName ?? t("pages.contest.team")
+  const contestName =
+    leaderboardData?.data?.contestName ?? t("leaderboard:contest")
+  const teamName = team?.teamName ?? t("leaderboard:team")
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD_DETAIL(
     contestName ?? "Contest",
@@ -109,10 +110,10 @@ const OrganizerLeaderboardTeam = () => {
                   <Award size={20} />
                   <div>
                     <p className="text-[14px] leading-5">
-                      {t("leaderboard.awardTeamCertificate")}
+                      {t("leaderboard:awardTeamCertificate")}
                     </p>
                     <p className="text-[12px] leading-4 text-[#7A7574]">
-                      {t("leaderboard.issueTeamCertificate")}
+                      {t("leaderboard:issueTeamCertificate")}
                     </p>
                   </div>
                 </div>
@@ -123,7 +124,7 @@ const OrganizerLeaderboardTeam = () => {
                   className="button-orange px-3"
                   onClick={handleAwardTeam}
                 >
-                  {t("leaderboard.award")}
+                  {t("leaderboard:award")}
                 </button>
               </div>
             </div>
@@ -146,18 +147,19 @@ const OrganizerLeaderboardTeam = () => {
                       </div>
                     </div>
 
-                  <div className="flex items-center gap-5">
-                    <p className="text-[14px] leading-5 text-[#7A7574]">
-                      {formatScore(member.totalScore)} {t("leaderboard.points")}
-                    </p>
-                    <ChevronRight size={20} className="text-[#7A7574]" />
+                    <div className="flex items-center gap-5">
+                      <p className="text-[14px] leading-5 text-[#7A7574]">
+                        {formatScore(member.totalScore)}{" "}
+                        {t("leaderboard:points")}
+                      </p>
+                      <ChevronRight size={20} className="text-[#7A7574]" />
+                    </div>
                   </div>
-                </div>
-              </Link>
-            </div>
-          ))}
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
       </AnimatedSection>
     </PageContainer>
   )

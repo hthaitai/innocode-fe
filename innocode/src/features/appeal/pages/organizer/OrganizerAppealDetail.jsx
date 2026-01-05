@@ -19,7 +19,10 @@ import { MissingState } from "../../../../shared/components/ui/MissingState"
 import AppealEvidences from "../../components/organizer/AppealEvidences"
 import AppealActions from "../../components/organizer/AppealActions"
 
+import { useTranslation } from "react-i18next"
+
 const OrganizerAppealDetail = () => {
+  const { t } = useTranslation(["appeal"])
   const { contestId, appealId } = useParams()
   const { openModal } = useModal()
 
@@ -65,7 +68,7 @@ const OrganizerAppealDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="appeal details" />
+        <ErrorState itemName={t("appeal:appealInfo")} />
       </PageContainer>
     )
   }
@@ -76,7 +79,7 @@ const OrganizerAppealDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="appeal" />
+        <MissingState itemName={t("appeal:missingAppeal")} />
       </PageContainer>
     )
   }
@@ -93,13 +96,17 @@ const OrganizerAppealDetail = () => {
 
           {/* Evidences */}
           <div>
-            <div className="text-sm font-semibold pt-3 pb-2">Evidences</div>
+            <div className="text-sm font-semibold pt-3 pb-2">
+              {t("appeal:evidences")}
+            </div>
             <AppealEvidences evidences={evidences} />
           </div>
 
           {/* Actions */}
           <div>
-            <div className="text-sm font-semibold pt-3 pb-2">Actions</div>
+            <div className="text-sm font-semibold pt-3 pb-2">
+              {t("appeal:actions")}
+            </div>
             <AppealActions appeal={appeal} />
           </div>
         </div>

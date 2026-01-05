@@ -210,7 +210,7 @@
     "round": "Vòng thi:",
     "team": "Đội:",
     "type": "Loại:",
-    "created": "Tạo lúc:",
+    "created": "Tạo lúc",
     "decision": "Quyết định",
     "yourReason": "Lý do của bạn:",
     "noContestProvided": "Không có thông tin cuộc thi",
@@ -486,7 +486,7 @@
         "subtitle": "Mời và quản lý giám khảo"
       },
       "activeJudges": {
-        "title": "Giám khảo hoạt động",
+        "title": "Giám khảo đang hoạt động",
         "subtitle": "Giám khảo hiện đang được phân công"
       },
       "leaderboard": {
@@ -650,7 +650,7 @@
     "judges": "Ban giám khảo",
     "judgeInvitations": "Lời mời giám khảo",
     "inviteJudge": "Mời giám khảo",
-    "activeJudges": "Giám khảo hoạt động",
+    "activeJudges": "Giám khảo đang hoạt động",
     "invitationList": "Danh sách lời mời",
     "invitationSent": "Gửi lời mời thành công",
     "failedToSendInvitation": "Không thể gửi lời mời",

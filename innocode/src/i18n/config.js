@@ -20,6 +20,17 @@ import enBreadcrumbs from "../locales/en/breadcrumbs.json"
 import viBreadcrumbs from "../locales/vi/breadcrumbs.json"
 import enRound from "../locales/en/round.json"
 import viRound from "../locales/vi/round.json"
+import enJudge from "../locales/en/judge.json"
+import viJudge from "../locales/vi/judge.json"
+import enLeaderboard from "../locales/en/leaderboard.json"
+import viLeaderboard from "../locales/vi/leaderboard.json"
+import enCertificate from "../locales/en/certificate.json"
+import viCertificate from "../locales/vi/certificate.json"
+
+import enAppeal from "../locales/en/appeal.json"
+import viAppeal from "../locales/vi/appeal.json"
+import enPlagiarism from "../locales/en/plagiarism.json"
+import viPlagiarism from "../locales/vi/plagiarism.json"
 
 i18n
   .use(LanguageDetector) // Tự động detect ngôn ngữ từ browser
@@ -34,9 +45,13 @@ i18n
         errors: enErrors,
         about: enAbout,
         pages: enPages,
-        pages: enPages,
         breadcrumbs: enBreadcrumbs,
         round: enRound,
+        judge: enJudge,
+        leaderboard: enLeaderboard,
+        certificate: enCertificate,
+        appeal: enAppeal,
+        plagiarism: enPlagiarism,
       },
       vi: {
         common: viCommon,
@@ -46,9 +61,13 @@ i18n
         errors: viErrors,
         about: viAbout,
         pages: viPages,
-        pages: viPages,
         breadcrumbs: viBreadcrumbs,
         round: viRound,
+        judge: viJudge,
+        leaderboard: viLeaderboard,
+        certificate: viCertificate,
+        appeal: viAppeal,
+        plagiarism: viPlagiarism,
       },
     },
     fallbackLng: "en",

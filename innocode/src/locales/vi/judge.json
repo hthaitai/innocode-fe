@@ -1,0 +1,36 @@
+{
+  "invitationList": "Danh sách lời mời",
+  "table": {
+    "name": "Tên giám khảo",
+    "email": "Email giám khảo",
+    "status": "Trạng thái",
+    "ttlDays": "TTL (ngày)",
+    "createdAt": "Ngày tạo",
+    "acceptedAt": "Ngày chấp nhận",
+    "invitedAt": "Ngày mời",
+    "expiresAt": "Ngày hết hạn",
+    "notInvited": "Chưa mời",
+    "noExpiration": "Không hết hạn",
+    "actions": {
+      "invite": "Mời",
+      "resend": "Gửi lại",
+      "revoke": "Thu hồi"
+    }
+  },
+  "activeJudges": {
+    "noJudgesAssigned": "Chưa có giám khảo nào được phân công cho cuộc thi này.",
+    "unnamed": "Giám khảo chưa có tên",
+    "noEmail": "Không có email"
+  },
+  "status": {
+    "pending": "Đang chờ",
+    "accepted": "Đã chấp nhận",
+    "active": "Hoạt động",
+    "invited": "Đã mời",
+    "revoked": "Đã thu hồi",
+    "expired": "Đã hết hạn",
+    "declined": "Đã từ chối",
+    "pendinginvite": "Chờ mời",
+    "cancelled": "Đã hủy"
+  }
+}

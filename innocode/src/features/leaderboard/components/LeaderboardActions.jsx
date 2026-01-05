@@ -4,8 +4,10 @@ import { toast } from "react-hot-toast"
 import ToggleSwitchFluent from "@/shared/components/ToggleSwitchFluent"
 import { useToggleFreezeLeaderboardMutation } from "@/services/leaderboardApi"
 import { useLiveLeaderboard } from "../hooks/useLiveLeaderboard"
+import { useTranslation } from "react-i18next"
 
 const LeaderboardActions = ({ contestId, refetchLeaderboard }) => {
+  const { t } = useTranslation(["leaderboard", "errors"])
   const [isFrozen, setIsFrozen] = useState(false)
 
   const [toggleFreeze] = useToggleFreezeLeaderboardMutation()
@@ -19,13 +21,22 @@ const LeaderboardActions = ({ contestId, refetchLeaderboard }) => {
         response?.message ??
           response?.data?.message ??
           (newState
-            ? "Leaderboard frozen successfully"
-            : "Leaderboard unfrozen successfully")
+            ? t("leaderboard:actions.frozenSuccess")
+            : t("leaderboard:actions.unfrozenSuccess"))
       )
     } catch (error) {
       console.error(error)
       setIsFrozen(!newState)
-      toast.error(error?.data?.errorMessage || "Failed to toggle freeze")
+
+      // Check for specific error message regarding contest status
+      if (error?.data?.errorMessage?.includes("Cannot toggle freeze status")) {
+        toast.error(t("errors:leaderboard.toggleFreezeInvalidStatus"))
+        return
+      }
+
+      toast.error(
+        error?.data?.errorMessage || t("leaderboard:actions.toggleFreezeError")
+      )
     }
   }
 
@@ -56,12 +67,16 @@ const LeaderboardActions = ({ contestId, refetchLeaderboard }) => {
             {isConnected ? (
               <div className="flex items-center gap-1 text-green-600">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs font-medium">Live</span>
+                <span className="text-xs font-medium">
+                  {t("leaderboard:actions.live")}
+                </span>
               </div>
             ) : (
               <div className="flex items-center gap-1 text-gray-400">
                 <WifiOff size={14} />
-                <span className="text-xs">Offline</span>
+                <span className="text-xs">
+                  {t("leaderboard:actions.offline")}
+                </span>
               </div>
             )}
           </div>
@@ -71,8 +86,8 @@ const LeaderboardActions = ({ contestId, refetchLeaderboard }) => {
       <ToggleSwitchFluent
         enabled={isFrozen}
         onChange={handleFreezeToggle}
-        labelLeft="Freeze"
-        labelRight="Unfreeze"
+        labelLeft={t("leaderboard:actions.freeze")}
+        labelRight={t("leaderboard:actions.unfreeze")}
         labelPosition="left"
       />
     </div>

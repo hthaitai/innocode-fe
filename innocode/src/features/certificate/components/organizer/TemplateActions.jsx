@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react"
 import { MoreHorizontal, Edit, Trash2 } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
+import { useTranslation } from "react-i18next"
 
 const TemplateActions = ({ template, onEdit, onDelete }) => {
+  const { t } = useTranslation(["certificate"])
   const [open, setOpen] = useState(false)
   const containerRef = useRef(null)
 
@@ -70,7 +72,7 @@ const TemplateActions = ({ template, onEdit, onDelete }) => {
               className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm rounded-[5px] transition-colors hover:bg-[#F0F0F0] cursor-pointer active:bg-[#F3F3F3]"
             >
               <Edit className="w-4 h-4" />
-              Edit
+              {t("certificate:edit")}
             </button>
 
             <button
@@ -81,7 +83,7 @@ const TemplateActions = ({ template, onEdit, onDelete }) => {
               className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-sm rounded-[5px] transition-colors hover:bg-[#F0F0F0] cursor-pointer active:bg-[#F3F3F3] text-red-500"
             >
               <Trash2 className="w-4 h-4" />
-              Delete
+              {t("certificate:delete")}
             </button>
           </motion.div>
         )}

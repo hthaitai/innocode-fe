@@ -9,8 +9,10 @@ import {
 } from "../../../../services/certificateApi"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { validateTemplate } from "../../validators/templateValidator"
+import { useTranslation } from "react-i18next"
 
 export default function OrganizerCertificateTemplateEdit() {
+  const { t } = useTranslation(["certificate"])
   const { contestId, templateId } = useParams()
   const navigate = useNavigate()
 
@@ -84,7 +86,7 @@ export default function OrganizerCertificateTemplateEdit() {
 
     // Check if there are any changes
     if (!hasChanges()) {
-      toast.error("No changes detected.")
+      toast.error(t("certificate:noChanges"))
       return
     }
 
@@ -92,7 +94,7 @@ export default function OrganizerCertificateTemplateEdit() {
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
-      toast.error("Please fix form errors.")
+      toast.error(t("certificate:fixErrors"))
       return
     }
 
@@ -123,11 +125,11 @@ export default function OrganizerCertificateTemplateEdit() {
 
       await editTemplate({ id: templateId, body: payload }).unwrap()
 
-      toast.success("Certificate template updated successfully!")
+      toast.success(t("certificate:updateSuccess"))
       navigate(`/organizer/contests/${contestId}/certificates/templates`)
     } catch (err) {
       console.error(err)
-      toast.error(err?.data?.message || "Something went wrong.")
+      toast.error(err?.data?.message || t("certificate:somethingWrong"))
     } finally {
       setSubmitting(false)
     }
@@ -136,21 +138,21 @@ export default function OrganizerCertificateTemplateEdit() {
   if (contestLoading || templateLoading)
     return (
       <div className="h-screen flex items-center justify-center">
-        Loading...
+        {t("certificate:loading")}
       </div>
     )
 
   if (contestError || templateError)
     return (
       <div className="h-screen flex items-center justify-center">
-        Error loading data.
+        {t("certificate:errorLoading")}
       </div>
     )
 
   if (!formData) {
     return (
       <div className="h-screen flex items-center justify-center">
-        Loading template data...
+        {t("certificate:loadingData")}
       </div>
     )
   }

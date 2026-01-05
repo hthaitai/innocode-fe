@@ -10,7 +10,10 @@ import { ErrorState } from "@/shared/components/ui/ErrorState"
 import { MissingState } from "@/shared/components/ui/MissingState"
 import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
 
+import { useTranslation } from "react-i18next"
+
 const OrganizerCertificateTemplates = () => {
+  const { t } = useTranslation(["certificate", "pages"])
   const { contestId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 6
@@ -31,7 +34,7 @@ const OrganizerCertificateTemplates = () => {
   const pagination = templatesData?.additionalData ?? {}
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_CERTIFICATE_TEMPLATES(
-    contest?.name ?? "Contest"
+    contest?.name ?? t("pages:contest.contest")
   )
   const breadcrumbPaths =
     BREADCRUMB_PATHS.ORGANIZER_CERTIFICATE_TEMPLATES(contestId)

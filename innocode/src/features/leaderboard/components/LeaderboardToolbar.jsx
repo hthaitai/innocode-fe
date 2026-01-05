@@ -2,8 +2,10 @@ import React from "react"
 import { Download } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { useLazyGetContestReportQuery } from "../../../services/contestApi"
+import { useTranslation } from "react-i18next"
 
 const LeaderboardToolbar = ({ contestId }) => {
+  const { t } = useTranslation(["leaderboard"])
   const [trigger, { isLoading }] = useLazyGetContestReportQuery()
 
   const handleDownloadReport = async () => {
@@ -11,13 +13,13 @@ const LeaderboardToolbar = ({ contestId }) => {
       const result = await trigger(contestId).unwrap()
       if (result?.url) {
         window.open(result.url, "_blank")
-        toast.success("Report downloading...")
+        toast.success(t("leaderboard:toolbar.reportDownloading"))
       } else {
-        toast.error("Report URL not found")
+        toast.error(t("leaderboard:toolbar.reportUrlNotFound"))
       }
     } catch (err) {
       console.error(err)
-      toast.error("Failed to download report")
+      toast.error(t("leaderboard:toolbar.downloadError"))
     }
   }
 
@@ -29,7 +31,7 @@ const LeaderboardToolbar = ({ contestId }) => {
         disabled={isLoading}
         className={`${isLoading ? "button-gray" : "button-orange"}`}
       >
-        Download
+        {t("leaderboard:toolbar.download")}
       </button>
     </div>
   )

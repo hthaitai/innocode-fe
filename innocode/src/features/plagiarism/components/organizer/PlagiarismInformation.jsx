@@ -1,21 +1,28 @@
+import { useTranslation } from "react-i18next"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 
 const PlagiarismInformation = ({ submission }) => {
+  const { t } = useTranslation(["plagiarism"])
   if (!submission) return null
 
   return (
-    <InfoSection title="Plagiarism information">
+    <InfoSection title={t("plagiarismInfo")}>
       <DetailTable
         data={[
-          { label: "Student name", value: submission.studentName },
-          { label: "Team name", value: submission.teamName },
-          { label: "Contest name", value: submission.contestName },
-          { label: "Round name", value: submission.roundName },
-          { label: "Submission score", value: submission.score },
+          { label: t("studentName"), value: submission.studentName },
+          { label: t("teamName"), value: submission.teamName },
+          { label: t("roundName"), value: submission.roundName },
           {
-            label: "Submitted at",
+            label: t("submissionScore"),
+            value:
+              submission.score !== undefined && submission.score !== null
+                ? `${submission.score} ${t("points")}`
+                : "—",
+          },
+          {
+            label: t("submittedAt"),
             value: formatDateTime(submission.submittedAt),
           },
         ]}

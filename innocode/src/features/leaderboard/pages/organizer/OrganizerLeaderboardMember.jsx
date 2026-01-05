@@ -13,7 +13,7 @@ import { ErrorState } from "@/shared/components/ui/ErrorState"
 import { formatScore } from "@/shared/utils/formatNumber"
 
 const OrganizerLeaderboardMember = () => {
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["leaderboard", "pages"])
   const { contestId, teamId, memberId } = useParams()
   const { openModal } = useModal()
 
@@ -31,9 +31,10 @@ const OrganizerLeaderboardMember = () => {
   )
   const member = team?.members?.find((m) => m.memberId === memberId)
 
-  const contestName = leaderboardData?.data?.contestName ?? t("pages.contest.contest")
-  const teamName = team?.teamName ?? t("pages.contest.team")
-  const memberName = member?.memberName ?? t("leaderboard.member")
+  const contestName =
+    leaderboardData?.data?.contestName ?? t("leaderboard:contest")
+  const teamName = team?.teamName ?? t("leaderboard:team")
+  const memberName = member?.memberName ?? t("leaderboard:member")
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD_MEMBER(
     contestName,
@@ -110,10 +111,10 @@ const OrganizerLeaderboardMember = () => {
                 <Award size={20} />
                 <div>
                   <p className="text-[14px] leading-5">
-                    {t("leaderboard.awardMemberCertificate")}
+                    {t("leaderboard:awardMemberCertificate")}
                   </p>
                   <p className="text-[12px] leading-4 text-[#7A7574]">
-                    {t("leaderboard.issueMemberCertificate")}
+                    {t("leaderboard:issueMemberCertificate")}
                   </p>
                 </div>
               </div>
@@ -124,7 +125,7 @@ const OrganizerLeaderboardMember = () => {
                 className="button-orange px-3"
                 onClick={handleAward}
               >
-                {t("leaderboard.award")}
+                {t("leaderboard:award")}
               </button>
             </div>
           </div>
@@ -146,20 +147,19 @@ const OrganizerLeaderboardMember = () => {
                     <span>
                       {round.completedAt
                         ? new Date(round.completedAt).toLocaleString()
-                        : t("leaderboard.notCompleted")}
+                        : t("leaderboard:notCompleted")}
                     </span>
                   </div>
                 </div>
               </div>
 
-            <div className="text-[14px] leading-5 text-[#7A7574]">
-              {formatScore(round.score)} {t("leaderboard.points")}
+              <div className="text-[14px] leading-5 text-[#7A7574]">
+                {formatScore(round.score)} {t("leaderboard:points")}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
       </AnimatedSection>
-
     </PageContainer>
   )
 }

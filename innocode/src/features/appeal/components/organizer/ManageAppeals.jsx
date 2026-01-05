@@ -1,5 +1,6 @@
 import React, { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 import TableFluent from "@/shared/components/TableFluent"
 import OrganizerAppealsToolbar from "../../components/organizer/OrganizerAppealsToolbar"
@@ -14,8 +15,9 @@ const ManageAppeals = ({
   decisionFilter,
   setDecisionFilter,
 }) => {
+  const { t } = useTranslation(["appeal"])
   const navigate = useNavigate()
-  const appealsColumns = getAppealsColumns()
+  const appealsColumns = getAppealsColumns(t)
 
   // Reset page when filter changes
   useEffect(() => {
@@ -39,7 +41,9 @@ const ManageAppeals = ({
         onRowClick={handleRowClick}
       />
 
-      <TablePagination pagination={pagination} onPageChange={setPageNumber} />
+      {appeals.length > 0 && (
+        <TablePagination pagination={pagination} onPageChange={setPageNumber} />
+      )}
     </div>
   )
 }

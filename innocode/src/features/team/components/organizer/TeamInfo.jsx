@@ -2,21 +2,50 @@ import React from "react"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
+import { useTranslation } from "react-i18next"
 
 const TeamInfo = ({ team }) => {
-  const safe = (val) =>
-    val === null || val === undefined || val === "" ? "—" : val
+  const { t } = useTranslation("common")
+
+  const safe = (val, suffix = "") => {
+    if (val === null || val === undefined || val === "") return "—"
+    const text = typeof suffix === "function" ? suffix(val) : suffix
+    return `${val}${text}`
+  }
+
+  const memberSuffix = (val) =>
+    Number(val) === 1
+      ? t("common.suffixes.member")
+      : t("common.suffixes.members")
 
   return (
-    <InfoSection title="Team Information">
+    <InfoSection title={t("teams.teamInfo")}>
       <DetailTable
         data={[
-          { label: "Team name", value: safe(team.name) },
-          { label: "Contest name", value: safe(team.contestName) },
-          { label: "School name", value: safe(team.schoolName) },
-          { label: "Mentor name", value: safe(team.mentorName) },
-          { label: "Created at", value: safe(formatDateTime(team.createdAt)) },
-          { label: "Total members", value: safe(team.members?.length) },
+          {
+            label: t("teams.teamName"),
+            value: safe(team.name),
+          },
+          {
+            label: t("organizerContests.table.name"),
+            value: safe(team.contestName),
+          },
+          {
+            label: t("schools.schoolName"),
+            value: safe(team.schoolName),
+          },
+          {
+            label: t("appeal.mentorName"),
+            value: safe(team.mentorName),
+          },
+          {
+            label: t("organizerContests.table.createdAt"),
+            value: safe(formatDateTime(team.createdAt)),
+          },
+          {
+            label: t("teams.memberCount"),
+            value: safe(team.members?.length, memberSuffix),
+          },
         ]}
       />
     </InfoSection>

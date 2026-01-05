@@ -13,52 +13,66 @@ export const getJudgeInviteColumns = ({
   onInvite,
   onResend,
   onRevoke,
+  t,
 } = {}) => [
   {
     accessorKey: "judgeName",
-    header: "Name",
+    header: t ? t("table.name") : "Name",
     size: 220,
     cell: ({ row }) => row.original.judgeName || "—",
     meta: { className: "truncate max-w-[220px]" },
   },
   {
     accessorKey: "judgeEmail",
-    header: "Email",
+    header: t ? t("table.email") : "Email",
     size: 240,
     cell: ({ row }) => row.original.judgeEmail || "—",
     meta: { className: "truncate max-w-[260px]" },
   },
   {
     accessorKey: "inviteStatus",
-    header: "Invite status",
+    header: t ? t("table.status") : "Invite status",
     size: 130,
-    cell: ({ row }) => <StatusBadge status={row.original.inviteStatus} />,
+    cell: ({ row }) => (
+      <StatusBadge
+        status={row.original.inviteStatus}
+        label={
+          t && row.original.inviteStatus
+            ? t(`status.${row.original.inviteStatus.toLowerCase()}`)
+            : row.original.inviteStatus
+        }
+      />
+    ),
     meta: { className: "truncate max-w-[110px]" },
   },
   {
     accessorKey: "invitedAt",
-    header: "Invited at",
+    header: t ? t("table.invitedAt") : "Invited at",
     size: 180,
     cell: ({ row }) => {
       const value = row.original.invitedAt
       return value ? (
         formatDateTime(value)
       ) : (
-        <span className="text-[#7A7574]">Not invited</span>
+        <span className="text-[#7A7574]">
+          {t ? t("table.notInvited") : "Not invited"}
+        </span>
       )
     },
     meta: { className: "truncate max-w-[180px]" },
   },
   {
     accessorKey: "expiresAt",
-    header: "Expires at",
+    header: t ? t("table.expiresAt") : "Expires at",
     size: 180,
     cell: ({ row }) => {
       const value = row.original.expiresAt
       return value ? (
         formatDateTime(value)
       ) : (
-        <span className="text-[#7A7574]">No expiration</span>
+        <span className="text-[#7A7574]">
+          {t ? t("table.noExpiration") : "No expiration"}
+        </span>
       )
     },
     meta: { className: "truncate max-w-[180px]" },
@@ -75,7 +89,7 @@ export const getJudgeInviteColumns = ({
 
       if (canInvite(status)) {
         items.push({
-          label: "Invite",
+          label: t ? t("table.actions.invite") : "Invite",
           icon: UserPlus,
           onClick: () => onInvite?.(row.original),
         })
@@ -83,7 +97,7 @@ export const getJudgeInviteColumns = ({
 
       if (canResend(status)) {
         items.push({
-          label: "Resend",
+          label: t ? t("table.actions.resend") : "Resend",
           icon: Repeat,
           onClick: () => onResend?.(row.original),
         })
@@ -91,7 +105,7 @@ export const getJudgeInviteColumns = ({
 
       if (canRevoke(status)) {
         items.push({
-          label: "Revoke",
+          label: t ? t("table.actions.revoke") : "Revoke",
           icon: Trash2,
           className: "text-red-500",
           onClick: () => onRevoke?.(row.original),

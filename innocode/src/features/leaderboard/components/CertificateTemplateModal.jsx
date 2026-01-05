@@ -9,6 +9,7 @@ import { Spinner } from "@/shared/components/SpinnerFluent"
 import TablePagination from "@/shared/components/TablePagination"
 import toast from "react-hot-toast"
 import TemplatePreviewCanvas from "../../certificate/components/organizer/TemplatePreviewCanvas"
+import { useTranslation } from "react-i18next"
 
 const CertificateTemplateModal = ({
   isOpen,
@@ -16,6 +17,7 @@ const CertificateTemplateModal = ({
   contestId,
   recipients = [],
 }) => {
+  const { t } = useTranslation(["leaderboard"])
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [page, setPage] = useState(1)
   const [awarding, setAwarding] = useState(false)
@@ -59,7 +61,7 @@ const CertificateTemplateModal = ({
     setAwarding(true)
     try {
       await awardCertificates(payload).unwrap()
-      toast.success("Certificate issued successfully.")
+      toast.success(t("leaderboard:modal.success"))
       onClose()
       setSelectedTemplate(null)
     } catch (err) {
@@ -67,7 +69,7 @@ const CertificateTemplateModal = ({
       toast.error(
         err?.data?.message ||
           err?.data?.errorMessage ||
-          "Unable to issue certificate"
+          t("leaderboard:modal.error")
       )
     } finally {
       setAwarding(false)
@@ -83,7 +85,7 @@ const CertificateTemplateModal = ({
     <BaseModal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Choose a certificate template"
+      title={t("leaderboard:modal.title")}
       size="full"
       footer={
         <div className="flex justify-end gap-2">
@@ -93,7 +95,7 @@ const CertificateTemplateModal = ({
             onClick={handleClose}
             disabled={awarding}
           >
-            Cancel
+            {t("leaderboard:modal.cancel")}
           </button>
           <button
             type="button"
@@ -101,7 +103,9 @@ const CertificateTemplateModal = ({
             onClick={handleAward}
             disabled={!selectedTemplate || awarding}
           >
-            {awarding ? "Awarding..." : "Award"}
+            {awarding
+              ? t("leaderboard:modal.awarding")
+              : t("leaderboard:modal.award")}
           </button>
         </div>
       }
@@ -110,12 +114,14 @@ const CertificateTemplateModal = ({
         {isLoading && <Spinner />}
 
         {isError && (
-          <p className="text-red-500 text-center">Failed to load templates</p>
+          <p className="text-red-500 text-center">
+            {t("leaderboard:modal.failedToLoadTemplates")}
+          </p>
         )}
 
         {!isLoading && !isError && templates.length === 0 && (
           <p className="text-center text-[#7A7574]">
-            No templates available for this contest.
+            {t("leaderboard:modal.noTemplates")}
           </p>
         )}
 
@@ -147,7 +153,7 @@ const CertificateTemplateModal = ({
                       className="accent-[#E05307] rounded-[5px]"
                     />
                     <span className="text-sm leading-5 font-medium line-clamp-2">
-                      {template.name || "Untitled Template"}
+                      {template.name || t("leaderboard:modal.untitled")}
                     </span>
                   </div>
                 </div>

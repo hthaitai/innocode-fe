@@ -1,30 +1,30 @@
 import { formatDateTime } from "@/shared/utils/dateTime"
 
-export const getPlagiarismColumns = () => [
+export const getPlagiarismColumns = (t) => [
   {
     accessorKey: "studentName",
-    header: "Student",
+    header: t("plagiarism:student"),
     size: 250,
     cell: ({ row }) => row.original.studentName || "—",
     meta: { className: "truncate max-w-[250px]" },
   },
   {
     accessorKey: "teamName",
-    header: "Team",
+    header: t("plagiarism:team"),
     size: 200,
     cell: ({ row }) => row.original.teamName || "—",
     meta: { className: "truncate max-w-[200px]" },
   },
   {
     accessorKey: "roundName",
-    header: "Round",
+    header: t("plagiarism:round"),
     size: 200,
     cell: ({ row }) => row.original.roundName || "—",
     meta: { className: "truncate max-w-[200px]" },
   },
   {
     accessorKey: "score",
-    header: "Score",
+    header: t("plagiarism:score"),
     size: 100,
     cell: ({ row }) => {
       const score = row.original.score
@@ -33,7 +33,7 @@ export const getPlagiarismColumns = () => [
   },
   {
     accessorKey: "submittedAt",
-    header: "Submitted at",
+    header: t("plagiarism:submittedAt"),
     size: 200,
     cell: ({ row }) => formatDateTime(row.original.submittedAt),
     meta: { className: "truncate max-w-[200px]" },

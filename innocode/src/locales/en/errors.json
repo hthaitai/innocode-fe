@@ -97,7 +97,8 @@
     "entryNotFound": "Leaderboard entry not found",
     "teamExists": "Team already exists in leaderboard",
     "teamEliminated": "This team has been eliminated and cannot receive new scores",
-    "invalidEliminationRule": "Elimination rule policy is not valid"
+    "invalidEliminationRule": "Elimination rule policy is not valid",
+    "toggleFreezeInvalidStatus": "Cannot toggle freeze status. Contest must be Ongoing or Paused"
   },
   "mcq": {
     "testNotFound": "MCQ Test not found",

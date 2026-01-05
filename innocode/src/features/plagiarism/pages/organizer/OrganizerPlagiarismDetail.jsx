@@ -1,5 +1,6 @@
 import React from "react"
 import { useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import PageContainer from "@/shared/components/PageContainer"
 import { useGetPlagiarismDetailQuery } from "@/services/plagiarismApi"
 import { useGetContestByIdQuery } from "@/services/contestApi"
@@ -15,6 +16,7 @@ import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 const OrganizerPlagiarismDetail = () => {
+  const { t } = useTranslation(["plagiarism"])
   const { contestId, submissionId } = useParams()
 
   const {
@@ -35,8 +37,8 @@ const OrganizerPlagiarismDetail = () => {
   const matches = plagiarismData?.matches || []
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_PLAGIARISM_DETAIL(
-    contest?.name ?? "Contest",
-    submission?.studentName ?? "Student"
+    contest?.name ?? t("contest"),
+    submission?.studentName ?? t("student")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_PLAGIARISM_DETAIL(
     contestId,
@@ -71,7 +73,7 @@ const OrganizerPlagiarismDetail = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="contest" />
+        <MissingState itemName={t("contest")} />
       </PageContainer>
     )
   }
@@ -87,21 +89,21 @@ const OrganizerPlagiarismDetail = () => {
 
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">
-              Submitted files
+              {t("submittedFiles")}
             </div>
             <SubmittedFiles artifacts={artifacts} />
           </div>
 
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">
-              Test case details
+              {t("testCaseDetails")}
             </div>
             <TestCaseResults details={details} />
           </div>
 
           <div>
             <div className="text-sm font-semibold pt-3 pb-2">
-              Matched submissions
+              {t("matchedSubmissions")}
             </div>
             <MatchedSubmissions matches={matches} />
           </div>

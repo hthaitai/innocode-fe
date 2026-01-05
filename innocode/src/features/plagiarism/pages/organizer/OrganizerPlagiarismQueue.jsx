@@ -13,7 +13,10 @@ import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 
+import { useTranslation } from "react-i18next"
+
 export default function OrganizerPlagiarismQueue() {
+  const { t } = useTranslation(["plagiarism"])
   const { contestId } = useParams()
 
   const [page, setPage] = useState(1)
@@ -33,6 +36,7 @@ export default function OrganizerPlagiarismQueue() {
     isLoading: plagiarismLoading,
     isError: plagiarismError,
   } = useGetPlagiarismQueueQuery({
+    contestId,
     pageNumber: page,
     pageSize,
     teamName: teamNameSearch,
@@ -40,7 +44,7 @@ export default function OrganizerPlagiarismQueue() {
   })
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_PLAGIARISM(
-    contest?.name ?? "Contest"
+    contest?.name ?? t("contest")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_PLAGIARISM(contestId)
 
@@ -64,7 +68,7 @@ export default function OrganizerPlagiarismQueue() {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="submissions" />
+        <ErrorState itemName={t("submissions")} />
       </PageContainer>
     )
   }
@@ -75,7 +79,7 @@ export default function OrganizerPlagiarismQueue() {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="contest" />
+        <MissingState itemName={t("contest")} />
       </PageContainer>
     )
   }

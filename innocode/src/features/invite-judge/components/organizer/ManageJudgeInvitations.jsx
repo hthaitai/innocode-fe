@@ -10,6 +10,7 @@ import {
 } from "../../../../services/contestJudgeApi"
 import { sendJudgeInviteEmail } from "@/shared/services/emailService"
 import { toast } from "react-hot-toast"
+import { useTranslation } from "react-i18next"
 
 const ManageJudgeInvitations = ({
   contestId,
@@ -115,10 +116,13 @@ const ManageJudgeInvitations = ({
     [contestId, revokeJudgeInvite]
   )
 
+  const { t } = useTranslation("judge")
+
   const columns = getJudgeInviteColumns({
     onInvite: handleInvite,
     onResend: handleResend,
     onRevoke: handleRevoke,
+    t,
   })
 
   return (

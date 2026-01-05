@@ -1,8 +1,10 @@
+import { useTranslation } from "react-i18next"
 import TableFluentScrollable from "@/shared/components/table/TableFluentScrollable"
 import { getTestCaseDetailColumns } from "../../columns/getTestCaseDetailColumns"
 
 const TestCaseResults = ({ details }) => {
-  const columns = getTestCaseDetailColumns()
+  const { t } = useTranslation(["plagiarism"])
+  const columns = getTestCaseDetailColumns(t)
 
   return (
     <div>

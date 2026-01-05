@@ -1,0 +1,36 @@
+{
+  "invitationList": "Invitation List",
+  "table": {
+    "name": "Judge name",
+    "email": "Judge email",
+    "status": "Invite status",
+    "ttlDays": "TTL (days)",
+    "createdAt": "Created at",
+    "acceptedAt": "Accepted at",
+    "invitedAt": "Invited at",
+    "expiresAt": "Expires at",
+    "notInvited": "Not invited",
+    "noExpiration": "No expiration",
+    "actions": {
+      "invite": "Invite",
+      "resend": "Resend",
+      "revoke": "Revoke"
+    }
+  },
+  "activeJudges": {
+    "noJudgesAssigned": "No judges have been assigned to this contest.",
+    "unnamed": "Unnamed Judge",
+    "noEmail": "Email not provided"
+  },
+  "status": {
+    "pending": "Pending",
+    "accepted": "Accepted",
+    "active": "Active",
+    "invited": "Invited",
+    "revoked": "Revoked",
+    "expired": "Expired",
+    "declined": "Declined",
+    "pendinginvite": "Pending Invite",
+    "cancelled": "Cancelled"
+  }
+}

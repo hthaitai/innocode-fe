@@ -5,10 +5,10 @@ import TemplateActions from "./TemplateActions"
 import CertificateTemplatesToolbar from "./CertificateTemplatesToolbar"
 import TablePagination from "@/shared/components/TablePagination"
 import { useModal } from "@/shared/hooks/useModal"
-import {
-  useDeleteCertificateTemplateMutation,
-} from "../../../../services/certificateApi"
+import { useDeleteCertificateTemplateMutation } from "../../../../services/certificateApi"
 import toast from "react-hot-toast"
+
+import { useTranslation } from "react-i18next"
 
 const ManageCertificateTemplates = ({
   contestId,
@@ -16,6 +16,7 @@ const ManageCertificateTemplates = ({
   pagination,
   setPageNumber,
 }) => {
+  const { t } = useTranslation(["certificate"])
   const navigate = useNavigate()
   const { openModal } = useModal()
   const [deleteCertificateTemplate] = useDeleteCertificateTemplateMutation()
@@ -29,15 +30,15 @@ const ManageCertificateTemplates = ({
   const handleDelete = async (tpl) => {
     openModal("confirmDelete", {
       item: tpl,
-      message: `Are you sure you want to delete "${tpl.name}"?`,
+      message: t("certificate:deleteConfirm", { name: tpl.name }),
       onConfirm: async (onClose) => {
         try {
           await deleteCertificateTemplate(tpl.templateId).unwrap()
-          toast.success(`"${tpl.name}" has been deleted.`)
+          toast.success(t("certificate:deleteSuccess", { name: tpl.name }))
           onClose()
         } catch (err) {
           console.error("Failed to delete template:", err)
-          toast.error(`Failed to delete "${tpl.name}". Please try again.`)
+          toast.error(t("certificate:deleteError", { name: tpl.name }))
         }
       },
     })
@@ -71,10 +72,11 @@ const ManageCertificateTemplates = ({
         ))}
       </div>
 
-      <TablePagination pagination={pagination} onPageChange={setPageNumber} />
+      {templates.length > 0 && (
+        <TablePagination pagination={pagination} onPageChange={setPageNumber} />
+      )}
     </div>
   )
 }
 
 export default ManageCertificateTemplates
-

@@ -1,51 +1,71 @@
 import React from "react"
-import { User } from "lucide-react"
 import { useParams } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
-import { formatDateTime } from "@/shared/utils/dateTime"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetContestByIdQuery } from "@/services/contestApi"
 import { useGetTeamByIdQuery } from "@/services/teamApi"
 import TeamInfo from "../../components/organizer/TeamInfo"
+import TeamMemberList from "../../components/organizer/TeamMemberList"
+import { useTranslation } from "react-i18next"
+import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
+import { LoadingState } from "@/shared/components/ui/LoadingState"
+import { ErrorState } from "@/shared/components/ui/ErrorState"
+import { MissingState } from "@/shared/components/ui/MissingState"
 
 const OrganizerTeamDetail = () => {
   const { teamId, contestId } = useParams()
+  const { t } = useTranslation("common")
 
   const {
     data: team,
     isLoading: teamLoading,
-    error: teamError,
+    isError: teamError,
   } = useGetTeamByIdQuery(teamId)
 
-  const { data: contest, isLoading: contestLoading } =
-    useGetContestByIdQuery(contestId)
-
-  const loading = teamLoading || contestLoading
-  const error = teamError
-
-  const contestName = contest?.name || "Contest"
-  const teamName = team?.name || "Team"
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    isError: contestError,
+  } = useGetContestByIdQuery(contestId)
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEAM_DETAIL(
-    contestName,
-    teamName
+    contest?.name ?? t("common.contest"),
+    team?.name ?? t("common.team")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEAM_DETAIL(
     contestId,
     teamId
   )
 
-  if (!team && !teamLoading) {
+  if (teamLoading || contestLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
-        loading={loading}
-        error={error}
       >
-        <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          This team has been deleted or is no longer available.
-        </div>
+        <LoadingState />
+      </PageContainer>
+    )
+  }
+
+  if (teamError || contestError) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName="team" />
+      </PageContainer>
+    )
+  }
+
+  if (!team) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <MissingState itemName="team" />
       </PageContainer>
     )
   }
@@ -54,58 +74,16 @@ const OrganizerTeamDetail = () => {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={loading}
-      error={error}
     >
-      <div className="space-y-5">
-        {/* --- Team Info --- */}
-        <TeamInfo team={team} />
+      <AnimatedSection>
+        <div className="space-y-5">
+          {/* --- Team Info --- */}
+          <TeamInfo team={team} />
 
-        {/* --- Students as List --- */}
-        <div>
-          <div className="text-sm font-semibold pt-3 pb-2">Members</div>
-          <div className="flex flex-col gap-1">
-            {team?.members?.length > 0 ? (
-              team.members.map((member) => (
-                <div
-                  key={member.studentId}
-                  className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 py-3 flex justify-between items-center min-h-[70px]"
-                >
-                  <div className="flex gap-5 items-center">
-                    <User size={20} />
-
-                    <div>
-                      <p className="text-[14px] leading-[20px]">
-                        {member.studentFullname}
-                      </p>
-
-                      <div className="flex items-center gap-[10px] text-[12px] leading-[16px] text-[#7A7574]">
-                        <p>{member.studentEmail}</p>
-                        <span>|</span>
-                        <p>{formatDateTime(member.joinedAt)}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    className={`text-sm leading-5 font-semibold ${
-                      member.memberRole === "Leader"
-                        ? "animated-rainbow"
-                        : "text-[#7A7574]"
-                    }`}
-                  >
-                    {member.memberRole || "Member"}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-                No members in this team.
-              </div>
-            )}
-          </div>
+          {/* --- Students as List --- */}
+          <TeamMemberList members={team.members} />
         </div>
-      </div>
+      </AnimatedSection>
     </PageContainer>
   )
 }
