@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { useSearchParams, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { useDeclineJudgeInviteMutation } from "../../../services/contestJudgeApi"
@@ -9,6 +10,7 @@ export default function JudgeInviteDecline() {
   const inviteCode = params.get("inviteCode")
   const email = params.get("email")
   const navigate = useNavigate()
+  const { t } = useTranslation("judge")
   const { user } = useAuth()
 
   const [declineInvite] = useDeclineJudgeInviteMutation()
@@ -17,17 +19,23 @@ export default function JudgeInviteDecline() {
     async function handleDecline() {
       const judgeEmail = email || user?.email
       if (!judgeEmail) {
-        toast.error("Email is required to decline the invitation.")
+        toast.error(
+          t("inviteResponse.emailRequiredAction", {
+            action: t("inviteResponse.declineButton").toLowerCase(),
+          })
+        )
         navigate("/")
         return
       }
 
       try {
         await declineInvite({ inviteCode, email: judgeEmail }).unwrap()
-        toast.success("Invitation declined.")
+        toast.success(t("inviteResponse.messages.declineToast"))
         navigate("/")
       } catch (err) {
-        toast.error(err?.data?.message || "Failed to decline invitation.")
+        toast.error(
+          err?.data?.message || t("inviteResponse.messages.declineFailed")
+        )
         navigate("/")
       }
     }
@@ -38,7 +46,9 @@ export default function JudgeInviteDecline() {
 
   return (
     <div className="p-6 text-center">
-      <h2 className="text-xl font-bold">Processing your response…</h2>
+      <h2 className="text-xl font-bold">
+        {t("inviteResponse.processingResponse")}
+      </h2>
     </div>
   )
 }

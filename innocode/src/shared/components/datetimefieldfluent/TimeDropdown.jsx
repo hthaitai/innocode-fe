@@ -1,8 +1,10 @@
 import React from "react"
 import DropdownFluent from "../DropdownFluent"
+import { useTranslation } from "react-i18next"
 import dayjs from "dayjs"
 
 const TimeDropdown = ({ selectedDate, setSelectedDate }) => {
+  const { t } = useTranslation()
   const currentDate = selectedDate || dayjs()
 
   // 12-hour options
@@ -19,8 +21,8 @@ const TimeDropdown = ({ selectedDate, setSelectedDate }) => {
 
   // AM/PM options
   const amPmOptions = [
-    { value: "AM", label: "AM" },
-    { value: "PM", label: "PM" },
+    { value: "AM", label: t("common.am") },
+    { value: "PM", label: t("common.pm") },
   ]
 
   // Determine current hour in 12-hour format
@@ -58,7 +60,7 @@ const TimeDropdown = ({ selectedDate, setSelectedDate }) => {
             placeholder="HH"
           />
         </div>
-        <span className="text-sm">Hour</span>
+        <span className="text-sm">{t("common.hour")}</span>
       </div>
 
       {/* Minute Picker */}
@@ -71,7 +73,7 @@ const TimeDropdown = ({ selectedDate, setSelectedDate }) => {
             placeholder="MM"
           />
         </div>
-        <span className="text-sm">Minute</span>
+        <span className="text-sm">{t("common.minute")}</span>
       </div>
 
       {/* AM/PM Picker */}
@@ -84,7 +86,7 @@ const TimeDropdown = ({ selectedDate, setSelectedDate }) => {
             placeholder="AM/PM"
           />
         </div>
-        <span className="text-sm">AM/PM</span>
+        <span className="text-sm">{t("common.amPm")}</span>
       </div>
     </div>
   )

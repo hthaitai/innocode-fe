@@ -1,6 +1,9 @@
 import i18n from "i18next"
 import { initReactI18next } from "react-i18next"
 import LanguageDetector from "i18next-browser-languagedetector"
+import dayjs from "dayjs"
+import "dayjs/locale/vi"
+import "dayjs/locale/en"
 
 import enCommon from "../locales/en/common.json"
 import viCommon from "../locales/vi/common.json"
@@ -31,6 +34,8 @@ import enAppeal from "../locales/en/appeal.json"
 import viAppeal from "../locales/vi/appeal.json"
 import enPlagiarism from "../locales/en/plagiarism.json"
 import viPlagiarism from "../locales/vi/plagiarism.json"
+import enNotifications from "../locales/en/notifications.json"
+import viNotifications from "../locales/vi/notifications.json"
 
 i18n
   .use(LanguageDetector) // Tự động detect ngôn ngữ từ browser
@@ -52,6 +57,7 @@ i18n
         certificate: enCertificate,
         appeal: enAppeal,
         plagiarism: enPlagiarism,
+        notifications: enNotifications,
       },
       vi: {
         common: viCommon,
@@ -68,6 +74,7 @@ i18n
         certificate: viCertificate,
         appeal: viAppeal,
         plagiarism: viPlagiarism,
+        notifications: viNotifications,
       },
     },
     fallbackLng: "en",
@@ -81,5 +88,14 @@ i18n
       caches: ["localStorage"],
     },
   })
+
+i18n.on("languageChanged", (lng) => {
+  dayjs.locale(lng)
+})
+
+// Set initial locale
+if (i18n.language) {
+  dayjs.locale(i18n.language)
+}
 
 export default i18n

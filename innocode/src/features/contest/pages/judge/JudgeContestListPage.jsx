@@ -11,8 +11,10 @@ import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import { useTranslation } from "react-i18next"
 
 const JudgeContestListPage = () => {
+  const { t } = useTranslation("judge")
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 9
 
@@ -71,7 +73,7 @@ const JudgeContestListPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="contests" />
+        <ErrorState itemName={t("contestList.listName")} />
       </PageContainer>
     )
   }
@@ -85,7 +87,7 @@ const JudgeContestListPage = () => {
         <div className="mb-3 flex justify-between items-center">
           <div className="w-[280px]">
             <TextFieldFluent
-              placeholder="Search contests..."
+              placeholder={t("contestList.searchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleSearchKeyDown}
@@ -106,7 +108,7 @@ const JudgeContestListPage = () => {
         </div>
 
         {contests.length === 0 ? (
-          <MissingState itemName="contests" />
+          <MissingState itemName={t("contestList.listName")} />
         ) : (
           <>
             <JudgeContestList

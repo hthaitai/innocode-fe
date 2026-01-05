@@ -39,6 +39,12 @@ export const statusColorMap = {
   pendinginvite: "bg-amber-400",
 
   notinvited: "bg-gray-400",
+
+  // Round statuses
+  opened: "bg-green-500",
+  closed: "bg-gray-500",
+  incoming: "bg-blue-400",
+  finalized: "bg-purple-500",
 }
 
 import { useTranslation } from "react-i18next"
@@ -86,6 +92,13 @@ const StatusBadge = ({ status, translate = false, label }) => {
         registrationopen: "contest.statusLabels.registrationOpen",
         registrationclosed: "contest.statusLabels.registrationClosed",
         draft: "contest.statusLabels.draft",
+        // Round statuses (using judge namespace but passed as label often, here logic assumes we might need to map them if translate=true)
+        // However, generic logic below tries to look it up.
+        // Let's add explicit mapping to judge.status if these are passed.
+        opened: "judge:status.opened",
+        closed: "judge:status.closed",
+        incoming: "judge:status.incoming",
+        finalized: "judge:status.finalized",
       }
 
       const translationKey = statusMap[safeStatus]

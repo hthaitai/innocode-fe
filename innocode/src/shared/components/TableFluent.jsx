@@ -9,6 +9,7 @@ import {
 import { Spinner } from "./SpinnerFluent"
 import TablePagination from "./TablePagination"
 import { Icon } from "@iconify/react"
+import { useTranslation } from "react-i18next"
 
 const TableFluent = ({
   data = [],
@@ -25,6 +26,7 @@ const TableFluent = ({
   getRowId,
   enableSorting = true,
 }) => {
+  const { t } = useTranslation("common")
   const [expanded, setExpanded] = React.useState({})
   const [sorting, setSorting] = React.useState([])
 
@@ -140,7 +142,7 @@ const TableFluent = ({
                     colSpan={columns.length}
                     className="text-center text-[14px] leading-[20px] text-[#7A7574] py-4"
                   >
-                    No data available.
+                    {t("common.noData")}
                   </td>
                 </tr>
               ) : (

@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { useSearchParams, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { useAcceptJudgeInviteMutation } from "../../../services/contestJudgeApi"
@@ -9,6 +10,7 @@ export default function JudgeInviteAccept() {
   const inviteCode = params.get("inviteCode")
   const email = params.get("email")
   const navigate = useNavigate()
+  const { t } = useTranslation("judge")
   const { user } = useAuth()
 
   console.log(user)
@@ -19,17 +21,23 @@ export default function JudgeInviteAccept() {
     async function handleAccept() {
       const judgeEmail = email || user?.email
       if (!judgeEmail) {
-        toast.error("Email is required to accept the invitation.")
+        toast.error(
+          t("inviteResponse.emailRequiredAction", {
+            action: t("inviteResponse.acceptButton").toLowerCase(),
+          })
+        )
         navigate("/")
         return
       }
 
       try {
         await acceptInvite({ inviteCode, email: judgeEmail }).unwrap()
-        toast.success("Invitation accepted successfully!")
+        toast.success(t("inviteResponse.messages.acceptToast"))
         navigate("/")
       } catch (err) {
-        toast.error(err?.data?.message || "Failed to accept invitation.")
+        toast.error(
+          err?.data?.message || t("inviteResponse.messages.acceptFailed")
+        )
         navigate("/")
       }
     }
@@ -40,7 +48,9 @@ export default function JudgeInviteAccept() {
 
   return (
     <div className="p-6 text-center">
-      <h2 className="text-xl font-bold">Processing your acceptance…</h2>
+      <h2 className="text-xl font-bold">
+        {t("inviteResponse.processingAccept")}
+      </h2>
     </div>
   )
 }

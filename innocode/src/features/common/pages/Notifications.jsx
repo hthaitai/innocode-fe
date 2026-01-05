@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import { Icon } from "@iconify/react"
 import PageContainer from "@/shared/components/PageContainer"
@@ -36,21 +37,38 @@ const Notifications = () => {
   const [readNotification] = useReadNotificationMutation()
   const [readAllNotifications] = useReadAllNotificationsMutation()
 
+  const { t } = useTranslation("notifications")
+
   const notifications = useMemo(() => {
     if (!notificationsData?.items) return []
 
     return notificationsData.items.map((notification) => {
       let parsedPayload = {}
-      let message = "No message"
 
       try {
         parsedPayload =
           typeof notification.payload === "string"
             ? JSON.parse(notification.payload)
             : notification.payload || {}
-        message = parsedPayload.message || notification.payload || "No message"
       } catch {
-        message = notification.payload || "No message"
+        // ignore
+      }
+
+      // Add type to payload if it's missing at top level but present in payload
+      const notificationType =
+        notification.type || parsedPayload.type || parsedPayload.Type
+
+      const translationKey = notificationType
+
+      let message = "No message"
+      if (translationKey) {
+        message = t(translationKey, {
+          ...parsedPayload,
+          defaultValue:
+            parsedPayload.message || notification.message || "No message",
+        })
+      } else {
+        message = parsedPayload.message || notification.payload || "No message"
       }
 
       return {
@@ -60,7 +78,7 @@ const Notifications = () => {
         isRead: notification.read ?? notification.isRead ?? false,
       }
     })
-  }, [notificationsData])
+  }, [notificationsData, t])
 
   // Build pagination object for TablePagination component
   const pagination = useMemo(() => {
@@ -104,7 +122,7 @@ const Notifications = () => {
       <PageContainer breadcrumb={BREADCRUMBS.NOTIFICATIONS}>
         <div className=" border border-[#E5E5E5] rounded-[5px] bg-white flex items-center justify-center px-5 min-h-[70px]">
           <p className=" text-[12px] leading-[16px] text-[#7A7574]">
-            No notifications.
+            {t("ui.empty")}
           </p>
         </div>
       </PageContainer>
@@ -126,13 +144,11 @@ const Notifications = () => {
             <div className="flex gap-5 items-center">
               <Icon icon="mdi:bell-outline" width={20} />
               <div>
-                <p className="text-[14px] leading-[20px]">Notifications</p>
+                <p className="text-[14px] leading-[20px]">{t("ui.title")}</p>
                 <p className="text-[12px] leading-[16px] text-[#7A7574]">
                   {unreadCount > 0
-                    ? `${unreadCount} unread notification${
-                        unreadCount > 1 ? "s" : ""
-                      }`
-                    : "All notifications read"}
+                    ? t("ui.unreadCount", { count: unreadCount })
+                    : t("ui.allRead")}
                 </p>
               </div>
             </div>
@@ -143,7 +159,7 @@ const Notifications = () => {
               }`}
               onClick={handleMarkAllClick}
             >
-              Mark all as read
+              {t("ui.markAllAsRead")}
             </button>
           </div>
 

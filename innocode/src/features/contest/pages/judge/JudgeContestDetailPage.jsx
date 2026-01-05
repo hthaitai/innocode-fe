@@ -9,8 +9,10 @@ import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import JudgeRoundList from "../../components/judge/JudgeRoundList"
+import { useTranslation } from "react-i18next"
 
 const JudgeContestDetailPage = () => {
+  const { t } = useTranslation("judge")
   const { contestId } = useParams()
   const navigate = useNavigate()
 
@@ -31,7 +33,7 @@ const JudgeContestDetailPage = () => {
 
   // Breadcrumbs
   const breadcrumbItems = BREADCRUMBS.JUDGE_CONTEST_DETAIL(
-    contest?.name ?? "Contest"
+    contest?.name ?? t("contestDetail.fallbackName")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.JUDGE_CONTEST_DETAIL(contestId)
 
@@ -54,7 +56,7 @@ const JudgeContestDetailPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="contest or rounds" />
+        <ErrorState itemName={t("contestDetail.errorItem")} />
       </PageContainer>
     )
   }
@@ -73,7 +75,7 @@ const JudgeContestDetailPage = () => {
           <div
             className={`text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]`}
           >
-            No rounds found
+            {t("contestDetail.noRounds")}
           </div>
         ) : (
           <JudgeRoundList rounds={rounds} onRoundClick={handleRoundClick} />

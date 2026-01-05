@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react"
+import { useTranslation } from "react-i18next"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { Icon } from "@iconify/react"
 import PageContainer from "@/shared/components/PageContainer"
@@ -13,6 +14,7 @@ import { useAuth } from "@/context/AuthContext"
 const JudgeInviteResponse = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const { t } = useTranslation("judge")
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState("idle") // idle, processing, success, error
@@ -47,10 +49,10 @@ const JudgeInviteResponse = () => {
     try {
       await acceptInvite({ inviteCode, email: judgeEmail }).unwrap()
       setStatus("success")
-      setMessage("Invitation accepted successfully! You are now a judge for this contest.")
-      
-      toast.success("Invitation accepted successfully!")
-      
+      setMessage(t("inviteResponse.messages.acceptSuccess"))
+
+      toast.success(t("inviteResponse.messages.acceptToast"))
+
       // Auto redirect after 2 seconds
       setTimeout(() => {
         navigate("/judge/manual-submissions")
@@ -58,18 +60,20 @@ const JudgeInviteResponse = () => {
     } catch (error) {
       console.error("Error accepting invite:", error)
       setStatus("error")
-      
+
       const errorMessage =
-        error?.data?.message ||
-        error?.data?.errorMessage ||
-        (error?.status === 400
-          ? "Invalid invitation. It may have expired or already been processed."
-          : error?.status === 404
-          ? "Invitation not found. It may have been revoked or expired."
-          : "Failed to accept invitation. Please try again.")
-      
+        error?.data?.message?.includes("not pending") ||
+        error?.data?.errorMessage?.includes("not pending")
+          ? t("inviteResponse.messages.notPending")
+          : error?.data?.message ||
+            error?.data?.errorMessage ||
+            (error?.status === 400
+              ? t("inviteResponse.messages.invalid")
+              : error?.status === 404
+              ? t("inviteResponse.messages.notFound")
+              : t("inviteResponse.messages.acceptFailed"))
+
       setMessage(errorMessage)
-      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -85,10 +89,10 @@ const JudgeInviteResponse = () => {
     try {
       await declineInvite({ inviteCode, email: judgeEmail }).unwrap()
       setStatus("success")
-      setMessage("Invitation declined successfully.")
-      
-      toast.success("Invitation declined.")
-      
+      setMessage(t("inviteResponse.messages.declineSuccess"))
+
+      toast.success(t("inviteResponse.messages.declineToast"))
+
       // Auto redirect after 2 seconds
       setTimeout(() => {
         navigate("/")
@@ -96,18 +100,20 @@ const JudgeInviteResponse = () => {
     } catch (error) {
       console.error("Error declining invite:", error)
       setStatus("error")
-      
+
       const errorMessage =
-        error?.data?.message ||
-        error?.data?.errorMessage ||
-        (error?.status === 400
-          ? "Invalid invitation. It may have expired or already been processed."
-          : error?.status === 404
-          ? "Invitation not found. It may have been revoked or expired."
-          : "Failed to decline invitation. Please try again.")
-      
+        error?.data?.message?.includes("not pending") ||
+        error?.data?.errorMessage?.includes("not pending")
+          ? t("inviteResponse.messages.notPending")
+          : error?.data?.message ||
+            error?.data?.errorMessage ||
+            (error?.status === 400
+              ? t("inviteResponse.messages.invalid")
+              : error?.status === 404
+              ? t("inviteResponse.messages.notFound")
+              : t("inviteResponse.messages.declineFailed"))
+
       setMessage(errorMessage)
-      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -129,8 +135,8 @@ const JudgeInviteResponse = () => {
   // Show error if no invite code
   if (!inviteCode && status === "idle") {
     return (
-      <PageContainer>
-        <div className="max-w-md mx-auto mt-12">
+      <PageContainer className="!min-h-screen overflow-hidden flex items-center justify-center">
+        <div className="w-full max-w-md mx-auto">
           <div className="bg-white border border-red-200 rounded-lg p-6 text-center">
             <Icon
               icon="mdi:alert-circle"
@@ -138,13 +144,13 @@ const JudgeInviteResponse = () => {
               className="text-red-500 mx-auto mb-4"
             />
             <h2 className="text-xl font-semibold text-gray-800 mb-2">
-              Invalid Invitation
+              {t("inviteResponse.invalidTitle")}
             </h2>
             <p className="text-gray-600 mb-4">
-              No invitation code provided. Please use the link from your invitation email or notification.
+              {t("inviteResponse.invalidMessage")}
             </p>
             <button onClick={() => navigate("/")} className="button-orange">
-              Go to Home
+              {t("inviteResponse.goHome")}
             </button>
           </div>
         </div>
@@ -155,8 +161,8 @@ const JudgeInviteResponse = () => {
   // Show error if no email
   if (!judgeEmail && status === "idle") {
     return (
-      <PageContainer>
-        <div className="max-w-md mx-auto mt-12">
+      <PageContainer className="!min-h-screen overflow-hidden flex items-center justify-center">
+        <div className="w-full max-w-md mx-auto">
           <div className="bg-white border border-red-200 rounded-lg p-6 text-center">
             <Icon
               icon="mdi:alert-circle"
@@ -164,13 +170,13 @@ const JudgeInviteResponse = () => {
               className="text-red-500 mx-auto mb-4"
             />
             <h2 className="text-xl font-semibold text-gray-800 mb-2">
-              Email Required
+              {t("inviteResponse.emailRequiredTitle")}
             </h2>
             <p className="text-gray-600 mb-4">
-              Email is required to process this invitation. Please ensure you are logged in or provide your email in the invitation link.
+              {t("inviteResponse.emailRequiredMessage")}
             </p>
             <button onClick={() => navigate("/")} className="button-orange">
-              Go to Home
+              {t("inviteResponse.goHome")}
             </button>
           </div>
         </div>
@@ -179,18 +185,20 @@ const JudgeInviteResponse = () => {
   }
 
   return (
-    <PageContainer>
-      <div className="max-w-md mx-auto mt-12">
+    <PageContainer className="!min-h-screen overflow-hidden flex items-center justify-center">
+      <div className="w-full max-w-md mx-auto">
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           {/* Processing state */}
           {status === "processing" && (
             <div className="text-center">
               <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-[#ff6b35] mx-auto mb-4"></div>
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                Processing...
+                {t("inviteResponse.loading")}
               </h2>
               <p className="text-gray-600">
-                Please wait while we process your {action === "accept" ? "acceptance" : "decline"}.
+                {action === "accept"
+                  ? t("inviteResponse.processingMessageAccept")
+                  : t("inviteResponse.processingMessageDecline")}
               </p>
             </div>
           )}
@@ -204,10 +212,12 @@ const JudgeInviteResponse = () => {
                 className="text-green-500 mx-auto mb-4"
               />
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                Success!
+                {t("inviteResponse.successTitle")}
               </h2>
               <p className="text-gray-600 mb-4">{message}</p>
-              <p className="text-sm text-gray-500">Redirecting...</p>
+              <p className="text-sm text-gray-500">
+                {t("inviteResponse.redirecting")}
+              </p>
             </div>
           )}
 
@@ -220,12 +230,12 @@ const JudgeInviteResponse = () => {
                 className="text-red-500 mx-auto mb-4"
               />
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                Error
+                {t("inviteResponse.errorTitle")}
               </h2>
               <p className="text-gray-600 mb-4">{message}</p>
               <div className="flex gap-2 justify-center">
-                <button onClick={() => navigate("/")} className="button-gray">
-                  Go to Home
+                <button onClick={() => navigate("/")} className="button-white">
+                  {t("inviteResponse.goHome")}
                 </button>
                 {inviteCode && (
                   <button
@@ -236,7 +246,7 @@ const JudgeInviteResponse = () => {
                     }}
                     className="button-orange"
                   >
-                    Try Again
+                    {t("inviteResponse.tryAgain")}
                   </button>
                 )}
               </div>
@@ -252,33 +262,35 @@ const JudgeInviteResponse = () => {
                 className="text-[#ff6b35] mx-auto mb-4"
               />
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                Judge Invitation
+                {t("inviteResponse.pageTitle")}
               </h2>
               {contest && (
                 <div className="mb-4">
                   <p className="text-gray-700 font-medium">{contest.name}</p>
                   {contest.year && (
-                    <p className="text-sm text-gray-500">Year: {contest.year}</p>
+                    <p className="text-sm text-gray-500">
+                      {t("inviteResponse.year")}: {contest.year}
+                    </p>
                   )}
                 </div>
               )}
               <p className="text-gray-600 mb-6">
-                You have been invited to judge this contest. Would you like to accept or decline this invitation?
+                {t("inviteResponse.inviteMessage")}
               </p>
               <div className="flex gap-3 justify-center">
                 <button
                   onClick={handleDeclineInvite}
                   disabled={loading}
-                  className="button-gray"
+                  className="button-white"
                 >
-                  Decline
+                  {t("inviteResponse.declineButton")}
                 </button>
                 <button
                   onClick={handleAcceptInvite}
                   disabled={loading}
                   className="button-orange"
                 >
-                  Accept
+                  {t("inviteResponse.acceptButton")}
                 </button>
               </div>
             </div>
@@ -290,4 +302,3 @@ const JudgeInviteResponse = () => {
 }
 
 export default JudgeInviteResponse
-

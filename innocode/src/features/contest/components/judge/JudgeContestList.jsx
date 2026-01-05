@@ -36,7 +36,7 @@ const JudgeContestList = ({ contests, onContestClick }) => {
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <StatusBadge status={contest.status} />
+            <StatusBadge status={contest.status} translate={true} />
             <ChevronRight size={20} className="text-[#7A7574]" />
           </div>
         </div>

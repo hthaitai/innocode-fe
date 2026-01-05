@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react"
 import RubricItem from "./RubricItem"
+import { useTranslation } from "react-i18next"
 
 export default function RubricList({
   rubric,
@@ -10,13 +11,17 @@ export default function RubricList({
   errors,
   readOnly = false,
 }) {
+  const { t } = useTranslation("judge")
+
   return (
     <div>
-      <div className="text-sm font-semibold pt-3 pb-2">Rubric</div>
+      <div className="text-sm font-semibold pt-3 pb-2">
+        {t("evaluation.rubric.title")}
+      </div>
 
       {!rubric?.length ? (
         <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          No rubric available for this round, contact organizer to add rubric.
+          {t("evaluation.rubric.noRubric")}
         </div>
       ) : (
         <div className="space-y-1">
@@ -45,7 +50,9 @@ export default function RubricList({
             }`}
           >
             {evaluating && <Loader2 className="animate-spin w-4 h-4" />}
-            {evaluating ? "Submitting..." : "Submit"}
+            {evaluating
+              ? t("evaluation.rubric.submitting")
+              : t("evaluation.rubric.submit")}
           </button>
         </div>
       )}

@@ -1,8 +1,11 @@
 import StatusBadge from "@/shared/components/StatusBadge"
 import { formatDateTime } from "../../../../shared/utils/dateTime"
 import { ChevronRight, Calendar } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 const JudgeRoundList = ({ rounds, onRoundClick }) => {
+  const { t } = useTranslation("judge")
+
   return (
     <ul className="space-y-1">
       {rounds.map((round) => (
@@ -22,14 +25,18 @@ const JudgeRoundList = ({ rounds, onRoundClick }) => {
                 <span className="flex-shrink-0">
                   {formatDateTime(round.start)}
                 </span>
-                <span>|</span>
-                <span className="truncate">{round.problemType}</span>
+                {/* <span>|</span>
+                <span className="truncate">
+                  {t(`round.types.${round.problemType}`, {
+                    defaultValue: round.problemType,
+                  })}
+                </span> */}
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <StatusBadge status={round.status} />
+            <StatusBadge status={round.status} translate={true} />
             <ChevronRight size={20} className="text-[#7A7574]" />
           </div>
         </div>

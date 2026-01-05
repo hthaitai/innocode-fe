@@ -1,5 +1,6 @@
 import Label from "../../../shared/components/form/Label"
 import TextFieldFluent from "../../../shared/components/TextFieldFluent"
+import { useTranslation } from "react-i18next"
 
 export default function RubricItem({
   index,
@@ -9,6 +10,8 @@ export default function RubricItem({
   error,
   readOnly = false,
 }) {
+  const { t } = useTranslation("judge")
+
   return (
     <div
       className={`border rounded-[5px] text-sm leading-5 bg-white ${
@@ -20,17 +23,21 @@ export default function RubricItem({
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
             <span className="font-medium text-[#E05307]">
-              Criteria {index + 1}
+              {t("evaluation.rubricItem.criteria", { index: index + 1 })}
             </span>
-            <span className="text-[#7A7574]">({item.maxScore} points)</span>
+            <span className="text-[#7A7574]">
+              {t("evaluation.rubricItem.points", { points: item.maxScore })}
+            </span>
           </div>
           <p>{item.description}</p>
         </div>
       </div>
-      
+
       {/* Input fields */}
       <div className="p-5 grid grid-cols-[max-content_1fr] gap-x-[28px] gap-y-5 items-start">
-        <Label htmlFor={`score-${item.rubricId}`}>Score</Label>
+        <Label htmlFor={`score-${item.rubricId}`}>
+          {t("evaluation.rubricItem.score")}
+        </Label>
         <TextFieldFluent
           id={`score-${item.rubricId}`}
           type="number"
@@ -43,13 +50,15 @@ export default function RubricItem({
           disabled={readOnly}
         />
 
-        <Label htmlFor={`note-${item.rubricId}`}>Note</Label>
+        <Label htmlFor={`note-${item.rubricId}`}>
+          {t("evaluation.rubricItem.note")}
+        </Label>
         <TextFieldFluent
           id={`note-${item.rubricId}`}
           value={scoreObj?.note || ""}
           multiline
           rows={6}
-          placeholder="Add a note..."
+          placeholder={t("evaluation.rubricItem.notePlaceholder")}
           onChange={(e) =>
             !readOnly && onChange(item.rubricId, "note", e.target.value)
           }

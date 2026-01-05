@@ -3,30 +3,30 @@ import { Download, Edit2 } from "lucide-react"
 import StatusBadge from "@/shared/components/StatusBadge"
 import Actions from "../../../shared/components/Actions"
 
-export const getJudgeSubmissionsColumns = (handleRubricEvaluation) => [
+export const getJudgeSubmissionsColumns = (handleRubricEvaluation, t) => [
   {
-    header: "Student",
+    header: t ? t("manualSubmissions.table.student") : "Student",
     accessorKey: "submitedByStudentName",
     size: 240, // rough 30%
     cell: ({ row }) => row.original?.submitedByStudentName || "—",
     meta: { className: "truncate max-w-[300px]" },
   },
   {
-    header: "Team",
+    header: t ? t("manualSubmissions.table.team") : "Team",
     accessorKey: "teamName",
     size: 220, // rough 20%
     cell: ({ row }) => row.original?.teamName || "—",
     meta: { className: "truncate max-w-[200px]" },
   },
+  // {
+  //   header: t ? t("manualSubmissions.table.status") : "Status",
+  //   accessorKey: "status",
+  //   size: 150, // rough 15%
+  //   cell: ({ row }) => <StatusBadge status={row.original?.status} />,
+  //   meta: { className: "truncate max-w-[150px]" },
+  // },
   {
-    header: "Status",
-    accessorKey: "status",
-    size: 150, // rough 15%
-    cell: ({ row }) => <StatusBadge status={row.original?.status} />,
-    meta: { className: "truncate max-w-[150px]" },
-  },
-  {
-    header: "Score",
+    header: t ? t("manualSubmissions.table.score") : "Score",
     accessorKey: "criterionResults",
     size: 150, // rough 15%
     cell: ({ row }) => {
@@ -48,7 +48,9 @@ export const getJudgeSubmissionsColumns = (handleRubricEvaluation) => [
         row={row.original}
         items={[
           {
-            label: "Rubric evaluation",
+            label: t
+              ? t("manualSubmissions.actions.rubricEvaluation")
+              : "Rubric evaluation",
             icon: Edit2,
             onClick: () => handleRubricEvaluation(row.original.submissionId),
           },

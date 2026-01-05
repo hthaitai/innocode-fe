@@ -214,6 +214,21 @@
     "failed": "Thất bại",
     "noSubmittedFilesAvailable": "Không có tệp đã nộp nào.",
     "failedToDownloadFile": "Không thể tải xuống tệp.",
+    "selectDateAndTime": "Chọn ngày và giờ",
+    "hour": "Giờ",
+    "minute": "Phút",
+    "amPm": "Sáng/Chiều",
+    "am": "Sáng",
+    "pm": "Chiều",
+    "daysShort": {
+      "su": "CN",
+      "mo": "T2",
+      "tu": "T3",
+      "we": "T4",
+      "th": "T5",
+      "fr": "T6",
+      "sa": "T7"
+    },
     "pagination": {
       "pageOfItems": "Trang {{page}} / {{totalPages}} — {{totalCount}} mục",
       "firstPage": "Trang đầu",

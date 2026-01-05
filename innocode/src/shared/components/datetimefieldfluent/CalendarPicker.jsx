@@ -1,16 +1,18 @@
-import React from "react";
-import dayjs from "dayjs";
+import React from "react"
+import { useTranslation } from "react-i18next"
+import dayjs from "dayjs"
 
 const CalendarPicker = ({ selectedDate, setSelectedDate }) => {
-  const currentDate = selectedDate || dayjs(); // default if null
+  const { t } = useTranslation()
+  const currentDate = selectedDate || dayjs() // default if null
 
-  const daysInMonth = currentDate.daysInMonth();
-  const firstDayOfMonth = currentDate.startOf("month").day();
-  const calendarDays = [];
-  for (let i = 0; i < firstDayOfMonth; i++) calendarDays.push(null);
-  for (let d = 1; d <= daysInMonth; d++) calendarDays.push(d);
+  const daysInMonth = currentDate.daysInMonth()
+  const firstDayOfMonth = currentDate.startOf("month").day()
+  const calendarDays = []
+  for (let i = 0; i < firstDayOfMonth; i++) calendarDays.push(null)
+  for (let d = 1; d <= daysInMonth; d++) calendarDays.push(d)
 
-  const handleDateClick = (day) => setSelectedDate(currentDate.date(day));
+  const handleDateClick = (day) => setSelectedDate(currentDate.date(day))
 
   return (
     <div className="flex-1">
@@ -21,7 +23,7 @@ const CalendarPicker = ({ selectedDate, setSelectedDate }) => {
         >
           &lt;
         </button>
-        <span className="text-sm font-medium">
+        <span className="text-sm font-medium capitalize">
           {currentDate.format("MMMM YYYY")}
         </span>
         <button
@@ -33,14 +35,22 @@ const CalendarPicker = ({ selectedDate, setSelectedDate }) => {
       </div>
 
       <div className="grid grid-cols-7 gap-1 text-center text-xs">
-        {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
+        {[
+          t("common.daysShort.su"),
+          t("common.daysShort.mo"),
+          t("common.daysShort.tu"),
+          t("common.daysShort.we"),
+          t("common.daysShort.th"),
+          t("common.daysShort.fr"),
+          t("common.daysShort.sa"),
+        ].map((d) => (
           <div key={d} className="font-semibold">
             {d}
           </div>
         ))}
 
         {calendarDays.map((day, idx) => {
-          const isSelected = day === currentDate.date();
+          const isSelected = day === currentDate.date()
           return (
             <div
               key={idx}
@@ -53,11 +63,11 @@ const CalendarPicker = ({ selectedDate, setSelectedDate }) => {
             >
               {day || ""}
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CalendarPicker;
+export default CalendarPicker

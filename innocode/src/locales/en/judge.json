@@ -31,6 +31,125 @@
     "expired": "Expired",
     "declined": "Declined",
     "pendinginvite": "Pending Invite",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "opened": "Opened",
+    "closed": "Closed",
+    "incoming": "Incoming",
+    "finalized": "Finalized"
+  },
+  "contestList": {
+    "title": "Contests",
+    "searchPlaceholder": "Search contests...",
+    "listName": "contest"
+  },
+  "contestDetail": {
+    "fallbackName": "Contest",
+    "errorItem": "contest or rounds",
+    "noRounds": "No rounds found"
+  },
+  "round": {
+    "problemType": "Problem Type",
+    "types": {
+      "Manual": "Manual",
+      "Coding": "Coding"
+    }
+  },
+  "manualSubmissions": {
+    "title": "Manual Submissions",
+    "table": {
+      "student": "Student",
+      "team": "Team",
+      "status": "Status",
+      "score": "Score",
+      "actions": "Actions"
+    },
+    "filter": {
+      "Pending": "Pending",
+      "Finished": "Finished",
+      "Cancelled": "Cancelled",
+      "PlagiarismConfirmed": "Plagiarism confirmed",
+      "PlagiarismSuspected": "Plagiarism suspected"
+    },
+    "actions": {
+      "rubricEvaluation": "Rubric evaluation"
+    },
+    "errors": {
+      "round": "round",
+      "submissions": "submissions"
+    },
+    "fallbacks": {
+      "contest": "Contest",
+      "round": "Round"
+    }
+  },
+  "evaluation": {
+    "alert": "This submission is {{status}} and cannot be edited.",
+    "submissionInfo": {
+      "title": "Submission information",
+      "author": "Author",
+      "teamName": "Team name",
+      "contestName": "Contest name",
+      "roundName": "Round name",
+      "status": "Status",
+      "judgeEmail": "Judge email",
+      "download": "Download",
+      "downloadDesc": "Download the submitted files for review.",
+      "submissionFile": "Submission"
+    },
+    "rubric": {
+      "title": "Rubric",
+      "noRubric": "No rubric available for this round, contact organizer to add rubric.",
+      "submit": "Submit",
+      "submitting": "Submitting..."
+    },
+    "toast": {
+      "success": "Evaluation submitted successfully!",
+      "error": "Failed to submit evaluation"
+    },
+    "errors": {
+      "submissionOrRubric": "submission or rubric",
+      "submission": "submission"
+    },
+    "rubricItem": {
+      "criteria": "Criteria {{index}}",
+      "points": "({{points}} points)",
+      "score": "Score",
+      "note": "Note",
+      "notePlaceholder": "Add a note..."
+    }
+  },
+  "inviteResponse": {
+    "pageTitle": "Judge Invitation",
+    "loading": "Verifying invitation...",
+    "processingAccept": "Processing acceptance...",
+    "processingDecline": "Processing decline...",
+    "processingResponse": "Processing your response...",
+    "processingMessageAccept": "Please wait while we process your acceptance.",
+    "processingMessageDecline": "Please wait while we process your decline.",
+    "successTitle": "Success!",
+    "redirecting": "Redirecting...",
+    "errorTitle": "Error",
+    "tryAgain": "Try Again",
+    "invalidTitle": "Invalid Invitation",
+    "invalidMessage": "No invitation code provided. Please use the link from your invitation email or notification.",
+    "emailRequiredTitle": "Email Required",
+    "emailRequiredMessage": "Email is required to process this invitation. Please ensure you are logged in or provide your email in the invitation link.",
+    "emailRequiredAction": "Email is required to {{action}} the invitation.",
+    "goHome": "Go to Home",
+    "year": "Year",
+    "inviteMessage": "You have been invited to judge this contest. Would you like to accept or decline this invitation?",
+    "acceptButton": "Accept",
+    "declineButton": "Decline",
+    "messages": {
+      "acceptSuccess": "Invitation accepted successfully! You are now a judge for this contest.",
+      "acceptToast": "Invitation accepted successfully!",
+      "declineSuccess": "Invitation declined successfully.",
+      "declineToast": "Invitation declined.",
+      "invalid": "Invalid invitation. It may have expired or already been processed.",
+      "notFound": "Invitation not found. It may have been revoked or expired.",
+      "notPending": "The invitation is no longer pending.",
+      "acceptFailed": "Failed to accept invitation. Please try again.",
+      "declineFailed": "Failed to decline invitation. Please try again."
+    }
   }
 }

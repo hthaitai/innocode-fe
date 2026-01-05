@@ -19,8 +19,10 @@ import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import { useTranslation } from "react-i18next"
 
 const JudgeManualEvaluationsPage = () => {
+  const { t } = useTranslation("judge")
   const { contestId, roundId, submissionId } = useParams()
   const navigate = useNavigate()
 
@@ -46,8 +48,8 @@ const JudgeManualEvaluationsPage = () => {
   } = useDownloadSubmissionQuery(submissionId)
 
   const breadcrumbItems = BREADCRUMBS.JUDGE_ROUND_SUBMISSION_EVALUATION(
-    round?.contestName ?? "Contest",
-    round?.name ?? "Round"
+    round?.contestName ?? t("manualSubmissions.fallbacks.contest"),
+    round?.name ?? t("manualSubmissions.fallbacks.round")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.JUDGE_ROUND_SUBMISSION_EVALUATION(
     contestId,
@@ -96,7 +98,7 @@ const JudgeManualEvaluationsPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="submission or rubric" />
+        <ErrorState itemName={t("evaluation.errors.submissionOrRubric")} />
       </PageContainer>
     )
   }
@@ -107,7 +109,7 @@ const JudgeManualEvaluationsPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="submission" />
+        <MissingState itemName={t("evaluation.errors.submission")} />
       </PageContainer>
     )
   }
@@ -140,11 +142,11 @@ const JudgeManualEvaluationsPage = () => {
 
     try {
       await evaluateSubmission(payload).unwrap()
-      toast.success("Evaluation submitted successfully!")
+      toast.success(t("evaluation.toast.success"))
       navigate(`/judge/contests/${contestId}/rounds/${roundId}/submissions`)
     } catch (err) {
       const errorMessage =
-        err?.data?.errorMessage || err?.error || "Failed to submit evaluation"
+        err?.data?.errorMessage || err?.error || t("evaluation.toast.error")
       toast.error(errorMessage)
     }
   }
@@ -169,11 +171,12 @@ const JudgeManualEvaluationsPage = () => {
             <div className="flex items-center gap-5 border border-yellow-400 bg-yellow-100 text-yellow-800 rounded-[5px] px-5 min-h-[70px] text-sm leading-5">
               <AlertTriangle className="w-5 h-5" />
               <span>
-                This submission is{" "}
-                <span className="font-bold">
-                  {submission.status.toLowerCase()}
-                </span>{" "}
-                and cannot be edited.
+                {t("evaluation.alert", {
+                  status: t(
+                    `manualSubmissions.filter.${submission.status}`,
+                    submission.status
+                  ).toLowerCase(),
+                })}
               </span>
             </div>
           )}

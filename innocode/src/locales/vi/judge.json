@@ -31,6 +31,125 @@
     "expired": "Đã hết hạn",
     "declined": "Đã từ chối",
     "pendinginvite": "Chờ mời",
-    "cancelled": "Đã hủy"
+    "cancelled": "Đã hủy",
+    "opened": "Đã mở",
+    "closed": "Đã đóng",
+    "incoming": "Sắp tới",
+    "finalized": "Đã kết thúc"
+  },
+  "contestList": {
+    "title": "Cuộc thi",
+    "searchPlaceholder": "Tìm kiếm cuộc thi...",
+    "listName": "cuộc thi"
+  },
+  "contestDetail": {
+    "fallbackName": "Cuộc thi",
+    "errorItem": "cuộc thi hoặc vòng thi",
+    "noRounds": "Không tìm thấy vòng thi nào"
+  },
+  "round": {
+    "problemType": "Loại bài toán",
+    "types": {
+      "Manual": "Thủ công",
+      "Coding": "Lập trình"
+    }
+  },
+  "manualSubmissions": {
+    "title": "Bài nộp thủ công",
+    "table": {
+      "student": "Sinh viên",
+      "team": "Đội",
+      "status": "Trạng thái",
+      "score": "Điểm",
+      "actions": "Hành động"
+    },
+    "filter": {
+      "Pending": "Đang chờ",
+      "Finished": "Đã hoàn thành",
+      "Cancelled": "Đã hủy",
+      "PlagiarismConfirmed": "Xác nhận đạo văn",
+      "PlagiarismSuspected": "Nghi ngờ đạo văn"
+    },
+    "actions": {
+      "rubricEvaluation": "Chấm điểm theo rubric"
+    },
+    "errors": {
+      "round": "vòng thi",
+      "submissions": "bài nộp"
+    },
+    "fallbacks": {
+      "contest": "Cuộc thi",
+      "round": "Vòng thi"
+    }
+  },
+  "evaluation": {
+    "alert": "Bài nộp này {{status}} và không thể chỉnh sửa.",
+    "submissionInfo": {
+      "title": "Thông tin bài nộp",
+      "author": "Tên học sinh",
+      "teamName": "Tên đội",
+      "contestName": "Tên cuộc thi",
+      "roundName": "Tên vòng thi",
+      "status": "Trạng thái",
+      "judgeEmail": "Email giám khảo",
+      "download": "Tải xuống",
+      "downloadDesc": "Tải xuống các tệp đã nộp để xem xét.",
+      "submissionFile": "Bài nộp"
+    },
+    "rubric": {
+      "title": "Rubric",
+      "noRubric": "Không có rubric cho vòng thi này, liên hệ người tổ chức để thêm rubric.",
+      "submit": "Gửi",
+      "submitting": "Đang gửi..."
+    },
+    "toast": {
+      "success": "Đã gửi đánh giá thành công!",
+      "error": "Không thể gửi đánh giá"
+    },
+    "errors": {
+      "submissionOrRubric": "bài nộp hoặc rubric",
+      "submission": "bài nộp"
+    },
+    "rubricItem": {
+      "criteria": "Tiêu chí {{index}}",
+      "points": "({{points}} điểm)",
+      "score": "Điểm",
+      "note": "Ghi chú",
+      "notePlaceholder": "Thêm ghi chú..."
+    }
+  },
+  "inviteResponse": {
+    "pageTitle": "Lời mời làm giám khảo",
+    "loading": "Đang xác minh lời mời...",
+    "processingAccept": "Đang xử lý chấp nhận...",
+    "processingDecline": "Đang xử lý từ chối...",
+    "processingResponse": "Đang xử lý phản hồi của bạn...",
+    "processingMessageAccept": "Vui lòng đợi trong khi chúng tôi xử lý chấp nhận của bạn.",
+    "processingMessageDecline": "Vui lòng đợi trong khi chúng tôi xử lý từ chối của bạn.",
+    "successTitle": "Thành công!",
+    "redirecting": "Đang chuyển hướng...",
+    "errorTitle": "Lỗi",
+    "tryAgain": "Thử lại",
+    "invalidTitle": "Lời mời không hợp lệ",
+    "invalidMessage": "Không có mã lời mời nào được cung cấp. Vui lòng sử dụng liên kết từ email mời hoặc thông báo của bạn.",
+    "emailRequiredTitle": "Yêu cầu email",
+    "emailRequiredMessage": "Email là bắt buộc để xử lý lời mời này. Vui lòng đảm bảo bạn đã đăng nhập hoặc cung cấp email của bạn trong liên kết mời.",
+    "emailRequiredAction": "Email là bắt buộc để {{action}} lời mời.",
+    "goHome": "Về trang chủ",
+    "year": "Năm",
+    "inviteMessage": "Bạn đã được mời làm giám khảo cho cuộc thi này. Bạn có muốn chấp nhận hay từ chối lời mời này không?",
+    "acceptButton": "Chấp nhận",
+    "declineButton": "Từ chối",
+    "messages": {
+      "acceptSuccess": "Đã chấp nhận lời mời thành công! Bây giờ bạn là giám khảo cho cuộc thi này.",
+      "acceptToast": "Đã chấp nhận lời mời thành công!",
+      "declineSuccess": "Đã từ chối lời mời thành công.",
+      "declineToast": "Đã từ chối lời mời.",
+      "invalid": "Lời mời không hợp lệ. Có thể nó đã hết hạn hoặc đã được xử lý.",
+      "notFound": "Không tìm thấy lời mời. Có thể nó đã bị thu hồi hoặc hết hạn.",
+      "notPending": "Lời mời không còn ở trạng thái chờ.",
+      "acceptFailed": "Không thể chấp nhận lời mời. Vui lòng thử lại.",
+      "declineFailed": "Không thể từ chối lời mời. Vui lòng thử lại."
+    }
   }
 }

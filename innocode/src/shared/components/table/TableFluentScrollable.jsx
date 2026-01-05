@@ -6,6 +6,7 @@ import {
   getExpandedRowModel,
 } from "@tanstack/react-table"
 import { Spinner } from "../SpinnerFluent"
+import { useTranslation } from "react-i18next"
 
 const TableFluentScrollable = ({
   data = [],
@@ -19,6 +20,7 @@ const TableFluentScrollable = ({
   renderActions = null,
   getRowId,
 }) => {
+  const { t } = useTranslation("common")
   const [expanded, setExpanded] = React.useState({})
 
   const table = useReactTable({
@@ -92,7 +94,7 @@ const TableFluentScrollable = ({
                   colSpan={columns.length}
                   className="text-center text-[#7A7574] py-4 text-[14px] leading-[20px]"
                 >
-                  No data available.
+                  {t("common.noData")}
                 </td>
               </tr>
             ) : (

@@ -15,8 +15,10 @@ import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import TablePagination from "../../../../shared/components/TablePagination"
+import { useTranslation } from "react-i18next"
 
 const JudgeManualSubmissionsPage = () => {
+  const { t } = useTranslation("judge")
   const { contestId, roundId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
@@ -50,12 +52,12 @@ const JudgeManualSubmissionsPage = () => {
     )
   }
 
-  const columns = getJudgeSubmissionsColumns(handleRubricEvaluation)
+  const columns = getJudgeSubmissionsColumns(handleRubricEvaluation, t)
 
   // Breadcrumbs
   const breadcrumbItems = BREADCRUMBS.JUDGE_ROUND_SUBMISSIONS(
-    roundData?.contestName ?? "Contest",
-    roundData?.name ?? "Round"
+    roundData?.contestName ?? t("manualSubmissions.fallbacks.contest"),
+    roundData?.name ?? t("manualSubmissions.fallbacks.round")
   )
 
   const breadcrumbPaths = BREADCRUMB_PATHS.JUDGE_ROUND_SUBMISSIONS(
@@ -80,7 +82,7 @@ const JudgeManualSubmissionsPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="round" />
+        <ErrorState itemName={t("manualSubmissions.errors.round")} />
       </PageContainer>
     )
   }
@@ -91,7 +93,7 @@ const JudgeManualSubmissionsPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="round" />
+        <MissingState itemName={t("manualSubmissions.errors.round")} />
       </PageContainer>
     )
   }
@@ -102,7 +104,7 @@ const JudgeManualSubmissionsPage = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="submissions" />
+        <ErrorState itemName={t("manualSubmissions.errors.submissions")} />
       </PageContainer>
     )
   }

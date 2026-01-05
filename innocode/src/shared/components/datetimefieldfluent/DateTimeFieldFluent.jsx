@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
+import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import dayjs from "dayjs"
 import CalendarPicker from "./CalendarPicker"
@@ -14,6 +15,7 @@ const DateTimeFieldFluent = ({
   error,
   helperText,
 }) => {
+  const { t } = useTranslation()
   const [focused, setFocused] = useState(false)
   const [showPicker, setShowPicker] = useState(false)
   const [selectedDate, setSelectedDate] = useState(value ? dayjs(value) : null)
@@ -162,7 +164,7 @@ const DateTimeFieldFluent = ({
           <span className="text-sm text-gray-700">
             {displayDate
               ? displayDate.format("DD/MM/YYYY hh:mm A")
-              : "Select date and time"}
+              : t("common.selectDateAndTime")}
           </span>
           <ChevronDown
             size={16}
@@ -187,7 +189,7 @@ const DateTimeFieldFluent = ({
                 opacity: 0,
                 transition: { duration: 0.25, ease: EASING.fluentOut },
               }}
-              className="min-w-[420px] absolute top-full bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg p-5 z-50"
+              className="min-w-[420px] w-max absolute top-full bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg p-5 z-50"
               style={{
                 ...pickerPosition,
               }}
@@ -214,7 +216,7 @@ const DateTimeFieldFluent = ({
                     onClick={handleSave}
                     className="button-orange"
                   >
-                    Save
+                    {t("buttons.save")}
                   </button>
                 </div>
               </div>

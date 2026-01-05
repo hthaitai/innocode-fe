@@ -214,6 +214,21 @@
     "failed": "Failed",
     "noSubmittedFilesAvailable": "No submitted files available.",
     "failedToDownloadFile": "Failed to download file.",
+    "selectDateAndTime": "Select date and time",
+    "hour": "Hour",
+    "minute": "Minute",
+    "amPm": "AM/PM",
+    "am": "AM",
+    "pm": "PM",
+    "daysShort": {
+      "su": "Su",
+      "mo": "Mo",
+      "tu": "Tu",
+      "we": "We",
+      "th": "Th",
+      "fr": "Fr",
+      "sa": "Sa"
+    },
     "pagination": {
       "pageOfItems": "Page {{page}} of {{totalPages}} — {{totalCount}} items",
       "firstPage": "First page",

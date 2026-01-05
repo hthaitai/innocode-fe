@@ -2,6 +2,7 @@
  * Date and time utility functions
  * Centralized location for all date/time formatting and conversion operations
  */
+import i18n from "../../i18n/config"
 
 /**
  * Formats a date string for display as dd/mm/yyyy HH:MM AM/PM
@@ -37,7 +38,7 @@ export const formatDateTime = (dateString) => {
 
   let hours = date.getHours()
   const minutes = String(date.getMinutes()).padStart(2, "0")
-  const ampm = hours >= 12 ? "PM" : "AM"
+  const ampm = hours >= 12 ? i18n.t("common.pm") : i18n.t("common.am")
   hours = hours % 12
   hours = hours ? hours : 12 // the hour '0' should be '12'
   const formattedHours = String(hours).padStart(2, "0")
