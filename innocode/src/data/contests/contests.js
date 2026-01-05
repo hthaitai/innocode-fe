@@ -9,6 +9,7 @@ export const contests = [
     status: "draft",
     created_at: "2025-10-01T09:00:00Z",
   },
+  //  s
   {
     contest_id: 2,
     year: 2025,
@@ -52,8 +53,7 @@ export const contests = [
     contest_id: 6,
     year: 2024,
     name: "Cybersecurity CTF",
-    description:
-      "Capture flags in this intense ethical hacking competition.",
+    description: "Capture flags in this intense ethical hacking competition.",
     img_url: "https://example.com/cyber-ctf.png",
     status: "finalized",
     created_at: "2024-11-05T13:20:00Z",
@@ -82,8 +82,7 @@ export const contests = [
     contest_id: 9,
     year: 2024,
     name: "IoT Smart City Hack",
-    description:
-      "Build hardware-software solutions for urban sustainability.",
+    description: "Build hardware-software solutions for urban sustainability.",
     img_url: "https://example.com/iot-smart-city.png",
     status: "finalized",
     created_at: "2024-10-18T09:30:00Z",
@@ -98,4 +97,4 @@ export const contests = [
     status: "published",
     created_at: "2025-10-29T11:00:00Z",
   },
-];
+]
