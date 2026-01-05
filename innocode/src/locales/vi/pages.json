@@ -129,7 +129,7 @@
     "viewLeaderboard": "Xem bảng xếp hạng",
     "checkCurrentRankings": "Kiểm tra xếp hạng và vị trí đội hiện tại",
     "seeYourResult": "Xem kết quả của bạn",
-    "viewYourResults": "Xem kết quả và điểm số {type} của bạn",
+    "viewYourResults": "Xem kết quả và điểm số của bạn",
     "yourResults": "Kết quả của bạn",
     "clickResultToView": "Nhấp vào kết quả để xem thông tin chi tiết",
     "yourTeam": "Đội của bạn",
@@ -162,6 +162,15 @@
     "team": "Đội",
     "teamSize": "Số lượng thành viên",
     "language": "Ngôn ngữ",
+    "dateRange": "Thời gian diễn ra",
+    "roundPeriod": "Thời gian vòng thi",
+    "appealSubmit": "Nộp khiếu nại",
+    "appealReview": "Duyệt khiếu nại",
+    "judgeDeadline": "Hạn chấm điểm",
+    "inProgress": "Đang diễn ra",
+    "deadline": "Hạn chót",
+    "dateRegister": "Thời gian mở đăng ký",
+    "rankCutoff": "Ngưỡng xếp hạng",
     "importantNotice": "Thông báo quan trọng",
     "registerBeforeDeadline": "Hãy đảm bảo đăng ký trước hạn chót. Các đăng ký muộn sẽ không được chấp nhận.",
     "statusLabels": {
@@ -171,7 +180,10 @@
       "published": "Đã công bố",
       "registrationOpen": "Đang mở đăng ký",
       "registrationClosed": "Đã đóng đăng ký",
-      "draft": "Nháp"
+      "draft": "Nháp",
+      "opened": "Đang mở",
+      "closed": "Đã đóng",
+      "scheduled": "Đã lên lịch"
     }
   },
   "appeal": {

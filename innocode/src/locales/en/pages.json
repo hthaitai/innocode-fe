@@ -129,7 +129,7 @@
     "viewLeaderboard": "View Leaderboard",
     "checkCurrentRankings": "Check current rankings and team standings",
     "seeYourResult": "See Your Result",
-    "viewYourResults": "View your {type} results and scores",
+    "viewYourResults": "View your results and scores",
     "yourResults": "Your Results",
     "clickResultToView": "Click on a result to view detailed information",
     "yourTeam": "Your Team",
@@ -163,16 +163,29 @@
     "teamSize": "Team Size",
     "language": "Language",
     "importantNotice": "Important Notice",
+    "dateRange": "Date Range",
+    "roundPeriod": "Round Period",
+    "appealSubmit": "Appeal Submission",
+    "appealReview": "Appeal Review",
+    "judgeDeadline": "Judge Deadline",
+    "inProgress": "In Progress",
+    "deadline": "Deadline",
+    "dateRegister": "Date Register",
+    "rankCutoff": "Rank Cutoff",
     "registerBeforeDeadline": "Make sure to register before the deadline. Late registrations will not be accepted.",
     "statusLabels": {
       "ongoing": "Ongoing",
       "upcoming": "Upcoming",
       "completed": "Completed",
-      "published": "Published",
+      "published": "Published", 
       "registrationOpen": "Registration Open",
       "registrationClosed": "Registration Closed",
-      "draft": "Draft"
+      "draft": "Draft",
+      "opened": "Opened",
+      "closed": "Closed",
+      "scheduled": "Scheduled"
     }
+
   },
   "appeal": {
     "noContestsAvailable": "No contests available",

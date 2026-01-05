@@ -1,4 +1,4 @@
-import axiosClient from "./axiosClient";
+import axiosClient from "./axiosClient"
 
 export const teamApi = {
   getAll: () => axiosClient.get("/teams"),
@@ -7,5 +7,5 @@ export const teamApi = {
   create: (data) => axiosClient.post("/teams", data),
   update: (id, data) => axiosClient.put(`/teams/${id}`, data),
   delete: (id) => axiosClient.delete(`/teams/${id}`),
-  getMyTeam: () => axiosClient.get("/teams/me"),
-};
+  getMyTeam: () => axiosClient.get("/teams/my-team"),
+}
