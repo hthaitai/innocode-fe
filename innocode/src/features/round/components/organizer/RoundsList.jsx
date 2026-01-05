@@ -4,9 +4,9 @@ import { formatDateTime, toDatetimeLocal } from "@/shared/utils/dateTime"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
-const RoundsList = ({ contestId, rounds }) => {
+const RoundsList = ({ contestId, rounds, disableNavigation = false }) => {
   const navigate = useNavigate()
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["pages", "round"])
 
   if (!rounds || rounds.length === 0) {
     return (
@@ -21,8 +21,13 @@ const RoundsList = ({ contestId, rounds }) => {
       {rounds.map((round) => (
         <div
           key={round.roundId}
-          className="cursor-pointer border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors"
+          className={`${
+            disableNavigation
+              ? ""
+              : "cursor-pointer hover:bg-[#F6F6F6] transition-colors"
+          } border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]`}
           onClick={() =>
+            !disableNavigation &&
             navigate(`/organizer/contests/${contestId}/rounds/${round.roundId}`)
           }
         >
@@ -34,7 +39,9 @@ const RoundsList = ({ contestId, rounds }) => {
               </p>
               <p className="text-[12px] leading-[16px] text-[#7A7574]">
                 {formatDateTime(round.start)} - {formatDateTime(round.end)} |{" "}
-                {round.problemType || "—"}
+                {t(`round:info.problemTypes.${round.problemType}`) ||
+                  round.problemType ||
+                  "—"}
               </p>
             </div>
           </div>
@@ -48,17 +55,20 @@ const RoundsList = ({ contestId, rounds }) => {
               )}
             </div>
 
-            <div className="flex items-center gap-2">
-              <ChevronRight
-                size={20}
-                className="text-[#7A7574] cursor-pointer"
-                onClick={() =>
-                  navigate(
-                    `/organizer/contests/${contestId}/rounds/${round.roundId}`
-                  )
-                }
-              />
-            </div>
+            {!disableNavigation && (
+              <div className="flex items-center gap-2">
+                <ChevronRight
+                  size={20}
+                  className="text-[#7A7574] cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigate(
+                      `/organizer/contests/${contestId}/rounds/${round.roundId}`
+                    )
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       ))}

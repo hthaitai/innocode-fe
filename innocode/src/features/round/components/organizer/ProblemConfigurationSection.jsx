@@ -77,8 +77,10 @@ export default function ProblemConfigurationSection({
               <div className="min-w-[150px] w-max">
                 <DropdownFluent
                   options={[
-                    { value: "InputOutput", label: t("form.inputOutput") },
-                    { value: "MockTest", label: t("form.mockTest") },
+                    // { value: "InputOutput", label: t("form.inputOutputLabel") },
+                    // { value: "MockTest", label: t("form.fileBasedLabel") },
+                    { value: "InputOutput", label: "Input/Output" },
+                    { value: "MockTest", label: "Mock test" },
                   ]}
                   value={formData.problemConfig?.testType || "InputOutput"}
                   onChange={(val) =>

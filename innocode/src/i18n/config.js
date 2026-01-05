@@ -34,8 +34,12 @@ import enAppeal from "../locales/en/appeal.json"
 import viAppeal from "../locales/vi/appeal.json"
 import enPlagiarism from "../locales/en/plagiarism.json"
 import viPlagiarism from "../locales/vi/plagiarism.json"
+import enContest from "../locales/en/contest.json"
+import viContest from "../locales/vi/contest.json"
 import enNotifications from "../locales/en/notifications.json"
 import viNotifications from "../locales/vi/notifications.json"
+import enFooter from "../locales/en/footer.json"
+import viFooter from "../locales/vi/footer.json"
 
 i18n
   .use(LanguageDetector) // Tự động detect ngôn ngữ từ browser
@@ -58,6 +62,8 @@ i18n
         appeal: enAppeal,
         plagiarism: enPlagiarism,
         notifications: enNotifications,
+        contest: enContest,
+        footer: enFooter,
       },
       vi: {
         common: viCommon,
@@ -75,6 +81,8 @@ i18n
         appeal: viAppeal,
         plagiarism: viPlagiarism,
         notifications: viNotifications,
+        contest: viContest,
+        footer: viFooter,
       },
     },
     fallbackLng: "en",

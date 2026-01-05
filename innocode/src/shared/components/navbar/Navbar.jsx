@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react"
 import { Link, NavLink, useNavigate } from "react-router-dom"
+import { motion } from "framer-motion"
 import { useTranslation } from "react-i18next"
 import "./Navbar.css"
 import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg"
@@ -143,18 +144,33 @@ const Navbar = () => {
 
       {/* Navigation Menu */}
       {!rolesToHideNav.includes(user?.role) && (
-        <div className="flex">
+        <div className="flex gap-1">
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
-                `px-4 py-2 text-sm leading-5 font-medium text-gray-700 hover:text-orange-600 ${
+                `px-4 py-2 text-sm leading-5 font-medium text-[#52525B] hover:text-orange-600 no-underline ${
                   isActive ? "text-orange-600 font-semibold" : ""
                 }`
               }
             >
-              {link.name}
+              {({ isActive }) => (
+                <span className="relative pb-1">
+                  {link.name}
+                  {isActive && (
+                    <motion.div
+                      layoutId="navbar-indicator"
+                      className="absolute bottom-[-3px] left-0 w-full h-[2px] bg-orange-600 rounded-t-sm"
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                </span>
+              )}
             </NavLink>
           ))}
         </div>

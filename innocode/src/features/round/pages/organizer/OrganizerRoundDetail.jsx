@@ -99,7 +99,11 @@ const OrganizerRoundDetail = () => {
 
             <div className="space-y-1">
               <StartEndRoundSection roundId={roundId} />
-              <RoundTimeTravelSection roundId={roundId} />
+              <RoundTimeTravelSection
+                roundId={roundId}
+                isRetakeRound={round.isRetakeRound}
+                problemType={round.problemType}
+              />
               <DeleteRoundSection round={round} contestId={contestId} />
             </div>
           </div>

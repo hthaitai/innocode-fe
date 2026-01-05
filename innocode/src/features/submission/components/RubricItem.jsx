@@ -13,11 +13,7 @@ export default function RubricItem({
   const { t } = useTranslation("judge")
 
   return (
-    <div
-      className={`border rounded-[5px] text-sm leading-5 bg-white ${
-        error?.score || error?.note ? "border-red-500" : "border-[#E5E5E5]"
-      }`}
-    >
+    <div className="border rounded-[5px] text-sm leading-5 bg-white border-[#E5E5E5]">
       {/* Question with bottom border */}
       <div className="border-b border-[#E5E5E5] p-5 min-h-[70px] flex items-center">
         <div className="flex flex-col gap-2">
@@ -34,36 +30,49 @@ export default function RubricItem({
       </div>
 
       {/* Input fields */}
-      <div className="p-5 grid grid-cols-[max-content_1fr] gap-x-[28px] gap-y-5 items-start">
-        <Label htmlFor={`score-${item.rubricId}`}>
-          {t("evaluation.rubricItem.score")}
-        </Label>
-        <TextFieldFluent
-          id={`score-${item.rubricId}`}
-          type="number"
-          value={scoreObj?.score || 0}
-          onChange={(e) =>
-            !readOnly &&
-            onChange(item.rubricId, "score", Number(e.target.value))
-          }
-          style={{ width: "80px" }}
-          disabled={readOnly}
-        />
+      <div className="p-5 space-y-5">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={`score-${item.rubricId}`}>
+            {t("evaluation.rubricItem.score")}
+          </Label>
+          <div className="flex flex-col gap-1">
+            <TextFieldFluent
+              id={`score-${item.rubricId}`}
+              type="number"
+              value={scoreObj?.score || 0}
+              onChange={(e) =>
+                !readOnly &&
+                onChange(item.rubricId, "score", Number(e.target.value))
+              }
+              style={{ width: "80px" }}
+              disabled={readOnly}
+              error={!!error?.score}
+              helperText={error?.score}
+            />
+          </div>
+        </div>
 
-        <Label htmlFor={`note-${item.rubricId}`}>
-          {t("evaluation.rubricItem.note")}
-        </Label>
-        <TextFieldFluent
-          id={`note-${item.rubricId}`}
-          value={scoreObj?.note || ""}
-          multiline
-          rows={6}
-          placeholder={t("evaluation.rubricItem.notePlaceholder")}
-          onChange={(e) =>
-            !readOnly && onChange(item.rubricId, "note", e.target.value)
-          }
-          disabled={readOnly}
-        />
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={`note-${item.rubricId}`}>
+            {t("evaluation.rubricItem.note")}
+          </Label>
+          <div className="flex flex-col gap-1">
+            <TextFieldFluent
+              id={`note-${item.rubricId}`}
+              value={scoreObj?.note || ""}
+              multiline
+              rows={6}
+              placeholder={t("evaluation.rubricItem.notePlaceholder")}
+              onChange={(e) =>
+                !readOnly && onChange(item.rubricId, "note", e.target.value)
+              }
+              disabled={readOnly}
+              error={!!error?.note}
+              helperText={error?.note}
+              maxLength={255}
+            />
+          </div>
+        </div>
       </div>
     </div>
   )

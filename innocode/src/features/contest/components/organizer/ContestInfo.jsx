@@ -48,14 +48,6 @@ const ContestInfo = ({ contest }) => {
           },
           { spacer: true },
           {
-            label: t("organizerContestDetail.info.labels.startDate"),
-            value: safe(formatDateTime(contest.start)),
-          },
-          {
-            label: t("organizerContestDetail.info.labels.endDate"),
-            value: safe(formatDateTime(contest.end)),
-          },
-          {
             label: t("organizerContestDetail.info.labels.registrationStart"),
             value: contest.registrationStart
               ? safe(formatDateTime(contest.registrationStart))
@@ -67,6 +59,15 @@ const ContestInfo = ({ contest }) => {
               ? safe(formatDateTime(contest.registrationEnd))
               : t("organizerContestDetail.info.labels.notSet"),
           },
+          {
+            label: t("organizerContestDetail.info.labels.startDate"),
+            value: safe(formatDateTime(contest.start)),
+          },
+          {
+            label: t("organizerContestDetail.info.labels.endDate"),
+            value: safe(formatDateTime(contest.end)),
+          },
+
           { spacer: true },
           {
             label: t("organizerContestDetail.info.labels.minTeamMembers"),

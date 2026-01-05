@@ -1,0 +1,14 @@
+{
+  "publish": {
+    "errors": {
+      "retakeNoWeight": "Vòng thi lại '{{name}}' không được tính điểm (thiếu câu hỏi/trường hợp kiểm thử/tiêu chí).",
+      "mcqNoQuestions": "Bài thi trắc nghiệm '{{name}}' chưa có câu hỏi.",
+      "autoEvalMissingConfig": "Vòng chấm tự động '{{name}}' phải có file mock test hoặc trường hợp kiểm thử.",
+      "manualNoRubric": "Vòng chấm thủ công '{{name}}' thiếu tiêu chí chấm điểm (rubric).",
+      "noJudges": "Chưa có giám khảo được phân công cho các bài thi thủ công."
+    }
+  },
+  "certificate": {
+    "noTemplates": "Chưa có mẫu chứng chỉ nào được tạo."
+  }
+}

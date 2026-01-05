@@ -3,7 +3,8 @@ import BaseModal from "@/shared/components/BaseModal"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { useInviteJudgeToContestMutation } from "@/services/contestJudgeApi"
 import { toast } from "react-hot-toast"
-import { sendJudgeInviteEmail } from "../../../../shared/services/emailService"
+import { sendJudgeInviteEmail } from "@/shared/services/emailService"
+import { useTranslation, Trans } from "react-i18next"
 
 export default function InviteJudgeModal({
   isOpen,
@@ -13,6 +14,7 @@ export default function InviteJudgeModal({
   judgeName,
   judgeEmail,
 }) {
+  const { t } = useTranslation("judge")
   const [ttlDays, setTtlDays] = useState(1)
   const [error, setError] = useState("")
   const [inviteJudgeToContest, { isLoading }] =
@@ -32,7 +34,7 @@ export default function InviteJudgeModal({
   const handleChange = (e) => {
     const val = parseInt(e.target.value, 10)
     if (isNaN(val) || val < MIN_TTL || val > MAX_TTL) {
-      setError(`Please enter a number between ${MIN_TTL} and ${MAX_TTL}`)
+      setError(t("inviteModal.ttlError", { min: MIN_TTL, max: MAX_TTL }))
     } else {
       setError("")
     }
@@ -41,7 +43,7 @@ export default function InviteJudgeModal({
 
   const handleSubmit = async () => {
     if (!contestId || !judgeUserId)
-      return toast.error("Missing contest or judge info")
+      return toast.error(t("inviteModal.errorMissingInfo"))
     if (error || !ttlDays) return
 
     try {
@@ -53,7 +55,8 @@ export default function InviteJudgeModal({
 
       const { inviteCode, contestName } = result.data
 
-      const baseUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin
+      const baseUrl =
+        import.meta.env.VITE_FRONTEND_URL || window.location.origin
       const acceptUrl = `${baseUrl}/judge/accept?inviteCode=${inviteCode}`
       const declineUrl = `${baseUrl}/judge/decline?inviteCode=${inviteCode}`
 
@@ -67,11 +70,11 @@ export default function InviteJudgeModal({
       })
       setSendingEmail(false)
 
-      toast.success("Invite sent and email delivered!")
+      toast.success(t("inviteModal.success"))
       onClose()
     } catch (err) {
       console.error(err)
-      toast.error(err?.data?.message || "Failed to send invite")
+      toast.error(err?.data?.message || t("inviteModal.errorGeneric"))
     }
   }
 
@@ -81,12 +84,12 @@ export default function InviteJudgeModal({
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Invite judge"
+      title={t("inviteModal.title")}
       size="sm"
       footer={
         <div className="flex justify-end gap-2">
           <button className="button-white" onClick={onClose} disabled={loading}>
-            Cancel
+            {t("inviteModal.cancel")}
           </button>
           <button
             className={`flex items-center gap-2 justify-center ${
@@ -99,21 +102,27 @@ export default function InviteJudgeModal({
               <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
             )}
 
-            {loading ? "Inviting..." : "Invite"}
+            {loading ? t("inviteModal.submitting") : t("inviteModal.submit")}
           </button>
         </div>
       }
     >
       <div className="space-y-3">
         <p className="text-sm leading-5 text-[#7A7574]">
-          You are about to invite <strong>{judgeName || "this judge"}</strong>
-          {judgeEmail ? ` (${judgeEmail})` : ""} to this contest. <br />
-          Set how long the judge has to accept the invitation before it expires.
-          After this period, the invite will no longer be valid.
+          <Trans
+            i18nKey="judge:inviteModal.description"
+            values={{
+              name: judgeName || t("activeJudges.unnamed"),
+              email: judgeEmail
+                ? t("inviteModal.emailFormat", { email: judgeEmail })
+                : "",
+            }}
+            components={{ strong: <strong />, br: <br /> }}
+          />
         </p>
 
         <TextFieldFluent
-          label="Invite expiration (days)"
+          label={t("inviteModal.ttlLabel")}
           type="number"
           min={MIN_TTL}
           max={MAX_TTL}

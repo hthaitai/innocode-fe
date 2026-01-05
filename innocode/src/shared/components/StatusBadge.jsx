@@ -19,7 +19,6 @@ export const statusColorMap = {
   in_review: "bg-amber-600",
   upcoming: "bg-amber-300",
 
-  finalized: "bg-green-700",
   completed: "bg-green-500",
   approved: "bg-green-600",
   resolved: "bg-green-500",
@@ -40,7 +39,6 @@ export const statusColorMap = {
 
   notinvited: "bg-gray-400",
 
-  // Round statuses
   opened: "bg-green-500",
   closed: "bg-gray-500",
   incoming: "bg-blue-400",
@@ -49,28 +47,23 @@ export const statusColorMap = {
 
 import { useTranslation } from "react-i18next"
 
-// StatusBadge component
 const StatusBadge = ({ status, translate = false, label }) => {
   const { t } = useTranslation("pages")
 
   if (!status) status = "draft"
 
-  // Normalize status: lowercase, remove spaces & special chars
   const safeStatus = status
     .toString()
-    .normalize("NFKC") // normalize unicode
-    .replace(/\s+/g, "") // remove all spaces
-    .replace(/-/g, "") // remove dashes
+    .normalize("NFKC")
+    .replace(/\s+/g, "")
+    .replace(/-/g, "")
     .toLowerCase()
 
-  // Get color, default gray if unknown
   const colorClass = statusColorMap[safeStatus] || "bg-gray-500"
 
-  // Get display status
   let displayStatus = label
 
   if (!displayStatus) {
-    // Check if this is a role registration status (pending, approved, denied)
     const roleRegistrationStatusMap = {
       pending: "roleRegistrations.pending",
       approved: "roleRegistrations.approved",
@@ -79,11 +72,8 @@ const StatusBadge = ({ status, translate = false, label }) => {
 
     const roleRegistrationKey = roleRegistrationStatusMap[safeStatus]
     if (roleRegistrationKey) {
-      // Use translation for role registration status
       displayStatus = t(roleRegistrationKey)
     } else if (translate) {
-      // Use translation for contest status
-      // Map status to translation key
       const statusMap = {
         ongoing: "contest.statusLabels.ongoing",
         upcoming: "contest.statusLabels.upcoming",
@@ -92,9 +82,6 @@ const StatusBadge = ({ status, translate = false, label }) => {
         registrationopen: "contest.statusLabels.registrationOpen",
         registrationclosed: "contest.statusLabels.registrationClosed",
         draft: "contest.statusLabels.draft",
-        // Round statuses (using judge namespace but passed as label often, here logic assumes we might need to map them if translate=true)
-        // However, generic logic below tries to look it up.
-        // Let's add explicit mapping to judge.status if these are passed.
         opened: "judge:status.opened",
         closed: "judge:status.closed",
         incoming: "judge:status.incoming",
@@ -109,10 +96,9 @@ const StatusBadge = ({ status, translate = false, label }) => {
             .replace(/_/g, " ")
             .trim()
     } else {
-      // Format display: split camelCase or snake_case into words
       displayStatus = status
-        .replace(/([a-z])([A-Z])/g, "$1 $2") // split camelCase
-        .replace(/_/g, " ") // replace underscores
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
+        .replace(/_/g, " ")
         .trim()
     }
   }

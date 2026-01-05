@@ -20,7 +20,7 @@ const AppealInfo = ({ appeal }) => {
     // Decision info
     { label: t("appeal:mentor"), value: safe(appeal.mentorName) },
     { label: t("appeal:decision"), value: safe(appeal.decision) },
-    { label: t("appeal:mentorReason"), value: safe(appeal.decisionReason) },
+    // { label: t("appeal:mentorReason"), value: safe(appeal.decisionReason) },
     {
       label: t("appeal:resolution"),
       value: safe(appeal.appealResolution),

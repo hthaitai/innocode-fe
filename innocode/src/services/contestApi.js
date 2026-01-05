@@ -36,6 +36,24 @@ export const contestApi = api.injectEndpoints({
           : [{ type: "Contests", id: "LIST" }],
     }),
 
+    getJudgeContests: builder.query({
+      query: ({ pageNumber = 1, pageSize = 10, nameSearch = "" }) => ({
+        url: "contests/participation",
+        params: { pageNumber, pageSize, nameSearch },
+      }),
+      providesTags: (result) =>
+        result?.data
+          ? [
+              ...result.data.map((contest) => ({
+                type: "Contests",
+                id: contest.contestId,
+              })),
+              { type: "JudgeContests", id: "LIST" },
+            ]
+          : [{ type: "JudgeContests", id: "LIST" }],
+      refetchOnMountOrArgChange: true,
+    }),
+
     getContestById: builder.query({
       query: (id) => `contests/${id}`,
       transformResponse: (response) => response.data,
@@ -96,6 +114,26 @@ export const contestApi = api.injectEndpoints({
         { type: "Contests", id: "LIST" },
       ],
     }),
+    startRegistrationNow: builder.mutation({
+      query: (id) => ({
+        url: `contests/${id}/start-registration-now`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Contests", id },
+        { type: "Contests", id: "LIST" },
+      ],
+    }),
+    endRegistrationNow: builder.mutation({
+      query: (id) => ({
+        url: `contests/${id}/end-registration-now`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Contests", id },
+        { type: "Contests", id: "LIST" },
+      ],
+    }),
     getContestReport: builder.query({
       query: (id) => `contests/${id}/report`,
       transformResponse: (response) => response.data,
@@ -106,6 +144,7 @@ export const contestApi = api.injectEndpoints({
 export const {
   useGetAllContestsQuery,
   useGetOrganizerContestsQuery,
+  useGetJudgeContestsQuery,
   useGetContestByIdQuery,
   useAddContestMutation,
   useUpdateContestMutation,
@@ -114,5 +153,7 @@ export const {
   usePublishContestMutation,
   useStartContestNowMutation,
   useEndContestNowMutation,
+  useStartRegistrationNowMutation,
+  useEndRegistrationNowMutation,
   useLazyGetContestReportQuery,
 } = contestApi

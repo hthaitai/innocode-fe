@@ -7,6 +7,7 @@ import TablePagination from "@/shared/components/TablePagination"
 import { useModal } from "@/shared/hooks/useModal"
 import { useDeleteCertificateTemplateMutation } from "../../../../services/certificateApi"
 import toast from "react-hot-toast"
+import { MissingState } from "@/shared/components/ui/MissingState"
 
 import { useTranslation } from "react-i18next"
 
@@ -16,7 +17,7 @@ const ManageCertificateTemplates = ({
   pagination,
   setPageNumber,
 }) => {
-  const { t } = useTranslation(["certificate"])
+  const { t } = useTranslation(["certificate", "contest"])
   const navigate = useNavigate()
   const { openModal } = useModal()
   const [deleteCertificateTemplate] = useDeleteCertificateTemplateMutation()
@@ -48,29 +49,37 @@ const ManageCertificateTemplates = ({
     <div>
       <CertificateTemplatesToolbar contestId={contestId} />
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
-        {templates.map((tpl) => (
-          <div
-            key={tpl.templateId}
-            className="border border-[#E5E5E5] rounded-[5px]"
-          >
-            <div className="relative w-full aspect-video overflow-hidden">
-              <TemplatePreviewCanvas template={tpl} />
-            </div>
+      {templates.length === 0 ? (
+        <div
+          className={`text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]`}
+        >
+          {t("contest:certificate.noTemplates")}
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
+          {templates.map((tpl) => (
+            <div
+              key={tpl.templateId}
+              className="border border-[#E5E5E5] rounded-[5px]"
+            >
+              <div className="relative w-full aspect-video overflow-hidden">
+                <TemplatePreviewCanvas template={tpl} />
+              </div>
 
-            <div className="flex items-center justify-between bg-white p-3 rounded-b-[5px]">
-              <h3 className="text-sm leading-5 line-clamp-2 font-medium">
-                {tpl.name}
-              </h3>
-              <TemplateActions
-                template={tpl}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
+              <div className="flex items-center justify-between bg-white p-3 rounded-b-[5px]">
+                <h3 className="text-sm leading-5 line-clamp-2 font-medium">
+                  {tpl.name}
+                </h3>
+                <TemplateActions
+                  template={tpl}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {templates.length > 0 && (
         <TablePagination pagination={pagination} onPageChange={setPageNumber} />

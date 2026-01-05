@@ -1,24 +1,33 @@
 export const validateScores = (scores, rubric) => {
-  const errors = []
+  const errors = {}
 
   scores.forEach((s) => {
     const rubricItem = rubric.find((r) => r.rubricId === s.rubricId)
     if (!rubricItem) {
-      errors.push(`Rubric item not found for ID ${s.rubricId}`)
-    } else if (s.score > rubricItem.maxScore) {
-      errors.push(
-        `Score for "${rubricItem.description}" exceeds max of ${rubricItem.maxScore}`
-      )
-    } else if (s.score < 0) {
-      errors.push(`Score for "${rubricItem.description}" cannot be negative`)
+      // Logic error, shouldn't happen in normal flow
+      return
     }
 
-    if (s.note && s.note.length > 255) {
-      errors.push(
-        `Note for "${
-          rubricItem?.description || s.rubricId
-        }" cannot exceed 255 characters`
-      )
+    // Initialize error object for this item if needed
+    if (!errors[s.rubricId]) {
+      errors[s.rubricId] = {}
+    }
+
+    // Validate Score
+    if (s.score > rubricItem.maxScore) {
+      errors[s.rubricId].score = `Score cannot exceed ${rubricItem.maxScore}`
+    } else if (s.score < 0) {
+      errors[s.rubricId].score = "Score cannot be negative"
+    }
+
+    // Validate Note
+    // if (s.note && s.note.length > 255) {
+    //   errors[s.rubricId].note = "Note cannot exceed 255 characters"
+    // }
+
+    // Clean up empty error objects
+    if (Object.keys(errors[s.rubricId]).length === 0) {
+      delete errors[s.rubricId]
     }
   })
 

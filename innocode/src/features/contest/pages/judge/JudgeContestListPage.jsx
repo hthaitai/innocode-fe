@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useGetAllContestsQuery } from "../../../../services/contestApi"
+import { useGetJudgeContestsQuery } from "../../../../services/contestApi"
 import PageContainer from "../../../../shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useNavigate } from "react-router-dom"
@@ -25,7 +25,7 @@ const JudgeContestListPage = () => {
     data: contestsData,
     isLoading,
     isError,
-  } = useGetAllContestsQuery({
+  } = useGetJudgeContestsQuery({
     pageNumber,
     pageSize,
     nameSearch,

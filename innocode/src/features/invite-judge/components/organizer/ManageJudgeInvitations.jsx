@@ -20,6 +20,7 @@ const ManageJudgeInvitations = ({
   setPageNumber,
 }) => {
   const { openModal } = useModal()
+  const { t } = useTranslation("judge")
 
   const [resendJudgeInvite] = useResendJudgeInviteMutation()
   const [revokeJudgeInvite] = useRevokeJudgeInviteMutation()
@@ -57,11 +58,11 @@ const ManageJudgeInvitations = ({
         const judgeName = judge.judgeName || "Judge"
 
         if (!inviteCode) {
-          toast.error("Unable to resend invite (missing invite code)")
+          toast.error(t("manageInvitations.missingInviteCode"))
           return
         }
         if (!judgeEmail) {
-          toast.error("Unable to resend invite (missing judge email)")
+          toast.error(t("manageInvitations.missingJudgeEmail"))
           return
         }
 
@@ -79,16 +80,20 @@ const ManageJudgeInvitations = ({
         })
 
         if (emailed) {
-          toast.success(`Invite resent to ${judgeName}`)
+          toast.success(
+            t("manageInvitations.inviteResentSuccess", { name: judgeName })
+          )
         } else {
-          toast.error("Invite resent but email failed to send")
+          toast.error(t("manageInvitations.inviteResentEmailFailed"))
         }
       } catch (error) {
         console.error("Failed to resend invite:", error)
-        toast.error(`Failed to resend invite to ${judge.judgeName}`)
+        toast.error(
+          t("manageInvitations.inviteResentError", { name: judge.judgeName })
+        )
       }
     },
-    [contestId, resendJudgeInvite, contestName]
+    [contestId, resendJudgeInvite, contestName, t]
   )
 
   const handleRevoke = useCallback(
@@ -96,7 +101,7 @@ const ManageJudgeInvitations = ({
       if (!judge || !contestId || !judge.inviteId) return
 
       const confirmed = window.confirm(
-        `Are you sure you want to revoke the invite for ${judge.judgeName}?`
+        t("manageInvitations.revokeConfirm", { name: judge.judgeName })
       )
 
       if (!confirmed) return
@@ -107,16 +112,18 @@ const ManageJudgeInvitations = ({
           inviteId: judge.inviteId,
         }).unwrap()
 
-        toast.success(`Invite revoked for ${judge.judgeName}`)
+        toast.success(
+          t("manageInvitations.inviteRevokedSuccess", { name: judge.judgeName })
+        )
       } catch (error) {
         console.error("Failed to revoke invite:", error)
-        toast.error(`Failed to revoke invite for ${judge.judgeName}`)
+        toast.error(
+          t("manageInvitations.inviteRevokeError", { name: judge.judgeName })
+        )
       }
     },
-    [contestId, revokeJudgeInvite]
+    [contestId, revokeJudgeInvite, t]
   )
-
-  const { t } = useTranslation("judge")
 
   const columns = getJudgeInviteColumns({
     onInvite: handleInvite,

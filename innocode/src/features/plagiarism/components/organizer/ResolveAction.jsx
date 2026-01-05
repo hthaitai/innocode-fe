@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom"
 
 const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
   const { t } = useTranslation(["plagiarism"])
-  const { openModal } = useModal()
+  const { openModal, closeModal } = useModal()
   const navigate = useNavigate()
 
   const [approvePlagiarism, { isLoading: isApproving }] =
@@ -21,12 +21,13 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
     openModal("confirm", {
       title: t("confirmPlagiarismTitle"),
       description: t("confirmPlagiarismDesc"),
-      confirmText: t("yes"),
-      cancelText: t("no"),
+      confirmText: t("actions_accept"),
+      cancelText: t("cancel"),
       onConfirm: async () => {
         try {
           await approvePlagiarism(submissionId).unwrap()
           toast.success(t("confirmSuccess"))
+          closeModal()
           navigate(`/organizer/contests/${contestId}/plagiarism`)
         } catch (err) {
           console.error(err)
@@ -45,12 +46,14 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
     openModal("confirm", {
       title: t("dismissPlagiarismTitle"),
       description: t("dismissPlagiarismDesc"),
-      confirmText: t("yes"),
-      cancelText: t("no"),
+      confirmText: t("actions_deny"),
+      cancelText: t("cancel"),
       onConfirm: async () => {
         try {
+          // Deny Plagiarism Case = Mark as Valid = Accept Submission
           await denyPlagiarism(submissionId).unwrap()
           toast.success(t("dismissSuccess"))
+          closeModal()
           navigate(`/organizer/contests/${contestId}/plagiarism`)
         } catch (err) {
           console.error(err)
@@ -83,18 +86,18 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
 
         <div className="flex gap-2">
           <button
-            className="button-white"
+            className="button-red"
             onClick={handleDeny}
             disabled={isApproving || isDenying}
           >
-            {isDenying ? t("processing") : t("no")}
+            {isDenying ? t("processing") : t("actions_deny")}
           </button>
           <button
-            className="button-orange"
+            className="button-green"
             onClick={handleApprove}
             disabled={isApproving || isDenying}
           >
-            {isApproving ? t("processing") : t("yes")}
+            {isApproving ? t("processing") : t("actions_accept")}
           </button>
         </div>
       </div>

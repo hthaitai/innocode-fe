@@ -536,6 +536,18 @@
       "endSuccess": "Contest ended successfully",
       "endError": "Failed to end contest"
     },
+    "registrationControl": {
+      "title": "Registration control",
+      "subtitle": "Start or end the registration immediately",
+      "start": "Start registration",
+      "starting": "Starting...",
+      "end": "End registration",
+      "ending": "Ending...",
+      "startSuccess": "Registration started successfully",
+      "startError": "Failed to start registration",
+      "endSuccess": "Registration ended successfully",
+      "endError": "Failed to end registration"
+    },
     "publish": {
       "title": "Publish contest",
       "subtitleNotReady": "Contest is not ready to publish.",
@@ -550,7 +562,11 @@
       "success": "Contest published successfully!",
       "error": "Failed to publish contest",
       "required": "Required",
-      "cannotPublishTitle": "Cannot Publish Contest"
+      "cannotPublishTitle": "Cannot Publish Contest",
+      "errors": {
+        "contestEndTooEarly": "Contest end is too early to cover deadlines. Suggested end >= {{date}}.",
+        "autoEvalMissingConfig": "Auto-evaluation round '{{roundId}}' must have either a mock test file or test cases."
+      }
     },
     "rounds": {
       "title": "Round Management",

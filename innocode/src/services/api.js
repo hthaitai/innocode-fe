@@ -7,10 +7,9 @@ export const api = createApi({
     prepareHeaders: (headers, { endpoint, type }) => {
       // Don't send token for public endpoints (role registration POST)
       // endpoint is the full URL path like "/role-registrations"
-      const isPublicRoleRegistration = 
-        type === "mutation" && 
-        endpoint === "createRoleRegistration";
-      
+      const isPublicRoleRegistration =
+        type === "mutation" && endpoint === "createRoleRegistration"
+
       if (!isPublicRoleRegistration) {
         const token = localStorage.getItem("token")
         if (token && token !== "null") {
@@ -37,6 +36,7 @@ export const api = createApi({
     "RoleRegistrations",
     "SchoolCreationRequests",
     "Plagiarism",
+    "JudgeContests",
   ],
   endpoints: () => ({}),
 })

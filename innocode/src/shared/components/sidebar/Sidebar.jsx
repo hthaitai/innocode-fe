@@ -122,7 +122,7 @@ const menuByRole = {
     "team",
     "notifications",
   ],
-  judge: ["profile", "dashboard", "judgeContests", "notifications", "help"],
+  judge: ["profile", "judgeContests", "notifications", "help"],
   admin: ["profile", "dashboard", "leaderboard", "notifications", "help"],
   schoolmanager: [
     "profile",

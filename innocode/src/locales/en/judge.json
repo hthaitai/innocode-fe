@@ -108,7 +108,9 @@
     },
     "errors": {
       "submissionOrRubric": "submission or rubric",
-      "submission": "submission"
+      "submission": "submission",
+      "validationFailed": "Validation failed",
+      "validationSummary": "Please fix {{count}} error(s)."
     },
     "rubricItem": {
       "criteria": "Criteria {{index}}",
@@ -151,5 +153,28 @@
       "acceptFailed": "Failed to accept invitation. Please try again.",
       "declineFailed": "Failed to decline invitation. Please try again."
     }
+  },
+  "manageInvitations": {
+    "inviteResentSuccess": "Invite resent to {{name}}",
+    "inviteResentError": "Failed to resend invite to {{name}}",
+    "inviteResentEmailFailed": "Invite resent but email failed to send",
+    "inviteRevokedSuccess": "Invite revoked for {{name}}",
+    "inviteRevokeError": "Failed to revoke invite for {{name}}",
+    "revokeConfirm": "Are you sure you want to revoke the invite for {{name}}?",
+    "missingInviteCode": "Unable to resend invite (missing invite code)",
+    "missingJudgeEmail": "Unable to resend invite (missing judge email)"
+  },
+  "inviteModal": {
+    "title": "Invite judge",
+    "description": "You are about to invite <strong>{{name}}</strong>{{email}} to this contest. <br />Set how long the judge has to accept the invitation before it expires. After this period, the invite will no longer be valid.",
+    "emailFormat": " ({{email}})",
+    "ttlLabel": "Invite expiration (days)",
+    "ttlError": "Please enter a number between {{min}} and {{max}}",
+    "submit": "Invite",
+    "submitting": "Inviting...",
+    "cancel": "Cancel",
+    "success": "Invite sent and email delivered!",
+    "errorGeneric": "Failed to send invite",
+    "errorMissingInfo": "Missing contest or judge info"
   }
 }

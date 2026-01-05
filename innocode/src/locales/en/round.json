@@ -40,11 +40,16 @@
     "manual": "Manual test",
     "auto": "Auto test",
     "inputOutput": "Input/Output",
-    "mockTest": "Mock Test"
+    "mockTest": "Mock Test",
+    "inputOutputLabel": "Input / Output",
+    "fileBasedLabel": "File-based"
   },
   "contestPeriod": "Contest Period",
   "errors": {
-    "templateFile": "Template file is required"
+    "templateFile": "Template file is required",
+    "bufferError": "Round start must be after previous round buffer. Earliest allowed: {{date}}.",
+    "conflictError": "Round dates conflict with existing round '{{roundName}}' ({{startDate}} - {{endDate}}).",
+    "unknownError": "An unknown error occurred"
   },
   "detail": {
     "relatedSettings": "Related settings",
@@ -77,6 +82,11 @@
       "seconds": " seconds",
       "team": " team",
       "teams": " teams"
+    },
+    "problemTypes": {
+      "McqTest": "MCQ Test",
+      "AutoEvaluation": "Auto Evaluation",
+      "Manual": "Manual Evaluation"
     }
   },
   "openCode": {

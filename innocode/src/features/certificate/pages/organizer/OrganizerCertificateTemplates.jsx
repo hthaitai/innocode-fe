@@ -28,7 +28,7 @@ const OrganizerCertificateTemplates = () => {
     data: templatesData,
     isLoading: templatesLoading,
     isError: templatesError,
-  } = useGetCertificateTemplatesQuery({ page: pageNumber, pageSize })
+  } = useGetCertificateTemplatesQuery({ page: pageNumber, pageSize, contestId })
 
   const templates = templatesData?.data ?? []
   const pagination = templatesData?.additionalData ?? {}

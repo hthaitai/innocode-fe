@@ -108,7 +108,9 @@
     },
     "errors": {
       "submissionOrRubric": "bài nộp hoặc rubric",
-      "submission": "bài nộp"
+      "submission": "bài nộp",
+      "validationFailed": "Xác thực thất bại",
+      "validationSummary": "Vui lòng sửa {{count}} lỗi."
     },
     "rubricItem": {
       "criteria": "Tiêu chí {{index}}",
@@ -151,5 +153,28 @@
       "acceptFailed": "Không thể chấp nhận lời mời. Vui lòng thử lại.",
       "declineFailed": "Không thể từ chối lời mời. Vui lòng thử lại."
     }
+  },
+  "manageInvitations": {
+    "inviteResentSuccess": "Đã gửi lại lời mời cho {{name}}",
+    "inviteResentError": "Gửi lại lời mời cho {{name}} thất bại",
+    "inviteResentEmailFailed": "Đã gửi lại lời mời nhưng không gửi được email",
+    "inviteRevokedSuccess": "Đã thu hồi lời mời của {{name}}",
+    "inviteRevokeError": "Thu hồi lời mời của {{name}} thất bại",
+    "revokeConfirm": "Bạn có chắc chắn muốn thu hồi lời mời của {{name}}?",
+    "missingInviteCode": "Không thể gửi lại lời mời (thiếu mã mời)",
+    "missingJudgeEmail": "Không thể gửi lại lời mời (thiếu email giám khảo)"
+  },
+  "inviteModal": {
+    "title": "Mời giám khảo",
+    "description": "Bạn sắp mời <strong>{{name}}</strong>{{email}} tham gia cuộc thi này. <br />Thiết lập thời gian giám khảo có thể chấp nhận lời mời trước khi hết hạn. Sau thời gian này, lời mời sẽ không còn hiệu lực.",
+    "emailFormat": " ({{email}})",
+    "ttlLabel": "Thời hạn lời mời (ngày)",
+    "ttlError": "Vui lòng nhập số từ {{min}} đến {{max}}",
+    "submit": "Mời",
+    "submitting": "Đang mời...",
+    "cancel": "Hủy",
+    "success": "Đã gửi lời mời và email!",
+    "errorGeneric": "Gửi lời mời thất bại",
+    "errorMissingInfo": "Thiếu thông tin cuộc thi hoặc giám khảo"
   }
 }

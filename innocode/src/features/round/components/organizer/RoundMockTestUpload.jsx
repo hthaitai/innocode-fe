@@ -1,4 +1,5 @@
 import React, { useRef } from "react"
+import { useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { FileUp, FileCode } from "lucide-react"
 import {
@@ -10,6 +11,7 @@ import { Spinner } from "@/shared/components/SpinnerFluent"
 
 const RoundMockTestUpload = ({ roundId }) => {
   const fileInputRef = useRef(null)
+  const { contestId } = useParams()
   const { t } = useTranslation("round")
   const [uploadMockTest, { isLoading }] = useUploadMockTestMutation()
   const { data: mockTestUrl } = useGetRoundMockTestUrlQuery(roundId, {
@@ -26,7 +28,7 @@ const RoundMockTestUpload = ({ roundId }) => {
     }
 
     try {
-      await uploadMockTest({ roundId, file }).unwrap()
+      await uploadMockTest({ roundId, contestId, file }).unwrap()
       toast.success(t("mockTest.success"))
     } catch (error) {
       console.error("Upload failed", error)

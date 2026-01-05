@@ -20,7 +20,11 @@ import RoundsList from "../../components/organizer/RoundsList"
 import { EMPTY_ROUND } from "../../constants/roundConstants"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
-import { formatRoundError } from "@/features/round/utils/errorUtils"
+import {
+  formatRoundError,
+  BUFFER_ERROR_REGEX,
+  CONFLICT_ERROR_REGEX,
+} from "@/features/round/utils/errorUtils"
 
 const CreateRound = () => {
   const { contestId } = useParams()
@@ -136,7 +140,23 @@ const CreateRound = () => {
     } catch (err) {
       console.error(err)
       const errorMessage = err?.data?.errorMessage || t("create.errorGeneric")
-      toast.error(formatRoundError(errorMessage))
+      const formattedError = formatRoundError(errorMessage)
+
+      // If it's a buffer error, highlight the start time
+      if (errorMessage.match(BUFFER_ERROR_REGEX)) {
+        setErrors((prev) => ({ ...prev, start: formattedError }))
+      }
+
+      // If it's a conflict error, highlight both start and end times
+      if (errorMessage.match(CONFLICT_ERROR_REGEX)) {
+        setErrors((prev) => ({
+          ...prev,
+          start: formattedError,
+          end: formattedError,
+        }))
+      }
+
+      toast.error(formattedError)
     }
   }
 
@@ -170,6 +190,7 @@ const CreateRound = () => {
               rounds={rounds}
               selectedStart={form.start}
               selectedEnd={form.end}
+              disableNavigation={true}
             />
           </div>
 

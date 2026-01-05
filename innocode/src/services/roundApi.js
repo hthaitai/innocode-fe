@@ -98,8 +98,9 @@ export const roundApi = api.injectEndpoints({
           body: formData,
         }
       },
-      invalidatesTags: (result, error, { roundId }) => [
+      invalidatesTags: (result, error, { roundId, contestId }) => [
         { type: "Rounds", id: roundId },
+        { type: "PublishCheck", id: contestId },
       ],
     }),
     getRoundMockTestUrl: builder.query({

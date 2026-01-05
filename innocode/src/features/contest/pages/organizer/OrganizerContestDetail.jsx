@@ -8,6 +8,7 @@ import ContestRelatedSettings from "../../components/organizer/ContestRelatedSet
 import ManageRounds from "../../components/organizer/ManageRounds"
 import DeleteContestSection from "../../components/organizer/DeleteContestSection"
 import StartEndContestSection from "../../components/organizer/StartEndContestSection"
+import StartEndRegistrationSection from "../../components/organizer/StartEndRegistrationSection"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
@@ -113,6 +114,7 @@ const OrganizerContestDetail = () => {
             </div>
 
             <div className="space-y-1">
+              <StartEndRegistrationSection contestId={contestId} />
               <StartEndContestSection contestId={contestId} />
               <DeleteContestSection contest={contest} />
             </div>

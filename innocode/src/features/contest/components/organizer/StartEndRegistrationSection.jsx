@@ -2,53 +2,56 @@ import React from "react"
 import { toast } from "react-hot-toast"
 import { Icon } from "@iconify/react"
 import {
-  useStartContestNowMutation,
-  useEndContestNowMutation,
+  useStartRegistrationNowMutation,
+  useEndRegistrationNowMutation,
 } from "../../../../services/contestApi"
 import { useTranslation } from "react-i18next"
 
-const StartEndContestSection = ({ contestId }) => {
-  const [startContestNow, { isLoading: isStarting }] =
-    useStartContestNowMutation()
-  const [endContestNow, { isLoading: isEnding }] = useEndContestNowMutation()
+const StartEndRegistrationSection = ({ contestId }) => {
+  const [startRegistrationNow, { isLoading: isStarting }] =
+    useStartRegistrationNowMutation()
+  const [endRegistrationNow, { isLoading: isEnding }] =
+    useEndRegistrationNowMutation()
   const { t } = useTranslation("pages")
 
   const handleStartNow = async () => {
     try {
-      await startContestNow(contestId).unwrap()
-      toast.success(t("organizerContestDetail.control.startSuccess"))
+      await startRegistrationNow(contestId).unwrap()
+      toast.success(
+        t("organizerContestDetail.registrationControl.startSuccess")
+      )
     } catch (error) {
       const errorMessage =
         error?.data?.message ||
         error?.data?.errorMessage ||
-        t("organizerContestDetail.control.startError")
+        t("organizerContestDetail.registrationControl.startError")
       toast.error(errorMessage)
     }
   }
 
   const handleEndNow = async () => {
     try {
-      await endContestNow(contestId).unwrap()
-      toast.success(t("organizerContestDetail.control.endSuccess"))
+      await endRegistrationNow(contestId).unwrap()
+      toast.success(t("organizerContestDetail.registrationControl.endSuccess"))
     } catch (error) {
       const errorMessage =
         error?.data?.message ||
         error?.data?.errorMessage ||
-        t("organizerContestDetail.control.endError")
+        t("organizerContestDetail.registrationControl.endError")
       toast.error(errorMessage)
     }
   }
 
   return (
-    <div className="border border-[#E5E5E5] rounded-[5px] bg-white gap-5 px-5 flex justify-between items-center min-h-[70px]">
+    <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 gap-5 flex justify-between items-center min-h-[70px]">
       <div className="flex gap-5 items-center">
-        <Icon icon="mdi:play-pause" fontSize={20} />
+        <Icon icon="mdi:calendar-clock" fontSize={20} />
         <div>
           <p className="text-[14px] leading-[20px]">
-            {t("organizerContestDetail.control.title")}
+            {t("organizerContestDetail.registrationControl.title")}
           </p>
           <p className="text-[12px] leading-[16px] text-[#7A7574]">
-            {t("organizerContestDetail.control.subtitle")}
+            {t("organizerContestDetail.registrationControl.subtitle")}
           </p>
         </div>
       </div>
@@ -65,11 +68,15 @@ const StartEndContestSection = ({ contestId }) => {
           {isStarting ? (
             <>
               <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
-              <span>{t("organizerContestDetail.control.starting")}</span>
+              <span>
+                {t("organizerContestDetail.registrationControl.starting")}
+              </span>
             </>
           ) : (
             <>
-              <span>{t("organizerContestDetail.control.start")}</span>
+              <span>
+                {t("organizerContestDetail.registrationControl.start")}
+              </span>
             </>
           )}
         </button>
@@ -85,11 +92,13 @@ const StartEndContestSection = ({ contestId }) => {
           {isEnding ? (
             <>
               <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
-              <span>{t("organizerContestDetail.control.ending")}</span>
+              <span>
+                {t("organizerContestDetail.registrationControl.ending")}
+              </span>
             </>
           ) : (
             <>
-              <span>{t("organizerContestDetail.control.end")}</span>
+              <span>{t("organizerContestDetail.registrationControl.end")}</span>
             </>
           )}
         </button>
@@ -98,4 +107,4 @@ const StartEndContestSection = ({ contestId }) => {
   )
 }
 
-export default StartEndContestSection
+export default StartEndRegistrationSection

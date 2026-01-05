@@ -55,7 +55,7 @@ const JudgeInviteResponse = () => {
 
       // Auto redirect after 2 seconds
       setTimeout(() => {
-        navigate("/judge/manual-submissions")
+        navigate(`/judge/contests/${contestId}`)
       }, 2000)
     } catch (error) {
       console.error("Error accepting invite:", error)

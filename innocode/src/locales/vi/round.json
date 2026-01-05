@@ -40,11 +40,16 @@
     "manual": "Chấm thủ công",
     "auto": "Chấm tự động",
     "inputOutput": "Input/Output",
-    "mockTest": "Thi thử"
+    "mockTest": "Thi thử",
+    "inputOutputLabel": "Nhập / Xuất",
+    "fileBasedLabel": "Nộp file"
   },
   "contestPeriod": "Thời gian cuộc thi",
   "errors": {
-    "templateFile": "File mẫu là bắt buộc"
+    "templateFile": "File mẫu là bắt buộc",
+    "bufferError": "Thời gian bắt đầu phải sau thời gian kết thúc của vòng trước. Sớm nhất: {{date}}.",
+    "conflictError": "Thời gian trùng với vòng '{{roundName}}' ({{startDate}} - {{endDate}}).",
+    "unknownError": "Đã xảy ra lỗi không xác định"
   },
   "detail": {
     "relatedSettings": "Cài đặt liên quan",
@@ -77,6 +82,11 @@
       "seconds": " giây",
       "team": " đội",
       "teams": " đội"
+    },
+    "problemTypes": {
+      "McqTest": "Trắc nghiệm",
+      "AutoEvaluation": "Chấm tự động",
+      "Manual": "Chấm thủ công"
     }
   },
   "openCode": {
@@ -85,13 +95,13 @@
     "manage": "Quản lý"
   },
   "mockTest": {
-    "title": "Tải lên đề thi thử",
-    "description": "Tải lên script python cho thi thử",
+    "title": "Tải lên mock test",
+    "description": "Tải lên script python cho mock test",
     "upload": "Tải lên",
     "changeFile": "Thay đổi file",
     "download": "Tải xuống",
     "errorExtension": "Chỉ chấp nhận file .py",
-    "success": "Tải lên đề thi thử thành công",
+    "success": "Tải lên mock test thành công",
     "errorGeneric": "Tải lên thất bại"
   },
   "settings": {

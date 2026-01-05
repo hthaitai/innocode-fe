@@ -122,19 +122,26 @@ const JudgeManualEvaluationsPage = () => {
     )
 
     // Clear error for this field as soon as user types
-    setErrors((prev) => ({
-      ...prev,
-      [rubricId]: { ...prev[rubricId], [field]: false },
-    }))
+    if (errors[rubricId]?.[field]) {
+      setErrors((prev) => ({
+        ...prev,
+        [rubricId]: { ...prev[rubricId], [field]: undefined },
+      }))
+    }
   }
 
   const handleSubmitEvaluation = async () => {
     // Run centralized validator
-    const errors = validateScores(scores, criteria)
+    const validationErrors = validateScores(scores, criteria)
+    setErrors(validationErrors)
 
     // Stop submission if there are errors
-    if (errors.length) {
-      errors.forEach((err) => toast.error(err))
+    if (Object.keys(validationErrors).length > 0) {
+      toast.error(
+        t("evaluation.errors.validationSummary", {
+          count: Object.keys(validationErrors).length,
+        })
+      )
       return
     }
 

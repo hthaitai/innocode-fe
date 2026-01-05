@@ -59,7 +59,7 @@ export const contestJudgeApi = api.injectEndpoints({
         method: "POST",
         params: { inviteCode, email },
       }),
-      invalidatesTags: ["JudgesInvite"],
+      invalidatesTags: ["JudgesInvite", { type: "JudgeContests", id: "LIST" }],
     }),
 
     declineJudgeInvite: builder.mutation({
@@ -68,7 +68,7 @@ export const contestJudgeApi = api.injectEndpoints({
         method: "POST",
         params: { inviteCode, email },
       }),
-      invalidatesTags: ["JudgesInvite"],
+      invalidatesTags: ["JudgesInvite", { type: "JudgeContests", id: "LIST" }],
     }),
   }),
 })

@@ -1,0 +1,14 @@
+{
+  "publish": {
+    "errors": {
+      "retakeNoWeight": "Retake round '{{name}}' has no weight (missing questions/test cases/criteria).",
+      "mcqNoQuestions": "MCQ test(s) '{{name}}' have no questions.",
+      "autoEvalMissingConfig": "Auto-evaluation round '{{name}}' must have either a mock test file or test cases.",
+      "manualNoRubric": "Manual evaluation round(s) '{{name}}' missing rubric.",
+      "noJudges": "No judges assigned to the contest for manual problems."
+    }
+  },
+  "certificate": {
+    "noTemplates": "No templates created yet."
+  }
+}

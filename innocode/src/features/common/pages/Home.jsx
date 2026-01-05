@@ -1,116 +1,115 @@
-import React, { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
-import bannerImage from "../../../assets/banner.jpg";
-import ContestCard from "../../../shared/components/contest/ContestCard";
-import useContests from "../../contest/hooks/useContests";
-import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
-import { Trophy, Medal, Award, Users, ArrowRight, Headset } from "lucide-react";
-import { Icon } from "@iconify/react";
+import React, { useMemo } from "react"
+import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { motion } from "framer-motion"
+import bannerImage from "../../../assets/banner.jpg"
+import ContestCard from "../../../shared/components/contest/ContestCard"
+import useContests from "../../contest/hooks/useContests"
+import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi"
+import { Trophy, Medal, Award, Users, ArrowRight, Headset } from "lucide-react"
+import { Icon } from "@iconify/react"
+import Footer from "../../../shared/components/footer/Footer"
 
 const Home = () => {
-  const { t } = useTranslation("home");
-  const navigate = useNavigate();
-  const { contests, loading: contestsLoading } = useContests();
+  const { t } = useTranslation("home")
+  const navigate = useNavigate()
+  const { contests, loading: contestsLoading } = useContests()
 
   // Filter and group contests
   const filteredContests = useMemo(() => {
     if (!contests || !Array.isArray(contests)) {
-      return [];
+      return []
     }
-    return contests.filter((contest) => contest.status !== "Draft");
-  }, [contests]);
+    return contests.filter((contest) => contest.status !== "Draft")
+  }, [contests])
 
   const ongoingContests = useMemo(() => {
     return filteredContests
       .filter((c) => {
-        const status = c.status?.toLowerCase() || "";
+        const status = c.status?.toLowerCase() || ""
         return (
           status === "ongoing" ||
           status === "registrationopen" ||
           status === "registrationclosed"
-        );
+        )
       })
-      .slice(0, 3); // Show max 3 for side layout
-  }, [filteredContests]);
+      .slice(0, 3) // Show max 3 for side layout
+  }, [filteredContests])
 
   const upcomingContests = useMemo(() => {
     return filteredContests
       .filter((c) => {
-        const status = c.status?.toLowerCase() || "";
+        const status = c.status?.toLowerCase() || ""
         if (status === "published" || status === "registrationopen") {
           if (c.start) {
-            const now = new Date();
-            const start = new Date(c.start);
-            return now < start;
+            const now = new Date()
+            const start = new Date(c.start)
+            return now < start
           }
-          return true;
+          return true
         }
-        return false;
+        return false
       })
-      .slice(0, 3); // Show max 3 for side layout
-  }, [filteredContests]);
+      .slice(0, 3) // Show max 3 for side layout
+  }, [filteredContests])
 
   const completedContests = useMemo(() => {
     return filteredContests
       .filter((c) => {
-        const status = c.status?.toLowerCase() || "";
-        return (
-          status === "completed" || (c.end && new Date() > new Date(c.end))
-        );
+        const status = c.status?.toLowerCase() || ""
+        return status === "completed" || (c.end && new Date() > new Date(c.end))
       })
-      .slice(0, 3); // Show max 3 for side layout
-  }, [filteredContests]);
+      .slice(0, 3) // Show max 3 for side layout
+  }, [filteredContests])
 
   // Get first available contest for leaderboard preview
   const leaderboardContest = useMemo(() => {
     const allAvailable = [...ongoingContests, ...completedContests].filter(
       (c) => c.status !== "Draft"
-    );
-    return allAvailable.length > 0 ? allAvailable[0] : null;
-  }, [ongoingContests, completedContests]);
+    )
+    return allAvailable.length > 0 ? allAvailable[0] : null
+  }, [ongoingContests, completedContests])
 
   // Fetch leaderboard data
   const { data: leaderboardData, isLoading: leaderboardLoading } =
     useGetTeamsByContestIdQuery(leaderboardContest?.contestId, {
       skip: !leaderboardContest?.contestId,
-    });
+    })
 
   const formatScore = (score) => {
-    return (score ?? 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
+    return (score ?? 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  }
 
   const handleContestClick = (contest) => {
-    navigate(`/contest-detail/${contest.contestId}`);
-  };
+    navigate(`/contest-detail/${contest.contestId}`)
+  }
 
   const handleViewAllContests = () => {
-    navigate("/contests");
-  };
+    navigate("/contests")
+  }
 
   const handleViewLeaderboard = () => {
     if (leaderboardContest) {
-      navigate(`/leaderboard/${leaderboardContest.contestId}`);
+      navigate(`/leaderboard/${leaderboardContest.contestId}`)
     } else {
-      navigate("/leaderboard");
+      navigate("/leaderboard")
     }
-  };
+  }
 
   // Get top teams for leaderboard preview
   const topTeams = useMemo(() => {
     if (!leaderboardData?.teams || !Array.isArray(leaderboardData.teams)) {
-      return [];
+      return []
     }
-    return leaderboardData.teams.slice(0, 5); // Show top 5 teams
-  }, [leaderboardData]);
+    return leaderboardData.teams.slice(0, 5) // Show top 5 teams
+  }, [leaderboardData])
 
   const getRankIcon = (rank) => {
-    if (rank === 1) return <Trophy className="w-5 h-5 text-yellow-500" />;
-    if (rank === 2) return <Medal className="w-5 h-5 text-gray-400" />;
-    if (rank === 3) return <Award className="w-5 h-5 text-amber-600" />;
-    return null;
-  };
+    if (rank === 1) return <Trophy className="w-5 h-5 text-yellow-500" />
+    if (rank === 2) return <Medal className="w-5 h-5 text-gray-400" />
+    if (rank === 3) return <Award className="w-5 h-5 text-amber-600" />
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-[#f3f3f3] w-full overflow-x-hidden">
@@ -263,9 +262,7 @@ const Home = () => {
                       <div className="w-1 h-8 bg-green-500 rounded-full"></div>
                       {t("completedContests")}
                     </h2>
-                    <p className="text-gray-600">
-                      {t("viewAll")}
-                    </p>
+                    <p className="text-gray-600">{t("viewAll")}</p>
                   </div>
                   <button
                     onClick={handleViewAllContests}
@@ -348,7 +345,7 @@ const Home = () => {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                           {topTeams.map((team, index) => {
-                            const rank = index + 1;
+                            const rank = index + 1
                             return (
                               <motion.tr
                                 key={team.teamId || index}
@@ -390,7 +387,7 @@ const Home = () => {
                                   </span>
                                 </td>
                               </motion.tr>
-                            );
+                            )
                           })}
                         </tbody>
                       </table>
@@ -410,32 +407,10 @@ const Home = () => {
         </div>
       </div>
       {/* Footer */}
-      <footer className="w-full bg-gray-800 text-white py-6 mt-16">
-        <div className="w-full px-4 md:px-8 lg:px-12">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-semibold text-[#ff6b35]">
-                InnoCode
-              </span>
-              <span className="text-gray-400">
-                © 2025. All rights reserved.
-              </span>
-            </div>
-            <span className=" flex items-center gap-2 text-gray-400">
-              <Headset className="w-6 h-6" />
-              <p className="font-semibold"> Contact for support :</p>
-              <span className="text-gray-400">
-                innocodechallenge@gmail.com
-              </span>{" "}
-            </span>
-            <div className="flex items-center gap-6 text-gray-400">
-              <span>Programming Contest Platform</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Footer */}
+      <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

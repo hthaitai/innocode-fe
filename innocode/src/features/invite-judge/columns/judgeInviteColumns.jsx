@@ -32,7 +32,7 @@ export const getJudgeInviteColumns = ({
   {
     accessorKey: "inviteStatus",
     header: t ? t("table.status") : "Invite status",
-    size: 130,
+    size: 140,
     cell: ({ row }) => (
       <StatusBadge
         status={row.original.inviteStatus}
@@ -48,7 +48,7 @@ export const getJudgeInviteColumns = ({
   {
     accessorKey: "invitedAt",
     header: t ? t("table.invitedAt") : "Invited at",
-    size: 180,
+    size: 160,
     cell: ({ row }) => {
       const value = row.original.invitedAt
       return value ? (
@@ -64,7 +64,7 @@ export const getJudgeInviteColumns = ({
   {
     accessorKey: "expiresAt",
     header: t ? t("table.expiresAt") : "Expires at",
-    size: 180,
+    size: 160,
     cell: ({ row }) => {
       const value = row.original.expiresAt
       return value ? (

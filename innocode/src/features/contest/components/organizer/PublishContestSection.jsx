@@ -7,10 +7,11 @@ import {
 } from "@/services/contestApi"
 import DetailTable from "../../../../shared/components/DetailTable"
 import { useTranslation } from "react-i18next"
+import { formatPublishError } from "../../utils/publishErrorUtils"
 
 const PublishContestSection = ({ contest }) => {
-  const { openModal } = useModal()
-  const { t } = useTranslation("pages")
+  const { openModal, closeModal } = useModal()
+  const { t } = useTranslation(["pages", "contest"])
 
   const { data: publishCheck } = useCheckPublishReadyQuery(contest?.contestId, {
     skip: !contest?.contestId || contest?.status === "Published",
@@ -32,7 +33,7 @@ const PublishContestSection = ({ contest }) => {
         description: (
           <ul className="list-disc ml-4 text-[#7A7574]">
             {missingItems.map((item, idx) => (
-              <li key={idx}>{item}</li>
+              <li key={idx}>{formatPublishError(item)}</li>
             ))}
           </ul>
         ),
@@ -44,7 +45,7 @@ const PublishContestSection = ({ contest }) => {
       description: t("organizerContestDetail.publish.confirmMessage", {
         name: contest.name,
       }),
-      onConfirm: async (onClose) => {
+      onConfirm: async () => {
         let hasShownToast = false // Prevent duplicate toasts
 
         try {
@@ -66,7 +67,7 @@ const PublishContestSection = ({ contest }) => {
               toast.success(t("organizerContestDetail.publish.success"))
               hasShownToast = true
             }
-            onClose()
+            closeModal()
           } else {
             // Response indicates failure even though request succeeded
             const missingFromError =
@@ -77,18 +78,19 @@ const PublishContestSection = ({ contest }) => {
               responseData?.Message ||
               responseData?.message ||
               t("organizerContestDetail.publish.error")
+            const formattedErrorMessage = formatPublishError(errorMessage)
 
             if (!hasShownToast) {
               if (missingFromError.length > 0) {
                 toast.error(
                   <ul className="list-disc ml-4">
                     {missingFromError.map((item, idx) => (
-                      <li key={idx}>{item}</li>
+                      <li key={idx}>{formatPublishError(item)}</li>
                     ))}
                   </ul>
                 )
               } else {
-                toast.error(errorMessage)
+                toast.error(formattedErrorMessage)
               }
               hasShownToast = true
             }
@@ -108,6 +110,7 @@ const PublishContestSection = ({ contest }) => {
               errorData?.message ||
               errorData?.errorMessage ||
               t("organizerContestDetail.publish.error")
+            const formattedErrorMessage = formatPublishError(errorMessage)
 
             // Double check: sometimes error response might actually indicate success
             if (
@@ -115,7 +118,7 @@ const PublishContestSection = ({ contest }) => {
               errorData?.status === "Published"
             ) {
               toast.success(t("organizerContestDetail.publish.success"))
-              onClose()
+              closeModal()
               return
             }
 
@@ -124,12 +127,12 @@ const PublishContestSection = ({ contest }) => {
               toast.error(
                 <ul className="list-disc ml-4">
                   {missingFromError.map((item, idx) => (
-                    <li key={idx}>{item}</li>
+                    <li key={idx}>{formatPublishError(item)}</li>
                   ))}
                 </ul>
               )
             } else {
-              toast.error(errorMessage)
+              toast.error(formattedErrorMessage)
             }
             hasShownToast = true
           }
@@ -186,10 +189,10 @@ const PublishContestSection = ({ contest }) => {
               key={idx}
               className="border-t border-[#E5E5E5] px-5 py-3 text-sm leading-5 flex justify-between"
             >
-              <div className="text-red-500">{item}</div>
-              <div className="text-[#7A7574]">
+              <div className="text-red-500">{formatPublishError(item)}</div>
+              {/* <div className="text-[#7A7574]">
                 {t("organizerContestDetail.publish.required")}
-              </div>
+              </div> */}
             </li>
           ))}
         </ul>

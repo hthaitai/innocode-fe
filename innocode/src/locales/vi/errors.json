@@ -200,7 +200,7 @@
     "fileRequired": "Yêu cầu tệp cho loại đánh giá File",
     "fileTypeNotSupported": "Loại tệp không được hỗ trợ",
     "codeRequired": "Yêu cầu mã cho loại đánh giá Code",
-    "noTestCases": "Không tìm thấy test case cho bài toán",
+    "noTestCases": "Không tìm thấy trường hợp kiểm thử cho bài toán",
     "cannotExecute": "Không thể thực thi mã",
     "fileNotFound": "Không tìm thấy tệp cho bài nộp",
     "flagged": "Bài nộp đã bị đánh dấu đạo văn",
@@ -250,17 +250,17 @@
     "regClosed": "Cửa sổ đăng ký đã đóng"
   },
   "testCase": {
-    "notFound": "Không tìm thấy test case",
-    "dataRequired": "Dữ liệu test case không được để trống",
+    "notFound": "Không tìm thấy trường hợp kiểm thử",
+    "dataRequired": "Dữ liệu trường hợp kiểm thử không được để trống",
     "inputRequired": "Yêu cầu đầu vào",
     "expectedOutputRequired": "Yêu cầu đầu ra mong đợi",
     "weightInvalid": "Trọng số phải lớn hơn 0",
     "fieldTooLong": "Mô tả, Đầu vào và Đầu ra mong đợi phải ít hơn hoặc bằng 255 ký tự",
     "timeLimitInvalid": "TimeLimitMs phải là số nguyên dương nếu được cung cấp",
-    "listEmpty": "Danh sách test case không được để trống",
-    "duplicateIds": "Tìm thấy ID test case trùng lặp trong yêu cầu",
-    "cannotDelete": "Chỉ có thể xóa test case loại 'TestCase'",
-    "notAvailable": "Test case chỉ có sẵn cho bài toán AutoEvaluation"
+    "listEmpty": "Danh sách trường hợp kiểm thử không được để trống",
+    "duplicateIds": "Tìm thấy ID trường hợp kiểm thử trùng lặp trong yêu cầu",
+    "cannotDelete": "Chỉ có thể xóa trường hợp kiểm thử loại 'TestCase'",
+    "notAvailable": "Trường hợp kiểm thử chỉ có sẵn cho bài toán AutoEvaluation"
   },
   "user": {
     "invalidRole": "Vai trò không được phép",

@@ -9,7 +9,7 @@ import {
   useFinalizeRoundMutation,
 } from "@/services/roundApi"
 
-const RoundTimeTravelSection = ({ roundId }) => {
+const RoundTimeTravelSection = ({ roundId, isRetakeRound, problemType }) => {
   const { t } = useTranslation("round")
   const [appealSubmitEnd, { isLoading: isAppealSubmitEnding }] =
     useAppealSubmitEndMutation()
@@ -32,7 +32,7 @@ const RoundTimeTravelSection = ({ roundId }) => {
   }
 
   const actions = [
-    {
+    !isRetakeRound && {
       title: t("timeTravel.appealSubmitEnd"),
       subtitle: t("timeTravel.appealSubmitEndDesc"),
       buttonText: t("timeTravel.endSubmit"),
@@ -45,7 +45,7 @@ const RoundTimeTravelSection = ({ roundId }) => {
           t("timeTravel.appealSubmitError")
         ),
     },
-    {
+    !isRetakeRound && {
       title: t("timeTravel.appealReviewEnd"),
       subtitle: t("timeTravel.appealReviewEndDesc"),
       buttonText: t("timeTravel.endReview"),
@@ -58,7 +58,7 @@ const RoundTimeTravelSection = ({ roundId }) => {
           t("timeTravel.appealReviewError")
         ),
     },
-    {
+    problemType === "Manual" && {
       title: t("timeTravel.judgeDeadlineEnd"),
       subtitle: t("timeTravel.judgeDeadlineEndDesc"),
       buttonText: t("timeTravel.endDeadline"),
@@ -84,7 +84,7 @@ const RoundTimeTravelSection = ({ roundId }) => {
           t("timeTravel.finalizeError")
         ),
     },
-  ]
+  ].filter(Boolean)
 
   return (
     <div className="flex flex-col gap-1">

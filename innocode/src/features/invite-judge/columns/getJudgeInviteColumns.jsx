@@ -48,7 +48,7 @@ export const getJudgeInviteColumns = (t) => [
   {
     header: t ? t("judge.table.acceptedAt") : "Accepted at",
     accessorKey: "acceptedAt",
-    size: 160,
+    size: 140,
     cell: ({ row }) =>
       row.original?.acceptedAt ? formatDateTime(row.original.acceptedAt) : "—",
     meta: { className: "truncate" },

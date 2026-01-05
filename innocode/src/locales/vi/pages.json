@@ -534,6 +534,18 @@
       "endSuccess": "Kết thúc cuộc thi thành công",
       "endError": "Không thể kết thúc cuộc thi"
     },
+    "registrationControl": {
+      "title": "Điều khiển đăng ký",
+      "subtitle": "Bắt đầu hoặc kết thúc đăng ký ngay lập tức",
+      "start": "Bắt đầu đăng ký",
+      "starting": "Đang bắt đầu...",
+      "end": "Kết thúc đăng ký",
+      "ending": "Đang kết thúc...",
+      "startSuccess": "Bắt đầu đăng ký thành công",
+      "startError": "Không thể bắt đầu đăng ký",
+      "endSuccess": "Kết thúc đăng ký thành công",
+      "endError": "Không thể kết thúc đăng ký"
+    },
     "publish": {
       "title": "Công khai cuộc thi",
       "subtitleNotReady": "Cuộc thi chưa sẵn sàng để công khai.",
@@ -548,7 +560,11 @@
       "success": "Công khai cuộc thi thành công!",
       "error": "Không thể công khai cuộc thi",
       "required": "Bắt buộc",
-      "cannotPublishTitle": "Không thể công khai"
+      "cannotPublishTitle": "Không thể công khai",
+      "errors": {
+        "contestEndTooEarly": "Thời gian kết thúc cuộc thi quá sớm để bao gồm các hạn chót. Gợi ý kết thúc >= {{date}}.",
+        "autoEvalMissingConfig": "Vòng chấm tự động '{{roundId}}' phải có file mock test hoặc trường hợp kiểm thử."
+      }
     },
     "rounds": {
       "title": "Quản lý vòng thi",

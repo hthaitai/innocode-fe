@@ -1,19 +1,15 @@
 import React from "react"
+import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
-import { Terminal, Trophy, Users, Globe, Code2, Zap } from "lucide-react"
+import { Terminal, Globe, Zap } from "lucide-react"
 import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
 
 const About = () => {
   const { t } = useTranslation("about")
+  const navigate = useNavigate()
 
   // --- Data Constants (Scalable configuration) ---
-  const STATS = [
-    { label: t("stats.activeDevelopers"), value: "150k+", icon: Users },
-    { label: t("stats.challengesSolved"), value: "2.5M", icon: Code2 },
-    { label: t("stats.contestsHosted"), value: "500+", icon: Trophy },
-    { label: t("stats.countries"), value: "80+", icon: Globe },
-  ]
 
   const FEATURES = [
     {
@@ -52,28 +48,8 @@ const About = () => {
           </p>
         </section>
 
-        {/* 2. Stats Grid */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-6xl mx-auto px-4">
-          {STATS.map((stat, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow-sm border border-orange-100 hover:shadow-md transition-shadow duration-300"
-            >
-              <div className="p-3 bg-orange-50 rounded-full mb-3 text-[#E05307]">
-                <stat.icon size={24} strokeWidth={2.5} />
-              </div>
-              <span className="text-3xl font-bold text-gray-900">
-                {stat.value}
-              </span>
-              <span className="text-sm font-medium text-gray-500 uppercase tracking-wide mt-1">
-                {stat.label}
-              </span>
-            </div>
-          ))}
-        </section>
-
         {/* 3. Mission / Split Section */}
-        <section className="bg-gradient-to-br from-gray-50 to-orange-50/30 rounded-3xl p-8 md:p-16 max-w-7xl mx-auto overflow-hidden relative">
+        <section className="bg-gradient-to-br from-gray-50 to-orange-50/30 rounded-[5px] p-8 md:p-16 max-w-7xl mx-auto overflow-hidden relative">
           {/* Decorative grid pattern */}
           <div
             className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -145,7 +121,7 @@ const About = () => {
             {FEATURES.map((item, idx) => (
               <div
                 key={idx}
-                className="group p-8 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                className="group p-8 bg-white rounded-[5px] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-[#E05307] mb-6 group-hover:bg-[#E05307] group-hover:text-white transition-colors duration-300">
                   <item.icon size={24} />
@@ -163,7 +139,7 @@ const About = () => {
 
         {/* 5. CTA Section */}
         <section className="max-w-4xl mx-auto px-4 text-center">
-          <div className="bg-[#E05307] rounded-3xl p-12 shadow-xl shadow-orange-900/20 text-white relative overflow-hidden">
+          <div className="bg-[#E05307] rounded-[5px] p-12 shadow-xl shadow-orange-900/20 text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
 
             <h2 className="relative text-3xl md:text-4xl font-bold mb-6">
@@ -172,7 +148,10 @@ const About = () => {
             <p className="relative text-orange-100 mb-8 text-lg max-w-xl mx-auto">
               {t("cta.description")}
             </p>
-            <button className="relative bg-white text-[#E05307] px-8 py-3.5 rounded-full font-bold hover:bg-orange-50 transition-colors shadow-lg active:scale-95">
+            <button
+              onClick={() => navigate("/contests")}
+              className="relative bg-white text-[#E05307] px-8 py-3.5 rounded-full font-bold hover:bg-orange-50 transition-colors shadow-lg active:scale-95"
+            >
               {t("cta.button")}
             </button>
           </div>
