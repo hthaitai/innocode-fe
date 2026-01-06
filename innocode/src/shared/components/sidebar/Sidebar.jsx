@@ -100,6 +100,11 @@ const allMenus = {
     labelKey: "sidebar.schoolsManagement",
     icon: "lucide:school",
   },
+  userManagement: {
+    path: "/user-management",
+    labelKey: "sidebar.userManagement",
+    icon: "lucide:users",
+  },
 }
 
 const menuByRole = {
@@ -127,11 +132,10 @@ const menuByRole = {
     "schools",
     "roleRegistrationsStaff",
     "contests",
-    "team",
     "notifications",
   ],
   judge: ["profile", "judgeContests", "notifications", "help"],
-  admin: ["profile", "dashboard", "notifications", "help"],
+  admin: ["profile", "dashboard", "userManagement", "notifications", "help"],
   schoolmanager: [
     "profile",
     "schoolManager",

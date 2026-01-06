@@ -877,5 +877,46 @@
       "passwordUpdatedSuccess": "Đã cập nhật mật khẩu thành công!",
       "passwordUpdateFailed": "Không thể cập nhật mật khẩu. Vui lòng kiểm tra mật khẩu hiện tại."
     }
+  },
+  "activityLog": {
+    "title": "Nhật ký hoạt động",
+    "description": "Xem hoạt động hệ thống và hành động người dùng",
+    "action": "Hành động",
+    "user": "Người dùng",
+    "unknownUser": "Người dùng không xác định",
+    "targetType": "Loại đối tượng",
+    "targetId": "ID đối tượng",
+    "time": "Thời gian",
+    "searchAction": "Tìm kiếm hành động...",
+    "filterTargetType": "Loại đối tượng...",
+    "filterTargetId": "ID đối tượng..."
+  },
+  "userManagement": {
+    "title": "Quản lý người dùng",
+    "description": "Quản lý người dùng và quyền hạn hệ thống",
+    "fullName": "Họ và tên",
+    "email": "Email",
+    "role": "Vai trò",
+    "status": "Trạng thái",
+    "searchUsers": "Tìm kiếm người dùng...",
+    "allRoles": "Tất cả vai trò",
+    "allStatuses": "Tất cả trạng thái",
+    "editUser": "Sửa người dùng",
+    "createUser": "Tạo người dùng",
+    "lock": "Khóa người dùng",
+    "unlock": "Mở khóa người dùng",
+    "enterFullName": "Nhập họ và tên",
+    "enterEmail": "Nhập địa chỉ email",
+    "selectRole": "Chọn vai trò",
+    "selectStatus": "Chọn trạng thái",
+    "fullNameRequired": "Họ và tên là bắt buộc",
+    "emailRequired": "Email là bắt buộc",
+    "emailInvalid": "Định dạng email không hợp lệ",
+    "roleRequired": "Vai trò là bắt buộc",
+    "statusRequired": "Trạng thái là bắt buộc",
+    "userUpdatedSuccess": "Cập nhật người dùng thành công",
+    "userDeletedSuccess": "Xóa người dùng thành công",
+    "userLockedSuccess": "Khóa người dùng thành công",
+    "userUnlockedSuccess": "Mở khóa người dùng thành công"
   }
 }

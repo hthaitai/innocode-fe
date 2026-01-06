@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import { Icon } from "@iconify/react";
-import { useGetActivityLogsQuery } from "@/services/activityLogApi";
-import { formatDateTime } from "@/shared/utils/dateTime";
-import "./ActivityLog.css";
+import React, { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { useGetActivityLogsQuery } from "@/services/activityLogApi"
+import { formatDateTime } from "@/shared/utils/dateTime"
+import TableFluent from "@/shared/components/TableFluent"
+import { History, User, Target, Calendar } from "lucide-react"
 
 const ActivityLog = () => {
-  const [page] = useState(1);
-  const [pageSize] = useState(1000); // Load tất cả logs
-  const [filters, setFilters] = useState({
-    actionContains: "",
-    targetType: "",
-    userId: "",
-  });
-  
+  const { t } = useTranslation(["pages", "common"])
+  const [pageNumber, setPageNumber] = useState(1)
+  const [pageSize] = useState(20)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [targetIdFilter, setTargetIdFilter] = useState("")
+  const [targetTypeFilter, setTargetTypeFilter] = useState("")
+
   const {
     data: logsData,
     isLoading,
@@ -20,226 +20,202 @@ const ActivityLog = () => {
     refetch,
   } = useGetActivityLogsQuery(
     {
-      page,
+      page: pageNumber,
       pageSize,
-      actionContains: filters.actionContains || undefined,
-      targetType: filters.targetType || undefined,
-      userId: filters.userId || undefined,
+      actionContains: searchTerm || undefined,
+      targetId: targetIdFilter || undefined,
+      targetType: targetTypeFilter || undefined,
       sortBy: "at",
       desc: true,
     },
     {
       pollingInterval: 30000, // Auto-refresh every 30 seconds
     }
-  );
+  )
 
-  const logs = logsData?.items || [];
-  const totalCount = logsData?.totalCount || 0;
+  const logs = logsData?.items || []
 
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const getActionIcon = (action) => {
-    if (!action) return "mdi:information-outline";
-    const actionLower = action.toLowerCase();
-    if (actionLower.includes("approve") || actionLower.includes("accept"))
-      return "mdi:check-circle";
-    if (actionLower.includes("reject") || actionLower.includes("deny"))
-      return "mdi:close-circle";
-    if (actionLower.includes("create") || actionLower.includes("add"))
-      return "mdi:plus-circle";
-    if (actionLower.includes("update") || actionLower.includes("edit"))
-      return "mdi:pencil";
-    if (actionLower.includes("delete") || actionLower.includes("remove"))
-      return "mdi:delete";
-    if (actionLower.includes("login") || actionLower.includes("auth"))
-      return "mdi:login";
-    if (actionLower.includes("logout")) return "mdi:logout";
-    if (actionLower.includes("view") || actionLower.includes("read"))
-      return "mdi:eye";
-    return "mdi:information-outline";
-  };
-
-  const getActionColor = (action) => {
-    if (!action) return "var(--color-info)";
-    const actionLower = action.toLowerCase();
-    if (actionLower.includes("approve") || actionLower.includes("accept"))
-      return "var(--color-success)";
-    if (actionLower.includes("reject") || actionLower.includes("deny"))
-      return "var(--color-danger)";
-    if (actionLower.includes("create") || actionLower.includes("add"))
-      return "var(--color-success)";
-    if (actionLower.includes("update") || actionLower.includes("edit"))
-      return "var(--color-warning)";
-    if (actionLower.includes("delete") || actionLower.includes("remove"))
-      return "var(--color-danger)";
-    if (actionLower.includes("login") || actionLower.includes("auth"))
-      return "var(--color-primary)";
-    return "var(--color-info)";
-  };
-
+  // Format action for display
   const formatAction = (action) => {
-    if (!action) return "Unknown Action";
-    // Format action like "school_request.approve" to "Approve School Request"
-    const parts = action.split(".");
-    if (parts.length > 1) {
-      const actionPart = parts[parts.length - 1];
-      const entityPart = parts.slice(0, -1).join(" ");
-      const formattedAction = actionPart.charAt(0).toUpperCase() + actionPart.slice(1);
-      const formattedEntity = entityPart
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-      return `${formattedAction} ${formattedEntity}`;
-    }
-    // If no dot, just capitalize first letter
-    return action.charAt(0).toUpperCase() + action.slice(1).replace(/_/g, " ");
-  };
+    if (!action) return "Unknown Action"
+    // Format action like "user.login" to "User Login"
+    return action
+      .split(".")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+      .replace(/_/g, " ")
+  }
+
+  // Get action badge color
+  const getActionBadgeColor = (action) => {
+    if (!action) return "bg-gray-100 text-gray-700"
+    const actionLower = action.toLowerCase()
+    if (actionLower.includes("create") || actionLower.includes("add"))
+      return "bg-green-100 text-green-700"
+    if (actionLower.includes("update") || actionLower.includes("edit"))
+      return "bg-blue-100 text-blue-700"
+    if (actionLower.includes("delete") || actionLower.includes("remove"))
+      return "bg-red-100 text-red-700"
+    if (actionLower.includes("approve") || actionLower.includes("accept"))
+      return "bg-emerald-100 text-emerald-700"
+    if (actionLower.includes("reject") || actionLower.includes("deny"))
+      return "bg-orange-100 text-orange-700"
+    if (actionLower.includes("login")) return "bg-purple-100 text-purple-700"
+    return "bg-gray-100 text-gray-700"
+  }
+
+  // Table columns
+  const columns = [
+    {
+      accessorKey: "action",
+      header: t("activityLog.action"),
+      cell: ({ row }) => {
+        const action = row.original.action
+        return (
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getActionBadgeColor(
+              action
+            )}`}
+          >
+            {formatAction(action)}
+          </span>
+        )
+      },
+      size: 180,
+    },
+    {
+      accessorKey: "userFullname",
+      header: t("activityLog.user"),
+      cell: ({ row }) => {
+        const { userFullname, userEmail } = row.original
+        return (
+          <div className="flex flex-col">
+            <span className="font-medium text-gray-800">
+              {userFullname || t("activityLog.unknownUser")}
+            </span>
+            {userEmail && (
+              <span className="text-xs text-gray-500">{userEmail}</span>
+            )}
+          </div>
+        )
+      },
+      size: 220,
+    },
+    {
+      accessorKey: "targetType",
+      header: t("activityLog.targetType"),
+      cell: ({ row }) => {
+        const targetType = row.original.targetType
+        return (
+          <span className="text-sm text-gray-700">
+            {targetType
+              ? targetType
+                  .replace(/_/g, " ")
+                  .replace(/\b\w/g, (l) => l.toUpperCase())
+              : "—"}
+          </span>
+        )
+      },
+      size: 150,
+    },
+    {
+      accessorKey: "targetId",
+      header: t("activityLog.targetId"),
+      cell: ({ row }) => {
+        const targetId = row.original.targetId
+        return (
+          <span className="text-xs font-mono text-gray-600">{targetId}</span>
+        )
+      },
+      size: 120,
+    },
+    {
+      accessorKey: "at",
+      header: t("activityLog.time"),
+      cell: ({ row }) => {
+        const timestamp = row.original.at
+        return (
+          <span className="text-sm text-gray-600">
+            {timestamp ? formatDateTime(timestamp) : "—"}
+          </span>
+        )
+      },
+      size: 180,
+    },
+  ]
+
+  // Pagination data
+  const pagination = {
+    pageNumber: logsData?.pageNumber || 1,
+    pageSize: logsData?.pageSize || pageSize,
+    totalPages: logsData?.totalPages || 1,
+    totalCount: logsData?.totalCount || 0,
+    hasPreviousPage: logsData?.hasPreviousPage || false,
+    hasNextPage: logsData?.hasNextPage || false,
+  }
 
   return (
-    <div className="activity-log-container">
-      <div className="activity-log-header">
-        <div className="activity-log-title-section">
-          <Icon icon="mdi:history" width="24" className="activity-log-icon" />
-          <h2 className="activity-log-title">Activity Logs</h2>
-          {totalCount > 0 && (
-            <span className="activity-log-count">({totalCount})</span>
-          )}
+    <div className="space-y-1">
+      {/* Header Section with Filters */}
+      <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 min-h-[70px] py-4">
+        <div className="flex gap-5 items-center">
+          <History size={20} className="text-gray-700" />
+          <div>
+            <p className="text-[14px] leading-[20px] font-semibold text-gray-800">
+              {t("activityLog.title")}
+            </p>
+            <p className="text-[12px] leading-[16px] text-[#7A7574] mt-0.5">
+              {t("activityLog.description")}
+            </p>
+          </div>
         </div>
-        <button
-          className="activity-log-refresh-btn"
-          onClick={() => refetch()}
-          title="Refresh"
-        >
-          <Icon icon="mdi:refresh" width="20" />
-        </button>
-      </div>
 
-      {/* Filters */}
-      <div className="activity-log-filters">
-        <div className="activity-log-filter-group">
-          <label htmlFor="actionFilter">Action:</label>
-          <input
-            id="actionFilter"
-            type="text"
-            placeholder="Filter by action..."
-            value={filters.actionContains}
-            onChange={(e) => handleFilterChange("actionContains", e.target.value)}
-            className="activity-log-filter-input"
-          />
-        </div>
-        <div className="activity-log-filter-group">
-          <label htmlFor="targetTypeFilter">Target Type:</label>
-          <input
-            id="targetTypeFilter"
-            type="text"
-            placeholder="Filter by target type..."
-            value={filters.targetType}
-            onChange={(e) => handleFilterChange("targetType", e.target.value)}
-            className="activity-log-filter-input"
-          />
-        </div>
-        <div className="activity-log-filter-group">
-          <label htmlFor="userIdFilter">User ID:</label>
-          <input
-            id="userIdFilter"
-            type="text"
-            placeholder="Filter by user ID..."
-            value={filters.userId}
-            onChange={(e) => handleFilterChange("userId", e.target.value)}
-            className="activity-log-filter-input"
-          />
+        <div className="flex flex-wrap gap-3 items-center">
+          {/* Search by Action */}
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={t("activityLog.searchAction")}
+              className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 min-w-[180px]"
+            />
+          </div>
+
+          {/* Filter by Target Type */}
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              value={targetTypeFilter}
+              onChange={(e) => setTargetTypeFilter(e.target.value)}
+              placeholder={t("activityLog.filterTargetType")}
+              className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 min-w-[150px]"
+            />
+          </div>
+
+          {/* Filter by Target ID */}
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              value={targetIdFilter}
+              onChange={(e) => setTargetIdFilter(e.target.value)}
+              placeholder={t("activityLog.filterTargetId")}
+              className="px-4 py-2 border border-[#E5E5E5] rounded-[5px] text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 min-w-[200px]"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Logs List */}
-      <div className="activity-log-list">
-        {isLoading ? (
-          <div className="activity-log-loading">
-            <Icon icon="mdi:loading" width="24" className="spinning" />
-            <span>Loading activity logs...</span>
-          </div>
-        ) : error ? (
-          <div className="activity-log-error">
-            <Icon icon="mdi:alert-circle-outline" width="24" />
-            <span>Error loading activity logs</span>
-            <button
-              className="activity-log-retry-btn"
-              onClick={() => refetch()}
-            >
-              Retry
-            </button>
-          </div>
-        ) : logs.length === 0 ? (
-          <div className="activity-log-empty">
-            <Icon icon="mdi:history-off" width="48" />
-            <span>No activity logs found</span>
-          </div>
-        ) : (
-          logs.map((log) => {
-            const actionIcon = getActionIcon(log.action);
-            const actionColor = getActionColor(log.action);
-            const timestamp = log.at || log.timestamp || log.createdAt || log.dateTime;
-
-            return (
-              <div key={log.logId || log.id || log.activityLogId} className="activity-log-item">
-                <div
-                  className="activity-log-icon-wrapper"
-                  style={{ color: actionColor }}
-                >
-                  <Icon icon={actionIcon} width="20" />
-                </div>
-                <div className="activity-log-content">
-                  <div className="activity-log-main">
-                    <span className="activity-log-action">{formatAction(log.action)}</span>
-                    {(log.userFullname || log.userEmail || log.userId) && (
-                      <span className="activity-log-user">
-                        {log.userFullname || log.userEmail || `User: ${log.userId}`}
-                        {log.userEmail && log.userFullname && (
-                          <span className="activity-log-user-email"> ({log.userEmail})</span>
-                        )}
-                      </span>
-                    )}
-                  </div>
-                  <div className="activity-log-details">
-                    {log.targetType && (
-                      <span className="activity-log-target-type">
-                        {log.targetType.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-                      </span>
-                    )}
-                    {log.targetId && (
-                      <span className="activity-log-target-id">
-                        ID: {log.targetId}
-                      </span>
-                    )}
-                  </div>
-                  <div className="activity-log-meta">
-                    {timestamp && (
-                      <span className="activity-log-time">
-                        <Icon icon="mdi:clock-outline" width="14" />
-                        {formatDateTime(timestamp)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      {/* Show total count if all logs are loaded */}
-      {logs.length > 0 && (
-        <div className="activity-log-footer">
-          <span className="activity-log-total-info">
-            Display {logs.length} / {totalCount} logs
-          </span>
-        </div>
-      )}
+      {/* Table */}
+      <TableFluent
+        data={logs}
+        columns={columns}
+        loading={isLoading}
+        pagination={pagination}
+        onPageChange={(page) => setPageNumber(page)}
+      />
     </div>
-  );
-};
+  )
+}
 
-export default ActivityLog;
-
+export default ActivityLog

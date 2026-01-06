@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api } from "./api"
 
 export const activityLogApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,6 +9,7 @@ export const activityLogApi = api.injectEndpoints({
         userId,
         actionContains,
         targetType,
+        targetId,
         from,
         to,
         sortBy = "at",
@@ -17,57 +18,32 @@ export const activityLogApi = api.injectEndpoints({
         const params = {
           Page: page,
           PageSize: pageSize,
-        };
+        }
 
-        if (userId) params.UserId = userId;
-        if (actionContains) params.ActionContains = actionContains;
-        if (targetType) params.TargetType = targetType;
-        if (from) params.From = from;
-        if (to) params.To = to;
-        if (sortBy) params.SortBy = sortBy;
-        if (desc !== undefined) params.Desc = desc;
+        if (userId) params.UserId = userId
+        if (actionContains) params.ActionContains = actionContains
+        if (targetType) params.TargetType = targetType
+        if (targetId) params.TargetId = targetId
+        if (from) params.From = from
+        if (to) params.To = to
+        if (sortBy) params.SortBy = sortBy
+        if (desc !== undefined) params.Desc = desc
 
         return {
           url: "activitylogs",
           params,
-        };
+        }
       },
       transformResponse: (response) => {
-        // Response có thể có dạng: { data: [...] } hoặc { data: { items: [...], totalCount: ... } }
-        let items = [];
-        let totalCount = 0;
-        let pageNumber = 1;
-        let pageSize = 20;
-        let totalPages = 1;
+        // New API response structure: { data: [...], additionalData: { pageNumber, pageSize, totalPages, totalCount, ... } }
+        const items = response?.data || []
+        const additionalData = response?.additionalData || {}
 
-        // Kiểm tra nếu response.data là array trực tiếp
-        if (Array.isArray(response.data)) {
-          items = response.data;
-          totalCount = response.data.length;
-          // Nếu có các field pagination ở cùng level với data
-          if (response.totalCount !== undefined) totalCount = response.totalCount;
-          if (response.pageNumber !== undefined) pageNumber = response.pageNumber;
-          if (response.pageSize !== undefined) pageSize = response.pageSize;
-          if (response.totalPages !== undefined) {
-            totalPages = response.totalPages;
-          } else {
-            totalPages = Math.ceil(totalCount / pageSize);
-          }
-        } else if (response.data) {
-          // Trường hợp response.data là object có items
-          const data = response.data;
-          items = data.items || data.data || (Array.isArray(data) ? data : []);
-          totalCount = data.totalCount || data.total || items.length;
-          pageNumber = data.pageNumber || data.currentPage || data.page || 1;
-          pageSize = data.pageSize || 20;
-          totalPages =
-            data.totalPages ||
-            Math.ceil(totalCount / pageSize);
-        } else if (Array.isArray(response)) {
-          // Trường hợp response là array trực tiếp
-          items = response;
-          totalCount = response.length;
-        }
+        const totalCount = additionalData.totalCount || items.length
+        const pageNumber = additionalData.pageNumber || 1
+        const pageSize = additionalData.pageSize || 20
+        const totalPages =
+          additionalData.totalPages || Math.ceil(totalCount / pageSize)
 
         return {
           items,
@@ -75,9 +51,9 @@ export const activityLogApi = api.injectEndpoints({
           pageNumber,
           pageSize,
           totalPages,
-          hasPreviousPage: pageNumber > 1,
-          hasNextPage: pageNumber < totalPages,
-        };
+          hasPreviousPage: additionalData.hasPreviousPage || pageNumber > 1,
+          hasNextPage: additionalData.hasNextPage || pageNumber < totalPages,
+        }
       },
       providesTags: (result) =>
         result?.items
@@ -91,7 +67,6 @@ export const activityLogApi = api.injectEndpoints({
           : [{ type: "ActivityLogs", id: "LIST" }],
     }),
   }),
-});
+})
 
-export const { useGetActivityLogsQuery } = activityLogApi;
-
+export const { useGetActivityLogsQuery } = activityLogApi

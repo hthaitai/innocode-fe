@@ -114,6 +114,7 @@ import CreateSchoolRequest from "./features/school/pages/school-manager/CreateSc
 import SchoolCreationRequestDetail from "./features/school/pages/school-manager/SchoolCreationRequestDetail"
 import MyManageSchool from "./features/school/pages/school-manager/MyManageSchool"
 import SchoolDetail from "./features/school/pages/school-manager/SchoolDetail"
+import UserManagement from "./features/user/pages/UserManagement"
 
 // Initialize EmailJS when app starts
 initEmailJs()
@@ -345,6 +346,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "user-management",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <UserManagement />
           </ProtectedRoute>
         ),
       },
