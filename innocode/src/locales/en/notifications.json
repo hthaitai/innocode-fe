@@ -21,6 +21,7 @@
   "ContestUpdated": "Contest '{{contest.Name}}' has been updated.",
   "SubmissionResultAvailable": "Submission result is available.",
   "SubmissionStatusUpdated": "Submission status updated.",
+  "SubmissionPlagiarismConfirmed": "Submission has been confirmed as plagiarism.",
   "CertificateIssued": "Certificate issued.",
   "NewSchoolCreationRequest": "New school creation request: {{req.Name}}",
   "SchoolApproved": "Your school '{{schoolName}}' has been approved.",
@@ -44,6 +45,7 @@
   "team.invitation_denied": "{{user.Fullname}} declined your team invitation.",
   "appeal.updated": "Appeal was updated.",
   "appeal.submitted": "New appeal submitted.",
+  "submission.plagiarism_confirmed": "Your submission has been confirmed as plagiarism.",
   "ui": {
     "title": "Notifications",
     "empty": "No notifications.",

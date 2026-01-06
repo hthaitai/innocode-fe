@@ -371,7 +371,20 @@
     "document": "Tài liệu",
     "errorLoadingDetails": "Lỗi khi tải chi tiết yêu cầu",
     "requestNotFound": "Không tìm thấy yêu cầu tạo trường",
-    "pleaseTryAgain": "Vui lòng thử lại sau"
+    "pleaseTryAgain": "Vui lòng thử lại sau",
+    "manageAllSchools": "Quản lý tất cả trường học trong hệ thống",
+    "searchSchools": "Tìm kiếm trường học...",
+    "allProvinces": "Tất cả Tỉnh/Thành phố",
+    "schoolCreatedSuccess": "Tạo trường học thành công",
+    "schoolCreatedError": "Không thể tạo trường học",
+    "schoolUpdatedSuccess": "Cập nhật trường học thành công",
+    "schoolUpdatedError": "Không thể cập nhật trường học",
+    "schoolDeletedSuccess": "Xóa trường học thành công",
+    "schoolDeletedError": "Không thể xóa trường học",
+    "schoolInUseError": "Không thể xóa trường học đang có học sinh, giáo viên hoặc đội tham gia",
+    "enterSchoolName": "Nhập tên trường",
+    "selectProvince": "Chọn tỉnh/thành phố",
+    "enterContact": "Nhập email liên hệ"
   },
   "roleRegistrations": {
     "roleRegistration": "Đăng ký Vai trò",

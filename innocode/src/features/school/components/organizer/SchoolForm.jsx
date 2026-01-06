@@ -1,4 +1,5 @@
 import React, { useMemo, useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 
@@ -9,6 +10,8 @@ export default function SchoolForm({
   setErrors,
   provinces = [],
 }) {
+  const { t } = useTranslation(["pages", "common"])
+
   // Memoize province options to prevent unnecessary re-renders
   const provinceOptions = useMemo(() => {
     return provinces.map((p) => ({
@@ -17,28 +20,34 @@ export default function SchoolForm({
     }))
   }, [provinces])
 
-  const handleChange = useCallback((e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+  const handleChange = useCallback(
+    (e) => {
+      const { name, value } = e.target
+      setFormData((prev) => ({ ...prev, [name]: value }))
 
-    // Clear field-specific error when typing
-    if (errors?.[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }))
-    }
-  }, [errors, setFormData, setErrors])
+      // Clear field-specific error when typing
+      if (errors?.[name]) {
+        setErrors((prev) => ({ ...prev, [name]: "" }))
+      }
+    },
+    [errors, setFormData, setErrors]
+  )
 
-  const handleProvinceSelect = useCallback((value) => {
-    setFormData((prev) => ({ 
-      ...prev, 
-      province_id: value,
-      provinceId: value 
-    }))
+  const handleProvinceSelect = useCallback(
+    (value) => {
+      setFormData((prev) => ({
+        ...prev,
+        province_id: value,
+        provinceId: value,
+      }))
 
-    // Clear dropdown error when selecting
-    if (errors?.province_id) {
-      setErrors((prev) => ({ ...prev, province_id: "" }))
-    }
-  }, [errors, setFormData, setErrors])
+      // Clear dropdown error when selecting
+      if (errors?.province_id) {
+        setErrors((prev) => ({ ...prev, province_id: "" }))
+      }
+    },
+    [errors, setFormData, setErrors]
+  )
 
   const currentProvinceValue = formData.province_id || formData.provinceId
 
@@ -46,18 +55,19 @@ export default function SchoolForm({
     <div className="flex flex-col gap-4">
       {/* School Name */}
       <TextFieldFluent
-        label="School Name"
+        label={t("schools.schoolName")}
         name="name"
         value={formData.name || ""}
         onChange={handleChange}
         error={!!errors?.name}
         helperText={errors?.name}
+        placeholder={t("schools.enterSchoolName")}
       />
 
       {/* Province Dropdown */}
       <DropdownFluent
-        label="Province"
-        placeholder="Select a province"
+        label={t("schools.province")}
+        placeholder={t("schools.selectProvince")}
         value={currentProvinceValue}
         options={provinceOptions}
         onChange={handleProvinceSelect}
@@ -67,12 +77,13 @@ export default function SchoolForm({
 
       {/* Contact Email */}
       <TextFieldFluent
-        label="Contact Email"
+        label={t("schools.contact")}
         name="contact"
         value={formData.contact || ""}
         onChange={handleChange}
         error={!!errors?.contact}
         helperText={errors?.contact}
+        placeholder={t("schools.enterContact")}
       />
     </div>
   )

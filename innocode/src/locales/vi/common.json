@@ -292,9 +292,10 @@
     "appeal": "Khiếu nại",
     "provinces": "Tỉnh/Thành phố",
     "schools": "Trường học",
+    "schoolManagement": "Quản lý trường",
     "roleRegistrations": "Đăng ký vai trò",
     "schoolCreationRequests": "Yêu cầu tạo trường",
-    "schoolsManagement": "Quản lý trường học",
+    "schoolsRequestManagement": "Quản lý yêu cầu tạo trường",
     "account": "tài khoản"
   },
   "notification": {

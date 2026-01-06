@@ -372,7 +372,20 @@
     "document": "Document",
     "errorLoadingDetails": "Error loading request details",
     "requestNotFound": "School creation request not found",
-    "pleaseTryAgain": "Please try again later"
+    "pleaseTryAgain": "Please try again later",
+    "manageAllSchools": "Manage all schools in the system",
+    "searchSchools": "Search schools...",
+    "allProvinces": "All Provinces",
+    "schoolCreatedSuccess": "School created successfully",
+    "schoolCreatedError": "Failed to create school",
+    "schoolUpdatedSuccess": "School updated successfully",
+    "schoolUpdatedError": "Failed to update school",
+    "schoolDeletedSuccess": "School deleted successfully",
+    "schoolDeletedError": "Failed to delete school",
+    "schoolInUseError": "Cannot delete a school that has students, mentors, or teams",
+    "enterSchoolName": "Enter school name",
+    "selectProvince": "Select a province",
+    "enterContact": "Enter contact email"
   },
   "roleRegistrations": {
     "roleRegistration": "Role Registration",

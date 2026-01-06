@@ -100,6 +100,7 @@ import OrganizerLeaderboardMember from "./features/leaderboard/pages/organizer/O
 import NotFound from "./pages/NotFound"
 import StaffProvinces from "./features/province/pages/staff/StaffProvinces"
 import StaffSchools from "./features/school/pages/staff/StaffSchools"
+import StaffSchoolsManagement from "./features/school/pages/staff/StaffSchoolsManagement"
 import StaffSchoolCreationRequestDetail from "./features/school/pages/staff/StaffSchoolCreationRequestDetail"
 import StaffRoleRegistrations from "./features/role-registration/pages/staff/StaffRoleRegistrations"
 import StaffRoleRegistrationDetail from "./features/role-registration/pages/staff/StaffRoleRegistrationDetail"
@@ -385,6 +386,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[ROLES.STAFF]}>
             <StaffRoleRegistrations />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "schools",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STAFF]}>
+            <StaffSchoolsManagement />
           </ProtectedRoute>
         ),
       },
@@ -839,7 +848,7 @@ const router = createBrowserRouter([
       {
         path: "certificate",
         element: (
-          <ProtectedRoute allowedRoles={[ROLES.STUDENT,ROLES.MENTOR]}>
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT, ROLES.MENTOR]}>
             <StudentCertificate />
           </ProtectedRoute>
         ),

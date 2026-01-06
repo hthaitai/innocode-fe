@@ -133,28 +133,57 @@ const useNotificationNavigation = (onClose) => {
       return
     }
 
+    // Submission plagiarism confirmed - navigate to plagiarism detail
+    if (
+      targetType === "submission" ||
+      notification.type === "submission.plagiarism_confirmed" ||
+      notification.type === "SubmissionPlagiarismConfirmed"
+    ) {
+      if (onClose) onClose()
+      const { contestId, submissionId } = notification.parsedPayload || {}
+
+      if (contestId && submissionId) {
+        // Navigate to plagiarism detail page for organizers, or contest detail for students
+        if (userRole === "organizer") {
+          navigate(
+            `/organizer/contests/${contestId}/plagiarism/${submissionId}`
+          )
+        } else {
+          // For students/mentors, navigate to contest detail
+          navigate(`/contest-detail/${contestId}`)
+        }
+      } else if (contestId) {
+        // Fallback to contest detail if submission details are missing
+        navigate(`/contest-detail/${contestId}`)
+      }
+      return
+    }
+
     // Round or Contest started/ended notifications - navigate to contest detail
     const message = notification.message || ""
     const notificationType = notification.type || ""
     const lowerMessage = message.toLowerCase()
     const lowerType = notificationType.toLowerCase()
-    
+
     // Check if notification is about round/contest started or ended
-    const isRoundOrContestStarted = 
+    const isRoundOrContestStarted =
       lowerMessage.includes("has started") ||
       lowerMessage.includes("started") ||
       lowerType.includes("started") ||
       lowerType.includes("round.started") ||
       lowerType.includes("contest.started")
-    
-    const isRoundOrContestEnded = 
+
+    const isRoundOrContestEnded =
       lowerMessage.includes("has ended") ||
       lowerMessage.includes("ended") ||
       lowerType.includes("ended") ||
       lowerType.includes("round.ended") ||
       lowerType.includes("contest.ended")
-    
-    if ((isRoundOrContestStarted || isRoundOrContestEnded) && notification.parsedPayload?.contestId) {
+
+    if (
+      (isRoundOrContestStarted || isRoundOrContestEnded) &&
+      notification.parsedPayload?.contestId
+    ) {
       if (onClose) onClose()
       const { contestId } = notification.parsedPayload
       // Navigate to contest detail page
