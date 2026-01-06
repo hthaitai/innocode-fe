@@ -39,6 +39,7 @@
     "schoolmanager": "School Manager"
   },
   "common": {
+    "timeExpired": "Time expired",
     "contest": "Contest",
     "loading": "Loading...",
     "error": "Error",

@@ -320,11 +320,24 @@ const router = createBrowserRouter([
       },
       {
         path: "appeal",
-        element: (
-          <ProtectedRoute>
-            <MentorAppeal />
-          </ProtectedRoute>
-        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedRoute>
+                <MentorAppeal />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId",
+            element: (
+              <ProtectedRoute>
+                <MentorAppeal />
+              </ProtectedRoute>
+            ),
+          },
+        ],
       },
       {
         path: "dashboard",

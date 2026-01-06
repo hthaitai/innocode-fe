@@ -39,6 +39,7 @@
     "schoolmanager": "Quản lý trường học"
   },
   "common": {
+    "timeExpired": "Thời gian đã hết",
     "contest": "Cuộc thi",
     "loading": "Đang tải...",
     "error": "Lỗi",

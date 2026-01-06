@@ -67,11 +67,31 @@ const useNotificationNavigation = (onClose) => {
       }
       return
     }
-    // Appeal created for organizer
+    // Appeal created/updated for organizer
     if (targetType === "appeal" && userRole === "organizer") {
       if (onClose) onClose()
       const { contestId, appealId } = notification.parsedPayload || {}
       navigate(`/organizer/contests/${contestId}/appeals/${appealId}`)
+      return
+    }
+
+    // Appeal updated/submitted for mentor
+    if (
+      (targetType === "appeal" ||
+        notification.type === "appeal.updated" ||
+        notification.type === "appeal.submitted" ||
+        notification.type === "AppealUpdated" ||
+        notification.type === "NewAppealSubmitted") &&
+      userRole === "mentor"
+    ) {
+      if (onClose) onClose()
+      const { contestId } = notification.parsedPayload || {}
+      // Navigate to mentor appeal page, optionally with contestId
+      if (contestId) {
+        navigate(`/appeal/${contestId}`)
+      } else {
+        navigate("/appeal")
+      }
       return
     }
 
