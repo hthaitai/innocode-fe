@@ -1,23 +1,23 @@
-import React, { useState } from "react";
-import { Icon } from "@iconify/react";
+import React, { useState } from "react"
+import { Icon } from "@iconify/react"
 
 /**
  * Component hiển thị test results
  */
 const TestResultsSection = ({ testResult, isLoading }) => {
-  const [expandedCases, setExpandedCases] = useState(new Set());
+  const [expandedCases, setExpandedCases] = useState(new Set())
 
   const toggleCase = (caseId) => {
     setExpandedCases((prev) => {
-      const newSet = new Set(prev);
+      const newSet = new Set(prev)
       if (newSet.has(caseId)) {
-        newSet.delete(caseId);
+        newSet.delete(caseId)
       } else {
-        newSet.add(caseId);
+        newSet.add(caseId)
       }
-      return newSet;
-    });
-  };
+      return newSet
+    })
+  }
   if (isLoading) {
     return (
       <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6">
@@ -33,7 +33,7 @@ const TestResultsSection = ({ testResult, isLoading }) => {
           <p className="text-[#7A7574]">Loading results...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (!testResult) {
@@ -51,12 +51,13 @@ const TestResultsSection = ({ testResult, isLoading }) => {
           <p>Run your code to see test results</p>
         </div>
       </div>
-    );
+    )
   }
 
-  const passedCount = testResult.details?.filter(
-    (d) => d.note === "success" || d.status === "success"
-  ).length || 0;
+  const passedCount =
+    testResult.details?.filter(
+      (d) => d.note === "success" || d.status === "success"
+    ).length || 0
 
   return (
     <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6 mt-4">
@@ -130,9 +131,10 @@ const TestResultsSection = ({ testResult, isLoading }) => {
               Test Cases Detail
             </h3>
             {testResult.details.map((detail, index) => {
-              const caseId = detail.detailsId || detail.id || index;
-              const isExpanded = expandedCases.has(caseId);
-              const hasOutput = detail.actual !== undefined || detail.expected !== undefined;
+              const caseId = detail.detailsId || detail.id || index
+              const isExpanded = expandedCases.has(caseId)
+              const hasOutput =
+                detail.actual !== undefined || detail.expected !== undefined
 
               return (
                 <div
@@ -152,7 +154,11 @@ const TestResultsSection = ({ testResult, isLoading }) => {
                     <div className="flex items-center gap-2">
                       {hasOutput && (
                         <Icon
-                          icon={isExpanded ? "mdi:chevron-down" : "mdi:chevron-right"}
+                          icon={
+                            isExpanded
+                              ? "mdi:chevron-down"
+                              : "mdi:chevron-right"
+                          }
                           width="20"
                           className="text-[#7A7574] transition-transform"
                         />
@@ -162,7 +168,8 @@ const TestResultsSection = ({ testResult, isLoading }) => {
                       </span>
                       <span
                         className={`px-2 py-0.5 rounded text-xs font-medium ${
-                          detail.note === "success" || detail.status === "success"
+                          detail.note === "success" ||
+                          detail.status === "success"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
                         }`}
@@ -189,68 +196,68 @@ const TestResultsSection = ({ testResult, isLoading }) => {
                         </div>
                       )}
                       <div className="font-bold text-sm">
-                        {detail.weight || 0} Points
+                        {detail.weight || 0} Pointssss
                       </div>
                     </div>
                   </div>
 
                   {/* Actual and Expected Output - only show when expanded */}
                   {isExpanded && hasOutput && (
-                  <div className="mt-3 space-y-2">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      
-                      {/* Actual Output */}
-                      {detail.actual !== undefined && (
-                        <div className="bg-white border border-gray-200 rounded-[5px] p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Icon
-                              icon="mdi:code-json"
-                              width="16"
-                              className={
-                                detail.status === "success" || detail.note === "success"
-                                  ? "text-green-600"
-                                  : "text-red-600"
-                              }
-                            />
-                            <span className="text-xs font-semibold text-[#7A7574] uppercase">
-                              Your Actual Output
-                            </span>
+                    <div className="mt-3 space-y-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {/* Actual Output */}
+                        {detail.actual !== undefined && (
+                          <div className="bg-white border border-gray-200 rounded-[5px] p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Icon
+                                icon="mdi:code-json"
+                                width="16"
+                                className={
+                                  detail.status === "success" ||
+                                  detail.note === "success"
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                }
+                              />
+                              <span className="text-xs font-semibold text-[#7A7574] uppercase">
+                                Your Actual Output
+                              </span>
+                            </div>
+                            <div
+                              className={`rounded p-2 font-mono text-sm break-words ${
+                                detail.status === "success" ||
+                                detail.note === "success"
+                                  ? "bg-green-50 text-green-800"
+                                  : "bg-red-50 text-red-800"
+                              }`}
+                            >
+                              {detail.actual || "N/A"}
+                            </div>
                           </div>
-                          <div
-                            className={`rounded p-2 font-mono text-sm break-words ${
-                              detail.status === "success" || detail.note === "success"
-                                ? "bg-green-50 text-green-800"
-                                : "bg-red-50 text-red-800"
-                            }`}
-                          >
-                            {detail.actual || "N/A"}
+                        )}
+                        {/* Expected Output */}
+                        {detail.expected !== undefined && (
+                          <div className="bg-white border border-gray-200 rounded-[5px] p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Icon
+                                icon="mdi:check"
+                                width="16"
+                                className="text-green-600"
+                              />
+                              <span className="text-xs font-semibold text-[#7A7574] uppercase">
+                                Expected Output
+                              </span>
+                            </div>
+                            <div className="bg-[#f9fafb] rounded p-2 font-mono text-sm text-[#2d3748] break-words">
+                              {detail.expected || "N/A"}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      {/* Expected Output */}
-                      {detail.expected !== undefined && (
-                        <div className="bg-white border border-gray-200 rounded-[5px] p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Icon
-                              icon="mdi:check"
-                              width="16"
-                              className="text-green-600"
-                            />
-                            <span className="text-xs font-semibold text-[#7A7574] uppercase">
-                              Expected Output
-                            </span>
-                          </div>
-                          <div className="bg-[#f9fafb] rounded p-2 font-mono text-sm text-[#2d3748] break-words">
-                            {detail.expected || "N/A"}
-                          </div>
-                        </div>
-                      )}
-
+                        )}
+                      </div>
                     </div>
-                  </div>
                   )}
                 </div>
-              );
+              )
             })}
           </div>
         )}
@@ -278,8 +285,7 @@ const TestResultsSection = ({ testResult, isLoading }) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default TestResultsSection;
-
+export default TestResultsSection

@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import PageContainer from "@/shared/components/PageContainer";
-import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs";
-import { Icon } from "@iconify/react";
+import React, { useEffect, useState, useMemo, useRef } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import PageContainer from "@/shared/components/PageContainer"
+import { createBreadcrumbWithPaths, BREADCRUMBS } from "@/config/breadcrumbs"
+import { Icon } from "@iconify/react"
 import {
   Calendar,
   Users,
@@ -16,31 +16,39 @@ import {
   TrophyIcon,
   JoystickIcon,
   RefreshCcw,
-} from "lucide-react";
-import useContestDetail from "../hooks/useContestDetail";
-import CountdownTimer from "@/shared/components/countdowntimer/CountdownTimer";
-import { useAuth } from "@/context/AuthContext";
-import useTeams from "@/features/team/hooks/useTeams";
-import useCompletedQuizzes from "@/features/quiz/hooks/useCompletedQuizzes";
-import { formatDateTime } from "@/shared/utils/dateTime";
-import { formatScore } from "@/shared/utils/formatNumber";
-import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi";
-import { useGetRoundsByContestIdQuery } from "@/services/roundApi";
-import useCompletedAutoTests from "@/features/problem/hooks/useCompletedAutoTests";
-import manualProblemApi from "@/api/manualProblemApi";
-import { useModal } from "@/shared/hooks/useModal";
+} from "lucide-react"
+import useContestDetail from "../hooks/useContestDetail"
+import CountdownTimer from "@/shared/components/countdowntimer/CountdownTimer"
+import { useAuth } from "@/context/AuthContext"
+import useTeams from "@/features/team/hooks/useTeams"
+import useCompletedQuizzes from "@/features/quiz/hooks/useCompletedQuizzes"
+import { formatDateTime } from "@/shared/utils/dateTime"
+import { formatScore } from "@/shared/utils/formatNumber"
+import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi"
+import { useGetRoundsByContestIdQuery } from "@/services/roundApi"
+import useCompletedAutoTests from "@/features/problem/hooks/useCompletedAutoTests"
+import manualProblemApi from "@/api/manualProblemApi"
+import { useModal } from "@/shared/hooks/useModal"
+import RoundTimeline from "@/features/round/components/RoundTimeline"
+import useRoundTimeline from "@/features/round/hooks/useRoundTimeline"
+
+// Wrapper component to fetch and display timeline for each round
+const RoundTimelineWrapper = ({ roundId }) => {
+  const { timeline, loading } = useRoundTimeline(roundId)
+  return <RoundTimeline timeline={timeline} loading={loading} />
+}
 
 const ContestDetail = () => {
-  const { t } = useTranslation('pages');
-  const { contestId } = useParams();
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview");
-  const { user } = useAuth();
-  const role = user?.role || "student";
-  const { openModal } = useModal();
+  const { t, i18n } = useTranslation("pages")
+  const { contestId } = useParams()
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState("overview")
+  const { user } = useAuth()
+  const role = user?.role || "student"
+  const { openModal } = useModal()
 
   // Fetch contest data from API
-  const { contest: apiContest, loading, error } = useContestDetail(contestId);
+  const { contest: apiContest, loading, error } = useContestDetail(contestId)
 
   // Fetch rounds separately using RTK Query (only when rounds tab is active or contest is loaded)
   const {
@@ -51,72 +59,72 @@ const ContestDetail = () => {
     refetch: refetchRounds,
   } = useGetRoundsByContestIdQuery(contestId, {
     skip: !contestId,
-  });
+  })
 
   // Fetch team data for student
-  const { getMyTeam, loading: teamLoading } = useTeams();
-  const [myTeam, setMyTeam] = useState(null);
+  const { getMyTeam, loading: teamLoading } = useTeams()
+  const [myTeam, setMyTeam] = useState(null)
 
   // Use API data if available
-  const contest = apiContest;
+  const contest = apiContest
 
   // Get rounds from RTK Query, fallback to contest data
   const rounds = useMemo(() => {
     if (roundsData?.data && Array.isArray(roundsData.data)) {
-      return roundsData.data;
+      return roundsData.data
     }
     // Fallback to contest rounds if RTK Query hasn't loaded yet
-    return contest?.rounds || [];
-  }, [roundsData, contest?.rounds]);
+    return contest?.rounds || []
+  }, [roundsData, contest?.rounds])
 
   // Check if we have rounds data from RTK Query (not just fallback)
-  const hasRoundsFromQuery = roundsData?.data && Array.isArray(roundsData.data);
+  const hasRoundsFromQuery = roundsData?.data && Array.isArray(roundsData.data)
 
   // Check if contest is ongoing
   const isOngoing = useMemo(() => {
-    if (!contest) return false;
-    const now = new Date();
-    const startDate = new Date(contest.start);
-    const endDate = new Date(contest.end);
-    const status = contest.statusLabel || contest.status || "";
+    if (!contest) return false
+    const now = new Date()
+    const startDate = new Date(contest.start)
+    const endDate = new Date(contest.end)
+    const status = contest.statusLabel || contest.status || ""
 
     // Check by status
-    if (status.toLowerCase() === "ongoing") return true;
+    if (status.toLowerCase() === "ongoing") return true
 
     // Check by dates
-    return now >= startDate && now < endDate;
-  }, [contest]);
+    return now >= startDate && now < endDate
+  }, [contest])
 
   // Fetch leaderboard using RTK Query (only when ongoing or ranks tab is active)
   const shouldFetchLeaderboard =
-    contestId && (isOngoing || activeTab === "ranks");
+    contestId && (isOngoing || activeTab === "ranks")
   const {
     data: leaderboardData,
     isLoading: leaderboardLoading,
     error: leaderboardError,
   } = useGetTeamsByContestIdQuery(contestId, {
     skip: !shouldFetchLeaderboard,
-  });
+  })
 
   // Debug: Log leaderboard data in ContestDetail
   useEffect(() => {
     if (import.meta.env.VITE_ENV === "development" && shouldFetchLeaderboard) {
-      console.log("🔍 [ContestDetail] contestId:", contestId);
+      console.log("🔍 [ContestDetail] contestId:", contestId)
       console.log(
         "🔍 [ContestDetail] shouldFetchLeaderboard:",
         shouldFetchLeaderboard
-      );
-      console.log("🔍 [ContestDetail] leaderboardData:", leaderboardData);
+      )
+      console.log("🔍 [ContestDetail] leaderboardData:", leaderboardData)
       console.log(
         "🔍 [ContestDetail] leaderboardData type:",
         typeof leaderboardData
-      );
+      )
       console.log(
         "🔍 [ContestDetail] leaderboardData isArray:",
         Array.isArray(leaderboardData)
-      );
-      console.log("🔍 [ContestDetail] leaderboardLoading:", leaderboardLoading);
-      console.log("🔍 [ContestDetail] leaderboardError:", leaderboardError);
+      )
+      console.log("🔍 [ContestDetail] leaderboardLoading:", leaderboardLoading)
+      console.log("🔍 [ContestDetail] leaderboardError:", leaderboardError)
     }
   }, [
     leaderboardData,
@@ -124,7 +132,7 @@ const ContestDetail = () => {
     shouldFetchLeaderboard,
     leaderboardLoading,
     leaderboardError,
-  ]);
+  ])
 
   // Handle data structure - API returns teams array directly or wrapped
   // transformResponse now always returns object with teams array
@@ -133,21 +141,21 @@ const ContestDetail = () => {
     : leaderboardData?.teams ||
       leaderboardData?.teamIdList ||
       leaderboardData?.entries ||
-      [];
+      []
 
   // Debug: Log entries
   useEffect(() => {
     if (import.meta.env.VITE_ENV === "development" && shouldFetchLeaderboard) {
-      console.log("🔍 [ContestDetail] leaderboardEntries:", leaderboardEntries);
+      console.log("🔍 [ContestDetail] leaderboardEntries:", leaderboardEntries)
       console.log(
         "🔍 [ContestDetail] leaderboardEntries length:",
         leaderboardEntries.length
-      );
+      )
       if (leaderboardEntries.length > 0) {
-        console.log("🔍 [ContestDetail] first entry:", leaderboardEntries[0]);
+        console.log("🔍 [ContestDetail] first entry:", leaderboardEntries[0])
       }
     }
-  }, [leaderboardEntries, shouldFetchLeaderboard]);
+  }, [leaderboardEntries, shouldFetchLeaderboard])
 
   // Get contest info from contest data
   const leaderboardContestInfo = {
@@ -157,106 +165,106 @@ const ContestDetail = () => {
       ? leaderboardEntries.length
       : leaderboardData?.totalTeamCount || 0,
     snapshotAt: leaderboardData?.snapshotAt || null,
-  };
+  }
 
   // Find my team's entry in leaderboard
   const myTeamLeaderboardEntry = useMemo(() => {
-    if (!isOngoing || !myTeam || !leaderboardEntries.length) return null;
+    if (!isOngoing || !myTeam || !leaderboardEntries.length) return null
 
-    const myTeamId = myTeam.teamId || myTeam.team_id;
+    const myTeamId = myTeam.teamId || myTeam.team_id
     return leaderboardEntries.find(
       (entry) => entry.teamId === myTeamId || entry.teamId === String(myTeamId)
-    );
-  }, [isOngoing, myTeam, leaderboardEntries]);
+    )
+  }, [isOngoing, myTeam, leaderboardEntries])
 
   // Fetch my team when contestId or user changes (for both student and mentor)
   useEffect(() => {
     const fetchMyTeam = async () => {
       if (contestId && user?.id && (role === "student" || role === "mentor")) {
         try {
-          const teamData = await getMyTeam(contestId);
-          setMyTeam(teamData || null);
+          const teamData = await getMyTeam(contestId)
+          setMyTeam(teamData || null)
         } catch (error) {
-          console.error("Error fetching my team:", error);
-          setMyTeam(null);
+          console.error("Error fetching my team:", error)
+          setMyTeam(null)
         }
       }
-    };
+    }
 
-    fetchMyTeam();
-  }, [contestId, user?.id, role, getMyTeam]);
+    fetchMyTeam()
+  }, [contestId, user?.id, role, getMyTeam])
 
   // Check for completed quizzes (only for students)
   const { completedRounds, loading: completedQuizzesLoading } =
-    useCompletedQuizzes(role === "student" ? rounds : []);
+    useCompletedQuizzes(role === "student" ? rounds : [])
 
   // Check completed AutoEvaluation rounds
   const {
     completedRounds: completedAutoTests,
     loading: completedAutoTestsLoading,
-  } = useCompletedAutoTests(role === "student" ? rounds : []);
+  } = useCompletedAutoTests(role === "student" ? rounds : [])
 
   // Check completed Manual problem rounds using RTK Query
   const manualRounds = useMemo(() => {
-    if (role !== "student" || !rounds || rounds.length === 0) return [];
+    if (role !== "student" || !rounds || rounds.length === 0) return []
     return rounds.filter(
       (round) => round.problemType === "Manual" && round.roundId
-    );
-  }, [rounds, role]);
+    )
+  }, [rounds, role])
 
   // Create a stable key from roundIds to prevent infinite loops
   const manualRoundsKey = useMemo(() => {
-    if (!manualRounds || manualRounds.length === 0) return "";
+    if (!manualRounds || manualRounds.length === 0) return ""
     return manualRounds
       .map((r) => r.roundId)
       .sort()
-      .join(",");
-  }, [manualRounds]);
+      .join(",")
+  }, [manualRounds])
 
   // Check each manual round for completion using manualProblemApi
-  const [completedManualProblems, setCompletedManualProblems] = useState([]);
+  const [completedManualProblems, setCompletedManualProblems] = useState([])
   const [completedManualProblemsLoading, setCompletedManualProblemsLoading] =
-    useState(false);
+    useState(false)
 
   // Track previous key and userId to prevent unnecessary re-fetches
-  const previousKeyRef = useRef("");
-  const previousUserIdRef = useRef(null);
+  const previousKeyRef = useRef("")
+  const previousUserIdRef = useRef(null)
   // Store rounds in ref to avoid stale closure
-  const roundsRef = useRef(rounds);
+  const roundsRef = useRef(rounds)
 
   // Update roundsRef when rounds change
   useEffect(() => {
-    roundsRef.current = rounds;
-  }, [rounds]);
+    roundsRef.current = rounds
+  }, [rounds])
 
   useEffect(() => {
-    const currentUserId = user?.id;
+    const currentUserId = user?.id
 
     // Skip if key and userId haven't changed
     if (
       manualRoundsKey === previousKeyRef.current &&
       currentUserId === previousUserIdRef.current
     ) {
-      return;
+      return
     }
 
     // Update previous values
-    previousKeyRef.current = manualRoundsKey;
-    previousUserIdRef.current = currentUserId;
+    previousKeyRef.current = manualRoundsKey
+    previousUserIdRef.current = currentUserId
 
     if (manualRounds.length === 0 || !currentUserId) {
-      setCompletedManualProblems([]);
-      setCompletedManualProblemsLoading(false);
-      return;
+      setCompletedManualProblems([])
+      setCompletedManualProblemsLoading(false)
+      return
     }
 
     const checkCompletedManualProblems = async () => {
-      setCompletedManualProblemsLoading(true);
+      setCompletedManualProblemsLoading(true)
       try {
         // Filter rounds from ref to get latest value
         const manualRoundsFiltered = (roundsRef.current || []).filter(
           (round) => round.problemType === "Manual" && round.roundId
-        );
+        )
 
         const checkPromises = manualRoundsFiltered.map(async (round) => {
           try {
@@ -267,137 +275,177 @@ const ContestDetail = () => {
                 pageSize: 1,
                 studentIdSearch: currentUserId,
               }
-            );
-            const results = res.data?.data || res.data || [];
-            return results.length > 0 ? round : null;
+            )
+            const results = res.data?.data || res.data || []
+            return results.length > 0 ? round : null
           } catch (err) {
             if (err?.response?.status === 404) {
-              return null;
+              return null
             }
             console.warn(
               `Error checking manual result for round ${round.roundId}:`,
               err
-            );
-            return null;
+            )
+            return null
           }
-        });
+        })
 
-        const results = await Promise.all(checkPromises);
-        const completed = results.filter((round) => round !== null);
-        setCompletedManualProblems(completed);
+        const results = await Promise.all(checkPromises)
+        const completed = results.filter((round) => round !== null)
+        setCompletedManualProblems(completed)
       } catch (err) {
-        console.error("Error checking completed manual problems:", err);
+        console.error("Error checking completed manual problems:", err)
       } finally {
-        setCompletedManualProblemsLoading(false);
+        setCompletedManualProblemsLoading(false)
       }
-    };
+    }
 
-    checkCompletedManualProblems();
+    checkCompletedManualProblems()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [manualRoundsKey, user?.id]); // Only depend on manualRoundsKey and userId, rounds is used inside effect to avoid stale closure
+  }, [manualRoundsKey, user?.id]) // Only depend on manualRoundsKey and userId, rounds is used inside effect to avoid stale closure
 
   const breadcrumbData = contest
     ? createBreadcrumbWithPaths("CONTEST_DETAIL", contest.name || contest.title)
-    : { items: BREADCRUMBS.NOT_FOUND, paths: ["/"] };
+    : { items: BREADCRUMBS.NOT_FOUND, paths: ["/"] }
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case "upcoming":
-        return "text-amber-500 bg-amber-500/10";
+        return "text-amber-500 bg-amber-500/10"
       case "ongoing":
-        return "text-blue-500 bg-blue-500/10";
+        return "text-blue-500 bg-blue-500/10"
       case "completed":
-        return "text-green-500 bg-green-500/10";
+        return "text-green-500 bg-green-500/10"
       default:
-        return "text-gray-500 bg-gray-500/10";
+        return "text-gray-500 bg-gray-500/10"
     }
-  };
+  }
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+    const date = new Date(dateString)
+    const isVietnamese = i18n.language === "vi"
+
+    const day = date.getDate()
+    const month = date.getMonth()
+    const year = date.getFullYear()
+    const hours = date.getHours()
+    const minutes = date.getMinutes()
+
+    // Month names
+    const monthNamesEn = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ]
+    const monthNamesVi = [
+      "Thg 1",
+      "Thg 2",
+      "Thg 3",
+      "Thg 4",
+      "Thg 5",
+      "Thg 6",
+      "Thg 7",
+      "Thg 8",
+      "Thg 9",
+      "Thg 10",
+      "Thg 11",
+      "Thg 12",
+    ]
+
+    const monthName = isVietnamese ? monthNamesVi[month] : monthNamesEn[month]
+
+    // Format time
+    const period =
+      hours >= 12 ? (isVietnamese ? "CH" : "PM") : isVietnamese ? "SA" : "AM"
+    const displayHours = hours % 12 || 12
+    const displayMinutes = minutes.toString().padStart(2, "0")
+
+    // Format: "Thg 1 5, 2026, 10:30 SA" (Vietnamese) or "Jan 5, 2026, 10:30 AM" (English)
+    return `${monthName} ${day}, ${year}, ${displayHours}:${displayMinutes} ${period}`
+  }
 
   // Determine countdown target and label based on contest status
   const getCountdownTarget = () => {
-    if (!contest) return null;
+    if (!contest) return null
 
-    const now = new Date();
-    const startDate = new Date(contest.start);
-    const endDate = new Date(contest.end);
+    const now = new Date()
+    const startDate = new Date(contest.start)
+    const endDate = new Date(contest.end)
 
     // If contest hasn't started yet, countdown to start
     if (now < startDate) {
-      return contest.start;
+      return contest.start
     }
 
     // If contest is ongoing, countdown to end
     if (now >= startDate && now < endDate) {
-      return contest.end;
+      return contest.end
     }
 
     // Contest has ended
-    return null;
-  };
+    return null
+  }
 
   const getCountdownLabel = () => {
-    if (!contest) return t('contest.timeRemaining');
+    if (!contest) return t("contest.timeRemaining")
 
-    const now = new Date();
-    const startDate = new Date(contest.start);
-    const endDate = new Date(contest.end);
+    const now = new Date()
+    const startDate = new Date(contest.start)
+    const endDate = new Date(contest.end)
 
     if (now < startDate) {
-      return t('contest.timeUntilStart');
+      return t("contest.timeUntilStart")
     }
 
     if (now >= startDate && now < endDate) {
-      return t('contest.timeUntilEnd');
+      return t("contest.timeUntilEnd")
     }
 
-    return t('contest.contestEnded');
-  };
+    return t("contest.contestEnded")
+  }
 
   // Check if registration is closed
   const isRegistrationClosed = () => {
-    if (!contest) return false;
+    if (!contest) return false
 
     // Check by status
     if (contest.status === "RegistrationClosed") {
-      return true;
+      return true
     }
 
     // Check by registrationEnd date
     if (contest.registrationEnd) {
-      const now = new Date();
-      const registrationEnd = new Date(contest.registrationEnd);
-      return now > registrationEnd;
+      const now = new Date()
+      const registrationEnd = new Date(contest.registrationEnd)
+      return now > registrationEnd
     }
 
-    return false;
-  };
+    return false
+  }
 
-  const registrationClosed = isRegistrationClosed();
+  const registrationClosed = isRegistrationClosed()
 
   const tabs = [
-    { id: "overview", label: t('contest.overview'), icon: "mdi:information-outline" },
+    {
+      id: "overview",
+      label: t("contest.overview"),
+      icon: "mdi:information-outline",
+    },
     {
       id: "rounds",
-      label: t('contest.rounds'),
+      label: t("contest.rounds"),
       icon: "mdi:clipboard-play-multiple-outline",
     },
-    {
-      id: "ranks",
-      label: t('contest.ranking'),
-      icon: "mdi:trophy-outline",
-    },
-  ];
+  ]
 
   // Loading state
   if (loading) {
@@ -407,12 +455,12 @@ const ContestDetail = () => {
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
             <p className="text-gray-600 font-medium">
-              {t('contest.loadingDetails')}
+              {t("contest.loadingDetails")}
             </p>
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   // Error state
@@ -426,7 +474,7 @@ const ContestDetail = () => {
               className="w-20 h-20 text-red-500 mx-auto mb-4"
             />
             <h3 className="text-xl font-bold text-gray-800 mb-2">
-              {t('contest.failedToLoadDetail')}
+              {t("contest.failedToLoadDetail")}
             </h3>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
@@ -434,12 +482,12 @@ const ContestDetail = () => {
               className="button-orange"
             >
               <Icon icon="mdi:arrow-left" className="inline mr-2" />
-              {t('contest.backToContests')}
+              {t("contest.backToContests")}
             </button>
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   if (!contest) {
@@ -449,10 +497,12 @@ const ContestDetail = () => {
         breadcrumbPaths={breadcrumbData.paths}
       >
         <div className="flex items-center justify-center h-[400px]">
-          <p className="text-[#7A7574] text-lg">{t('contest.contestNotFound')}</p>
+          <p className="text-[#7A7574] text-lg">
+            {t("contest.contestNotFound")}
+          </p>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   return (
@@ -481,7 +531,7 @@ const ContestDetail = () => {
                   {contest.name || contest.title}
                 </h1>
                 <p className="text-lg opacity-90 truncate max-w-full mx-auto">
-                  {t('contest.organizedBy')} {contest.createdByName}
+                  {t("contest.organizedBy")} {contest.createdByName}
                 </p>
               </div>
             </div>
@@ -496,76 +546,109 @@ const ContestDetail = () => {
                 )}`}
               >
                 {(() => {
-                  const rawStatus = contest.statusLabel || contest.status;
-                  if (!rawStatus) return '';
-                  
+                  const rawStatus = contest.statusLabel || contest.status
+                  if (!rawStatus) return ""
+
                   // Normalize status to lowercase for matching
-                  const statusLower = rawStatus.toLowerCase().replace(/\s+/g, '');
-                  
+                  const statusLower = rawStatus
+                    .toLowerCase()
+                    .replace(/\s+/g, "")
+
                   // Map status to translation key
                   const statusMap = {
-                    'ongoing': 'contest.statusLabels.ongoing',
-                    'upcoming': 'contest.statusLabels.upcoming',
-                    'completed': 'contest.statusLabels.completed',
-                    'published': 'contest.statusLabels.published',
-                    'registrationopen': 'contest.statusLabels.registrationOpen',
-                    'registrationclosed': 'contest.statusLabels.registrationClosed',
-                    'draft': 'contest.statusLabels.draft',
-                  };
-                  
-                  const translationKey = statusMap[statusLower];
-                  if (translationKey) {
-                    return t(translationKey);
+                    ongoing: "contest.statusLabels.ongoing",
+                    upcoming: "contest.statusLabels.upcoming",
+                    completed: "contest.statusLabels.completed",
+                    published: "contest.statusLabels.published",
+                    registrationopen: "contest.statusLabels.registrationOpen",
+                    registrationclosed:
+                      "contest.statusLabels.registrationClosed",
+                    draft: "contest.statusLabels.draft",
                   }
-                  
+
+                  const translationKey = statusMap[statusLower]
+                  if (translationKey) {
+                    return t(translationKey)
+                  }
+
                   // Fallback: format status to readable label if no translation found
-                  return rawStatus
-                    .charAt(0)
-                    .toUpperCase() + rawStatus.slice(1);
+                  return rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1)
                 })()}
               </span>
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-[#E5E5E5]">
-              <div className="flex items-center gap-2 text-sm min-w-0">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-[200px] pt-6 mt-2 border-t border-[#E5E5E5]">
+              <div className="flex items-center gap-3 text-sm min-w-0">
                 <Calendar size={26} className="text-[#7A7574] flex-shrink-0" />
                 <div className="min-w-0">
-                  <div className="text-[#7A7574] text-xs">{t('contest.startDate')}</div>
-                  <div className="font-medium text-[#2d3748] break-words">
-                    {contest.start
-                      ? formatDate(contest.start).split(",")[0]
-                      : "TBA"}
+                  <div className="text-[#7A7574] text-nowrap text-xs whitespace-nowrap">
+                    {t("contest.dateRange")}
+                  </div>
+                  <div className="font-medium text-[#2d3748] text-[11px] leading-relaxed">
+                    <div className="whitespace-nowrap">
+                      {contest.start ? formatDate(contest.start) : "TBA"}
+                    </div>
+                    <div className="text-gray-400 text-center my-0.5">
+                      {i18n.language === "vi" ? "đến" : "to"}
+                    </div>
+                    <div className="whitespace-nowrap">
+                      {contest.end ? formatDate(contest.end) : "TBA"}
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-sm min-w-0">
-                <TrophyIcon
+              <div className="flex items-center gap-3 text-sm min-w-0">
+                <NotebookPen
                   size={26}
                   className="text-[#7A7574] flex-shrink-0"
                 />
                 <div className="min-w-0">
-                  <div className="text-[#7A7574] text-xs">{t('contest.prizePool')}</div>
-                  <div
-                    className="font-medium text-[#2d3748] break-words line-clamp-2"
-                    title={contest.rewardsText || "TBA"}
-                  >
-                    {contest.rewardsText || "TBA"}
+                  <div className="text-[#7A7574] text-nowrap text-xs whitespace-nowrap">
+                    {t("contest.dateRegister")}
+                  </div>
+                  <div className="font-medium text-[#2d3748] text-[11px] leading-relaxed">
+                    <div className="whitespace-nowrap">
+                      {contest.registrationStart
+                        ? formatDate(contest.registrationStart)
+                        : "TBA"}
+                    </div>
+                    <div className="text-gray-400 text-center my-0.5">
+                      {i18n.language === "vi" ? "đến" : "to"}
+                    </div>
+                    <div className="whitespace-nowrap">
+                      {contest.registrationEnd
+                        ? formatDate(contest.registrationEnd)
+                        : "TBA"}
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-sm min-w-0">
+
+              <div className="flex items-center gap-3 text-sm min-w-0">
                 <JoystickIcon
                   size={26}
                   className="text-[#7A7574] flex-shrink-0"
                 />
                 <div className="min-w-0">
-                  <div className="text-[#7A7574] text-xs">{t('contest.rounds')}</div>
-                  <div className="font-medium text-[#2d3748] break-words">
-                    {Array.isArray(contest.rounds) ? contest.rounds.length : 0}{" "}
-                    {Array.isArray(contest.rounds) && contest.rounds.length === 1
-                      ? t('contest.round')
-                      : t('contest.roundsPlural')}
+                  <div className="text-[#7A7574] text-xs whitespace-nowrap">
+                    {t("contest.rounds")}
+                  </div>
+                  <div className="font-medium text-[#2d3748] whitespace-nowrap">
+                    {(() => {
+                      const nonRetakeRounds = Array.isArray(contest.rounds)
+                        ? contest.rounds.filter((r) => !r.isRetakeRound)
+                        : []
+                      const count = nonRetakeRounds.length
+                      return (
+                        <>
+                          {count}{" "}
+                          {count === 1
+                            ? t("contest.round")
+                            : t("contest.roundsPlural")}
+                        </>
+                      )
+                    })()}
                   </div>
                 </div>
               </div>
@@ -598,7 +681,7 @@ const ContestDetail = () => {
                   {/* Description */}
                   <div>
                     <h3 className="text-lg font-semibold text-[#2d3748] mb-3">
-                      {t('contest.aboutContest')}
+                      {t("contest.aboutContest")}
                     </h3>
                     <p
                       className="text-[#4a5568] text-base leading-relaxed whitespace-pre-wrap break-words max-w-full"
@@ -614,7 +697,7 @@ const ContestDetail = () => {
                   {/* Prizes */}
                   <div>
                     <h3 className="text-lg font-semibold text-amber-500 mb-3">
-                      {t('contest.prizesAwards')}
+                      {t("contest.prizesAwards")}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <p className="text-sm text-[#4a5568] break-words line-clamp-3">
@@ -635,7 +718,7 @@ const ContestDetail = () => {
                         <div className="flex flex-col items-center gap-3">
                           <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-orange-500"></div>
                           <p className="text-sm text-[#7A7574] font-medium">
-                            {t('contest.refreshingRounds')}
+                            {t("contest.refreshingRounds")}
                           </p>
                         </div>
                       </div>
@@ -643,14 +726,14 @@ const ContestDetail = () => {
 
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold text-[#2d3748]">
-                      {t('contest.contestRounds')}
+                      {t("contest.contestRounds")}
                     </h3>
                     <div className="flex items-center gap-2">
                       {(roundsLoading || roundsFetching) && (
                         <span className="text-sm text-[#7A7574] animate-pulse font-medium">
                           {roundsFetching && hasRoundsFromQuery
-                            ? t('contest.refreshing')
-                            : t('common:common.loading')}
+                            ? t("contest.refreshing")
+                            : t("common:common.loading")}
                         </span>
                       )}
                       <RefreshCcw
@@ -675,7 +758,9 @@ const ContestDetail = () => {
                         width="48"
                         className="mx-auto mb-2 text-red-500 opacity-50"
                       />
-                      <p className="text-[#7A7574]">{t('contest.failedToLoadRounds')}</p>
+                      <p className="text-[#7A7574]">
+                        {t("contest.failedToLoadRounds")}
+                      </p>
                       <p className="text-sm text-[#7A7574] mt-1">
                         {roundsError?.data?.message ||
                           roundsError?.message ||
@@ -686,80 +771,82 @@ const ContestDetail = () => {
                     !hasRoundsFromQuery ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-                      <p className="text-[#7A7574]">{t('contest.loadingRounds')}</p>
+                      <p className="text-[#7A7574]">
+                        {t("contest.loadingRounds")}
+                      </p>
                     </div>
                   ) : rounds && rounds.length > 0 ? (
                     rounds.map((round, index) => {
                       // ✅ Check if round is completed
                       const isRoundCompleted = () => {
-                        if (!round.roundId) return false;
+                        if (!round.roundId) return false
 
                         switch (round.problemType) {
                           case "McqTest":
                             return completedRounds.some(
                               (r) => r.roundId === round.roundId
-                            );
+                            )
                           case "AutoEvaluation":
                             return completedAutoTests.some(
                               (r) => r.roundId === round.roundId
-                            );
+                            )
                           case "Manual":
                             return completedManualProblems.some(
                               (r) => r.roundId === round.roundId
-                            );
+                            )
                           default:
-                            return false;
+                            return false
                         }
-                      };
+                      }
 
                       // ✅ Get result route based on problemType
                       const getResultRoute = () => {
                         switch (round.problemType) {
                           case "McqTest":
-                            return `/quiz/${round.roundId}/finish`;
+                            return `/quiz/${round.roundId}/finish`
                           case "AutoEvaluation":
-                            return `/auto-test-result/${contestId}/${round.roundId}`;
+                            return `/auto-test-result/${contestId}/${round.roundId}`
                           case "Manual":
-                            return `/manual-problem/${contestId}/${round.roundId}`;
+                            return `/manual-problem/${contestId}/${round.roundId}`
                           default:
-                            return null;
+                            return null
                         }
-                      };
+                      }
 
                       // ✅ Determine route based on problemType
                       const getRoundRoute = () => {
                         switch (round.problemType) {
                           case "McqTest":
-                            return `/mcq-test/${contestId}/${round.roundId}`;
+                            return `/mcq-test/${contestId}/${round.roundId}`
                           case "Manual":
-                            return `/manual-problem/${contestId}/${round.roundId}`;
+                            return `/manual-problem/${contestId}/${round.roundId}`
                           case "AutoEvaluation":
-                            return `/auto-evaluation/${contestId}/${round.roundId}`;
+                            return `/auto-evaluation/${contestId}/${round.roundId}`
                           default:
-                            return null;
+                            return null
                         }
-                      };
+                      }
 
                       // ✅ Get button label based on problemType and completion status
                       const getButtonLabel = () => {
                         if (isRoundCompleted()) {
-                          return t('contest.viewResult');
+                          return t("contest.viewResult")
                         }
                         switch (round.problemType) {
                           case "McqTest":
-                            return t('contest.startTest');
+                            return t("contest.startTest")
                           case "Manual":
-                            return t('contest.startProblem');
+                            return t("contest.startProblem")
                           case "AutoEvaluation":
-                            return t('contest.startChallenge');
+                            return t("contest.startChallenge")
                           default:
-                            return t('contest.start');
+                            return t("contest.start")
                         }
-                      };
+                      }
 
-                      const roundRoute = getRoundRoute();
-                      const resultRoute = getResultRoute();
-                      const isCompleted = isRoundCompleted();
+                      const roundRoute = getRoundRoute()
+                      const resultRoute = getResultRoute()
+                      const isCompleted = isRoundCompleted()
 
                       return (
                         <div
@@ -774,7 +861,7 @@ const ContestDetail = () => {
                               <h4 className="font-semibold text-[#2d3748] break-words line-clamp-2 min-w-0 flex-1">
                                 {round.roundName ||
                                   round.name ||
-                                  `${t('contest.round')} ${index + 1}`}
+                                  `${t("contest.round")} ${index + 1}`}
                               </h4>
                             </div>
                             <div className="flex flex-col items-end gap-2 flex-shrink-0">
@@ -787,7 +874,19 @@ const ContestDetail = () => {
                                     : "bg-[#fef7e0] text-[#fbbc05]"
                                 }`}
                               >
-                                {round.status}
+                                {(() => {
+                                  const status = round.status
+                                  if (!status) return ""
+
+                                  const statusLower = status.toLowerCase()
+                                  const translationKey = `contest.statusLabels.${statusLower}`
+
+                                  // Try to get translation, fallback to original status
+                                  const translated = t(translationKey)
+                                  return translated !== translationKey
+                                    ? translated
+                                    : status
+                                })()}
                               </span>
                               <div className="flex gap-2 absolute bottom-4 right-4">
                                 {round.status === "Opened" &&
@@ -798,35 +897,37 @@ const ContestDetail = () => {
                                     <button
                                       onClick={() => {
                                         // If not completed, proceed with normal start flow
-                                        if (!roundRoute) return;
+                                        if (!roundRoute) return
 
                                         // Check if openCode already exists in sessionStorage
                                         const existingOpenCode =
                                           sessionStorage.getItem(
                                             `openCode_${round.roundId}`
-                                          );
+                                          )
 
                                         if (existingOpenCode) {
                                           // If openCode exists, navigate directly
-                                          navigate(roundRoute);
+                                          navigate(roundRoute)
                                         } else {
                                           // If no openCode, open modal to enter it
                                           openModal("openCode", {
                                             roundName:
                                               round.roundName ||
                                               round.name ||
-                                              `${t('contest.round')} ${index + 1}`,
+                                              `${t("contest.round")} ${
+                                                index + 1
+                                              }`,
                                             roundId: round.roundId,
                                             onConfirm: (openCode) => {
                                               // Store openCode in sessionStorage for this round
                                               sessionStorage.setItem(
                                                 `openCode_${round.roundId}`,
                                                 openCode
-                                              );
+                                              )
                                               // Navigate to round
-                                              navigate(roundRoute);
+                                              navigate(roundRoute)
                                             },
-                                          });
+                                          })
                                         }
                                       }}
                                       className="button-orange text-xs px-3 py-1 flex items-center gap-1"
@@ -862,11 +963,11 @@ const ContestDetail = () => {
                               />
                               <span className="truncate">
                                 {round.problemType === "McqTest"
-                                  ? t('contest.multipleChoiceQuestions')
+                                  ? t("contest.multipleChoiceQuestions")
                                   : round.problemType === "Manual"
-                                  ? t('contest.manualProblem')
+                                  ? t("contest.manualProblem")
                                   : round.problemType === "AutoEvaluation"
-                                  ? t('contest.autoEvaluation')
+                                  ? t("contest.autoEvaluation")
                                   : round.problemType}
                               </span>
                             </div>
@@ -881,10 +982,25 @@ const ContestDetail = () => {
                                 />
                                 <span>
                                   {Math.floor(round.timeLimitSeconds / 60)}{" "}
-                                  {t('contest.minutes')}
+                                  {t("contest.minutes")}
                                 </span>
                               </div>
                             )}
+
+                            {/* Rank Cutoff (if available) */}
+                            {round.rankCutoff != null &&
+                              round.rankCutoff > 0 && (
+                                <div className="flex items-center gap-2">
+                                  <Trophy
+                                    size={14}
+                                    className="flex-shrink-0 text-amber-500"
+                                  />
+                                  <span>
+                                    {t("contest.rankCutoff")}:{" "}
+                                    {round.rankCutoff}
+                                  </span>
+                                </div>
+                              )}
 
                             {/* Date Range */}
                             {round.start && round.end && (
@@ -896,9 +1012,14 @@ const ContestDetail = () => {
                                 </span>
                               </div>
                             )}
+
+                            {/* Round Timeline */}
+                            {round.roundId && (
+                              <RoundTimelineWrapper roundId={round.roundId} />
+                            )}
                           </div>
                         </div>
-                      );
+                      )
                     })
                   ) : (
                     <div className="text-center py-8 text-[#7A7574]">
@@ -907,285 +1028,7 @@ const ContestDetail = () => {
                         width="48"
                         className="mx-auto mb-2 opacity-50"
                       />
-                      <p>{t('contest.noRoundsScheduled')}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === "ranks" && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-[#2d3748]">
-                      {t('contest.rankingAndStandings')}
-                    </h3>
-                    {leaderboardContestInfo?.snapshotAt && (
-                      <p className="text-sm text-[#7A7574]">
-                        {t('contest.lastUpdated')}:{" "}
-                        {formatDateTime(leaderboardContestInfo.snapshotAt)}
-                      </p>
-                    )}
-                  </div>
-                  {leaderboardLoading ? (
-                    <div className="flex items-center justify-center py-12">
-                      <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-                        <p className="text-gray-600">{t('contest.loadingLeaderboard')}</p>
-                      </div>
-                    </div>
-                  ) : leaderboardError ? (
-                    // Check if it's a 404 (no data yet) vs actual error
-                    (typeof leaderboardError === "object" &&
-                      leaderboardError?.Message?.includes("Not found")) ||
-                    (typeof leaderboardError === "string" &&
-                      leaderboardError.includes("Not found")) ? (
-                      <div className="text-center py-12 text-[#7A7574]">
-                        <Icon
-                          icon="mdi:trophy-outline"
-                          width="48"
-                          className="mx-auto mb-2 opacity-50"
-                        />
-                        <p className="text-lg font-medium mb-1">
-                          {t('contest.noRankingsAvailable')}
-                        </p>
-                        <p className="text-sm">
-                          {isOngoing
-                            ? t('contest.leaderboardWillAppear')
-                            : t('contest.contestNotStarted')}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <Icon
-                          icon="mdi:alert-circle-outline"
-                          width="48"
-                          className="mx-auto mb-2 text-red-500 opacity-50"
-                        />
-                        <p className="text-lg font-medium text-red-600 mb-1">
-                          {t('contest.failedToLoadLeaderboard')}
-                        </p>
-                        <p className="text-sm text-[#7A7574]">
-                          {typeof leaderboardError === "string"
-                            ? leaderboardError
-                            : leaderboardError?.Message ||
-                              leaderboardError?.message ||
-                              "An error occurred"}
-                        </p>
-                      </div>
-                    )
-                  ) : leaderboardEntries && leaderboardEntries.length > 0 ? (
-                    <div className="space-y-6">
-                      {/* Top 3 Podium */}
-                      {leaderboardEntries.length >= 3 && (
-                        <div className="relative">
-                          <div className="flex items-end justify-center gap-2 mb-4">
-                            {/* Rank 2 - Left */}
-                            <div className="flex-1 max-w-[200px] flex flex-col items-center">
-                              <div className="w-full bg-white rounded-lg shadow-md p-4 mb-2 border border-[#E5E5E5]">
-                                <div className="flex flex-col items-center">
-                                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center mb-2">
-                                    <Users
-                                      size={24}
-                                      className="text-gray-600"
-                                    />
-                                  </div>
-                                  <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full">
-                                    {leaderboardEntries[1]?.teamName || "—"}
-                                  </p>
-                                  <p className="text-2xl font-bold text-[#ff6b35]">
-                                    {formatScore(leaderboardEntries[1]?.score)}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="w-full bg-yellow-400 rounded-t-lg flex items-center justify-center py-4">
-                                <span className="text-white font-bold text-lg">
-                                  2
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Rank 1 - Center (Tallest) */}
-                            <div className="flex-1 max-w-[220px] flex flex-col items-center relative">
-                              <div className="absolute -top-2 right-2 z-10">
-                                <Icon
-                                  icon="mdi:star"
-                                  className="text-yellow-400"
-                                  width={32}
-                                />
-                              </div>
-                              <div className="w-full bg-white rounded-lg shadow-lg p-5 mb-2 border-2 border-yellow-300">
-                                <div className="flex flex-col items-center">
-                                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-500 flex items-center justify-center mb-3">
-                                    <Trophy
-                                      className="text-yellow-700"
-                                      size={32}
-                                    />
-                                  </div>
-                                  <p className="text-base font-bold text-[#2d3748] text-center mb-2 truncate w-full">
-                                    {leaderboardEntries[0]?.teamName || "—"}
-                                  </p>
-                                  <p className="text-3xl font-bold text-[#ff6b35]">
-                                    {formatScore(leaderboardEntries[0]?.score)}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="w-full bg-yellow-500 rounded-t-lg flex items-center justify-center py-6">
-                                <span className="text-white font-bold text-xl">
-                                  1
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Rank 3 - Right */}
-                            <div className="flex-1 max-w-[200px] flex flex-col items-center">
-                              <div className="w-full bg-white rounded-lg shadow-md p-4 mb-2 border border-[#E5E5E5]">
-                                <div className="flex flex-col items-center">
-                                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-200 to-amber-300 flex items-center justify-center mb-2">
-                                    <Award
-                                      className="text-amber-700"
-                                      size={24}
-                                    />
-                                  </div>
-                                  <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full">
-                                    {leaderboardEntries[2]?.teamName || "—"}
-                                  </p>
-                                  <p className="text-2xl font-bold text-[#ff6b35]">
-                                    {formatScore(leaderboardEntries[2]?.score)}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="w-full bg-amber-400 rounded-t-lg flex items-center justify-center py-3">
-                                <span className="text-white font-bold text-lg">
-                                  3
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Rest of the ranks list (from rank 4+) */}
-                      {leaderboardEntries.length > 3 && (
-                        <div className="space-y-3">
-                          <h4 className="text-md font-semibold text-[#2d3748] mb-3">
-                            {t('contest.otherRankings')}
-                          </h4>
-                          {leaderboardEntries.slice(3).map((entry, index) => {
-                            const actualRank = entry.rank || index + 4;
-                            return (
-                              <div
-                                key={entry.teamId || index + 3}
-                                className="bg-white rounded-lg border border-[#E5E5E5] p-4 shadow-sm hover:shadow-md transition-shadow"
-                              >
-                                <div className="flex items-center gap-4">
-                                  {/* Rank Circle */}
-                                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                    <span className="text-lg font-bold text-[#2d3748]">
-                                      {actualRank}
-                                    </span>
-                                  </div>
-
-                                  {/* Team Icon */}
-                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-200 to-purple-300 flex items-center justify-center flex-shrink-0">
-                                    <Users
-                                      size={20}
-                                      className="text-purple-700"
-                                    />
-                                  </div>
-
-                                  {/* Team Name */}
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-semibold text-[#2d3748] truncate">
-                                      {entry.teamName || "—"}
-                                    </p>
-                                  </div>
-
-                                  {/* Score */}
-                                  <div className="text-right flex-shrink-0">
-                                    <p className="text-xl font-bold text-[#ff6b35]">
-                                      {formatScore(entry.score)} {t('contest.pts')}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {/* Show top 3 as list if less than 3 entries */}
-                      {leaderboardEntries.length < 3 && (
-                        <div className="space-y-3">
-                          {leaderboardEntries.map((entry, index) => {
-                            const actualRank = entry.rank || index + 1;
-                            const getRankIcon = () => {
-                              if (actualRank === 1)
-                                return (
-                                  <Trophy
-                                    className="text-yellow-500"
-                                    size={20}
-                                  />
-                                );
-                              if (actualRank === 2)
-                                return (
-                                  <Medal className="text-gray-400" size={20} />
-                                );
-                              if (actualRank === 3)
-                                return (
-                                  <Award className="text-amber-600" size={20} />
-                                );
-                              return null;
-                            };
-
-                            return (
-                              <div
-                                key={entry.teamId || index}
-                                className="bg-white rounded-lg border border-[#E5E5E5] p-4 shadow-sm hover:shadow-md transition-shadow"
-                              >
-                                <div className="flex items-center gap-4">
-                                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                    {getRankIcon() || (
-                                      <span className="text-lg font-bold text-[#2d3748]">
-                                        {actualRank}
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-semibold text-[#2d3748] truncate">
-                                      {entry.teamName || "—"}
-                                    </p>
-                                  </div>
-                                  <div className="text-right flex-shrink-0">
-                                    <p className="text-xl font-bold text-[#13d45d]">
-                                      {formatScore(entry.score)}{" "}
-                                      <span className="text-xs text-[#13d45d]">
-                                        {t('contest.pts')}
-                                      </span>
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-[#7A7574]">
-                      <Icon
-                        icon="mdi:trophy-outline"
-                        width="48"
-                        className="mx-auto mb-2 opacity-50"
-                      />
-                      <p className="text-lg font-medium mb-1">
-                        No rankings available yet
-                      </p>
-                      <p className="text-sm">
-                        {isOngoing
-                          ? "Leaderboard will appear once teams start participating"
-                          : "This contest has not started yet"}
-                      </p>
+                      <p>{t("contest.noRoundsScheduled")}</p>
                     </div>
                   )}
                 </div>
@@ -1204,10 +1047,10 @@ const ContestDetail = () => {
                 className="button-orange w-full flex items-center justify-center gap-2 py-3"
               >
                 <Icon icon="mdi:account-plus" width="18" />
-                {t('contest.registerNow')}
+                {t("contest.registerNow")}
               </button>
               <p className="text-xs text-[#7A7574] text-center mt-2">
-                {t('contest.registrationClosesOn')}{" "}
+                {t("contest.registrationClosesOn")}{" "}
                 {contest.registrationEnd
                   ? formatDate(contest.registrationEnd).split(",")[0]
                   : "TBA"}
@@ -1223,11 +1066,11 @@ const ContestDetail = () => {
                   className="text-[#7A7574] flex-shrink-0"
                 />
                 <p className="text-sm font-semibold text-[#2d3748]">
-                  {t('contest.registrationClosedDetail')}
+                  {t("contest.registrationClosedDetail")}
                 </p>
               </div>
               <p className="text-xs text-[#7A7574] text-center">
-                {t('contest.registrationWindowClosed')}
+                {t("contest.registrationWindowClosed")}
               </p>
             </div>
           )}{" "}
@@ -1236,6 +1079,22 @@ const ContestDetail = () => {
             targetDate={getCountdownTarget()}
             label={getCountdownLabel()}
           />
+          {/* Important Notice */}
+          <div className="bg-[#fef7e0] border border-[#fbbc05] rounded-[8px] p-5">
+            <div className="flex items-start gap-2 mb-2">
+              <Icon
+                icon="mdi:alert-circle"
+                width="20"
+                className="text-[#fbbc05] flex-shrink-0 mt-0.5"
+              />
+              <h3 className="text-sm font-semibold text-[#2d3748]">
+                {t("contest.importantNotice")}
+              </h3>
+            </div>
+            <p className="text-sm text-[#4a5568] leading-relaxed">
+              {t("contest.registerBeforeDeadline")}
+            </p>
+          </div>
           {/* View Leaderboard Button */}
           <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
             <button
@@ -1243,10 +1102,10 @@ const ContestDetail = () => {
               className="button-orange w-full flex items-center justify-center gap-2 py-3"
             >
               <Trophy size={18} />
-              {t('contest.viewLeaderboard')}
+              {t("contest.viewLeaderboard")}
             </button>
             <p className="text-xs text-[#7A7574] text-center mt-2">
-              {t('contest.checkCurrentRankings')}
+              {t("contest.checkCurrentRankings")}
             </p>
           </div>
           {/* See My Result Button - Show if student has completed quiz, manual, or auto test */}
@@ -1266,39 +1125,39 @@ const ContestDetail = () => {
                       type: "quiz",
                       route: `/quiz/${r.roundId}/finish`,
                       icon: "mdi:clipboard-check-outline",
-                      label: t('contest.quiz'),
+                      label: t("contest.quiz"),
                     })),
                     ...completedAutoTests.map((r) => ({
                       ...r,
                       type: "auto",
                       route: `/auto-test-result/${contestId}/${r.roundId}`,
                       icon: "mdi:code-tags-check",
-                      label: t('contest.autoTest'),
+                      label: t("contest.autoTest"),
                     })),
                     ...completedManualProblems.map((r) => ({
                       ...r,
                       type: "manual",
                       route: `/manual-problem/${contestId}/${r.roundId}`,
                       icon: "mdi:file-document-check",
-                      label: t('contest.manual'),
+                      label: t("contest.manual"),
                     })),
-                  ];
+                  ]
 
                   const totalCount =
                     completedRounds.length +
                     completedAutoTests.length +
-                    completedManualProblems.length;
+                    completedManualProblems.length
 
                   if (totalCount === 1) {
                     // Single result - direct button
-                    const result = allResults[0];
+                    const result = allResults[0]
                     const roundInfo = rounds.find(
                       (r) => r.roundId === result.roundId
-                    );
-                      const roundName =
+                    )
+                    const roundName =
                       roundInfo?.roundName ||
                       result.roundName ||
-                      `${result.label} ${t('contest.result')}`;
+                      `${result.label} ${t("contest.result")}`
 
                     return (
                       <>
@@ -1311,29 +1170,31 @@ const ContestDetail = () => {
                           className="button-green w-full flex items-center justify-center gap-2 py-3"
                         >
                           <Icon icon={result.icon} width="18" />
-                          {t('contest.seeYourResult')}
+                          {t("contest.seeYourResult")}
                         </button>
                         <p className="text-xs text-[#7A7574] text-center mt-2">
-                          {t('contest.viewYourResults', { type: result.label.toLowerCase() })}
+                          {t("contest.viewYourResults", {
+                            type: result.label.toLowerCase(),
+                          })}
                         </p>
                       </>
-                    );
+                    )
                   } else {
                     // Multiple results - show list for user to choose
                     return (
                       <>
                         <h3 className="text-sm font-semibold text-gray-800 mb-3">
-                          {t('contest.yourResults')} ({totalCount})
+                          {t("contest.yourResults")} ({totalCount})
                         </h3>
                         <div className="space-y-2">
                           {allResults.map((result, index) => {
                             const roundInfo = rounds.find(
                               (r) => r.roundId === result.roundId
-                            );
+                            )
                             const roundName =
                               roundInfo?.roundName ||
                               result.roundName ||
-                              `${result.label} ${index + 1}`;
+                              `${result.label} ${index + 1}`
 
                             return (
                               <button
@@ -1354,14 +1215,14 @@ const ContestDetail = () => {
                                 </div>
                                 <Icon icon="mdi:chevron-right" width="16" />
                               </button>
-                            );
+                            )
                           })}
                         </div>
                         <p className="text-xs text-[#7A7574] text-center mt-3">
-                          {t('contest.clickResultToView')}
+                          {t("contest.clickResultToView")}
                         </p>
                       </>
-                    );
+                    )
                   }
                 })()}
               </div>
@@ -1374,13 +1235,18 @@ const ContestDetail = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold text-[#2d3748] flex items-center gap-2">
                     <Users size={26} className="text-[#ff6b35] flex-shrink-0" />
-                    <span className="min-w-0 break-words">{t('contest.yourTeam')}</span>
+                    <span className="min-w-0 break-words">
+                      {t("contest.yourTeam")}
+                    </span>
                   </h3>
                 </div>
+
                 {teamLoading ? (
                   <div className="text-center py-4">
                     <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#ff6b35] border-t-transparent mx-auto mb-2"></div>
-                    <p className="text-sm text-[#7A7574]">{t('contest.loadingTeam')}</p>
+                    <p className="text-sm text-[#7A7574]">
+                      {t("contest.loadingTeam")}
+                    </p>
                   </div>
                 ) : myTeam ? (
                   <div className="space-y-4">
@@ -1392,7 +1258,7 @@ const ContestDetail = () => {
                             <div className="flex items-center justify-center gap-2">
                               <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
                               <span className="text-sm">
-                                {t('contest.loadingRankings')}
+                                {t("contest.loadingRankings")}
                               </span>
                             </div>
                           </div>
@@ -1419,13 +1285,14 @@ const ContestDetail = () => {
                                     />
                                   ) : null}
                                   <span className="font-bold text-lg min-w-0 break-words">
-                                    {t('contest.rank')} #{myTeamLeaderboardEntry.rank || "—"}
+                                    {t("contest.rank")} #
+                                    {myTeamLeaderboardEntry.rank || "—"}
                                   </span>
                                 </div>
                               </div>
                               <div className="flex items-baseline gap-2">
                                 <span className="text-xs opacity-90">
-                                  {t('contest.score')}:
+                                  {t("contest.score")}:
                                 </span>
                                 <span className="text-2xl font-bold">
                                   {(myTeamLeaderboardEntry.score ?? 0).toFixed(
@@ -1449,7 +1316,7 @@ const ContestDetail = () => {
                           <div className="flex items-center gap-3 flex-shrink-0">
                             <div>
                               <p className="text-xs text-[#7A7574] mb-0.5">
-                                {t('contest.members')}
+                                {t("contest.members")}
                               </p>
                               <p className="font-semibold text-[#2d3748] text-sm">
                                 {myTeam.members?.length || 0} /{" "}
@@ -1459,7 +1326,7 @@ const ContestDetail = () => {
                             {myTeamLeaderboardEntry && (
                               <div>
                                 <p className="text-xs text-[#7A7574] mb-0.5">
-                                  {t('contest.rank')}
+                                  {t("contest.rank")}
                                 </p>
                                 <p className="font-semibold text-[#2d3748] text-sm">
                                   #{myTeamLeaderboardEntry.rank || "—"}
@@ -1473,16 +1340,17 @@ const ContestDetail = () => {
                         {myTeam.members && myTeam.members.length > 0 && (
                           <div className="pt-3 border-t border-[#E5E5E5]">
                             <p className="text-xs text-[#7A7574] mb-2">
-                              {t('contest.teamMembers')}
+                              {t("contest.teamMembers")}
                             </p>
                             <div className="space-y-2">
                               {myTeam.members
                                 .slice(0, 3)
                                 .map((member, index) => {
                                   const memberName =
-                                    member.studentFullname || t('contest.unknownMember');
+                                    member.studentFullname ||
+                                    t("contest.unknownMember")
                                   const memberInitial =
-                                    memberName?.charAt(0)?.toUpperCase() || "M";
+                                    memberName?.charAt(0)?.toUpperCase() || "M"
 
                                   return (
                                     <div
@@ -1500,11 +1368,13 @@ const ContestDetail = () => {
                                         {memberName}
                                       </p>
                                     </div>
-                                  );
+                                  )
                                 })}
                               {myTeam.members.length > 3 && (
                                 <p className="text-xs text-[#7A7574] text-center pt-1">
-                                  {t('contest.moreMembers', { count: myTeam.members.length - 3 })}
+                                  {t("contest.moreMembers", {
+                                    count: myTeam.members.length - 3,
+                                  })}
                                 </p>
                               )}
                             </div>
@@ -1516,14 +1386,14 @@ const ContestDetail = () => {
                           <button
                             onClick={() => {
                               if (role === "mentor") {
-                                navigate(`/mentor-team/${contestId}`);
+                                navigate(`/mentor-team/${contestId}`)
                               } else {
-                                navigate(`/team`);
+                                navigate(`/team`)
                               }
                             }}
                             className="button-orange flex-1 text-sm"
                           >
-                            {t('contest.teamDetails')}
+                            {t("contest.teamDetails")}
                           </button>
                         </div>
                       </>
@@ -1555,16 +1425,17 @@ const ContestDetail = () => {
                         {myTeam.members && myTeam.members.length > 0 ? (
                           <div className="pt-3 border-t border-[#E5E5E5]">
                             <p className="text-xs text-[#7A7574] mb-2">
-                              {t('contest.teamMembers')}
+                              {t("contest.teamMembers")}
                             </p>
                             <div className="space-y-2">
                               {myTeam.members
                                 .slice(0, 3)
                                 .map((member, index) => {
                                   const memberName =
-                                    member.studentFullname || t('contest.unknownMember');
+                                    member.studentFullname ||
+                                    t("contest.unknownMember")
                                   const memberInitial =
-                                    memberName?.charAt(0)?.toUpperCase() || "M";
+                                    memberName?.charAt(0)?.toUpperCase() || "M"
 
                                   return (
                                     <div
@@ -1582,11 +1453,13 @@ const ContestDetail = () => {
                                         {memberName}
                                       </p>
                                     </div>
-                                  );
+                                  )
                                 })}
                               {myTeam.members.length > 3 && (
                                 <p className="text-xs text-[#7A7574] text-center pt-1">
-                                  {t('contest.moreMembers', { count: myTeam.members.length - 3 })}
+                                  {t("contest.moreMembers", {
+                                    count: myTeam.members.length - 3,
+                                  })}
                                 </p>
                               )}
                             </div>
@@ -1594,7 +1467,7 @@ const ContestDetail = () => {
                         ) : (
                           <div className="pt-3 border-t border-[#E5E5E5]">
                             <p className="text-xs text-[#7A7574] text-center">
-                              {t('contest.noMembersYet')}
+                              {t("contest.noMembersYet")}
                             </p>
                           </div>
                         )}
@@ -1603,14 +1476,14 @@ const ContestDetail = () => {
                         <button
                           onClick={() => {
                             if (role === "mentor") {
-                              navigate(`/mentor-team/${contestId}`);
+                              navigate(`/mentor-team/${contestId}`)
                             } else {
-                              navigate(`/team`);
+                              navigate(`/team`)
                             }
                           }}
                           className="button-white w-full text-sm mt-3"
                         >
-                          {t('contest.viewTeamDetails')}
+                          {t("contest.viewTeamDetails")}
                         </button>
                       </>
                     )}
@@ -1624,13 +1497,13 @@ const ContestDetail = () => {
                     />
                     <p className="text-sm text-[#7A7574] mb-3">
                       {role === "student"
-                        ? t('contest.haventJoinedTeamStudent')
-                        : t('contest.haventCreatedTeam')}
+                        ? t("contest.haventJoinedTeamStudent")
+                        : t("contest.haventCreatedTeam")}
                     </p>
                     <p className="text-xs text-[#7A7574]">
                       {role === "student"
-                        ? t('contest.contactMentor')
-                        : t('contest.createTeamToStart')}
+                        ? t("contest.contactMentor")
+                        : t("contest.createTeamToStart")}
                     </p>
                   </div>
                 )}
@@ -1639,45 +1512,32 @@ const ContestDetail = () => {
           {/* Contest Info */}
           <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
             <h3 className="text-sm font-semibold text-[#2d3748] mb-4">
-              {t('contest.contestInformation')}
+              {t("contest.contestInformation")}
             </h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-[#7A7574]">{t('contest.format')}:</span>
-                <span className="font-medium text-[#2d3748]">{t('contest.team')}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#7A7574]">{t('contest.teamSize')}:</span>
+                <span className="text-[#7A7574]">{t("contest.format")}:</span>
                 <span className="font-medium text-[#2d3748]">
-                  1-{contest.teamMembersMax || contest.maxTeamSize || 3} {t('contest.members')}
+                  {t("contest.team")}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#7A7574]">{t('contest.language')}:</span>
+                <span className="text-[#7A7574]">{t("contest.teamSize")}:</span>
+                <span className="font-medium text-[#2d3748]">
+                  1-{contest.teamMembersMax || contest.maxTeamSize || 3}{" "}
+                  {t("contest.members")}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#7A7574]">{t("contest.language")}:</span>
                 <span className="font-medium text-[#2d3748]">Python 3</span>
               </div>
             </div>
           </div>
-          {/* Important Notice */}
-          <div className="bg-[#fef7e0] border border-[#fbbc05] rounded-[8px] p-5">
-            <div className="flex items-start gap-2 mb-2">
-              <Icon
-                icon="mdi:alert-circle"
-                width="20"
-                className="text-[#fbbc05] flex-shrink-0 mt-0.5"
-              />
-              <h3 className="text-sm font-semibold text-[#2d3748]">
-                {t('contest.importantNotice')}
-              </h3>
-            </div>
-            <p className="text-sm text-[#4a5568] leading-relaxed">
-              {t('contest.registerBeforeDeadline')}
-            </p>
-          </div>
         </div>
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default ContestDetail;
+export default ContestDetail

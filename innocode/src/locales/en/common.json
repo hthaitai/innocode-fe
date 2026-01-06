@@ -392,7 +392,10 @@
     "teamIdNotFound": "Team ID not found",
     "failedToSendInvitation": "Failed to send invitation",
     "registrationWindowClosed": "Registration window is closed. You cannot invite members at this time.",
-    "studentAlreadyInvited": "{{studentName}} has already been invited or is already a member of this team."
+    "studentAlreadyInvited": "{{studentName}} has already been invited or is already a member of this team.",
+    "mentor": "Mentor",
+    "school": "School",
+    "province": "Province"
   },
   "teams": {
     "noAvailable": "This team has been deleted or is no longer available.",

@@ -13,14 +13,14 @@ const useNotificationNavigation = (onClose) => {
   const [readNotification] = useReadNotificationMutation()
 
   const handleNotificationClick = async (notification) => {
+    const { targetType } = notification.parsedPayload || {}
+    const userRole = user?.role
+
     try {
       await readNotification(notification.notificationId).unwrap()
     } catch (error) {
       console.error("Error reading notification:", error)
     }
-
-    const { targetType } = notification.parsedPayload || {}
-    const userRole = user?.role
 
     // Team invite for students
     if (targetType === "team_invite" && userRole === "student") {
@@ -90,6 +90,35 @@ const useNotificationNavigation = (onClose) => {
       navigate(`/organizer/contests/${contestId}/judges`)
       return
     }
+
+    // Team invitation response (accepted/declined) for mentor
+    if (
+      (targetType === "team_invitation_accepted" ||
+        targetType === "team_invitation_declined" ||
+        notification.type === "team.invitation_accepted" ||
+        notification.type === "team.invitation_declined" ||
+        notification.type === "TeamInvitationAccepted" ||
+        notification.type === "TeamInvitationDeclined") &&
+      userRole === "mentor"
+    ) {
+      if (onClose) onClose()
+      const { contestId } = notification.parsedPayload || {}
+      console.log("🎯 Navigating to team page with contestId:", contestId)
+      if (contestId) {
+        navigate(`/mentor-team/${contestId}`)
+      } else {
+        // Fallback to my team page if contestId is not available
+        navigate("/team")
+      }
+      return
+    }
+
+    // No matching navigation case found
+    console.warn("⚠️ No navigation case matched for notification:", {
+      targetType,
+      notificationType: notification.type,
+      userRole,
+    })
   }
 
   return handleNotificationClick

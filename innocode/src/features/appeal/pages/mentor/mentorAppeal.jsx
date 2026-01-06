@@ -631,7 +631,8 @@ function MentorAppeal() {
                       const state = appeal.state || ""
                       const targetType = appeal.targetType || appeal.target_type
                       const createdAt = appeal.createdAt || appeal.created_at
-                      const decision = appeal.decision || appeal.decisionReason
+                      const decision = appeal.decision
+                      const decisionReason = appeal.decisionReason
                       const roundName = appeal.roundName || appeal.round_name
                       const teamName = appeal.teamName || appeal.team_name
                       const ownerName = appeal.ownerName || appeal.owner_name
@@ -752,19 +753,50 @@ function MentorAppeal() {
                             </div>
                           </div>
 
-                          {/* Decision */}
-                          {decision && (
+                          {/* Organizer Decision Reason */}
+                          {(decision || decisionReason) && (
                             <div className="mt-4 pt-4 border-t border-[#E5E5E5]">
                               <p className="text-sm font-semibold text-[#2d3748] mb-2 flex items-center gap-2">
                                 <Icon
-                                  icon="mdi:comment-text-outline"
-                                  width="16"
+                                  icon="mdi:gavel"
+                                  width="18"
+                                  className="text-[#ff6b35]"
                                 />
                                 {t("appeal.decision")}
                               </p>
-                              <p className="text-sm text-[#4a5568] bg-[#f9fafb] rounded-[5px] p-3 border border-[#E5E5E5]">
-                                {decision}
-                              </p>
+                              <div
+                                className={`rounded-[5px] p-3 border ${
+                                  decision?.toLowerCase() === "approved" ||
+                                  decision?.toLowerCase() === "accepted"
+                                    ? "bg-green-50 border-green-200"
+                                    : decision?.toLowerCase() === "rejected" ||
+                                      decision?.toLowerCase() === "denied"
+                                    ? "bg-red-50 border-red-200"
+                                    : "bg-blue-50 border-blue-200"
+                                }`}
+                              >
+                                {decision && (
+                                  <p
+                                    className={`text-sm font-semibold mb-2 ${
+                                      decision?.toLowerCase() === "approved" ||
+                                      decision?.toLowerCase() === "accepted"
+                                        ? "text-green-700"
+                                        : decision?.toLowerCase() ===
+                                            "rejected" ||
+                                          decision?.toLowerCase() === "denied"
+                                        ? "text-red-700"
+                                        : "text-[#2d3748]"
+                                    }`}
+                                  >
+                                    {decision}
+                                  </p>
+                                )}
+                                {decisionReason && (
+                                  <p className="text-sm text-[#2d3748] leading-relaxed">
+                                    {decisionReason}
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           )}
                         </div>

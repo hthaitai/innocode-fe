@@ -1,70 +1,79 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { Icon } from "@iconify/react";
-import { Users, Mail, Trophy, Calendar, School, Search } from "lucide-react";
-import PageContainer from "@/shared/components/PageContainer";
-import { BREADCRUMBS } from "@/config/breadcrumbs";
-import { useAuth } from "@/context/AuthContext";
-import { ROLES } from "@/context/AuthContext";
-import useTeams from "@/features/team/hooks/useTeams";
-import useContests from "@/features/contest/hooks/useContests";
+import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { Icon } from "@iconify/react"
+import {
+  Users,
+  Mail,
+  Trophy,
+  Calendar,
+  School,
+  Search,
+  UserCheck,
+  MapPin,
+} from "lucide-react"
+import PageContainer from "@/shared/components/PageContainer"
+import { BREADCRUMBS } from "@/config/breadcrumbs"
+import { useAuth } from "@/context/AuthContext"
+import { ROLES } from "@/context/AuthContext"
+import useTeams from "@/features/team/hooks/useTeams"
+import useContests from "@/features/contest/hooks/useContests"
 
 const MyTeamView = () => {
-  const { t } = useTranslation("common");
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const role = user?.role || "student";
-  const { getMyTeam, loading: teamsLoading } = useTeams();
-  const { contests, loading: contestsLoading } = useContests();
-  const [myTeams, setMyTeams] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedContestId, setSelectedContestId] = useState(null);
+  const { t } = useTranslation("common")
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const role = user?.role || "student"
+  const { getMyTeam, loading: teamsLoading } = useTeams()
+  const { contests, loading: contestsLoading } = useContests()
+  const [myTeams, setMyTeams] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [selectedContestId, setSelectedContestId] = useState(null)
 
   // Fetch all teams for user
   useEffect(() => {
     const fetchMyTeams = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         if (contests && contests.length > 0) {
           const teamsPromises = contests.map(async (contest) => {
             try {
-              const team = await getMyTeam(contest.contestId || contest.id);
+              const team = await getMyTeam(contest.contestId || contest.id)
               if (team) {
-                return { ...team, contest };
+                return { ...team, contest }
               }
-              return null;
+              return null
             } catch (error) {
               console.error(
                 `Error fetching team for contest ${contest.contestId}:`,
                 error
-              );
-              return null;
+              )
+              return null
             }
-          });
+          })
 
-          const teams = await Promise.all(teamsPromises);
-          const validTeams = teams.filter((team) => team !== null);
-          setMyTeams(validTeams);
+          const teams = await Promise.all(teamsPromises)
+          const validTeams = teams.filter((team) => team !== null)
+          setMyTeams(validTeams)
 
           // Auto-select first contest if available
           if (validTeams.length > 0 && !selectedContestId) {
             setSelectedContestId(
               validTeams[0].contestId || validTeams[0].contest_id
-            );
+            )
           }
         }
       } catch (error) {
-        console.error("Error fetching teams:", error);
+        console.error("Error fetching teams:", error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
     if (user?.id && contests) {
-      fetchMyTeams();
+      fetchMyTeams()
     }
-  }, [user?.id, contests, getMyTeam]);
+  }, [user?.id, contests, getMyTeam])
 
   const selectedTeam = myTeams.find(
     (team) =>
@@ -72,7 +81,7 @@ const MyTeamView = () => {
         team.contest_id === selectedContestId) &&
       (String(team.contestId) === String(selectedContestId) ||
         String(team.contest_id) === String(selectedContestId))
-  );
+  )
 
   if (loading || contestsLoading) {
     return (
@@ -84,7 +93,7 @@ const MyTeamView = () => {
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   // For mentor: show all teams or allow filtering by contest
@@ -103,8 +112,15 @@ const MyTeamView = () => {
                     ? t("team.youHaveTeams", {
                         count: myTeams.length,
                         plural: myTeams.length > 1 ? "s" : "",
-                        contestCount: new Set(myTeams.map((t) => t.contestId || t.contest_id)).size,
-                        contestPlural: new Set(myTeams.map((t) => t.contestId || t.contest_id)).size > 1 ? "s" : ""
+                        contestCount: new Set(
+                          myTeams.map((t) => t.contestId || t.contest_id)
+                        ).size,
+                        contestPlural:
+                          new Set(
+                            myTeams.map((t) => t.contestId || t.contest_id)
+                          ).size > 1
+                            ? "s"
+                            : "",
                       })
                     : t("team.viewManageTeams")}
                 </p>
@@ -125,7 +141,7 @@ const MyTeamView = () => {
                   <option value="">
                     {t("team.allContestsWithCount", {
                       count: myTeams.length,
-                      plural: myTeams.length > 1 ? "s" : ""
+                      plural: myTeams.length > 1 ? "s" : "",
                     })}
                   </option>
                   {contests
@@ -143,15 +159,16 @@ const MyTeamView = () => {
                           team.contestId ===
                             (contest.contestId || contest.id) ||
                           team.contest_id === (contest.contestId || contest.id)
-                      ).length;
+                      ).length
                       return (
                         <option
                           key={contest.contestId || contest.id}
                           value={contest.contestId || contest.id}
                         >
-                          {contest.name || contest.title} ({teamCount} {teamCount > 1 ? t("team.teams") : t("team.team")})
+                          {contest.name || contest.title} ({teamCount}{" "}
+                          {teamCount > 1 ? t("team.teams") : t("team.team")})
                         </option>
-                      );
+                      )
                     })}
                 </select>
               </div>
@@ -170,7 +187,7 @@ const MyTeamView = () => {
                     )
                   : myTeams
                 ).map((team) => {
-                  const contestId = team.contestId || team.contest_id;
+                  const contestId = team.contestId || team.contest_id
                   return (
                     <div
                       key={team.teamId || team.team_id}
@@ -187,10 +204,9 @@ const MyTeamView = () => {
                               <h4 className="text-2xl font-bold text-[#2d3748] mb-1">
                                 {team.name}
                               </h4>
-                           
                             </div>
                           </div>
-                            <div className="grid grid-cols-2 gap-4 mt-4">
+                          <div className="grid grid-cols-2 gap-4 mt-4">
                             <div className="p-3 bg-[#f9fafb] rounded-[5px]">
                               <p className="text-xs text-[#7A7574] mb-1">
                                 {t("team.contest")}
@@ -209,6 +225,31 @@ const MyTeamView = () => {
                               <p className="font-semibold text-[#2d3748]">
                                 {team.members?.length || 0} /{" "}
                                 {team.contest?.teamMembersMax || "∞"}
+                              </p>
+                            </div>
+                            <div className="p-3 bg-[#f9fafb] rounded-[5px]">
+                              <div className="flex items-center gap-2 mb-1">
+                                <UserCheck
+                                  size={16}
+                                  className="text-[#7A7574]"
+                                />
+                                <p className="text-xs text-[#7A7574]">
+                                  {t("team.mentor")}
+                                </p>
+                              </div>
+                              <p className="font-semibold text-[#2d3748]">
+                                {team.mentorName || "N/A"}
+                              </p>
+                            </div>
+                            <div className="p-3 bg-[#f9fafb] rounded-[5px]">
+                              <div className="flex items-center gap-2 mb-1">
+                                <School size={16} className="text-[#7A7574]" />
+                                <p className="text-xs text-[#7A7574]">
+                                  {t("team.school")}
+                                </p>
+                              </div>
+                              <p className="font-semibold text-[#2d3748]">
+                                {team.schoolName || "N/A"}
                               </p>
                             </div>
                           </div>
@@ -236,7 +277,7 @@ const MyTeamView = () => {
                                 member.userFullname ||
                                 member.user_fullname ||
                                 member.user?.name ||
-                                t("team.unknownMember");
+                                t("team.unknownMember")
 
                               const memberEmail =
                                 member.studentEmail ||
@@ -244,10 +285,10 @@ const MyTeamView = () => {
                                 member.userEmail ||
                                 member.user_email ||
                                 member.user?.email ||
-                                "";
+                                ""
 
                               const memberInitial =
-                                memberName?.charAt(0)?.toUpperCase() || "M";
+                                memberName?.charAt(0)?.toUpperCase() || "M"
 
                               return (
                                 <div
@@ -283,13 +324,13 @@ const MyTeamView = () => {
                                     {t("team.active")}
                                   </span>
                                 </div>
-                              );
+                              )
                             })}
                           </div>
                         </div>
                       )}
                     </div>
-                  );
+                  )
                 })}
               </div>
             ) : selectedContestId ? (
@@ -346,7 +387,7 @@ const MyTeamView = () => {
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   // For student: show team information
@@ -359,9 +400,7 @@ const MyTeamView = () => {
               <h2 className="text-2xl font-semibold text-[#2d3748] mb-2">
                 {t("team.myTeams")}
               </h2>
-              <p className="text-sm text-[#7A7574]">
-                {t("team.viewTeamInfo")}
-              </p>
+              <p className="text-sm text-[#7A7574]">{t("team.viewTeamInfo")}</p>
             </div>
           </div>
 
@@ -385,17 +424,19 @@ const MyTeamView = () => {
                           </h4>
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-4 mt-4">
+                      <div className="grid grid-cols-2 gap-4 mt-4">
                         <div className="p-3 bg-[#f9fafb] rounded-[5px]">
                           <div className="flex items-center gap-2 mb-1">
                             <Trophy size={16} className="text-[#7A7574]" />
-                            <p className="text-xs text-[#7A7574]">{t("team.contest")}</p>
+                            <p className="text-xs text-[#7A7574]">
+                              {t("team.contest")}
+                            </p>
                           </div>
                           <p className="font-semibold text-[#2d3748]">
                             {team.contestName || "N/A"}
                           </p>
                           <button
-                            className="px-2 py-1 cursor-pointer bg-[#ff6b35] text-white rounded-[5px] hover:bg-[#ff5722] transition-colors text-sm font-medium"
+                            className="px-2 py-1 mt-2 cursor-pointer bg-[#ff6b35] text-white rounded-[5px] hover:bg-[#ff5722] transition-colors text-sm font-medium"
                             onClick={() =>
                               navigate(`/contest-detail/${team.contestId}`)
                             }
@@ -406,28 +447,37 @@ const MyTeamView = () => {
                         <div className="p-3 bg-[#f9fafb] rounded-[5px]">
                           <div className="flex items-center gap-2 mb-1">
                             <Users size={16} className="text-[#7A7574]" />
-                            <p className="text-xs text-[#7A7574]">{t("team.members")}</p>
+                            <p className="text-xs text-[#7A7574]">
+                              {t("team.members")}
+                            </p>
                           </div>
                           <p className="font-semibold text-[#2d3748]">
                             {team.members?.length || 0} /{" "}
                             {team.contest?.teamMembersMax || "∞"}
                           </p>
                         </div>
-                        {team.contest?.registrationEnd && (
-                          <div className="p-3 bg-[#f9fafb] rounded-[5px]">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Calendar size={16} className="text-[#7A7574]" />
-                              <p className="text-xs text-[#7A7574]">
-                                {t("team.registrationEnd")}
-                              </p>
-                            </div>
-                            <p className="font-semibold text-[#2d3748] text-xs">
-                              {new Date(
-                                team.contest.registrationEnd
-                              ).toLocaleDateString()}
+                        <div className="p-3 bg-[#f9fafb] rounded-[5px]">
+                          <div className="flex items-center gap-2 mb-1">
+                            <UserCheck size={16} className="text-[#7A7574]" />
+                            <p className="text-xs text-[#7A7574]">
+                              {t("team.mentor")}
                             </p>
                           </div>
-                        )}
+                          <p className="font-semibold text-[#2d3748]">
+                            {team.mentorName || "N/A"}
+                          </p>
+                        </div>
+                        <div className="p-3 bg-[#f9fafb] rounded-[5px]">
+                          <div className="flex items-center gap-2 mb-1">
+                            <School size={16} className="text-[#7A7574]" />
+                            <p className="text-xs text-[#7A7574]">
+                              {t("team.school")}
+                            </p>
+                          </div>
+                          <p className="font-semibold text-[#2d3748]">
+                            {team.schoolName || "N/A"}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -441,12 +491,12 @@ const MyTeamView = () => {
                       <div className="space-y-3">
                         {team.members.map((member, index) => {
                           const memberName =
-                            member.studentFullname || t("team.unknownMember");
+                            member.studentFullname || t("team.unknownMember")
 
-                          const memberEmail = member.studentEmail || "";
+                          const memberEmail = member.studentEmail || ""
 
                           const memberInitial =
-                            memberName?.charAt(0)?.toUpperCase() || "M";
+                            memberName?.charAt(0)?.toUpperCase() || "M"
 
                           return (
                             <div
@@ -478,7 +528,7 @@ const MyTeamView = () => {
                                 {t("team.active")}
                               </span>
                             </div>
-                          );
+                          )
                         })}
                       </div>
                     </div>
@@ -496,15 +546,13 @@ const MyTeamView = () => {
               <p className="text-[#7A7574] text-sm mb-4">
                 {t("team.notMemberOfAnyTeam")}
               </p>
-              <p className="text-xs text-[#7A7574]">
-                {t("team.joinTeamInfo")}
-              </p>
+              <p className="text-xs text-[#7A7574]">{t("team.joinTeamInfo")}</p>
             </div>
           )}
         </div>
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default MyTeamView;
+export default MyTeamView
