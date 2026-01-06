@@ -164,5 +164,26 @@
     "confirmMessage": "Bạn có chắc chắn muốn xóa \"{{name}}\"?",
     "success": "Xóa vòng thi thành công!",
     "error": "Xóa vòng thi thất bại."
+  },
+  "notFound": "Không tìm thấy vòng thi",
+  "validation": {
+    "retakeSelect": "Vui lòng chọn vòng thi để thi lại",
+    "name": "Tên vòng thi là bắt buộc",
+    "start": "Thời gian bắt đầu là bắt buộc",
+    "startPast": "Thời gian bắt đầu không được trong quá khứ",
+    "end": "Thời gian kết thúc là bắt buộc",
+    "endAfterStart": "Thời gian kết thúc phải sau thời gian bắt đầu",
+    "endPast": "Thời gian kết thúc không được trong quá khứ",
+    "rankInteger": "Giới hạn đi tiếp phải là số nguyên",
+    "rankNegative": "Giới hạn đi tiếp không được âm",
+    "problemType": "Loại đề thi là bắt buộc",
+    "problemTypeConfig": "Vui lòng cấu hình loại đề thi đã chọn",
+    "description": "Mô tả là bắt buộc",
+    "testType": "Loại kiểm thử là bắt buộc",
+    "templateFile": "File mẫu là bắt buộc",
+    "startInContest": "Thời gian bắt đầu phải nằm trong thời gian cuộc thi",
+    "endInContest": "Thời gian kết thúc phải nằm trong thời gian cuộc thi",
+    "overlap": "Thời gian vòng thi trùng với vòng thi khác",
+    "timeLimitNegative": "Giới hạn thời gian không được âm"
   }
 }

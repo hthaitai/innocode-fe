@@ -2,7 +2,7 @@ export const validateRound = (
   data,
   contest = null,
   existingRounds = [],
-  { isEdit = false } = {}
+  { isEdit = false, t = (key) => key } = {}
 ) => {
   const errors = {}
   const now = new Date()
@@ -10,29 +10,29 @@ export const validateRound = (
   // ---- Retake Round Validation ----
   if (data.isRetakeRound) {
     if (!data.mainRoundId) {
-      errors.mainRoundId = "Please select a round to retake"
+      errors.mainRoundId = t("round:validation.retakeSelect")
     }
   }
 
   // ---- Round Name ----
   if (!data.isRetakeRound && !data.name?.trim()) {
-    errors.name = "Round name is required"
+    errors.name = t("round:validation.name")
   }
 
   // ---- Start Time ----
   if (!data.start) {
-    errors.start = "Start time is required"
+    errors.start = t("round:validation.start")
   } else if (!isEdit && new Date(data.start) < now) {
-    errors.start = "Start time cannot be in the past"
+    errors.start = t("round:validation.startPast")
   }
 
   // ---- End Time ----
   if (!data.end) {
-    errors.end = "End time is required"
+    errors.end = t("round:validation.end")
   } else if (data.start && new Date(data.end) <= new Date(data.start)) {
-    errors.end = "End time must be after start time"
+    errors.end = t("round:validation.endAfterStart")
   } else if (!isEdit && new Date(data.end) < now) {
-    errors.end = "End time cannot be in the past"
+    errors.end = t("round:validation.endPast")
   }
 
   // ---- Rank Cutoff ----
@@ -42,15 +42,15 @@ export const validateRound = (
     data.rankCutoff !== ""
   ) {
     if (!Number.isInteger(Number(data.rankCutoff))) {
-      errors.rankCutoff = "Rank cutoff must be an integer"
+      errors.rankCutoff = t("round:validation.rankInteger")
     } else if (Number(data.rankCutoff) < 0) {
-      errors.rankCutoff = "Rank cutoff cannot be negative"
+      errors.rankCutoff = t("round:validation.rankNegative")
     }
   }
 
   // ---- Problem Type ----
   if (!data.isRetakeRound && !data.problemType) {
-    errors.problemType = "Problem type is required"
+    errors.problemType = t("round:validation.problemType")
   }
 
   // ---- Problem Configuration ----
@@ -60,7 +60,7 @@ export const validateRound = (
     ["Manual", "AutoEvaluation"].includes(data.problemType)
 
   if (!data.isRetakeRound && !hasMcqConfig && !hasProblemConfig) {
-    errors.problemType = "Please configure the selected problem type"
+    errors.problemType = t("round:validation.problemTypeConfig")
   }
 
   // optional: type check (not strictly needed now because problemType itself is Manual or AutoEvaluation)
@@ -69,7 +69,7 @@ export const validateRound = (
     data.problemConfig &&
     !data.problemConfig.type
   ) {
-    errors.problemType = "Please configure the selected problem type"
+    errors.problemType = t("round:validation.problemTypeConfig")
   }
 
   // ---- Validate problemConfig only for Manual/AutoEvaluation ----
@@ -78,18 +78,18 @@ export const validateRound = (
     data.problemConfig
   ) {
     if (!data.problemConfig.description?.trim()) {
-      errors.problemConfigDescription = "Description is required"
+      errors.problemConfigDescription = t("round:validation.description")
     }
     // if (!data.problemConfig.language?.trim()) {
     //   errors.problemConfigLanguage = "Language is required"
     // }
 
     if (data.problemType === "AutoEvaluation" && !data.problemConfig.testType) {
-      errors.problemConfigTestType = "Test type is required"
+      errors.problemConfigTestType = t("round:validation.testType")
     }
     // Template file validation
     if (!data.TemplateFile) {
-      errors.templateFile = "Template file is required"
+      errors.templateFile = t("round:validation.templateFile")
     }
   }
 
@@ -101,11 +101,16 @@ export const validateRound = (
     const roundEnd = new Date(data.end)
 
     if (roundStart < contestStart) {
-      errors.start = "Start time must be within contest period"
+      errors.start = t("round:validation.startInContest")
     }
     if (roundEnd > contestEnd) {
-      errors.end = "End time must be within contest period"
+      errors.end = t("round:validation.endInContest")
     }
+  }
+
+  // ---- Time Limit ----
+  if (data.timeLimitSeconds && Number(data.timeLimitSeconds) < 0) {
+    errors.timeLimitSeconds = t("round:validation.timeLimitNegative")
   }
 
   // ---- Overlap with Existing Rounds ----
@@ -123,7 +128,7 @@ export const validateRound = (
     })
 
     if (overlap) {
-      errors.start = "Round time overlaps with an existing round"
+      errors.start = t("round:validation.overlap")
     }
   }
 

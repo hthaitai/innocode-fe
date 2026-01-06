@@ -1,92 +1,94 @@
-export const validateContest = (data, { isEdit = false } = {}) => {
+export const validateContest = (
+  data,
+  { isEdit = false, t = (key) => key } = {}
+) => {
   const errors = {}
   const now = new Date()
 
   if (!data.imgFile && !data.imgUrl) {
-    errors.imgFile = "Contest image is required"
+    errors.imgFile = t("contest:validation.imgFile")
   }
 
   // ---- Year ----
   const yearValue = data.year != null ? String(data.year).trim() : ""
   if (!yearValue) {
-    errors.year = "Year is required"
+    errors.year = t("contest:validation.year")
   } else if (isNaN(Number(yearValue))) {
-    errors.year = "Year must be a number"
+    errors.year = t("contest:validation.yearNumber")
   } else if (Number(yearValue) < 2025) {
-    errors.year = "Year must be equal or greater than 2025"
+    errors.year = t("contest:validation.yearMin")
   }
 
   // ---- Name ----
   const nameValue = String(data.name ?? "").trim()
   if (!nameValue) {
-    errors.name = "Contest name is required"
+    errors.name = t("contest:validation.name")
   }
 
   // ---- Image URL ----
   if (data.imgUrl && !/^https?:\/\/.+\..+/.test(data.imgUrl)) {
-    errors.imgUrl = "Please enter a valid URL (must start with http or https)"
+    errors.imgUrl = t("contest:validation.imgUrl")
   }
 
   // ---- Start Date ----
   if (!data.start) {
-    errors.start = "Start date is required"
+    errors.start = t("contest:validation.start")
   } else if (!isEdit && new Date(data.start) < now) {
-    errors.start = "Start date cannot be in the past"
+    errors.start = t("contest:validation.startPast")
   }
 
   // ---- End Date ----
   if (!data.end) {
-    errors.end = "End date is required"
+    errors.end = t("contest:validation.end")
   } else if (data.start && new Date(data.end) <= new Date(data.start)) {
-    errors.end = "End date must be after the start date"
+    errors.end = t("contest:validation.endAfterStart")
   } else if (!isEdit && new Date(data.end) < now) {
-    errors.end = "End date cannot be in the past"
+    errors.end = t("contest:validation.endPast")
   }
 
   // ---- Registration Dates ----
   if (!data.registrationStart) {
-    errors.registrationStart = "Registration start date is required"
+    errors.registrationStart = t("contest:validation.regStart")
   } else if (!isEdit && new Date(data.registrationStart) < now) {
-    errors.registrationStart = "Registration start cannot be in the past"
+    errors.registrationStart = t("contest:validation.regStartPast")
   }
 
   if (!data.registrationEnd) {
-    errors.registrationEnd = "Registration end date is required"
+    errors.registrationEnd = t("contest:validation.regEnd")
   } else if (
     data.registrationStart &&
     new Date(data.registrationEnd) <= new Date(data.registrationStart)
   ) {
-    errors.registrationEnd = "Registration end must be after registration start"
+    errors.registrationEnd = t("contest:validation.regEndAfterStart")
   } else if (
     data.start &&
     new Date(data.registrationEnd) > new Date(data.start)
   ) {
-    errors.registrationEnd =
-      "Registration end cannot be after contest start date"
+    errors.registrationEnd = t("contest:validation.regEndAfterContestStart")
   } else if (!isEdit && new Date(data.registrationEnd) < now) {
-    errors.registrationEnd = "Registration end cannot be in the past"
+    errors.registrationEnd = t("contest:validation.regEndPast")
   }
 
   // ---- Team Members ----
   if (data.teamMembersMin === null || data.teamMembersMin === "") {
-    errors.teamMembersMin = "Min team members is required"
+    errors.teamMembersMin = t("contest:validation.teamMin")
   } else if (!Number.isInteger(Number(data.teamMembersMin))) {
-    errors.teamMembersMin = "Min team members must be an integer"
+    errors.teamMembersMin = t("contest:validation.teamMinInteger")
   } else if (data.teamMembersMin < 0) {
-    errors.teamMembersMin = "Min team members cannot be negative"
+    errors.teamMembersMin = t("contest:validation.teamMinNegative")
   }
 
   if (data.teamMembersMax === null || data.teamMembersMax === "") {
-    errors.teamMembersMax = "Max team members is required"
+    errors.teamMembersMax = t("contest:validation.teamMax")
   } else if (!Number.isInteger(Number(data.teamMembersMax))) {
-    errors.teamMembersMax = "Max team members must be an integer"
+    errors.teamMembersMax = t("contest:validation.teamMaxInteger")
   } else if (data.teamMembersMax < 1 || data.teamMembersMax > 50) {
-    errors.teamMembersMax = "Max team members must be between 1 and 50"
+    errors.teamMembersMax = t("contest:validation.teamMaxRange")
   } else if (
     data.teamMembersMin !== "" &&
     Number(data.teamMembersMin) > Number(data.teamMembersMax)
   ) {
-    errors.teamMembersMax = "Max team members must be >= Min team members"
+    errors.teamMembersMax = t("contest:validation.teamMaxMin")
   }
 
   // ---- Settings: Appeal & Judge ----
@@ -98,21 +100,21 @@ export const validateContest = (data, { isEdit = false } = {}) => {
 
   settingsFields.forEach(({ key, label }) => {
     if (data[key] === null || data[key] === "") {
-      errors[key] = `${label} is required`
+      errors[key] = t("contest:validation.fieldRequired", { label })
     } else if (!Number.isInteger(Number(data[key]))) {
-      errors[key] = `${label} must be an integer`
+      errors[key] = t("contest:validation.fieldInteger", { label })
     } else if (Number(data[key]) < 0) {
-      errors[key] = `${label} cannot be negative`
+      errors[key] = t("contest:validation.fieldNegative", { label })
     } else if (Number(data[key]) > 365) {
-      errors[key] = `${label} cannot exceed 365 days`
+      errors[key] = t("contest:validation.fieldMax", { label })
     }
   })
 
   // ---- Team Limit ----
   if (data.teamLimitMax == null || data.teamLimitMax === "") {
-    errors.teamLimitMax = "Team limit is required"
+    errors.teamLimitMax = t("contest:validation.teamLimit")
   } else if (data.teamLimitMax < 1 || data.teamLimitMax > 10000) {
-    errors.teamLimitMax = "Team limit must be between 1 and 10000"
+    errors.teamLimitMax = t("contest:validation.teamLimitRange")
   }
 
   return errors

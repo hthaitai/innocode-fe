@@ -1,5 +1,8 @@
 import React, { useState, useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import { ErrorState } from "../../../../shared/components/ui/ErrorState"
+import { MissingState } from "../../../../shared/components/ui/MissingState"
+import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { useNavigate, useParams } from "react-router-dom"
 import { useCreateRoundMutation } from "@/services/roundApi"
 import { useGetContestByIdQuery } from "@/services/contestApi"
@@ -28,28 +31,45 @@ import {
 
 const CreateRound = () => {
   const { contestId } = useParams()
-  const { t } = useTranslation("round")
+  const { t } = useTranslation(["round", "common", "contest"])
   const navigate = useNavigate()
   const [createRound, { isLoading }] = useCreateRoundMutation()
 
   const [form, setForm] = useState(EMPTY_ROUND)
   const [errors, setErrors] = useState({})
 
-  const { data: contest, isLoading: contestLoading } =
-    useGetContestByIdQuery(contestId)
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    isError: isContestError,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId)
   const { data: roundsData, isLoading: roundsLoading } =
     useGetRoundsByContestIdQuery(contestId)
 
   const rounds = roundsData?.data ?? []
 
   // Breadcrumbs
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_CREATE(
-    contest?.name ?? "Contest"
-  )
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_CREATE(contestId)
+  let breadcrumbItems
+  let breadcrumbPaths
+
+  const isContestNotFound =
+    contestError?.status === 404 || (!contest && isContestError)
+
+  if (isContestNotFound) {
+    breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(
+      t("contest:notFound")
+    )
+    breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
+  } else {
+    breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_CREATE(
+      contest?.name ?? "Contest"
+    )
+    breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_CREATE(contestId)
+  }
 
   const handleSubmit = async () => {
-    let validationErrors = validateRound(form, contest)
+    let validationErrors = validateRound(form, contest, [], { t })
 
     // If sections are hidden, only show errors for visible fields (Round Type & Round to retake)
     const isHidden = form.isRetakeRound && !form.mainRoundId
@@ -166,9 +186,22 @@ const CreateRound = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="min-h-[70px] flex items-center justify-center">
-          <Spinner />
-        </div>
+        <LoadingState />
+      </PageContainer>
+    )
+  }
+
+  if (isContestError || !contest) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        {isContestNotFound ? (
+          <MissingState itemName={t("common:common.contest")} />
+        ) : (
+          <ErrorState itemName={t("common:common.contest")} />
+        )}
       </PageContainer>
     )
   }

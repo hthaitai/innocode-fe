@@ -31,6 +31,8 @@ export default function MainLayout() {
   // Hide sidebar if not authenticated OR on public routes OR on specific routes
   const hideSidebar = !isAuthenticated || isPublicRoute || shouldHideSidebar
 
+  const isHomePage = location.pathname === "/"
+
   return (
     <div>
       <Navbar />
@@ -45,7 +47,7 @@ export default function MainLayout() {
           </div>
         )}
 
-        <div className="flex-1 px-5 pb-5 relative">
+        <div className={`flex-1 relative ${isHomePage ? "p-0" : "px-5 pb-5"}`}>
           {/* 👇 This ensures scroll resets on every route change */}
           <ScrollToTop />
 

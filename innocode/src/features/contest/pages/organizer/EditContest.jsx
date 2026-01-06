@@ -15,16 +15,20 @@ import {
 } from "../../../../shared/utils/dateTime"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { useTranslation } from "react-i18next"
+import { ErrorState } from "../../../../shared/components/ui/ErrorState"
+import { MissingState } from "../../../../shared/components/ui/MissingState"
+import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 
 export default function EditContest() {
   const { contestId } = useParams()
   const navigate = useNavigate()
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["pages", "contest", "common"])
 
   const {
     data: contest,
     isLoading,
     isError,
+    error,
   } = useGetContestByIdQuery(contestId)
   const [updateContest, { isLoading: updating }] = useUpdateContestMutation()
 
@@ -32,10 +36,16 @@ export default function EditContest() {
   const [originalData, setOriginalData] = useState(null)
   const [errors, setErrors] = useState({})
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_EDIT(
-    contest?.name ?? t("organizerContestForm.breadcrumb")
-  )
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_EDIT(contestId)
+  const isNotFound = error?.status === 404
+
+  const breadcrumbItems = isNotFound
+    ? BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(t("contest:notFound"))
+    : BREADCRUMBS.ORGANIZER_CONTEST_EDIT(
+        contest?.name ?? t("organizerContestForm.breadcrumb")
+      )
+  const breadcrumbPaths = isNotFound
+    ? BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
+    : BREADCRUMB_PATHS.ORGANIZER_CONTEST_EDIT(contestId)
 
   // Initialize form data once contest is loaded
   useEffect(() => {
@@ -65,7 +75,7 @@ export default function EditContest() {
     if (!formData) return
 
     // Validate form
-    const validationErrors = validateContest(formData, { isEdit: true })
+    const validationErrors = validateContest(formData, { isEdit: true, t })
     setErrors(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
       toast.error(
@@ -114,10 +124,11 @@ export default function EditContest() {
       console.error(err)
 
       if (err?.data?.errorCode === "DUPLICATE") {
-        toast.error(err.data.errorMessage)
+        const errorMessage = t("contest:validation.contestNameExists")
+        toast.error(errorMessage)
         setErrors((prev) => ({
           ...prev,
-          name: err.data.errorMessage,
+          name: errorMessage,
           ...(err.data.additionalData?.suggestion
             ? { nameSuggestion: err.data.additionalData.suggestion }
             : {}),
@@ -132,13 +143,41 @@ export default function EditContest() {
     }
   }
 
-  if (isLoading || !formData) {
+  if (isLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
-        loading={isLoading}
-      />
+      >
+        <LoadingState />
+      </PageContainer>
+    )
+  }
+
+  if (isError || !contest) {
+    const isNotFound = error?.status === 404 || !contest
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        {isNotFound ? (
+          <MissingState itemName={t("common:common.contest")} />
+        ) : (
+          <ErrorState itemName={t("common:common.contest")} />
+        )}
+      </PageContainer>
+    )
+  }
+
+  if (!formData) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <LoadingState />
+      </PageContainer>
     )
   }
 
@@ -146,8 +185,6 @@ export default function EditContest() {
     <PageContainer
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
-      loading={isLoading}
-      error={isError}
     >
       <AnimatedSection>
         <ContestForm

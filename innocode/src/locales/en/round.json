@@ -164,5 +164,26 @@
     "confirmMessage": "Are you sure you want to delete \"{{name}}\"?",
     "success": "Round deleted successfully!",
     "error": "Failed to delete round."
+  },
+  "notFound": "Round Not Found",
+  "validation": {
+    "retakeSelect": "Please select a round to retake",
+    "name": "Round name is required",
+    "start": "Start time is required",
+    "startPast": "Start time cannot be in the past",
+    "end": "End time is required",
+    "endAfterStart": "End time must be after start time",
+    "endPast": "End time cannot be in the past",
+    "rankInteger": "Rank cutoff must be an integer",
+    "rankNegative": "Rank cutoff cannot be negative",
+    "problemType": "Problem type is required",
+    "problemTypeConfig": "Please configure the selected problem type",
+    "description": "Description is required",
+    "testType": "Test type is required",
+    "templateFile": "Template file is required",
+    "startInContest": "Start time must be within contest period",
+    "endInContest": "End time must be within contest period",
+    "overlap": "Round time overlaps with an existing round",
+    "timeLimitNegative": "Time limit cannot be negative"
   }
 }

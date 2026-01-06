@@ -8,6 +8,7 @@ import {
 } from "react"
 import { authService } from "@/features/auth/services/authService"
 import { shouldRefreshToken } from "@/shared/utils/jwtUtils"
+import { FullScreenLoader } from "@/shared/components/ui/FullScreenLoader"
 // Xóa dòng import useNavigate
 // import { useNavigate } from 'react-router-dom';
 
@@ -70,14 +71,17 @@ export const AuthProvider = ({ children }) => {
           }
         } catch (refreshError) {
           if (import.meta.env.VITE_ENV === "development") {
-            const errorData = refreshError?.response?.data || {};
+            const errorData = refreshError?.response?.data || {}
             console.error("❌ Automatic token refresh failed:", {
               status: refreshError?.response?.status,
               code: errorData?.errorCode || errorData?.Code,
-              message: errorData?.errorMessage || errorData?.Message || errorData?.message,
+              message:
+                errorData?.errorMessage ||
+                errorData?.Message ||
+                errorData?.message,
               url: refreshError?.config?.url,
               data: errorData,
-            });
+            })
           }
           // If refresh fails, clear tokens and redirect to login
           stopTokenRefreshInterval()
@@ -93,14 +97,15 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       if (import.meta.env.VITE_ENV === "development") {
-        const errorData = error?.response?.data || {};
+        const errorData = error?.response?.data || {}
         console.error("❌ Token refresh check error:", {
           status: error?.response?.status,
           code: errorData?.Code || errorData?.errorCode,
-          message: errorData?.Message || errorData?.message || errorData?.errorMessage,
+          message:
+            errorData?.Message || errorData?.message || errorData?.errorMessage,
           url: error?.config?.url,
           data: errorData,
-        });
+        })
       }
     }
   }, [stopTokenRefreshInterval])
@@ -191,14 +196,17 @@ export const AuthProvider = ({ children }) => {
             )
           } catch (refreshError) {
             if (import.meta.env.VITE_ENV === "development") {
-              const errorData = refreshError?.response?.data || {};
+              const errorData = refreshError?.response?.data || {}
               console.error("❌ Initial token refresh failed:", {
                 status: refreshError?.response?.status,
                 code: errorData?.Code || errorData?.errorCode,
-                message: errorData?.Message || errorData?.message || errorData?.errorMessage,
+                message:
+                  errorData?.Message ||
+                  errorData?.message ||
+                  errorData?.errorMessage,
                 url: refreshError?.config?.url,
                 data: errorData,
-              });
+              })
             }
             // If refresh fails, clear tokens but don't redirect (let user stay on page)
             localStorage.removeItem("token")
@@ -256,14 +264,17 @@ export const AuthProvider = ({ children }) => {
             )
           } catch (refreshError) {
             if (import.meta.env.VITE_ENV === "development") {
-              const errorData = refreshError?.response?.data || {};
+              const errorData = refreshError?.response?.data || {}
               console.error("❌ Initial token refresh failed:", {
                 status: refreshError?.response?.status,
                 code: errorData?.Code || errorData?.errorCode,
-                message: errorData?.Message || errorData?.message || errorData?.errorMessage,
+                message:
+                  errorData?.Message ||
+                  errorData?.message ||
+                  errorData?.errorMessage,
                 url: refreshError?.config?.url,
                 data: errorData,
-              });
+              })
             }
             // If refresh fails, clear tokens
             localStorage.removeItem("token")
@@ -277,14 +288,17 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         if (import.meta.env.VITE_ENV === "development") {
-          const errorData = error?.response?.data || {};
+          const errorData = error?.response?.data || {}
           console.error("❌ Initialize auth error:", {
             status: error?.response?.status,
             code: errorData?.Code || errorData?.errorCode,
-            message: errorData?.Message || errorData?.message || errorData?.errorMessage,
+            message:
+              errorData?.Message ||
+              errorData?.message ||
+              errorData?.errorMessage,
             url: error?.config?.url,
             data: errorData,
-          });
+          })
         }
       } finally {
         setLoading(false)
@@ -320,14 +334,17 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         if (import.meta.env.VITE_ENV === "development") {
-          const errorData = error?.response?.data || {};
+          const errorData = error?.response?.data || {}
           console.error("❌ Token refresh handler error:", {
             status: error?.response?.status,
             code: errorData?.Code || errorData?.errorCode,
-            message: errorData?.Message || errorData?.message || errorData?.errorMessage,
+            message:
+              errorData?.Message ||
+              errorData?.message ||
+              errorData?.errorMessage,
             url: error?.config?.url,
             data: errorData,
-          });
+          })
         }
       }
     }
@@ -387,28 +404,7 @@ export const AuthProvider = ({ children }) => {
 
   // Chờ loading xong mới render children
   if (loading) {
-    return (
-      <div
-        className="fixed inset-0 flex flex-col items-center justify-center text-white z-50"
-        style={{
-          background:
-            "linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffd89b 100%)",
-        }}
-      >
-        {/* Animated bouncing dots */}
-        <div className="flex space-x-3 mb-6">
-          <div className="w-4 h-4 bg-white rounded-full animate-bounce delay-0"></div>
-          <div className="w-4 h-4 bg-white rounded-full animate-bounce delay-200"></div>
-          <div className="w-4 h-4 bg-white rounded-full animate-bounce delay-400"></div>
-        </div>
-
-        {/* Text */}
-        <h1 className="text-3xl font-bold mb-2">Loading, please wait...</h1>
-        <p className="text-lg opacity-90">
-          Your experience will start shortly.
-        </p>
-      </div>
-    )
+    return <FullScreenLoader />
   }
 
   return (

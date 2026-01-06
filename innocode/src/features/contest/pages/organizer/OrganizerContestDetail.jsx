@@ -1,5 +1,6 @@
-import React, { useMemo } from "react"
+import React from "react"
 import { useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import ContestInfo from "../../components/organizer/ContestInfo"
@@ -19,15 +20,23 @@ import { useTranslation } from "react-i18next"
 
 const OrganizerContestDetail = () => {
   const { contestId } = useParams()
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["pages", "contest", "common"])
+
+  const isValidGuid = uuidValidate(contestId)
 
   const {
     data: contest,
     isLoading,
     isError,
+    error,
   } = useGetContestByIdQuery(contestId)
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(contest?.name)
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(
+    !isValidGuid || error?.status === 404
+      ? t("contest:notFound")
+      : contest?.name
+  )
+
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
 
   if (isLoading) {
@@ -41,24 +50,19 @@ const OrganizerContestDetail = () => {
     )
   }
 
-  if (isError) {
-    return (
-      <PageContainer
-        breadcrumb={breadcrumbItems}
-        breadcrumbPaths={breadcrumbPaths}
-      >
-        <ErrorState itemName="contest" />
-      </PageContainer>
-    )
-  }
+  if (isError || !contest || !isValidGuid) {
+    const isNotFound = error?.status === 404 || !contest || !isValidGuid
 
-  if (!contest) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="contest" />
+        {isNotFound ? (
+          <MissingState itemName={t("common:common.contest")} />
+        ) : (
+          <ErrorState itemName={t("common:common.contest")} />
+        )}
       </PageContainer>
     )
   }

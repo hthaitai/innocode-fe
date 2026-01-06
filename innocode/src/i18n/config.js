@@ -40,6 +40,8 @@ import enNotifications from "../locales/en/notifications.json"
 import viNotifications from "../locales/vi/notifications.json"
 import enFooter from "../locales/en/footer.json"
 import viFooter from "../locales/vi/footer.json"
+import enLoader from "../locales/en/loader.json"
+import viLoader from "../locales/vi/loader.json"
 
 i18n
   .use(LanguageDetector) // Tự động detect ngôn ngữ từ browser
@@ -64,6 +66,7 @@ i18n
         notifications: enNotifications,
         contest: enContest,
         footer: enFooter,
+        loader: enLoader,
       },
       vi: {
         common: viCommon,
@@ -83,6 +86,7 @@ i18n
         notifications: viNotifications,
         contest: viContest,
         footer: viFooter,
+        loader: viLoader,
       },
     },
     fallbackLng: "en",

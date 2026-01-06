@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import { ErrorState } from "../../../../shared/components/ui/ErrorState"
+import { MissingState } from "../../../../shared/components/ui/MissingState"
+import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   useUpdateRoundMutation,
@@ -29,13 +32,22 @@ import {
 
 const EditRound = () => {
   const { contestId, roundId } = useParams()
-  const { t } = useTranslation("round")
+  const { t } = useTranslation(["round", "common", "contest"])
   const navigate = useNavigate()
 
   // Fetch contest and round data
-  const { data: contest, isLoading: contestLoading } =
-    useGetContestByIdQuery(contestId)
-  const { data: round, isLoading: roundLoading } = useGetRoundByIdQuery(roundId)
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    isError: isContestError,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId)
+  const {
+    data: round,
+    isLoading: roundLoading,
+    isError: isRoundError,
+    error: roundError,
+  } = useGetRoundByIdQuery(roundId)
   const { data: roundsData, isLoading: roundsLoading } =
     useGetRoundsByContestIdQuery(contestId)
 
@@ -48,17 +60,35 @@ const EditRound = () => {
   const [updateRound, { isLoading: isUpdating }] = useUpdateRoundMutation()
 
   // Breadcrumbs
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_EDIT(
-    round?.contestName ?? "Contest",
-    round?.roundName ?? "Round"
-  )
+  // Breadcrumbs
+  let breadcrumbItems
+  let breadcrumbPaths
 
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_EDIT(
-    round?.contestId ?? contestId,
-    round?.roundId ?? roundId
-  )
+  const isContestNotFound =
+    contestError?.status === 404 || (!contest && isContestError)
+  const isRoundNotFound = roundError?.status === 404 || (!round && isRoundError)
 
-  console.log(round)
+  if (isContestNotFound) {
+    breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(
+      t("contest:notFound")
+    )
+    breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
+  } else if (isRoundNotFound) {
+    breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
+      contest?.name,
+      t("round:notFound")
+    )
+    breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_DETAIL(
+      contestId,
+      roundId
+    )
+  } else {
+    breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_EDIT(
+      contest?.name ?? "Contest",
+      round?.roundName ?? "Round"
+    )
+    breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_EDIT(contestId, roundId)
+  }
 
   // Initialize form data once round is loaded
   useEffect(() => {
@@ -103,6 +133,7 @@ const EditRound = () => {
 
     const validationErrors = validateRound(formData, contest, [], {
       isEdit: true,
+      t,
     })
     setErrors(validationErrors)
 
@@ -200,9 +231,48 @@ const EditRound = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="min-h-[70px] flex items-center justify-center">
-          <Spinner />
-        </div>
+        <LoadingState />
+      </PageContainer>
+    )
+  }
+
+  if (isContestError || !contest) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        {isContestNotFound ? (
+          <MissingState itemName={t("common:common.contest")} />
+        ) : (
+          <ErrorState itemName={t("common:common.contest")} />
+        )}
+      </PageContainer>
+    )
+  }
+
+  if (isRoundError || !round) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        {isRoundNotFound ? (
+          <MissingState itemName={t("common:common.round")} />
+        ) : (
+          <ErrorState itemName={t("common:common.round")} />
+        )}
+      </PageContainer>
+    )
+  }
+
+  if (!formData) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <LoadingState />
       </PageContainer>
     )
   }

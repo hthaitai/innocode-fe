@@ -1,5 +1,7 @@
 {
   "submissions": "Bài nộp",
+  "submission": "Bài nộp",
+  "notFound": "Không tìm thấy bài nộp",
   "contest": "Cuộc thi",
   "searchPlaceholder": "Tìm kiếm theo tên sinh viên hoặc đội...",
   "student": "Sinh viên",

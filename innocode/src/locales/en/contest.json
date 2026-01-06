@@ -10,5 +10,42 @@
   },
   "certificate": {
     "noTemplates": "No templates created yet."
+  },
+  "notFound": "Contest Not Found",
+  "validation": {
+    "imgFile": "Contest image is required",
+    "year": "Year is required",
+    "yearNumber": "Year must be a number",
+    "yearMin": "Year must be equal or greater than 2025",
+    "name": "Contest name is required",
+    "imgUrl": "Please enter a valid URL (must start with http or https)",
+    "start": "Start date is required",
+    "startPast": "Start date cannot be in the past",
+    "end": "End date is required",
+    "endAfterStart": "End date must be after the start date",
+    "endPast": "End date cannot be in the past",
+    "regStart": "Registration start date is required",
+    "regStartPast": "Registration start cannot be in the past",
+    "regEnd": "Registration end date is required",
+    "regEndAfterStart": "Registration end must be after registration start",
+    "regEndAfterContestStart": "Registration end cannot be after contest start date",
+    "regEndPast": "Registration end cannot be in the past",
+    "teamMin": "Min team members is required",
+    "teamMinInteger": "Min team members must be an integer",
+    "teamMinNegative": "Min team members cannot be negative",
+    "teamMax": "Max team members is required",
+    "teamMaxInteger": "Max team members must be an integer",
+    "teamMaxRange": "Max team members must be between 1 and 50",
+    "teamMaxMin": "Max team members must be >= Min team members",
+    "fieldRequired": "{{label}} is required",
+    "fieldInteger": "{{label}} must be an integer",
+    "fieldNegative": "{{label}} cannot be negative",
+    "fieldMax": "{{label}} cannot exceed 365 days",
+    "teamLimit": "Team limit is required",
+    "teamLimitRange": "Team limit must be between 1 and 10000",
+    "contestNameExists": "Contest name already exists for this year."
+  },
+  "suggestion": {
+    "useSuggestedName": "Use suggested name:"
   }
 }

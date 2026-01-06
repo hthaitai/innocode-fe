@@ -124,15 +124,16 @@ const DropdownFluent = ({
       <div className="relative w-full" ref={dropdownRef}>
         <div
           onClick={toggleDropdown}
-          className={`text-sm leading-5 flex gap-3 justify-between items-center cursor-pointer border rounded-[5px] px-3 py-1.5 min-h-[32px] bg-white transition-colors duration-150 ${borderClass} ${
+          className={`text-sm leading-5 flex gap-3 justify-between items-center cursor-pointer border border-b-[#D3D3D3] rounded-[5px] px-3 py-1.5 min-h-[32px] bg-white transition-colors duration-150 ${borderClass} ${
             disabled
               ? "opacity-60 cursor-not-allowed"
               : isOpen
               ? "border-[#7A7574]"
               : ""
           }`}
+          title={selectedLabel}
         >
-          <span className="break-words whitespace-normal">{selectedLabel}</span>
+          <span className="truncate">{selectedLabel}</span>
           <ChevronDown
             size={16}
             className={`text-[#7A7574] transition-transform duration-200 flex-shrink-0 ${
@@ -184,6 +185,7 @@ const DropdownFluent = ({
                           ? "bg-[#F0F0F0]"
                           : "hover:bg-[#F0F0F0]"
                       }`}
+                      title={option.label}
                     >
                       {value === option.value && (
                         <span className="absolute left-0 top-2.5 h-3 w-[3px] bg-[#E05307] rounded-[5px]"></span>
@@ -194,9 +196,7 @@ const DropdownFluent = ({
                           {option.icon}
                         </span>
                       )}
-                      <span className="break-words whitespace-normal">
-                        {option.label}
-                      </span>
+                      <span className="truncate">{option.label}</span>
                     </div>
                   ))
                 )}

@@ -1,7 +1,7 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Icon } from "@iconify/react"
-import { motion } from "framer-motion"
+
 import { useTranslation } from "react-i18next"
 import { useAuth } from "@/context/AuthContext"
 
@@ -195,11 +195,7 @@ const Sidebar = () => {
                 {t(item.labelKey)}
               </span>
               {active && (
-                <motion.div
-                  layoutId="active-indicator"
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-[#ff6b35] rounded-[5px]"
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-[#ff6b35] rounded-[5px]" />
               )}
             </Link>
           )

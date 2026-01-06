@@ -1,5 +1,7 @@
 {
   "submissions": "Submissions",
+  "submission": "Submission",
+  "notFound": "Not found",
   "contest": "Contest",
   "searchPlaceholder": "Search student or team name...",
   "student": "Student",

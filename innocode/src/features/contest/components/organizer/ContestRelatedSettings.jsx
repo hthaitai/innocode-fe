@@ -58,34 +58,10 @@ const ContestRelatedSettings = ({ contestId }) => {
         path: "leaderboard",
       },
       {
-        title: t(
-          "organizerContestDetail.relatedSettings.templateGallery.title"
-        ),
-        subtitle: t(
-          "organizerContestDetail.relatedSettings.templateGallery.subtitle"
-        ),
-        icon: <LayoutTemplate size={20} />,
-        path: "certificates/templates",
-      },
-      {
-        title: t(
-          "organizerContestDetail.relatedSettings.issuedStudentCertificates.title"
-        ),
-        subtitle: t(
-          "organizerContestDetail.relatedSettings.issuedStudentCertificates.subtitle"
-        ),
-        icon: <GraduationCap size={20} />,
-        path: "certificates/issued/students",
-      },
-      {
-        title: t(
-          "organizerContestDetail.relatedSettings.issuedTeamCertificates.title"
-        ),
-        subtitle: t(
-          "organizerContestDetail.relatedSettings.issuedTeamCertificates.subtitle"
-        ),
-        icon: <Icon icon="mdi:certificate-outline" width={20} height={20} />,
-        path: "certificates/issued/teams",
+        title: "Certificates",
+        subtitle: "Manage certificates and templates",
+        icon: <Award size={20} />, // Using Award icon instead of individual icons
+        path: "certificates",
       },
       {
         title: t("organizerContestDetail.relatedSettings.appeals.title"),

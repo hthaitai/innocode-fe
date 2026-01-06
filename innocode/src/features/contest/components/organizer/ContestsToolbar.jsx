@@ -12,7 +12,7 @@ const ContestsToolbar = ({ onSearch, onFilter }) => {
   const { t } = useTranslation("pages")
 
   const handleAddContest = () => {
-    navigate("/organizer/contests/add")
+    navigate("/organizer/contests/new")
   }
 
   const handleSearchKeyDown = (e) => {

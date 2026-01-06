@@ -14,7 +14,7 @@ const PublishContestSection = ({ contest }) => {
   const { t } = useTranslation(["pages", "contest"])
 
   const { data: publishCheck } = useCheckPublishReadyQuery(contest?.contestId, {
-    skip: !contest?.contestId || contest?.status === "Published",
+    skip: !contest?.contestId || contest?.status !== "Draft",
   })
 
   const [publishContest, { isLoading: actionLoading }] =
@@ -22,7 +22,7 @@ const PublishContestSection = ({ contest }) => {
 
   if (!contest) return null
 
-  const isPublished = contest?.status === "Published"
+  const isPublished = contest?.status !== "Draft"
   const isReady = publishCheck?.data?.isReady ?? false
   const missingItems = publishCheck?.data?.missing ?? []
 

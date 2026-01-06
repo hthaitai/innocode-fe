@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react"
 import { Link, NavLink, useNavigate } from "react-router-dom"
-import { motion } from "framer-motion"
+
 import { useTranslation } from "react-i18next"
 import "./Navbar.css"
 import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg"
@@ -159,15 +159,7 @@ const Navbar = () => {
                 <span className="relative pb-1">
                   {link.name}
                   {isActive && (
-                    <motion.div
-                      layoutId="navbar-indicator"
-                      className="absolute bottom-[-3px] left-0 w-full h-[2px] bg-orange-600 rounded-t-sm"
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                    />
+                    <div className="absolute bottom-[-3px] left-0 w-full h-[2px] bg-orange-600 rounded-t-sm" />
                   )}
                 </span>
               )}
@@ -183,9 +175,12 @@ const Navbar = () => {
           {isAuthenticated ? (
             <div className="user-menu" ref={dropdownRef}>
               {/* Notification Bell */}
-              <div className="notification-container flex" ref={notifRef}>
+              <div
+                className="notification-container w-[32px] h-[32px] flex"
+                ref={notifRef}
+              >
                 <button
-                  className="hover:bg-[#F3f3f3] cursor-pointer p-1 border border-[#E5E5E5] rounded-[5px] bg-white"
+                  className="hover:bg-[#F3f3f3] cursor-pointer p-1 border border-[#E5E5E5] border-b-[#D3D3D3] rounded-[5px] bg-white"
                   onClick={(e) => {
                     e.stopPropagation()
                     setShowDropdown(false) // Tắt profile dropdown khi mở notification

@@ -58,6 +58,7 @@ import OrganizerIssuedStudentCertificates from "./features/certificate/pages/org
 import OrganizerIssuedTeamCertificates from "./features/certificate/pages/organizer/OrganizerIssuedTeamCertificates"
 import OrganizerAppeals from "./features/appeal/pages/organizer/OrganizerAppeals"
 import OrganizerAppealDetail from "./features/appeal/pages/organizer/OrganizerAppealDetail"
+import OrganizerCertificates from "./features/certificate/pages/organizer/OrganizerCertificates"
 import OrganizerPlagiarismQueue from "./features/plagiarism/pages/organizer/OrganizerPlagiarismQueue"
 import OrganizerPlagiarismDetail from "./features/plagiarism/pages/organizer/OrganizerPlagiarismDetail"
 import OrganizerProvinces from "./features/province/pages/organizer/OrganizerProvinces"
@@ -223,14 +224,10 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-  // Home page with its own layout (full width, no constraints)
-  {
-    element: <HomeLayout />,
-    children: [{ index: true, element: <Home /> }],
-  },
   {
     element: <MainLayout />, // layout wrapper
     children: [
+      { path: "/", element: <Home /> },
       { path: "about", element: <About /> },
       { path: "policy", element: <Policy /> },
       {
@@ -456,7 +453,7 @@ const router = createBrowserRouter([
           //   ),
           // },
           {
-            path: "add",
+            path: "new",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <CreateContest />
@@ -683,6 +680,14 @@ const router = createBrowserRouter([
             path: ":contestId/certificates",
             children: [
               {
+                index: true,
+                element: (
+                  <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                    <OrganizerCertificates />
+                  </ProtectedRoute>
+                ),
+              },
+              {
                 path: "templates",
                 element: (
                   <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
@@ -756,22 +761,22 @@ const router = createBrowserRouter([
           // },
         ],
       },
-      {
-        path: "organizer/provinces",
-        element: (
-          <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-            <OrganizerProvinces />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "organizer/schools",
-        element: (
-          <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
-            <OrganizerSchools />
-          </ProtectedRoute>
-        ),
-      },
+      // {
+      //   path: "organizer/provinces",
+      //   element: (
+      //     <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+      //       <OrganizerProvinces />
+      //     </ProtectedRoute>
+      //   ),
+      // },
+      // {
+      //   path: "organizer/schools",
+      //   element: (
+      //     <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+      //       <OrganizerSchools />
+      //     </ProtectedRoute>
+      //   ),
+      // },
       {
         path: "organizer/notifications",
         element: (

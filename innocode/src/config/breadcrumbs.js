@@ -240,24 +240,33 @@ export const BREADCRUMBS = {
     memberName,
   ],
 
+  ORGANIZER_CERTIFICATES: (contestName) => [
+    "Contests",
+    contestName,
+    "Certificates",
+  ],
   ORGANIZER_CERTIFICATE_TEMPLATES: (contestName) => [
     "Contests",
     contestName,
+    "Certificates",
     "Certificate templates",
   ],
   ORGANIZER_CERTIFICATE_ISSUED: (contestName) => [
     "Contests",
     contestName,
+    "Certificates",
     "Issued certificates",
   ],
   ORGANIZER_CERTIFICATE_ISSUED_STUDENT: (contestName) => [
     "Contests",
     contestName,
+    "Certificates",
     "Issued student certificates",
   ],
   ORGANIZER_CERTIFICATE_ISSUED_TEAM: (contestName) => [
     "Contests",
     contestName,
+    "Certificates",
     "Issued team certificates",
   ],
   ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestName) => [
@@ -571,24 +580,33 @@ export const BREADCRUMB_PATHS = {
     `/organizer/contests/${contestId}/leaderboard/teams/${teamId}/members/${memberId}`,
   ],
 
+  ORGANIZER_CERTIFICATES: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
+  ],
   ORGANIZER_CERTIFICATE_TEMPLATES: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
     `/organizer/contests/${contestId}/certificates/templates`,
   ],
   ORGANIZER_CERTIFICATE_ISSUED: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
     `/organizer/contests/${contestId}/certificates/issued`,
   ],
   ORGANIZER_CERTIFICATE_ISSUED_STUDENT: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
     `/organizer/contests/${contestId}/certificates/issued/students`,
   ],
   ORGANIZER_CERTIFICATE_ISSUED_TEAM: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/certificates`,
     `/organizer/contests/${contestId}/certificates/issued/teams`,
   ],
   ORGANIZER_CERTIFICATE_TEMPLATE_CREATE: (contestId) => [

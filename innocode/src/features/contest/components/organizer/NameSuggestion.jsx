@@ -1,7 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { EASING } from "../../../../shared/components/ui/easing"
+import { useTranslation } from "react-i18next"
 
 const NameSuggestion = ({ suggestion, onApply }) => {
+  const { t } = useTranslation("contest")
+
   if (!suggestion) return null
 
   return (
@@ -23,7 +26,7 @@ const NameSuggestion = ({ suggestion, onApply }) => {
         onClick={onApply}
         className="text-[#D32F2F] text-xs leading-4 mt-1 self-start"
       >
-        Use suggested name:{" "}
+        {t("suggestion.useSuggestedName")}{" "}
         <span className="hover:underline cursor-pointer">{suggestion}</span>.
       </motion.button>
     </AnimatePresence>

@@ -10,5 +10,42 @@
   },
   "certificate": {
     "noTemplates": "Chưa có mẫu chứng chỉ nào được tạo."
+  },
+  "notFound": "Không tìm thấy cuộc thi",
+  "validation": {
+    "imgFile": "Hình ảnh cuộc thi là bắt buộc",
+    "year": "Năm là bắt buộc",
+    "yearNumber": "Năm phải là số",
+    "yearMin": "Năm phải bằng hoặc lớn hơn 2025",
+    "name": "Tên cuộc thi là bắt buộc",
+    "imgUrl": "Vui lòng nhập URL hợp lệ (phải bắt đầu bằng http hoặc https)",
+    "start": "Ngày bắt đầu là bắt buộc",
+    "startPast": "Ngày bắt đầu không được trong quá khứ",
+    "end": "Ngày kết thúc là bắt buộc",
+    "endAfterStart": "Ngày kết thúc phải sau ngày bắt đầu",
+    "endPast": "Ngày kết thúc không được trong quá khứ",
+    "regStart": "Ngày bắt đầu đăng ký là bắt buộc",
+    "regStartPast": "Ngày bắt đầu đăng ký không được trong quá khứ",
+    "regEnd": "Ngày kết thúc đăng ký là bắt buộc",
+    "regEndAfterStart": "Ngày kết thúc đăng ký phải sau ngày bắt đầu đăng ký",
+    "regEndAfterContestStart": "Ngày kết thúc đăng ký không được sau ngày bắt đầu cuộc thi",
+    "regEndPast": "Ngày kết thúc đăng ký không được trong quá khứ",
+    "teamMin": "Số thành viên tối thiểu là bắt buộc",
+    "teamMinInteger": "Số thành viên tối thiểu phải là số nguyên",
+    "teamMinNegative": "Số thành viên tối thiểu không được âm",
+    "teamMax": "Số thành viên tối đa là bắt buộc",
+    "teamMaxInteger": "Số thành viên tối đa phải là số nguyên",
+    "teamMaxRange": "Số thành viên tối đa phải từ 1 đến 50",
+    "teamMaxMin": "Số thành viên tối đa phải >= Số thành viên tối thiểu",
+    "fieldRequired": "{{label}} là bắt buộc",
+    "fieldInteger": "{{label}} phải là số nguyên",
+    "fieldNegative": "{{label}} không được âm",
+    "fieldMax": "{{label}} không được quá 365 ngày",
+    "teamLimit": "Giới hạn số đội là bắt buộc",
+    "teamLimitRange": "Giới hạn số đội phải từ 1 đến 10000",
+    "contestNameExists": "Tên cuộc thi đã tồn tại trong năm nay."
+  },
+  "suggestion": {
+    "useSuggestedName": "Sử dụng tên gợi ý:"
   }
 }

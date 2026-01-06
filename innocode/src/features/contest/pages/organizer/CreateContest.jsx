@@ -40,7 +40,7 @@ export default function CreateContest() {
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_CREATE
 
   const handleSubmit = async () => {
-    const validationErrors = validateContest(formData, { isEdit: false })
+    const validationErrors = validateContest(formData, { isEdit: false, t })
     setErrors(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
       toast.error(
@@ -84,10 +84,11 @@ export default function CreateContest() {
       console.error(err)
 
       if (err?.data?.errorCode === "DUPLICATE") {
-        toast.error(err.data.errorMessage)
+        const errorMessage = t("contest:validation.contestNameExists")
+        toast.error(errorMessage)
         setErrors((prev) => ({
           ...prev,
-          name: err.data.errorMessage,
+          name: errorMessage,
           ...(err.data.additionalData?.suggestion
             ? { nameSuggestion: err.data.additionalData.suggestion }
             : {}),

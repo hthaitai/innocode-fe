@@ -1,6 +1,7 @@
 import React from "react"
 import { useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { validate as uuidValidate } from "uuid"
 import PageContainer from "@/shared/components/PageContainer"
 import { useGetPlagiarismDetailQuery } from "@/services/plagiarismApi"
 import { useGetContestByIdQuery } from "@/services/contestApi"
@@ -16,30 +17,46 @@ import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 const OrganizerPlagiarismDetail = () => {
-  const { t } = useTranslation(["plagiarism"])
+  const { t } = useTranslation(["plagiarism", "common", "contest"])
   const { contestId, submissionId } = useParams()
+
+  const isValidContestGuid = uuidValidate(contestId)
+  const isValidSubmissionGuid = uuidValidate(submissionId)
 
   const {
     data: contest,
     isLoading: contestLoading,
-    isError: contestError,
-  } = useGetContestByIdQuery(contestId)
+    isError: isContestError,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestGuid })
 
   const {
     data: plagiarismData,
     isLoading: plagiarismLoading,
-    isError: plagiarismError,
-  } = useGetPlagiarismDetailQuery(submissionId)
+    isError: isPlagiarismError,
+    error: plagiarismError,
+  } = useGetPlagiarismDetailQuery(submissionId, {
+    skip: !isValidSubmissionGuid,
+  })
 
   const submission = plagiarismData?.submission
   const artifacts = plagiarismData?.artifacts || []
   const details = plagiarismData?.details || []
   const matches = plagiarismData?.matches || []
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_PLAGIARISM_DETAIL(
-    contest?.name ?? t("contest"),
-    submission?.studentName ?? t("student")
-  )
+  const isContestNotFound = !isValidContestGuid || contestError?.status === 404
+  const isSubmissionNotFound =
+    !isValidSubmissionGuid || plagiarismError?.status === 404
+
+  const breadcrumbItems = isContestNotFound
+    ? BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(t("contest:notFound"))
+    : BREADCRUMBS.ORGANIZER_PLAGIARISM_DETAIL(
+        contest?.name ?? t("contest"),
+        isSubmissionNotFound
+          ? t("plagiarism:notFound", "Submission Not Found")
+          : submission?.studentName ?? t("student")
+      )
+
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_PLAGIARISM_DETAIL(
     contestId,
     submissionId
@@ -56,24 +73,38 @@ const OrganizerPlagiarismDetail = () => {
     )
   }
 
-  if (plagiarismError || contestError) {
+  if (isContestError || !contest || !isValidContestGuid) {
+    const isNotFound =
+      contestError?.status === 404 || !contest || !isValidContestGuid
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="submission" />
+        {isNotFound ? (
+          <MissingState itemName={t("common:common.contest")} />
+        ) : (
+          <ErrorState itemName={t("common:common.contest")} />
+        )}
       </PageContainer>
     )
   }
 
-  if (!contest) {
+  if (isPlagiarismError || !plagiarismData || !isValidSubmissionGuid) {
+    const isNotFound =
+      plagiarismError?.status === 404 ||
+      !plagiarismData ||
+      !isValidSubmissionGuid
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName={t("contest")} />
+        {isNotFound ? (
+          <MissingState itemName={t("plagiarism:submission", "Submission")} />
+        ) : (
+          <ErrorState itemName={t("plagiarism:submission", "Submission")} />
+        )}
       </PageContainer>
     )
   }
