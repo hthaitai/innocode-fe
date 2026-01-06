@@ -823,6 +823,7 @@
     "mentorAddedFailed": "Không thể thêm giáo viên"
   },
   "profile": {
+    "role": "Vai trò",
     "tabs": {
       "about": "Giới thiệu",
       "changePassword": "Đổi mật khẩu"

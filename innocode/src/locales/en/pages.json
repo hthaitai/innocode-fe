@@ -826,6 +826,7 @@
     "mentorAddedFailed": "Failed to add mentor"
   },
   "profile": {
+    "role": "Role",
     "tabs": {
       "about": "About",
       "changePassword": "Change Password"
