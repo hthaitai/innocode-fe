@@ -1,8 +1,11 @@
 import React from "react"
 import { Icon } from "@iconify/react"
 import { motion } from "framer-motion"
+import { useTranslation } from "react-i18next"
 
 export default function ProfileHeader({ user, role }) {
+  const { t } = useTranslation("common")
+  const { t: tPages } = useTranslation("pages")
   const initials = (user?.fullName || user?.name || "U")
     .split(" ")
     .map((n) => n[0])
@@ -27,9 +30,7 @@ export default function ProfileHeader({ user, role }) {
           <h2 className="font-bold text-2xl text-gray-900 tracking-tight">
             {user?.fullName || user?.name}
           </h2>
-          <span className="px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full uppercase tracking-wider">
-            {role}
-          </span>
+         
         </div>
 
         <div className="flex flex-col gap-1">
@@ -48,16 +49,7 @@ export default function ProfileHeader({ user, role }) {
         </div>
       </div>
 
-      <div className="hidden md:flex gap-4">
-        <div className="text-center px-4 py-2 bg-gray-50 rounded-xl border border-gray-100">
-          <div className="text-xs text-gray-400 font-bold uppercase mb-0.5">
-            Role
-          </div>
-          <div className="text-sm font-bold text-gray-700 capitalize">
-            {role}
-          </div>
-        </div>
-      </div>
+ 
     </motion.div>
   )
 }

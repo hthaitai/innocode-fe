@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import BaseModal from "@/shared/components/BaseModal"
 import { validateSchool } from "@/shared/validators/schoolValidator"
 import SchoolForm from "./SchoolForm"
-
 
 export default function SchoolModal({
   isOpen,
@@ -12,11 +12,16 @@ export default function SchoolModal({
   onSubmit,
   onClose,
 }) {
-  const emptyData = useMemo(() => ({
-    name: "",
-    province_id: "",
-    contact: "",
-  }), [])
+  const { t } = useTranslation(["pages", "common"])
+
+  const emptyData = useMemo(
+    () => ({
+      name: "",
+      province_id: "",
+      contact: "",
+    }),
+    []
+  )
 
   const [formData, setFormData] = useState(emptyData)
   const [errors, setErrors] = useState({})
@@ -29,12 +34,12 @@ export default function SchoolModal({
         const editData = {
           ...initialData,
           province_id: initialData.provinceId || initialData.province_id,
-        };
-        setFormData(editData);
+        }
+        setFormData(editData)
       } else {
-        setFormData(emptyData);
+        setFormData(emptyData)
       }
-      setErrors({});
+      setErrors({})
     }
   }, [isOpen, mode, initialData, emptyData])
 
@@ -48,10 +53,10 @@ export default function SchoolModal({
       const submitData = {
         ...formData,
         provinceId: formData.provinceId || formData.province_id,
-      };
+      }
       // Remove province_id if provinceId exists to avoid confusion
       if (submitData.provinceId) {
-        delete submitData.province_id;
+        delete submitData.province_id
       }
       await onSubmit(submitData, mode)
       onClose()
@@ -59,23 +64,29 @@ export default function SchoolModal({
   }, [formData, mode, onSubmit, onClose])
 
   // Memoize title and footer to prevent unnecessary re-renders
-  const title = useMemo(() => 
-    mode === "edit"
-      ? `Edit School: ${initialData.name || ""}`
-      : "Create New School",
-    [mode, initialData.name]
+  const title = useMemo(
+    () =>
+      mode === "edit"
+        ? `${t("schools.edit")}: ${initialData.name || ""}`
+        : t("schools.createSchool"),
+    [mode, initialData.name, t]
   )
 
-  const footer = useMemo(() => (
-    <div className="flex justify-end gap-2">
-      <button type="button" className="button-white" onClick={onClose}>
-        Cancel
-      </button>
-      <button type="button" className="button-orange" onClick={handleSubmit}>
-        {mode === "edit" ? "Save Changes" : "Create"}
-      </button>
-    </div>
-  ), [mode, onClose, handleSubmit])
+  const footer = useMemo(
+    () => (
+      <div className="flex justify-end gap-2">
+        <button type="button" className="button-white" onClick={onClose}>
+          {t("common:buttons.cancel")}
+        </button>
+        <button type="button" className="button-orange" onClick={handleSubmit}>
+          {mode === "edit"
+            ? t("common:buttons.save")
+            : t("common:buttons.create")}
+        </button>
+      </div>
+    ),
+    [mode, onClose, handleSubmit, t]
+  )
 
   return (
     <BaseModal

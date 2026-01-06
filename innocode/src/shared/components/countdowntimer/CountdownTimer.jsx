@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
 import { Icon } from "@iconify/react";
+import { useTranslation } from "react-i18next";
 
 const CountdownTimer = ({ 
   targetDate, 
@@ -9,6 +10,7 @@ const CountdownTimer = ({
   compact = false,
   onExpired = null 
 }) => {
+  const { t } = useTranslation("common");
   const calculateTimeLeft = () => {
     if (!targetDate) return null;
     const difference = +new Date(targetDate) - +new Date();
@@ -74,7 +76,7 @@ const CountdownTimer = ({
           width="48"
           className="text-[#7A7574] mx-auto mb-2 opacity-50"
         />
-        <p className="text-sm text-[#7A7574]">Time expired</p>
+        <p className="text-sm text-[#7A7574]">{t("common.timeExpired")}</p>
       </div>
     );
   }
@@ -122,7 +124,7 @@ const CountdownTimer = ({
             width="48"
             className="text-[#7A7574] mx-auto mb-2 opacity-50"
           />
-          <p className="text-sm text-[#7A7574]">Time expired</p>
+          <p className="text-sm text-[#7A7574]">{t("common.timeExpired")}</p>
         </div>
       )}
     </div>

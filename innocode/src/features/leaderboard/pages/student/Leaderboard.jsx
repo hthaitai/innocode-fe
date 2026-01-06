@@ -15,11 +15,11 @@ import {
 } from "lucide-react"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { formatScore } from "@/shared/utils/formatNumber"
-import { BREADCRUMBS } from "@/config/breadcrumbs"
+import { BREADCRUMBS, createBreadcrumbWithPaths } from "@/config/breadcrumbs"
 import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi"
+import { useGetContestByIdQuery } from "@/services/contestApi"
 import useContests from "../../../contest/hooks/useContests"
 import { Icon } from "@iconify/react"
-import DropdownFluent from "../../../../shared/components/DropdownFluent"
 import { motion, AnimatePresence } from "framer-motion"
 import { useLiveLeaderboard } from "../../hooks/useLiveLeaderboard"
 
@@ -75,7 +75,13 @@ const Leaderboard = () => {
     }
   }, [availableContests, selectedContestId])
 
-  // Get selected contest details
+  // Fetch contest detail immediately if we have urlContestId using RTK Query
+  const { data: contestDetail, isLoading: contestDetailLoading } =
+    useGetContestByIdQuery(urlContestId, {
+      skip: !urlContestId, // Skip if no contestId in URL
+    })
+
+  // Get selected contest details from availableContests
   const selectedContest = availableContests.find(
     (c) => c.contestId === selectedContestId
   )
@@ -197,33 +203,37 @@ const Leaderboard = () => {
     snapshotAt: currentData?.snapshotAt || null,
   }
 
-  // Get rank icon based on position
-  const getRankIcon = (rank) => {
-    switch (rank) {
-      case 1:
-        return <Trophy className="text-yellow-500" size={20} />
-      case 2:
-        return <Medal className="text-gray-400" size={20} />
-      case 3:
-        return <Award className="text-amber-600" size={20} />
-      default:
-        return null
-    }
-  }
+  // Dynamic breadcrumb based on selected contest
+  const breadcrumbData = useMemo(() => {
+    // Use urlContestId if available, fallback to selectedContestId
+    const contestIdForBreadcrumb = urlContestId || selectedContestId
 
-  // Get rank badge color
-  const getRankBadgeClass = (rank) => {
-    switch (rank) {
-      case 1:
-        return "bg-yellow-100 text-yellow-800 border-yellow-300"
-      case 2:
-        return "bg-gray-100 text-gray-800 border-gray-300"
-      case 3:
-        return "bg-amber-100 text-amber-800 border-amber-300"
-      default:
-        return "bg-blue-50 text-blue-800 border-blue-200"
+    if (contestIdForBreadcrumb) {
+      // Try to get contest name from multiple sources (prioritize contestDetail for immediate display)
+      const contestName =
+        contestDetail?.name || // From useContestDetail (immediate when URL has contestId)
+        selectedContest?.name || // From availableContests
+        currentData?.contestName || // From leaderboard data
+        contestInfo?.contestName || // From contest info
+        "Contest"
+
+      const paths = [
+        "/contests",
+        `/contest-detail/${contestIdForBreadcrumb}`,
+        `/leaderboard/${contestIdForBreadcrumb}`,
+      ]
+      const items = ["Contests", contestName, "Leaderboard"]
+      return { items, paths }
     }
-  }
+    return { items: BREADCRUMBS.LEADERBOARD, paths: ["/leaderboard"] }
+  }, [
+    urlContestId,
+    selectedContestId,
+    selectedContest,
+    currentData,
+    contestInfo,
+    contestDetail,
+  ])
 
   // Format round type for display
   const formatRoundType = (roundType) => {
@@ -377,7 +387,10 @@ const Leaderboard = () => {
 
   if (contestsLoading) {
     return (
-      <PageContainer breadcrumb={BREADCRUMBS.LEADERBOARD}>
+      <PageContainer
+        breadcrumb={breadcrumbData?.items || BREADCRUMBS.LEADERBOARD}
+        breadcrumbPaths={breadcrumbData?.paths || ["/leaderboard"]}
+      >
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
@@ -392,7 +405,10 @@ const Leaderboard = () => {
 
   if (!availableContests || availableContests.length === 0) {
     return (
-      <PageContainer breadcrumb={BREADCRUMBS.LEADERBOARD}>
+      <PageContainer
+        breadcrumb={breadcrumbData?.items || BREADCRUMBS.LEADERBOARD}
+        breadcrumbPaths={breadcrumbData?.paths || ["/leaderboard"]}
+      >
         <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 py-8 text-center">
           <Trophy className="mx-auto text-gray-400 mb-4" size={48} />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -408,7 +424,8 @@ const Leaderboard = () => {
 
   return (
     <PageContainer
-      breadcrumb={BREADCRUMBS.LEADERBOARD}
+      breadcrumb={breadcrumbData.items}
+      breadcrumbPaths={breadcrumbData.paths}
       loading={loading}
       error={null}
     >
@@ -471,22 +488,6 @@ const Leaderboard = () => {
                 </p>
               </div>
             </div>
-            {/* Contest Selector */}
-            {availableContests.length > 1 && (
-              <div className="flex items-center gap-2 max-w-[400px]">
-                <label className="text-sm text-nowrap font-medium text-gray-700">
-                  {t("leaderboard.contest")}
-                </label>
-                <DropdownFluent
-                  options={availableContests.map((contest) => ({
-                    value: contest.contestId,
-                    label: contest.name,
-                  }))}
-                  value={selectedContestId}
-                  onChange={(value) => setSelectedContestId(value)}
-                />
-              </div>
-            )}
           </div>
         </div>
 

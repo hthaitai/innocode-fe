@@ -23,9 +23,9 @@ import { useGetMyAppealsQuery } from "@/services/appealApi"
 import { useGetRoundsByContestIdQuery } from "@/services/roundApi"
 import { useGetMyTeamQuery } from "@/services/teamApi"
 import useContestDetail from "@/features/contest/hooks/useContestDetail"
-import useContests from "@/features/contest/hooks/useContests"
 import { useAuth } from "@/context/AuthContext"
 import { useModal } from "@/shared/hooks/useModal"
+import { useGetMyContestsQuery } from "../../../../services/contestApi"
 function MentorAppeal() {
   const { t } = useTranslation("pages")
   const { contestId: urlContestId } = useParams()
@@ -42,9 +42,27 @@ function MentorAppeal() {
   )
 
   // Fetch contests list
-  const { contests, loading: contestsLoading } = useContests()
+  const { data: contests, isLoading: contestsLoading } = useGetMyContestsQuery({
+    pageNumber: 1,
+    pageSize: 100,
+    nameSearch: "",
+  })
 
-  // Get available contests (only ongoing - for appeal requests)
+  // Get contest IDs from mentor's teams
+  const mentorContestIds = useMemo(() => {
+    if (!myTeamsData || !Array.isArray(myTeamsData)) return new Set()
+    
+    const contestIds = new Set()
+    myTeamsData.forEach((team) => {
+      const contestId = team.contestId || team.contest_id
+      if (contestId) {
+        contestIds.add(String(contestId))
+      }
+    })
+    return contestIds
+  }, [myTeamsData])
+
+  // Get available contests (only contests where mentor has a team)
   const availableContests = useMemo(() => {
     if (!contests || !Array.isArray(contests)) return []
 
@@ -52,12 +70,11 @@ function MentorAppeal() {
       // Filter out Draft contests
       if (c.status === "Draft") return false
 
-      const status = c.status?.toLowerCase() || ""
-      const now = new Date()
-
-      return true
+      // Only include contests where mentor has a team
+      const contestId = c.contestId || c.id
+      return contestId && mentorContestIds.has(String(contestId))
     })
-  }, [contests])
+  }, [contests, mentorContestIds])
 
   // Use contestId from URL or first available contest
   const [selectedContestId, setSelectedContestId] = useState(

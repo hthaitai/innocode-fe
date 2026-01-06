@@ -8,7 +8,60 @@ import { Check, Clock } from "lucide-react"
  * @param {boolean} loading - Loading state
  */
 const RoundTimeline = ({ timeline, loading }) => {
-  const { t } = useTranslation("pages")
+  const { t, i18n } = useTranslation("pages")
+
+  // Format date function similar to ContestDetail
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    const isVietnamese = i18n.language === "vi"
+
+    const day = date.getDate()
+    const month = date.getMonth()
+    const year = date.getFullYear()
+    const hours = date.getHours()
+    const minutes = date.getMinutes()
+
+    // Month names
+    const monthNamesEn = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ]
+    const monthNamesVi = [
+      "Thg 1",
+      "Thg 2",
+      "Thg 3",
+      "Thg 4",
+      "Thg 5",
+      "Thg 6",
+      "Thg 7",
+      "Thg 8",
+      "Thg 9",
+      "Thg 10",
+      "Thg 11",
+      "Thg 12",
+    ]
+
+    const monthName = isVietnamese ? monthNamesVi[month] : monthNamesEn[month]
+
+    // Format time
+    const period =
+      hours >= 12 ? (isVietnamese ? "CH" : "PM") : isVietnamese ? "SA" : "AM"
+    const displayHours = hours % 12 || 12
+    const displayMinutes = minutes.toString().padStart(2, "0")
+
+    // Format: "Thg 1 5, 2026, 10:30 SA" (Vietnamese) or "Jan 5, 2026, 10:30 AM" (English)
+    return `${monthName} ${day}, ${year}, ${displayHours}:${displayMinutes} ${period}`
+  }
 
   if (loading) {
     return (
@@ -25,13 +78,19 @@ const RoundTimeline = ({ timeline, loading }) => {
 
   const now = new Date()
 
-  // Define timeline phases
+  // Define timeline phases in correct order:
+  // Round Start → Round End → Judge Time → Submit Appeal → Review Appeal → Judge Rescore
   const phases = [
     {
       key: "round",
       label: t("contest.roundPeriod"),
       start: timeline.start,
       end: timeline.end,
+    },
+    timeline.judgeDeadline && {
+      key: "judge",
+      label: t("contest.judgeDeadline"),
+      deadline: timeline.judgeDeadline,
     },
     timeline.appealSubmitDeadline && {
       key: "appealSubmit",
@@ -43,10 +102,10 @@ const RoundTimeline = ({ timeline, loading }) => {
       label: t("contest.appealReview"),
       deadline: timeline.appealReviewDeadline,
     },
-    timeline.judgeDeadline && {
-      key: "judge",
-      label: t("contest.judgeDeadline"),
-      deadline: timeline.judgeDeadline,
+    timeline.judgeRescoreDeadline && {
+      key: "judgeRescore",
+      label: t("contest.judgeRescoreDeadline"),
+      deadline: timeline.judgeRescoreDeadline,
     },
   ].filter(Boolean)
 
@@ -61,6 +120,14 @@ const RoundTimeline = ({ timeline, loading }) => {
 
     if (now >= roundStart && now <= roundEnd) {
       return 0 // Round period
+    }
+
+    // Check judge period (only for Manual rounds)
+    if (timeline.judgeDeadline) {
+      const judgeEnd = new Date(timeline.judgeDeadline)
+      if (now <= judgeEnd) {
+        return phases.findIndex((p) => p.key === "judge")
+      }
     }
 
     // Check appeal submit period
@@ -79,11 +146,11 @@ const RoundTimeline = ({ timeline, loading }) => {
       }
     }
 
-    // Check judge period
-    if (timeline.judgeDeadline) {
-      const judgeEnd = new Date(timeline.judgeDeadline)
-      if (now <= judgeEnd) {
-        return phases.findIndex((p) => p.key === "judge")
+    // Check judge rescore period (only for Manual rounds)
+    if (timeline.judgeRescoreDeadline) {
+      const judgeRescoreEnd = new Date(timeline.judgeRescoreDeadline)
+      if (now <= judgeRescoreEnd) {
+        return phases.findIndex((p) => p.key === "judgeRescore")
       }
     }
 
@@ -94,9 +161,9 @@ const RoundTimeline = ({ timeline, loading }) => {
 
   return (
     <div className="mt-3 pt-3 border-t border-gray-200">
-      {/* Timeline - Centered */}
-      <div className="flex items-center justify-center">
-        <div className="flex items-center max-w-2xl">
+      {/* Timeline - Scrollable horizontal */}
+      <div className="overflow-x-auto pb-4">
+        <div className="flex items-center min-w-max">
           {phases.map((phase, index) => {
             const isCompleted = index < currentPhaseIndex
             const isActive = index === currentPhaseIndex
@@ -124,13 +191,29 @@ const RoundTimeline = ({ timeline, loading }) => {
 
                   {/* Label */}
                   <div
-                    className={`text-[10px] font-medium text-center max-w-[70px] leading-tight whitespace-nowrap ${
+                    className={`text-[10px] font-medium text-center max-w-[140px] leading-tight ${
                       isCompleted || isActive
                         ? "text-gray-900"
                         : "text-gray-400"
                     }`}
                   >
-                    {phase.label}
+                    <div className="whitespace-nowrap">{phase.label}</div>
+
+                    {/* Show start and end time for round period */}
+                    {phase.key === "round" && phase.start && phase.end && (
+                      <div className="text-[9px] text-gray-500 mt-0.5 leading-tight">
+                        <div>{formatDate(phase.start)}</div>
+                        <div className="text-center my-0.5">-</div>
+                        <div>{formatDate(phase.end)}</div>
+                      </div>
+                    )}
+
+                    {/* Show deadline time for other phases */}
+                    {phase.key !== "round" && phase.deadline && (
+                      <div className="text-[9px] text-gray-500 mt-0.5 leading-tight">
+                        <div>{formatDate(phase.deadline)}</div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

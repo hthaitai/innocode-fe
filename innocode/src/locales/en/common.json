@@ -39,6 +39,7 @@
     "schoolmanager": "School Manager"
   },
   "common": {
+    "timeExpired": "Time expired",
     "contest": "Contest",
     "loading": "Loading...",
     "error": "Error",
@@ -296,7 +297,8 @@
     "schools": "Schools",
     "roleRegistrations": "Role Registrations",
     "schoolCreationRequests": "School Creation Requests",
-    "schoolsManagement": "Schools Management",
+    "schoolsRequestManagement": "Schools Request Management",
+    "userManagement": "User Management",
     "account": "account"
   },
   "notification": {

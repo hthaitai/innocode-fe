@@ -122,7 +122,6 @@ const Navbar = () => {
   const navLinks = [
     { name: t("navbar.home"), key: "home", to: "/" },
     { name: t("navbar.contests"), key: "contests", to: getContestsLink() },
-    { name: t("navbar.leaderboard"), key: "leaderboard", to: "/leaderboard" },
     { name: t("navbar.about"), key: "about", to: "/about" },
     { name: t("navbar.policy"), key: "policy", to: "/policy" },
   ]

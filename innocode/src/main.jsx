@@ -101,6 +101,7 @@ import OrganizerLeaderboardMember from "./features/leaderboard/pages/organizer/O
 import NotFound from "./pages/NotFound"
 import StaffProvinces from "./features/province/pages/staff/StaffProvinces"
 import StaffSchools from "./features/school/pages/staff/StaffSchools"
+import StaffSchoolsManagement from "./features/school/pages/staff/StaffSchoolsManagement"
 import StaffSchoolCreationRequestDetail from "./features/school/pages/staff/StaffSchoolCreationRequestDetail"
 import StaffRoleRegistrations from "./features/role-registration/pages/staff/StaffRoleRegistrations"
 import StaffRoleRegistrationDetail from "./features/role-registration/pages/staff/StaffRoleRegistrationDetail"
@@ -114,6 +115,7 @@ import CreateSchoolRequest from "./features/school/pages/school-manager/CreateSc
 import SchoolCreationRequestDetail from "./features/school/pages/school-manager/SchoolCreationRequestDetail"
 import MyManageSchool from "./features/school/pages/school-manager/MyManageSchool"
 import SchoolDetail from "./features/school/pages/school-manager/SchoolDetail"
+import UserManagement from "./features/user/pages/UserManagement"
 
 // Initialize EmailJS when app starts
 initEmailJs()
@@ -317,17 +319,38 @@ const router = createBrowserRouter([
       },
       {
         path: "appeal",
-        element: (
-          <ProtectedRoute>
-            <MentorAppeal />
-          </ProtectedRoute>
-        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <ProtectedRoute>
+                <MentorAppeal />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId",
+            element: (
+              <ProtectedRoute>
+                <MentorAppeal />
+              </ProtectedRoute>
+            ),
+          },
+        ],
       },
       {
         path: "dashboard",
         element: (
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "user-management",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <UserManagement />
           </ProtectedRoute>
         ),
       },
@@ -369,6 +392,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[ROLES.STAFF]}>
             <StaffRoleRegistrations />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "schools",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STAFF]}>
+            <StaffSchoolsManagement />
           </ProtectedRoute>
         ),
       },
@@ -831,7 +862,7 @@ const router = createBrowserRouter([
       {
         path: "certificate",
         element: (
-          <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT, ROLES.MENTOR]}>
             <StudentCertificate />
           </ProtectedRoute>
         ),

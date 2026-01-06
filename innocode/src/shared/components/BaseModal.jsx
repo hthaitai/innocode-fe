@@ -17,8 +17,14 @@ export default function BaseModal({
   size = "lg",
   children,
 }) {
+  // Ensure onClose is defined
+  if (!onClose) {
+    console.warn("BaseModal: onClose prop is required but not provided")
+  }
+
   // Close modal with Escape key
   useEffect(() => {
+    if (!onClose) return
     const handleEsc = (e) => e.key === "Escape" && onClose()
     document.addEventListener("keydown", handleEsc)
     return () => document.removeEventListener("keydown", handleEsc)
@@ -62,6 +68,7 @@ export default function BaseModal({
             opacity: 0,
             transition: { duration: 0.2, ease: fluentEaseOut },
           }}
+          onClick={onClose || undefined}
         >
           <motion.div
             key="modal"
@@ -75,8 +82,9 @@ export default function BaseModal({
             {/* Header */}
             <div className="flex justify-end items-center bg-[#F3F3F3]">
               <button
-                onClick={onClose}
+                onClick={onClose || undefined}
                 className="p-1 hover:bg-[#C42B1C] hover:text-white transition cursor-pointer"
+                disabled={!onClose}
               >
                 <X size={20} strokeWidth={1} />
               </button>

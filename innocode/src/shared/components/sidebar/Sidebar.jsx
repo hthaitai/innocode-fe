@@ -29,11 +29,6 @@ const allMenus = {
     icon: "lucide:file-spreadsheet",
   },
   team: { path: "/team", labelKey: "sidebar.team", icon: "lucide:users" },
-  leaderboard: {
-    path: "/leaderboard",
-    labelKey: "sidebar.leaderboard",
-    icon: "mdi:podium",
-  },
   certificate: {
     path: "/certificate",
     labelKey: "sidebar.certificate",
@@ -81,13 +76,18 @@ const allMenus = {
   },
   schoolStaff: {
     path: "/school-staff",
-    labelKey: "sidebar.schools",
+    labelKey: "sidebar.schoolsRequestManagement",
     icon: "lucide:school",
   },
   roleRegistrationsStaff: {
     path: "/role-registrations-staff",
     labelKey: "sidebar.roleRegistrations",
     icon: "lucide:user-check",
+  },
+  schools: {
+    path: "/schools",
+    labelKey: "sidebar.schools",
+    icon: "lucide:school",
   },
   //SchoolManager menus
   schoolManagerRequests: {
@@ -99,6 +99,11 @@ const allMenus = {
     path: "/school-manager",
     labelKey: "sidebar.schoolsManagement",
     icon: "lucide:school",
+  },
+  userManagement: {
+    path: "/user-management",
+    labelKey: "sidebar.userManagement",
+    icon: "lucide:users",
   },
 }
 
@@ -112,18 +117,25 @@ const menuByRole = {
     "notifications",
   ],
   organizer: ["profile", "organizerContests", "notifications"],
-  mentor: ["profile", "contests", "team", "notifications", "appeal"],
+  mentor: [
+    "profile",
+    "contests",
+    "team",
+    "certificate",
+    "notifications",
+    "appeal",
+  ],
   staff: [
     "profile",
     "provinceStaff",
     "schoolStaff",
+    "schools",
     "roleRegistrationsStaff",
     "contests",
-    "team",
     "notifications",
   ],
   judge: ["profile", "judgeContests", "notifications", "help"],
-  admin: ["profile", "dashboard", "leaderboard", "notifications", "help"],
+  admin: ["profile", "dashboard", "userManagement", "notifications", "help"],
   schoolmanager: [
     "profile",
     "schoolManager",

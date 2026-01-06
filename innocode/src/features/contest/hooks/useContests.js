@@ -9,7 +9,7 @@ export const useContests = () => {
   const [pageNumber, setPageNumber] = useState(1)
   const [pagination, setPagination] = useState(null)
   const [isAutoSkipping, setIsAutoSkipping] = useState(false)
-  const pageSize = 100
+  const pageSize = 10
 
   // ----- FETCH -----
   useEffect(() => {

@@ -39,6 +39,7 @@
     "schoolmanager": "Quản lý trường học"
   },
   "common": {
+    "timeExpired": "Thời gian đã hết",
     "contest": "Cuộc thi",
     "loading": "Đang tải...",
     "error": "Lỗi",
@@ -294,9 +295,11 @@
     "appeal": "Khiếu nại",
     "provinces": "Tỉnh/Thành phố",
     "schools": "Trường học",
+    "schoolManagement": "Quản lý trường",
     "roleRegistrations": "Đăng ký vai trò",
     "schoolCreationRequests": "Yêu cầu tạo trường",
-    "schoolsManagement": "Quản lý trường học",
+    "schoolsRequestManagement": "Quản lý yêu cầu tạo trường",
+    "userManagement": "Quản lý người dùng",
     "account": "tài khoản"
   },
   "notification": {

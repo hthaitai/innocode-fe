@@ -25,6 +25,7 @@ import {
 } from "../../../../services/teamApi"
 import toast from "react-hot-toast"
 import BaseModal from "@/shared/components/BaseModal"
+import translateApiError from "@/shared/utils/translateApiError"
 
 const MentorTeam = () => {
   const { t } = useTranslation("common")
@@ -255,10 +256,7 @@ const MentorTeam = () => {
       setActiveTab("myTeam")
       setTeamName("")
     } catch (error) {
-      const errorMessage =
-        error?.data?.errorMessage ||
-        error?.message ||
-        t("team.failedToCreateTeam")
+      const errorMessage = translateApiError(error, "errors") || t("team.failedToCreateTeam")
       setErrors({ submit: errorMessage })
     }
   }
@@ -335,40 +333,12 @@ const MentorTeam = () => {
       // Refetch data to get updated team and invites
       await Promise.all([refetchMyTeam(), refetchInvites()])
     } catch (error) {
-      // Handle different error cases
-      let errorMessage = t("team.failedToSendInvitation")
-
-      if (error?.data) {
-        const responseData = error.data
-        const errorCode = responseData?.errorCode
-        const errorMsg = responseData?.errorMessage || responseData?.message
-
-        // Handle REG_CLOSED - Registration window is closed
-        if (errorCode === "REG_CLOSED") {
-          errorMessage =
-            errorMsg ||
-            t("team.registrationWindowClosed")
-        }
-        // Handle 409 Conflict - student already invited or is member
-        else if (error?.status === 409 || errorCode === "CONFLICT") {
-          errorMessage =
-            errorMsg ||
-            responseData?.error ||
-            t("team.studentAlreadyInvited", { studentName: student.userFullname })
-
-          // Refresh team data to get updated members
-          await refetchMyTeam()
-        }
-        // Handle other errors
-        else {
-          errorMessage =
-            errorMsg ||
-            responseData?.error ||
-            responseData?.data?.message ||
-            `Error: ${error?.status || "Unknown"}`
-        }
-      } else if (error?.message) {
-        errorMessage = error.message
+      // Use translateApiError to get translated error message
+      const errorMessage = translateApiError(error, "errors") || t("team.failedToSendInvitation")
+      
+      // Special handling for CONFLICT - refresh team data to get updated members
+      if (error?.data?.errorCode === "CONFLICT" || error?.status === 409) {
+        await refetchMyTeam()
       }
 
       setInviteError(errorMessage)
@@ -395,7 +365,7 @@ const MentorTeam = () => {
   }
   const handleDeleteTeam = async (onClose) => {
     if (!teamId) return
-    
+
     try {
       await deleteTeam(teamId).unwrap()
       // Close modal first
@@ -406,19 +376,15 @@ const MentorTeam = () => {
     } catch (error) {
       // Close modal even on error
       if (onClose) onClose()
-      const errorMessage =
-        error?.data?.errorMessage ||
-        error?.message ||
-        t("team.failedToDeleteTeam")
+      const errorMessage = translateApiError(error, "errors") || t("team.failedToDeleteTeam")
       toast.error(errorMessage)
-      console.log(error)
       setErrors({ submit: errorMessage })
     }
   }
 
   const handleDeleteTeamMember = async (studentId, onClose) => {
     if (!teamId || !studentId) return
-    
+
     try {
       await deleteTeamMember({ teamId, studentId }).unwrap()
       // Close modal first
@@ -430,10 +396,7 @@ const MentorTeam = () => {
     } catch (error) {
       // Close modal even on error
       if (onClose) onClose()
-      const errorMessage =
-        error?.data?.errorMessage ||
-        error?.message ||
-        t("team.failedToRemoveMember")
+      const errorMessage = translateApiError(error, "errors") || t("team.failedToRemoveMember")
       toast.error(errorMessage)
       setInviteError(errorMessage)
     }
@@ -471,10 +434,7 @@ const MentorTeam = () => {
       // Refetch to update UI
       await refetchMyTeam()
     } catch (error) {
-      const errorMessage =
-        error?.data?.errorMessage ||
-        error?.message ||
-        t("team.failedToUpdateTeamName")
+      const errorMessage = translateApiError(error, "errors") || t("team.failedToUpdateTeamName")
       toast.error(errorMessage)
       setErrors({ submit: errorMessage })
     }
@@ -573,7 +533,8 @@ const MentorTeam = () => {
                   {/* Team Name */}
                   <div>
                     <label className="block text-sm font-medium text-[#2d3748] mb-2">
-                      {t("team.teamName")} <span className="text-red-500">*</span>
+                      {t("team.teamName")}{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -653,7 +614,9 @@ const MentorTeam = () => {
                                   <input
                                     type="text"
                                     value={editedTeamName}
-                                    onChange={(e) => setEditedTeamName(e.target.value)}
+                                    onChange={(e) =>
+                                      setEditedTeamName(e.target.value)
+                                    }
                                     onKeyDown={(e) => {
                                       if (e.key === "Enter") {
                                         handleSaveTeamName()
@@ -667,7 +630,9 @@ const MentorTeam = () => {
                                   />
                                   <button
                                     onClick={handleSaveTeamName}
-                                    disabled={updatingTeam || !editedTeamName.trim()}
+                                    disabled={
+                                      updatingTeam || !editedTeamName.trim()
+                                    }
                                     className="p-2 text-green-600 hover:bg-green-50 rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     title="Save"
                                   >
@@ -693,13 +658,16 @@ const MentorTeam = () => {
                                     className="p-1 text-[#7A7574] hover:text-[#ff6b35] hover:bg-orange-50 rounded-[5px] transition-colors"
                                     title={t("team.editTeamName")}
                                   >
-                                    <Icon icon="mdi:pencil-outline" width="18" />
+                                    <Icon
+                                      icon="mdi:pencil-outline"
+                                      width="18"
+                                    />
                                   </button>
                                 </div>
                               )}
                             </div>
                           </div>
-                            <div className="grid grid-cols-2 gap-4 mt-4">
+                          <div className="grid grid-cols-2 gap-4 mt-4">
                             <div className="p-3 bg-[#f9fafb] rounded-[5px]">
                               <p className="text-xs text-[#7A7574] mb-1">
                                 {t("team.contest")}
@@ -818,7 +786,10 @@ const MentorTeam = () => {
                                       className="p-2 text-red-600 hover:bg-red-50 rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                       title={t("team.removeMemberTitle")}
                                     >
-                                      <Icon icon="mdi:delete-outline" width="18" />
+                                      <Icon
+                                        icon="mdi:delete-outline"
+                                        width="18"
+                                      />
                                     </button>
                                   </div>
                                 </div>
@@ -978,7 +949,8 @@ const MentorTeam = () => {
                                 </div>
                                 <div className="flex-1">
                                   <p className="font-semibold text-[#2d3748]">
-                                    {student.userFullname || t("team.unknownStudent")}
+                                    {student.userFullname ||
+                                      t("team.unknownStudent")}
                                   </p>
                                   <div className="flex items-center gap-2 mt-1">
                                     <Mail
@@ -1061,7 +1033,9 @@ const MentorTeam = () => {
             </button>
             <button
               className="button-red"
-              onClick={() => handleDeleteTeam(() => setShowDeleteTeamConfirm(false))}
+              onClick={() =>
+                handleDeleteTeam(() => setShowDeleteTeamConfirm(false))
+              }
               disabled={deletingTeam}
             >
               {deletingTeam ? (
@@ -1076,7 +1050,14 @@ const MentorTeam = () => {
           </>
         }
       >
-        <p className="text-[#7A7574]" dangerouslySetInnerHTML={{ __html: t("team.confirmDeleteTeamDesc", { teamName: myTeam?.name || "" }) }} />
+        <p
+          className="text-[#7A7574]"
+          dangerouslySetInnerHTML={{
+            __html: t("team.confirmDeleteTeamDesc", {
+              teamName: myTeam?.name || "",
+            }),
+          }}
+        />
       </BaseModal>
 
       {/* Delete Member Confirmation Modal */}
@@ -1104,7 +1085,8 @@ const MentorTeam = () => {
               className="button-red"
               onClick={() => {
                 if (memberToDelete) {
-                  const studentId = memberToDelete.studentId || memberToDelete.student_id
+                  const studentId =
+                    memberToDelete.studentId || memberToDelete.student_id
                   handleDeleteTeamMember(studentId, () => {
                     setShowDeleteMemberConfirm(false)
                     setMemberToDelete(null)
@@ -1125,14 +1107,20 @@ const MentorTeam = () => {
           </>
         }
       >
-        <p className="text-[#7A7574]" dangerouslySetInnerHTML={{ __html: t("team.confirmRemoveMemberDesc", { 
-          memberName: memberToDelete?.studentFullname ||
-            memberToDelete?.student_fullname ||
-            memberToDelete?.userFullname ||
-            memberToDelete?.user_fullname ||
-            memberToDelete?.name ||
-            t("team.unknownMember")
-        }) }} />
+        <p
+          className="text-[#7A7574]"
+          dangerouslySetInnerHTML={{
+            __html: t("team.confirmRemoveMemberDesc", {
+              memberName:
+                memberToDelete?.studentFullname ||
+                memberToDelete?.student_fullname ||
+                memberToDelete?.userFullname ||
+                memberToDelete?.user_fullname ||
+                memberToDelete?.name ||
+                t("team.unknownMember"),
+            }),
+          }}
+        />
       </BaseModal>
     </PageContainer>
   )

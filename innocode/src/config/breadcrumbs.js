@@ -24,6 +24,7 @@ export const BREADCRUMBS = {
   MY_MANAGED_SCHOOLS: ["My Managed Schools"],
   SCHOOL_REQUESTS: ["School Requests"],
   SCHOOL_CREATE_REQUEST: ["School Requests", "Create Request"],
+  USER_MANAGEMENT: ["User Management"],
   // Sub-pages
   PROFILE_ABOUT: ["Profile", "Personal Information"],
   PROFILE_PASSWORD: ["Profile", "Change Password"],
