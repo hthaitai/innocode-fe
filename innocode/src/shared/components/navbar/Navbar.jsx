@@ -263,7 +263,7 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <button className="signin-btn" onClick={handleSignIn}>
+            <button className="button-orange" onClick={handleSignIn}>
               {t("navbar.signIn")}
             </button>
           )}

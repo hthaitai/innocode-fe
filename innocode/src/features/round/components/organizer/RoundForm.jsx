@@ -87,6 +87,7 @@ export default function RoundForm({
       end: mainRound.end ? toDatetimeLocal(mainRound.end) : "",
       problemType: mainRound.problemType,
       timeLimitSeconds: mainRound.timeLimitSeconds,
+      rankCutoff: mainRound.rankCutoff ?? 0,
       mcqTestConfig:
         mainRound.problemType === "McqTest" && mainRound.mcqTest
           ? { ...mainRound.mcqTest }
