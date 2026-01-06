@@ -9,10 +9,16 @@ import {
   useReadAllNotificationsMutation,
 } from "../../../../services/notificationApi"
 import useNotificationNavigation from "../../hooks/useNotificationNavigation"
+import {
+  buildInterpolationValues,
+  parseNotificationPayload,
+  getTranslationKey,
+} from "../../utils/notificationUtils"
 
 const NotificationDropdown = ({ onClose }) => {
   const navigate = useNavigate()
-  const { t } = useTranslation("common")
+  const { t: tCommon } = useTranslation("common")
+  const { t: tNotifications } = useTranslation("notifications")
   const {
     data: notificationsData,
     isLoading,
@@ -31,17 +37,24 @@ const NotificationDropdown = ({ onClose }) => {
     if (!notificationsData?.items) return []
 
     return notificationsData.items.map((notification) => {
-      let parsedPayload = {}
-      let message = t("notification.noMessage")
+      const parsedPayload = parseNotificationPayload(notification)
+      const translationKey = getTranslationKey(notification, parsedPayload)
+      const rawMessage = parsedPayload.message || notification.message || ""
 
-      try {
-        parsedPayload =
-          typeof notification.payload === "string"
-            ? JSON.parse(notification.payload)
-            : notification.payload || {}
-        message = parsedPayload.message || notification.payload || t("notification.noMessage")
-      } catch {
-        message = notification.payload || t("notification.noMessage")
+      let message = tCommon("notification.noMessage")
+      if (translationKey) {
+        const interpolationValues = buildInterpolationValues(
+          parsedPayload,
+          translationKey,
+          rawMessage
+        )
+
+        message = tNotifications(translationKey, {
+          ...interpolationValues,
+          defaultValue: rawMessage || tCommon("notification.noMessage"),
+        })
+      } else {
+        message = rawMessage || notification.payload || tCommon("notification.noMessage")
       }
 
       return {
@@ -51,7 +64,7 @@ const NotificationDropdown = ({ onClose }) => {
         isRead: notification.read ?? notification.isRead ?? false,
       }
     })
-  }, [notificationsData, t])
+  }, [notificationsData, tCommon, tNotifications])
 
 
   const handleReadAllNotifications = async () => {
@@ -81,14 +94,14 @@ const NotificationDropdown = ({ onClose }) => {
   return (
     <div className="notification-dropdown">
       <div className="notification-dropdown-header">
-        <h3 className="notification-title">{t("notification.title")}</h3>
+        <h3 className="notification-title">{tCommon("notification.title")}</h3>
         {notifications.length > 0 && (
           <span className="notification-count">
             {
               notifications.filter((notification) => !notification.isRead)
                 .length
             }{" "}
-            {t("notification.new")}
+            {tCommon("notification.new")}
           </span>
         )}
       </div>
@@ -97,17 +110,17 @@ const NotificationDropdown = ({ onClose }) => {
         {isLoading ? (
           <div className="notification-loading">
             <Icon icon="mdi:loading" width="20" className="spinning" />
-            <span>{t("notification.loading")}</span>
+            <span>{tCommon("notification.loading")}</span>
           </div>
         ) : error ? (
           <div className="notification-empty">
             <Icon icon="mdi:alert-circle-outline" width="24" />
-            <span>{t("notification.errorLoading")}</span>
+            <span>{tCommon("notification.errorLoading")}</span>
           </div>
         ) : notifications.length === 0 ? (
           <div className="notification-empty">
             <Icon icon="mdi:bell-off-outline" width="24" />
-            <span>{t("notification.noNotifications")}</span>
+            <span>{tCommon("notification.noNotifications")}</span>
           </div>
         ) : (
           displayedNotifications.map((notification) => (
@@ -140,7 +153,7 @@ const NotificationDropdown = ({ onClose }) => {
       <div className="notification-dropdown-footer">
         {hasMoreNotifications && (
           <button className="notification-view-all" onClick={handleViewAll}>
-            <span>{t("notification.viewAll")}</span>
+            <span>{tCommon("notification.viewAll")}</span>
             <Icon icon="mdi:chevron-right" width="16" />
           </button>
         )}
@@ -149,7 +162,7 @@ const NotificationDropdown = ({ onClose }) => {
             className="notification-mark-all"
             onClick={handleReadAllNotifications}
           >
-            {t("notification.markAllAsRead")}
+            {tCommon("notification.markAllAsRead")}
           </button>
         )}
       </div>

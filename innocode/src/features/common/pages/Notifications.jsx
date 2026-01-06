@@ -16,6 +16,11 @@ import TablePagination from "@/shared/components/TablePagination"
 import useNotificationNavigation from "../../notification/hooks/useNotificationNavigation"
 import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
 import { ChevronRight, Mail } from "lucide-react"
+import {
+  buildInterpolationValues,
+  parseNotificationPayload,
+  getTranslationKey,
+} from "../../notification/utils/notificationUtils"
 
 const Notifications = () => {
   const navigate = useNavigate()
@@ -43,32 +48,24 @@ const Notifications = () => {
     if (!notificationsData?.items) return []
 
     return notificationsData.items.map((notification) => {
-      let parsedPayload = {}
-
-      try {
-        parsedPayload =
-          typeof notification.payload === "string"
-            ? JSON.parse(notification.payload)
-            : notification.payload || {}
-      } catch {
-        // ignore
-      }
-
-      // Add type to payload if it's missing at top level but present in payload
-      const notificationType =
-        notification.type || parsedPayload.type || parsedPayload.Type
-
-      const translationKey = notificationType
+      const parsedPayload = parseNotificationPayload(notification)
+      const translationKey = getTranslationKey(notification, parsedPayload)
+      const rawMessage = parsedPayload.message || notification.message || ""
 
       let message = "No message"
       if (translationKey) {
+        const interpolationValues = buildInterpolationValues(
+          parsedPayload,
+          translationKey,
+          rawMessage
+        )
+
         message = t(translationKey, {
-          ...parsedPayload,
-          defaultValue:
-            parsedPayload.message || notification.message || "No message",
+          ...interpolationValues,
+          defaultValue: rawMessage || "No message",
         })
       } else {
-        message = parsedPayload.message || notification.payload || "No message"
+        message = rawMessage || notification.payload || "No message"
       }
 
       return {

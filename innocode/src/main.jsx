@@ -826,7 +826,7 @@ const router = createBrowserRouter([
       {
         path: "certificate",
         element: (
-          <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT,ROLES.MENTOR]}>
             <StudentCertificate />
           </ProtectedRoute>
         ),

@@ -113,6 +113,35 @@ const useNotificationNavigation = (onClose) => {
       return
     }
 
+    // Round or Contest started/ended notifications - navigate to contest detail
+    const message = notification.message || ""
+    const notificationType = notification.type || ""
+    const lowerMessage = message.toLowerCase()
+    const lowerType = notificationType.toLowerCase()
+    
+    // Check if notification is about round/contest started or ended
+    const isRoundOrContestStarted = 
+      lowerMessage.includes("has started") ||
+      lowerMessage.includes("started") ||
+      lowerType.includes("started") ||
+      lowerType.includes("round.started") ||
+      lowerType.includes("contest.started")
+    
+    const isRoundOrContestEnded = 
+      lowerMessage.includes("has ended") ||
+      lowerMessage.includes("ended") ||
+      lowerType.includes("ended") ||
+      lowerType.includes("round.ended") ||
+      lowerType.includes("contest.ended")
+    
+    if ((isRoundOrContestStarted || isRoundOrContestEnded) && notification.parsedPayload?.contestId) {
+      if (onClose) onClose()
+      const { contestId } = notification.parsedPayload
+      // Navigate to contest detail page
+      navigate(`/contest-detail/${contestId}`)
+      return
+    }
+
     // No matching navigation case found
     console.warn("⚠️ No navigation case matched for notification:", {
       targetType,

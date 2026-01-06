@@ -107,7 +107,7 @@ const menuByRole = {
     "notifications",
   ],
   organizer: ["profile", "organizerContests", "notifications"],
-  mentor: ["profile", "contests", "team", "notifications", "appeal"],
+  mentor: ["profile", "contests", "team", "certificate", "notifications", "appeal"],
   staff: [
     "profile",
     "provinceStaff",
