@@ -31,6 +31,8 @@ import manualProblemApi from "@/api/manualProblemApi"
 import { useModal } from "@/shared/hooks/useModal"
 import RoundTimeline from "@/features/round/components/RoundTimeline"
 import useRoundTimeline from "@/features/round/hooks/useRoundTimeline"
+import ContestTimeline from "../components/ContestTimeline"
+import { useGetContestTimelineQuery } from "@/services/contestApi"
 
 // Wrapper component to fetch and display timeline for each round
 const RoundTimelineWrapper = ({ roundId }) => {
@@ -64,6 +66,12 @@ const ContestDetail = () => {
   // Fetch team data for student
   const { getMyTeam, loading: teamLoading } = useTeams()
   const [myTeam, setMyTeam] = useState(null)
+
+  // Fetch contest timeline using RTK Query
+  const { data: contestTimeline, isLoading: contestTimelineLoading } =
+    useGetContestTimelineQuery(contestId, {
+      skip: !contestId,
+    })
 
   // Use API data if available
   const contest = apiContest
@@ -655,6 +663,12 @@ const ContestDetail = () => {
             </div>
           </div>
 
+          {/* Contest Timeline - Separate Box */}
+          <ContestTimeline
+            timeline={contestTimeline}
+            loading={contestTimelineLoading}
+          />
+
           {/* Tabs Navigation */}
           <div className="bg-white border border-[#E5E5E5] rounded-[8px] overflow-hidden min-w-0 max-w-full">
             <div className="flex border-b border-[#E5E5E5]">
@@ -851,18 +865,33 @@ const ContestDetail = () => {
                       return (
                         <div
                           key={round.roundId || index}
-                          className="border border-[#E5E5E5] rounded-[5px] relative p-4 hover:bg-[#f9fafb] transition-colors min-w-0 max-w-full overflow-hidden"
+                          className="border border-[#E5E5E5] rounded-[5px] p-4 hover:bg-[#f9fafb] transition-colors min-w-0 max-w-full overflow-hidden"
                         >
-                          <div className="flex items-center justify-between mb-2 min-w-0">
-                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <div className="flex items-start justify-between mb-3 min-w-0">
+                            <div className="flex items-start gap-3 min-w-0 flex-1">
                               <div className="w-8 h-8 rounded-full bg-[#ff6b35] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
                                 {index + 1}
                               </div>
-                              <h4 className="font-semibold text-[#2d3748] break-words line-clamp-2 min-w-0 flex-1">
-                                {round.roundName ||
-                                  round.name ||
-                                  `${t("contest.round")} ${index + 1}`}
-                              </h4>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-[#2d3748] break-words line-clamp-2 min-w-0">
+                                  {round.roundName ||
+                                    round.name ||
+                                    `${t("contest.round")} ${index + 1}`}
+                                </h4>
+                                {/* Time information directly under title */}
+                                {round.start && round.end && (
+                                  <div className="flex items-center gap-2 mt-1 text-xs text-[#7A7574]">
+                                    <Calendar
+                                      size={12}
+                                      className="flex-shrink-0"
+                                    />
+                                    <span className="truncate">
+                                      {formatDate(round.start)} -{" "}
+                                      {formatDate(round.end)}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                             <div className="flex flex-col items-end gap-2 flex-shrink-0">
                               <span
@@ -888,59 +917,57 @@ const ContestDetail = () => {
                                     : status
                                 })()}
                               </span>
-                              <div className="flex gap-2 absolute bottom-4 right-4">
-                                {round.status === "Opened" &&
-                                  role === "student" &&
-                                  (roundRoute || resultRoute) &&
-                                  myTeam &&
-                                  !isCompleted && (
-                                    <button
-                                      onClick={() => {
-                                        // If not completed, proceed with normal start flow
-                                        if (!roundRoute) return
+                              {round.status === "Opened" &&
+                                role === "student" &&
+                                (roundRoute || resultRoute) &&
+                                myTeam &&
+                                !isCompleted && (
+                                  <button
+                                    onClick={() => {
+                                      // If not completed, proceed with normal start flow
+                                      if (!roundRoute) return
 
-                                        // Check if openCode already exists in sessionStorage
-                                        const existingOpenCode =
-                                          sessionStorage.getItem(
-                                            `openCode_${round.roundId}`
-                                          )
+                                      // Check if openCode already exists in sessionStorage
+                                      const existingOpenCode =
+                                        sessionStorage.getItem(
+                                          `openCode_${round.roundId}`
+                                        )
 
-                                        if (existingOpenCode) {
-                                          // If openCode exists, navigate directly
-                                          navigate(roundRoute)
-                                        } else {
-                                          // If no openCode, open modal to enter it
-                                          openModal("openCode", {
-                                            roundName:
-                                              round.roundName ||
-                                              round.name ||
-                                              `${t("contest.round")} ${
-                                                index + 1
-                                              }`,
-                                            roundId: round.roundId,
-                                            onConfirm: (openCode) => {
-                                              // Store openCode in sessionStorage for this round
-                                              sessionStorage.setItem(
-                                                `openCode_${round.roundId}`,
-                                                openCode
-                                              )
-                                              // Navigate to round
-                                              navigate(roundRoute)
-                                            },
-                                          })
-                                        }
-                                      }}
-                                      className="button-orange text-xs px-3 py-1 flex items-center gap-1"
-                                    >
-                                      <Play size={12} />
-                                      {getButtonLabel()}
-                                    </button>
-                                  )}
-                              </div>
+                                      if (existingOpenCode) {
+                                        // If openCode exists, navigate directly
+                                        navigate(roundRoute)
+                                      } else {
+                                        // If no openCode, open modal to enter it
+                                        openModal("openCode", {
+                                          roundName:
+                                            round.roundName ||
+                                            round.name ||
+                                            `${t("contest.round")} ${
+                                              index + 1
+                                            }`,
+                                          roundId: round.roundId,
+                                          onConfirm: (openCode) => {
+                                            // Store openCode in sessionStorage for this round
+                                            sessionStorage.setItem(
+                                              `openCode_${round.roundId}`,
+                                              openCode
+                                            )
+                                            // Navigate to round
+                                            navigate(roundRoute)
+                                          },
+                                        })
+                                      }
+                                    }}
+                                    className="button-orange text-xs px-3 py-1 flex items-center gap-1"
+                                  >
+                                    <Play size={12} />
+                                    {getButtonLabel()}
+                                  </button>
+                                )}
                             </div>
                           </div>
 
-                          <div className="flex flex-col gap-2 text-sm text-[#7A7574] ml-10">
+                          <div className="flex flex-col gap-2 text-sm text-[#7A7574] ml-11">
                             {/* ✅ Show MCQ Test info only for McqTest type */}
                             {round.problemType === "McqTest" &&
                               round.mcqTest && (
@@ -1001,17 +1028,6 @@ const ContestDetail = () => {
                                   </span>
                                 </div>
                               )}
-
-                            {/* Date Range */}
-                            {round.start && round.end && (
-                              <div className="flex items-center gap-2">
-                                <Calendar size={14} className="flex-shrink-0" />
-                                <span className="truncate">
-                                  {formatDate(round.start)} -{" "}
-                                  {formatDate(round.end)}
-                                </span>
-                              </div>
-                            )}
 
                             {/* Round Timeline */}
                             {round.roundId && (

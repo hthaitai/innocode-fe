@@ -9,8 +9,8 @@ const contestApi = {
   getOrganizerContests: ({ pageNumber = 1, pageSize = 10 } = {}) =>
     axiosClient.get("/contests/my-contests", {
       params: { pageNumber, pageSize },
-    }),  // GET /api/contests with idSearch parameter
-  getById: (id) => 
+    }), // GET /api/contests with idSearch parameter
+  getById: (id) =>
     axiosClient.get("/contests", {
       params: { idSearch: id, pageNumber: 1, pageSize: 1 },
     }),

@@ -1,4 +1,4 @@
-import i18n from '../../i18n/config'
+import i18n from "../../i18n/config"
 
 /**
  * Translate API error messages to the current language
@@ -6,20 +6,24 @@ import i18n from '../../i18n/config'
  * @param {string} namespace - i18n namespace (default: 'errors')
  * @returns {string} Translated error message
  */
-export const translateApiError = (error, namespace = 'errors') => {
+export const translateApiError = (error, namespace = "errors") => {
   if (!error) {
     return i18n.t(`${namespace}:common.unexpectedError`)
   }
 
   // If error is already a string, try to translate it
-  if (typeof error === 'string') {
+  if (typeof error === "string") {
     return translateErrorMessage(error, namespace)
   }
 
   // If error is an object, extract message
-  // Ưu tiên errorMessage từ response.data (backend) trước error.message (axios)
+  // Ưu tiên errorMessage từ error.data (RTK Query) trước error.response.data (axios) trước error.message
   const errorMessage =
-    error?.response?.data?.errorMessage || error?.response?.data?.message || error?.message
+    error?.data?.errorMessage ||
+    error?.data?.message ||
+    error?.response?.data?.errorMessage ||
+    error?.response?.data?.message ||
+    error?.message
   if (!errorMessage) {
     return i18n.t(`${namespace}:common.unexpectedError`)
   }
@@ -36,13 +40,16 @@ export const translateApiError = (error, namespace = 'errors') => {
  */
 const translateErrorMessage = (message, namespace, error = {}) => {
   const currentLang = i18n.language
-  // Lấy errorCode từ response.data theo cấu trúc backend
-  const errorCode = error?.response?.data?.errorCode || error?.data?.errorCode || error?.errorCode
+  // Lấy errorCode từ error.data (RTK Query) trước error.response.data (axios) theo cấu trúc backend
+  const errorCode =
+    error?.data?.errorCode ||
+    error?.response?.data?.errorCode ||
+    error?.errorCode
   const statusCode = error?.response?.status || error?.status
 
   // Nếu ngôn ngữ là tiếng Anh, sử dụng trực tiếp errorMessage từ backend
   // Backend đã gửi errorMessage bằng tiếng Anh, không cần translate
-  if (currentLang === 'en' || currentLang?.startsWith('en-')) {
+  if (currentLang === "en" || currentLang?.startsWith("en-")) {
     return message
   }
 
@@ -84,16 +91,23 @@ const translateByErrorCode = (errorCode, namespace) => {
     EXISTED: `${namespace}:common.duplicate`,
     CONFLICT: `${namespace}:common.conflict`,
     GONE: `${namespace}:common.gone`,
-    
+
     // ActivityLog
     LOG_NOT_FOUND: `${namespace}:activityLog.logNotFound`,
-    
+    USER_NOT_FOUND: `${namespace}:activityLog.userNotFound`,
+
     // Appeal
     APPEAL_NOT_FOUND: `${namespace}:appeal.notFound`,
-    
+    FORBIDDEN: `${namespace}:appeal.forbidden`,
+    NOT_FOUND: `${namespace}:appeal.notFound`,
+    DUPLICATE: `${namespace}:appeal.duplicate`,
+    BADREQUEST: `${namespace}:appeal.badRequest`,
+    INTERNAL_SERVER_ERROR: `${namespace}:appeal.internalServerError`,
+    UNAUTHENTICATED: `${namespace}:appeal.unauthenticated`,
+
     // Attachment
     ATTACHMENT_NOT_FOUND: `${namespace}:attachment.notFound`,
-    
+
     // Auth codes
     INVALID_CREDENTIALS: `${namespace}:auth.invalidCredentials`,
     ACCOUNT_DISABLED: `${namespace}:auth.accountDisabled`,
@@ -114,7 +128,7 @@ const translateByErrorCode = (errorCode, namespace) => {
     USER_NOT_FOUND: `${namespace}:auth.userNotFound`,
     EMAIL_MISMATCH: `${namespace}:auth.emailMismatch`,
     BAD_CURRENT_PASSWORD: `${namespace}:auth.badCurrentPassword`,
-    
+
     // Certificate
     TEMPLATE_NOT_FOUND: `${namespace}:certificate.templateNotFound`,
     RECIPIENT_INVALID: `${namespace}:certificate.recipientInvalid`,
@@ -130,14 +144,18 @@ const translateByErrorCode = (errorCode, namespace) => {
     CERTIFICATE_TYPE_INVALID: `${namespace}:certificate.typeInvalid`,
     CERT_NOT_FOUND: `${namespace}:certificate.certNotFound`,
     CONTEST_NOT_FOUND: `${namespace}:certificate.contestNotFound`,
-    
+    UNAUTHORIZED: `${namespace}:certificate.unauthorized`,
+    BAD_REQUEST: `${namespace}:certificate.badRequest`,
+
     // Config
     CONFIG_NOT_FOUND: `${namespace}:config.notFound`,
     CONFIG_EXISTS: `${namespace}:config.exists`,
     INVALID_WINDOW: `${namespace}:config.invalidWindow`,
     INVALID_KEY: `${namespace}:config.invalidKey`,
     INVALID_INPUT: `${namespace}:config.invalidInput`,
-    
+    FORBIDDEN: `${namespace}:config.forbidden`,
+    NOT_FOUND: `${namespace}:config.notFound`,
+
     // Contest
     CONTEST_ALREADY_DELETED: `${namespace}:contest.alreadyDeleted`,
     CONTEST_YEAR_INVALID: `${namespace}:contest.yearInvalid`,
@@ -148,42 +166,115 @@ const translateByErrorCode = (errorCode, namespace) => {
     INVALID_IMAGE: `${namespace}:contest.invalidImage`,
     INVALID_STATE: `${namespace}:contest.invalidState`,
     DATE_CONFLICT: `${namespace}:contest.dateConflict`,
-    
+    BADREQUEST: `${namespace}:contest.badRequest`,
+    NOT_FOUND: `${namespace}:contest.notFound`,
+    INTERNAL_SERVER_ERROR: `${namespace}:contest.internalServerError`,
+    BADREQUEST_POLICIES: `${namespace}:contest.badRequestPolicies`,
+    BADREQUEST_POLICY_KEY: `${namespace}:contest.badRequestPolicyKey`,
+    INTERNAL_SERVER_ERROR_DELETE_POLICY: `${namespace}:contest.internalServerErrorDeletePolicy`,
+    FORBIDDEN: `${namespace}:contest.forbidden`,
+    UNAUTHENTICATED: `${namespace}:contest.unauthenticated`,
+    INTERNAL_SERVER_ERROR_CANCEL: `${namespace}:contest.internalServerErrorCancel`,
+    INVALID_STATE_ENDED: `${namespace}:contest.invalidStateEnded`,
+    INVALID_STATE_NOT_STARTED: `${namespace}:contest.invalidStateNotStarted`,
+    UNAUTHENTICATED_INVALID_USER_ID: `${namespace}:contest.unauthenticatedInvalidUserId`,
+
+    // ContestJudge
+    UNAUTHENTICATED: `${namespace}:contestJudge.unauthenticated`,
+    USER_NOT_FOUND: `${namespace}:contestJudge.userNotFound`,
+    FORBIDDEN: `${namespace}:contestJudge.forbidden`,
+    USER_INACTIVE: `${namespace}:contestJudge.userInactive`,
+
     // Judge
     JUDGE_NOT_FOUND: `${namespace}:judge.notFound`,
     JUDGE_INACTIVE: `${namespace}:judge.inactive`,
-    
+
     // JudgeInvite
     INVITE_NOT_FOUND: `${namespace}:judgeInvite.inviteNotFound`,
     INVITE_NOT_PENDING: `${namespace}:judgeInvite.inviteNotPending`,
     INVITE_EXPIRED: `${namespace}:judgeInvite.inviteExpired`,
     INVALID_INVITE_CODE: `${namespace}:judgeInvite.invalidCode`,
-    
+    NOT_FOUND: `${namespace}:judgeInvite.notFound`,
+    BADREQUEST: `${namespace}:judgeInvite.badRequest`,
+    EXISTED: `${namespace}:judgeInvite.existed`,
+    INTERNAL_SERVER_ERROR: `${namespace}:judgeInvite.internalServerError`,
+    GONE: `${namespace}:judgeInvite.gone`,
+    CONFLICT: `${namespace}:judgeInvite.conflict`,
+    UNAUTHORIZED: `${namespace}:judgeInvite.unauthorized`,
+    FORBIDDEN: `${namespace}:judgeInvite.forbidden`,
+
     // Leaderboard
     LEADERBOARD_FROZEN: `${namespace}:leaderboard.frozen`,
     LEADERBOARD_ENTRY_NOT_FOUND: `${namespace}:leaderboard.entryNotFound`,
     TEAM_ALREADY_EXISTS: `${namespace}:leaderboard.teamExists`,
     TEAM_ELIMINATED: `${namespace}:leaderboard.teamEliminated`,
     INVALID_ELIMINATION_RULE: `${namespace}:leaderboard.invalidEliminationRule`,
-    
-    // MCQ
-    MCQ_TEST_NOT_FOUND: `${namespace}:mcq.testNotFound`,
-    MCQ_QUESTION_NOT_FOUND: `${namespace}:mcq.questionNotFound`,
-    MCQ_OPTION_NOT_FOUND: `${namespace}:mcq.optionNotFound`,
-    MCQ_TEST_QUESTION_NOT_FOUND: `${namespace}:mcq.testQuestionNotFound`,
-    MCQ_ATTEMPT_NOT_FOUND: `${namespace}:mcq.attemptNotFound`,
-    
+    NOT_FOUND: `${namespace}:leaderboard.notFound`,
+    BADREQUEST: `${namespace}:leaderboard.badRequest`,
+    INTERNAL_SERVER_ERROR: `${namespace}:leaderboard.internalServerError`,
+    FORBIDDEN: `${namespace}:leaderboard.forbidden`,
+
+    // MCQ Attempt Item
+    INTERNAL_SERVER_ERROR_CREATE_ATTEMPT: `${namespace}:mcqAttemptItem.internalServerErrorCreate`,
+    INTERNAL_SERVER_ERROR_RETRIEVE: `${namespace}:mcqAttemptItem.internalServerErrorRetrieve`,
+
+    // MCQ Attempt
+    INTERNAL_SERVER_ERROR_CREATE_ATTEMPT: `${namespace}:mcqAttempt.internalServerErrorCreate`,
+    BADREQUEST: `${namespace}:mcqAttempt.badRequest`,
+    INTERNAL_SERVER_ERROR_RETRIEVE: `${namespace}:mcqAttempt.internalServerErrorRetrieve`,
+
+    // MCQ Option
+    INTERNAL_SERVER_ERROR_CREATE: `${namespace}:mcqOption.internalServerErrorCreate`,
+    NOT_FOUND: `${namespace}:mcqOption.notFound`,
+    INTERNAL_SERVER_ERROR_DELETE: `${namespace}:mcqOption.internalServerErrorDelete`,
+    INTERNAL_SERVER_ERROR_RETRIEVE: `${namespace}:mcqOption.internalServerErrorRetrieve`,
+    INTERNAL_SERVER_ERROR_UPDATE: `${namespace}:mcqOption.internalServerErrorUpdate`,
+
+    // MCQ Question
+    INTERNAL_SERVER_ERROR_CREATE: `${namespace}:mcqQuestion.internalServerErrorCreate`,
+    NOT_FOUND: `${namespace}:mcqQuestion.notFound`,
+    INTERNAL_SERVER_ERROR_DELETE: `${namespace}:mcqQuestion.internalServerErrorDelete`,
+    BADREQUEST: `${namespace}:mcqQuestion.badRequest`,
+    INTERNAL_SERVER_ERROR_RETRIEVE: `${namespace}:mcqQuestion.internalServerErrorRetrieve`,
+    INTERNAL_SERVER_ERROR_UPDATE: `${namespace}:mcqQuestion.internalServerErrorUpdate`,
+
+    // MCQ Test Question
+    NOT_FOUND: `${namespace}:mcqTestQuestion.notFound`,
+    INTERNAL_SERVER_ERROR_DELETE: `${namespace}:mcqTestQuestion.internalServerErrorDelete`,
+    BADREQUEST: `${namespace}:mcqTestQuestion.badRequest`,
+    INTERNAL_SERVER_ERROR_RETRIEVE: `${namespace}:mcqTestQuestion.internalServerErrorRetrieve`,
+    INTERNAL_SERVER_ERROR_UPDATE: `${namespace}:mcqTestQuestion.internalServerErrorUpdate`,
+
+    // MCQ Test
+    NOT_FOUND: `${namespace}:mcqTest.notFound`,
+    BADREQUEST: `${namespace}:mcqTest.badRequest`,
+    INTERNAL_SERVER_ERROR: `${namespace}:mcqTest.internalServerError`,
+
+    // MentorManagement
+    CONFIRM_PASSWORD_MISMATCH: `${namespace}:mentorManagement.confirmPasswordMismatch`,
+    SCHOOL_NOT_FOUND: `${namespace}:mentorManagement.schoolNotFound`,
+    FORBIDDEN: `${namespace}:mentorManagement.forbidden`,
+    EMAIL_EXISTS: `${namespace}:mentorManagement.emailExists`,
+
     // Mentor
     MENTOR_NOT_FOUND: `${namespace}:mentor.notFound`,
     USER_NOT_MENTOR: `${namespace}:mentor.userNotMentor`,
     USER_INVALID_STATUS: `${namespace}:mentor.userInvalidStatus`,
     USER_ALREADY_MENTOR: `${namespace}:mentor.userAlreadyMentor`,
     MENTOR_IN_USE: `${namespace}:mentor.inUse`,
-    
+    USER_NOT_FOUND: `${namespace}:mentor.userNotFound`,
+    SCHOOL_NOT_FOUND: `${namespace}:mentor.schoolNotFound`,
+
     // Notification
     NOTIFICATION_NOT_FOUND: `${namespace}:notification.notFound`,
     RECIPIENT_LIST_EMPTY: `${namespace}:notification.recipientListEmpty`,
-    
+    BADREQUEST: `${namespace}:notification.badRequest`,
+    USER_NOT_FOUND: `${namespace}:notification.userNotFound`,
+    INTERNAL_SERVER_ERROR: `${namespace}:notification.internalServerError`,
+    UNAUTHORIZED: `${namespace}:notification.unauthorized`,
+    BAD_REQUEST: `${namespace}:notification.badRequest`,
+    NOTIFICATION_ID_REQUIRED: `${namespace}:notification.notificationIdRequired`,
+
     // Problem
     PROBLEM_NOT_FOUND: `${namespace}:problem.notFound`,
     RUBRIC_TEMPLATE_NOT_AVAILABLE: `${namespace}:problem.rubricTemplateNotAvailable`,
@@ -193,12 +284,15 @@ const translateByErrorCode = (errorCode, namespace) => {
     MOCK_TEST_INVALID_TYPE: `${namespace}:problem.mockTestInvalidType`,
     MOCK_TEST_SIZE_EXCEEDED: `${namespace}:problem.mockTestSizeExceeded`,
     MOCK_TEST_WRONG_TYPE: `${namespace}:problem.mockTestWrongType`,
-    
+    INTERNAL_SERVER_ERROR: `${namespace}:problem.internalServerError`,
+    NOT_FOUND: `${namespace}:problem.notFound`,
+    BADREQUEST: `${namespace}:problem.badRequest`,
+
     // Province
     PROVINCE_NOT_FOUND: `${namespace}:province.notFound`,
     PROVINCE_IN_USE: `${namespace}:province.inUse`,
     NAME_EXISTS: `${namespace}:province.nameExists`,
-    
+
     // Quiz
     QUIZ_NOT_FOUND: `${namespace}:quiz.notFound`,
     QUIZ_ALREADY_FINISHED: `${namespace}:quiz.alreadyFinished`,
@@ -208,7 +302,12 @@ const translateByErrorCode = (errorCode, namespace) => {
     INVALID_CSV: `${namespace}:quiz.invalidCsv`,
     KEY_REQUIRED: `${namespace}:quiz.keyRequired`,
     KEY_MISMATCH: `${namespace}:quiz.keyMismatch`,
-    
+    BADREQUEST: `${namespace}:quiz.badRequest`,
+    FORBIDDEN: `${namespace}:quiz.forbidden`,
+    NOT_FOUND: `${namespace}:quiz.notFound`,
+    INTERNAL_SERVER_ERROR: `${namespace}:quiz.internalServerError`,
+    UNAUTHORIZED: `${namespace}:quiz.unauthorized`,
+
     // RoleRegistration
     EVIDENCE_REQUIRED: `${namespace}:roleRegistration.evidenceRequired`,
     REGISTRATION_EXISTS: `${namespace}:roleRegistration.registrationExists`,
@@ -218,7 +317,7 @@ const translateByErrorCode = (errorCode, namespace) => {
     REASON_REQUIRED: `${namespace}:roleRegistration.reasonRequired`,
     ROLE_REQUIRED: `${namespace}:roleRegistration.roleRequired`,
     INVALID_ROLE: `${namespace}:roleRegistration.invalidRole`,
-    
+
     // Round
     ROUND_NOT_FOUND: `${namespace}:round.notFound`,
     ROUND_DATA_REQUIRED: `${namespace}:round.dataRequired`,
@@ -243,22 +342,47 @@ const translateByErrorCode = (errorCode, namespace) => {
     ROUND_ALREADY_FINISHED: `${namespace}:round.alreadyFinished`,
     CANNOT_END_BEFORE_START: `${namespace}:round.cannotEndBeforeStart`,
     TOP_CUTOFF_REQUIRED: `${namespace}:round.topCutoffRequired`,
-    
+    BADREQUEST: `${namespace}:round.badRequest`,
+    INTERNAL_SERVER_ERROR: `${namespace}:round.internalServerError`,
+    NOT_FOUND: `${namespace}:round.notFound`,
+    UNAUTHORIZED: `${namespace}:round.unauthorized`,
+    FORBIDDEN: `${namespace}:round.forbidden`,
+    UNAUTHENTICATED: `${namespace}:round.unauthenticated`,
+    INVALID_STATE: `${namespace}:round.invalidState`,
+    DATE_CONFLICT: `${namespace}:round.dateConflict`,
+
+    // SchoolCreationRequest
+    EVIDENCE_REQUIRED: `${namespace}:schoolCreationRequest.evidenceRequired`,
+    INVALID_EVIDENCE_TYPE: `${namespace}:schoolCreationRequest.invalidEvidenceType`,
+    BADREQUEST: `${namespace}:schoolCreationRequest.badRequest`,
+    PROVINCE_NOT_FOUND: `${namespace}:schoolCreationRequest.provinceNotFound`,
+    REQ_NOT_FOUND: `${namespace}:schoolCreationRequest.reqNotFound`,
+    FORBIDDEN: `${namespace}:schoolCreationRequest.forbidden`,
+    NOT_PENDING: `${namespace}:schoolCreationRequest.notPending`,
+    DENY_REASON_REQUIRED: `${namespace}:schoolCreationRequest.denyReasonRequired`,
+
     // School
     SCHOOL_IN_USE: `${namespace}:school.inUse`,
     SCHOOL_NAME_EXISTS: `${namespace}:school.nameExists`,
     PROVINCE_NOT_FOUND: `${namespace}:school.provinceNotFound`,
-    
+    SCHOOL_NOT_FOUND: `${namespace}:school.schoolNotFound`,
+    UNAUTHORIZED: `${namespace}:school.unauthorized`,
+    NAME_EXISTS: `${namespace}:school.nameExists`,
+
     // SchoolCreationRequest
     REQ_NOT_FOUND: `${namespace}:schoolCreationRequest.notFound`,
     DENY_REASON_REQUIRED: `${namespace}:schoolCreationRequest.denyReasonRequired`,
     INVALID_EVIDENCE_TYPE: `${namespace}:schoolCreationRequest.invalidEvidenceType`,
-    
+
     // Student
     USER_NOT_STUDENT: `${namespace}:student.userNotStudent`,
     USER_ALREADY_STUDENT: `${namespace}:student.userAlreadyStudent`,
     STUDENT_IN_USE: `${namespace}:student.inUse`,
-    
+    STUDENT_NOT_FOUND: `${namespace}:student.studentNotFound`,
+    USER_NOT_FOUND: `${namespace}:student.userNotFound`,
+    USER_INACTIVE: `${namespace}:student.userInactive`,
+    SCHOOL_NOT_FOUND: `${namespace}:student.schoolNotFound`,
+
     // Submission
     SUBMISSION_NOT_FOUND: `${namespace}:submission.notFound`,
     DEADLINE_PASSED: `${namespace}:submission.deadlinePassed`,
@@ -282,13 +406,43 @@ const translateByErrorCode = (errorCode, namespace) => {
     FINGERPRINT_NOT_FOUND: `${namespace}:submission.fingerprintNotFound`,
     PLAGIARISM_NOT_SUSPECTED: `${namespace}:submission.plagiarismNotSuspected`,
     NO_MOCK_TEST: `${namespace}:submission.noMockTest`,
-    
+    INTERNAL_SERVER_ERROR: `${namespace}:submission.internalServerError`,
+    NOT_FOUND: `${namespace}:submission.notFound`,
+    BADREQUEST: `${namespace}:submission.badRequest`,
+    FORBIDDEN: `${namespace}:submission.forbidden`,
+    UNAUTHORIZED: `${namespace}:submission.unauthorized`,
+
     // SubmissionArtifact
     SUBMISSION_ARTIFACT_NOT_FOUND: `${namespace}:submissionArtifact.notFound`,
-    
+    INTERNAL_SERVER_ERROR: `${namespace}:submissionArtifact.internalServerError`,
+    NOT_FOUND: `${namespace}:submissionArtifact.notFound`,
+
     // SubmissionDetail
     SUBMISSION_DETAIL_NOT_FOUND: `${namespace}:submissionDetail.notFound`,
-    
+    INTERNAL_SERVER_ERROR: `${namespace}:submissionDetail.internalServerError`,
+    NOT_FOUND: `${namespace}:submissionDetail.notFound`,
+
+    // TeamInvite
+    TEAM_NOT_FOUND: `${namespace}:teamInvite.teamNotFound`,
+    TEAM_FULL: `${namespace}:teamInvite.teamFull`,
+    STUDENT_NOT_FOUND: `${namespace}:teamInvite.studentNotFound`,
+    INVALID_INPUT: `${namespace}:teamInvite.invalidInput`,
+    ALREADY_ON_TEAM: `${namespace}:teamInvite.alreadyOnTeam`,
+    TIME_CONFLICT: `${namespace}:teamInvite.timeConflict`,
+    INVITE_NOT_FOUND: `${namespace}:teamInvite.inviteNotFound`,
+    INVITE_NOT_PENDING: `${namespace}:teamInvite.inviteNotPending`,
+    STUDENT_PROFILE_REQUIRED: `${namespace}:teamInvite.studentProfileRequired`,
+    INVITE_NOT_FOR_YOU: `${namespace}:teamInvite.inviteNotForYou`,
+    ACCOUNT_REQUIRED: `${namespace}:teamInvite.accountRequired`,
+    NOT_STUDENT: `${namespace}:teamInvite.notStudent`,
+    REG_CLOSED: `${namespace}:teamInvite.regClosed`,
+    INVITE_EXPIRED: `${namespace}:teamInvite.inviteExpired`,
+    EMAIL_MISMATCH: `${namespace}:teamInvite.emailMismatch`,
+
+    // TeamMember
+    TEAM_NOT_FOUND: `${namespace}:teamMember.teamNotFound`,
+    STUDENT_NOT_FOUND: `${namespace}:teamMember.studentNotFound`,
+
     // Team
     NOT_MENTOR: `${namespace}:team.notMentor`,
     MENTOR_NOT_BELONG_TO_SCHOOL: `${namespace}:team.mentorNotBelongToSchool`,
@@ -297,18 +451,15 @@ const translateByErrorCode = (errorCode, namespace) => {
     TEAM_IN_USE: `${namespace}:team.inUse`,
     CONTEST_STARTED: `${namespace}:team.contestStarted`,
     TEAM_MEMBER_NOT_FOUND: `${namespace}:team.memberNotFound`,
-    
-    // TeamInvite
-    TEAM_FULL: `${namespace}:teamInvite.teamFull`,
-    INVALID_INPUT: `${namespace}:teamInvite.invalidInput`,
-    ALREADY_ON_TEAM: `${namespace}:teamInvite.alreadyOnTeam`,
-    TIME_CONFLICT: `${namespace}:teamInvite.timeConflict`,
-    STUDENT_PROFILE_REQUIRED: `${namespace}:teamInvite.studentProfileRequired`,
-    INVITE_NOT_FOR_YOU: `${namespace}:teamInvite.inviteNotForYou`,
-    ACCOUNT_REQUIRED: `${namespace}:teamInvite.accountRequired`,
-    NOT_STUDENT: `${namespace}:teamInvite.notStudent`,
-    REG_CLOSED: `${namespace}:teamInvite.regClosed`,
-    
+    NOT_FOUND: `${namespace}:team.notFound`,
+    CONTEST_NOT_FOUND: `${namespace}:team.contestNotFound`,
+    SCHOOL_NOT_FOUND: `${namespace}:team.schoolNotFound`,
+    NAME_EXISTS: `${namespace}:team.nameExists`,
+    FORBIDDEN: `${namespace}:team.forbidden`,
+    UNAUTHENTICATED: `${namespace}:team.unauthenticated`,
+    CONFLICT: `${namespace}:team.conflict`,
+
+
     // TestCase
     TEST_CASE_NOT_FOUND: `${namespace}:testCase.notFound`,
     TEST_CASE_DATA_REQUIRED: `${namespace}:testCase.dataRequired`,
@@ -321,19 +472,37 @@ const translateByErrorCode = (errorCode, namespace) => {
     DUPLICATE_TEST_CASE_IDS: `${namespace}:testCase.duplicateIds`,
     CANNOT_DELETE_TEST_CASE: `${namespace}:testCase.cannotDelete`,
     TEST_CASE_NOT_AVAILABLE: `${namespace}:testCase.notAvailable`,
-    
+    BADREQUEST: `${namespace}:testCase.badRequest`,
+    NOT_FOUND: `${namespace}:testCase.notFound`,
+    INTERNAL_SERVER_ERROR: `${namespace}:testCase.internalServerError`,
+    FORBIDDEN: `${namespace}:testCase.forbidden`,
+
     // User
     INVALID_ROLE: `${namespace}:user.invalidRole`,
     INVALID_STATUS: `${namespace}:user.invalidStatus`,
     INVALID_PROFILE_TYPE: `${namespace}:user.invalidProfileType`,
     PROFILE_NOT_FOUND: `${namespace}:user.profileNotFound`,
-    
+    USER_NOT_FOUND: `${namespace}:user.userNotFound`,
+    EMAIL_EXISTS: `${namespace}:user.emailExists`,
+    FORBIDDEN: `${namespace}:user.forbidden`,
+    PROFILE_NOT_FOUND_MENTOR: `${namespace}:user.profileNotFoundMentor`,
+    PROFILE_NOT_FOUND_STUDENT: `${namespace}:user.profileNotFoundStudent`,
+
     // Cloudinary
     NO_FILE_PROVIDED: `${namespace}:cloudinary.noFileProvided`,
     FILE_TYPE_NOT_ALLOWED: `${namespace}:cloudinary.fileTypeNotAllowed`,
     FILE_SIZE_EXCEEDED: `${namespace}:cloudinary.fileSizeExceeded`,
     NO_IMAGE_STREAM: `${namespace}:cloudinary.noImageStream`,
     EVIDENCE_INVALID_TYPE: `${namespace}:cloudinary.evidenceInvalidType`,
+    BADREQUEST: `${namespace}:cloudinary.badRequest`,
+    INTERNAL_SERVER_ERROR: `${namespace}:cloudinary.internalServerError`,
+
+    // Judge0
+    BADREQUEST: `${namespace}:judge0.badRequest`,
+    INTERNAL_SERVER_ERROR: `${namespace}:judge0.internalServerError`,
+
+    // MockTestExecutor
+    INTERNAL_SERVER_ERROR: `${namespace}:mockTestExecutor.internalServerError`,
   }
 
   const translationKey = codeMap[errorCode]

@@ -23,9 +23,9 @@ import { useGetMyAppealsQuery } from "@/services/appealApi"
 import { useGetRoundsByContestIdQuery } from "@/services/roundApi"
 import { useGetMyTeamQuery } from "@/services/teamApi"
 import useContestDetail from "@/features/contest/hooks/useContestDetail"
-import useContests from "@/features/contest/hooks/useContests"
 import { useAuth } from "@/context/AuthContext"
 import { useModal } from "@/shared/hooks/useModal"
+import { useGetMyContestsQuery } from "../../../../services/contestApi"
 function MentorAppeal() {
   const { t } = useTranslation("pages")
   const { contestId: urlContestId } = useParams()
@@ -42,7 +42,11 @@ function MentorAppeal() {
   )
 
   // Fetch contests list
-  const { contests, loading: contestsLoading } = useContests()
+  const { data: contests, isLoading: contestsLoading } = useGetMyContestsQuery({
+    pageNumber: 1,
+    pageSize: 100,
+    nameSearch: "",
+  })
 
   // Get available contests (only ongoing - for appeal requests)
   const availableContests = useMemo(() => {

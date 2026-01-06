@@ -35,7 +35,23 @@ export const contestApi = api.injectEndpoints({
             ]
           : [{ type: "Contests", id: "LIST" }],
     }),
-
+    getMyContests: builder.query({
+      query: ({ pageNumber = 1, pageSize = 10, nameSearch = "" }) => ({
+        url: "contests/participation",
+        params: { pageNumber, pageSize, nameSearch },
+      }),
+      transformResponse: (response) => response.data,
+      providesTags: (result) =>
+        result?.data
+          ? [
+              ...result.data.map((contest) => ({
+                type: "Contests",
+                id: contest.contestId,
+              })),
+              { type: "Contests", id: "LIST" },
+            ]
+          : [{ type: "Contests", id: "LIST" }],
+    }),
     getJudgeContests: builder.query({
       query: ({ pageNumber = 1, pageSize = 10, nameSearch = "" }) => ({
         url: "contests/participation",
@@ -138,6 +154,11 @@ export const contestApi = api.injectEndpoints({
       query: (id) => `contests/${id}/report`,
       transformResponse: (response) => response.data,
     }),
+    getContestTimeline: builder.query({
+      query: (id) => `contests/${id}/timeline`,
+      transformResponse: (response) => response.data,
+      providesTags: (result, error, id) => [{ type: "Contests", id }],
+    }),
   }),
 })
 
@@ -156,4 +177,6 @@ export const {
   useStartRegistrationNowMutation,
   useEndRegistrationNowMutation,
   useLazyGetContestReportQuery,
+  useGetMyContestsQuery,
+  useGetContestTimelineQuery,
 } = contestApi

@@ -9,12 +9,12 @@ Hệ thống đã được tích hợp i18n để xử lý các error messages t
 ### 1. Sử dụng `translateApiError` utility
 
 ```javascript
-import translateApiError from '@/shared/utils/translateApiError'
+import translateApiError from "@/shared/utils/translateApiError"
 
 try {
   // API call
 } catch (error) {
-  const translatedError = translateApiError(error, 'errors')
+  const translatedError = translateApiError(error, "errors")
   toast.error(translatedError)
   // hoặc
   setError(translatedError)
@@ -24,11 +24,11 @@ try {
 ### 2. Sử dụng `useApiError` hook (trong React components)
 
 ```javascript
-import { useApiError } from '@/shared/hooks/useApiError'
+import { useApiError } from "@/shared/hooks/useApiError"
 
 const MyComponent = () => {
   const { translateError } = useApiError()
-  
+
   try {
     // API call
   } catch (error) {
@@ -60,6 +60,7 @@ Các error handlers sau đã tự động sử dụng translation:
 ### Thêm error code mới
 
 1. Thêm vào `src/locales/en/errors.json`:
+
 ```json
 {
   "myFeature": {
@@ -69,6 +70,7 @@ Các error handlers sau đã tự động sử dụng translation:
 ```
 
 2. Thêm vào `src/locales/vi/errors.json`:
+
 ```json
 {
   "myFeature": {
@@ -78,16 +80,18 @@ Các error handlers sau đã tự động sử dụng translation:
 ```
 
 3. Thêm mapping vào `src/shared/utils/translateApiError.js`:
+
 ```javascript
 const codeMap = {
   // ...
-  MY_ERROR_CODE: 'errors:myFeature.myErrorCode',
+  MY_ERROR_CODE: "errors:myFeature.myErrorCode",
 }
 ```
 
 ### Thêm message pattern mới
 
 Thêm vào `matchCommonMessage` function trong `translateApiError.js`:
+
 ```javascript
 {
   pattern: /my error pattern/i,
@@ -120,4 +124,3 @@ catch (error) {
   toast.error(translatedError)
 }
 ```
-

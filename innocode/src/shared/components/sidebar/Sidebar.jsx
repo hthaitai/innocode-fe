@@ -29,11 +29,6 @@ const allMenus = {
     icon: "lucide:file-spreadsheet",
   },
   team: { path: "/team", labelKey: "sidebar.team", icon: "lucide:users" },
-  leaderboard: {
-    path: "/leaderboard",
-    labelKey: "sidebar.leaderboard",
-    icon: "mdi:podium",
-  },
   certificate: {
     path: "/certificate",
     labelKey: "sidebar.certificate",
@@ -123,7 +118,7 @@ const menuByRole = {
     "notifications",
   ],
   judge: ["profile", "judgeContests", "notifications", "help"],
-  admin: ["profile", "dashboard", "leaderboard", "notifications", "help"],
+  admin: ["profile", "dashboard", "notifications", "help"],
   schoolmanager: [
     "profile",
     "schoolManager",
