@@ -11,7 +11,7 @@ const McqTableExpanded = ({ mcq = {} }) => {
         return (
           <div
             key={opt.optionId || opt.id || i}
-            className={`flex items-center gap-2 text-sm leading-5 px-5 pl-11 py-1 rounded ${
+            className={`flex items-center gap-2 text-sm leading-5 px-5 pl-30 py-1 rounded ${
               isCorrect ? "bg-green-50" : ""
             }`}
           >
