@@ -925,7 +925,14 @@ createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <ModalProvider>
           <RouterProvider router={router} />
-          <Toaster position="bottom-right" reverseOrder={false} />
+          <Toaster
+            position="top-right"
+            reverseOrder={false}
+            containerStyle={{
+              top: "80px", // height of your navbar
+              right: "16px",
+            }}
+          />
         </ModalProvider>
       </AuthProvider>
     </Provider>
