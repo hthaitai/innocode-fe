@@ -20,7 +20,7 @@ export const useContests = () => {
         setIsAutoSkipping(false)
 
         let currentPage = pageNumber
-        let maxSkipPages = 10 // Limit to prevent infinite loop
+        let maxSkipPages = 10 // Limit to prevent infinite loops
         let skippedPages = 0
 
         while (skippedPages < maxSkipPages) {
