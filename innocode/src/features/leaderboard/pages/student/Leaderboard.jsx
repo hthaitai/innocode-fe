@@ -252,15 +252,20 @@ const Leaderboard = () => {
   // Get status color class based on status
   const getStatusColorClass = (status) => {
     if (!status) return "text-gray-400"
+    const s = status.toLowerCase().replace(/\s+/g, "")
 
-    switch (status) {
-      case "Pending":
-      case "PlagiarismSuspected":
+    switch (s) {
+      case "pending":
+      case "plagiarismsuspected":
+      case "incoming":
+      case "upcoming":
         return "text-yellow-500"
-      case "PlagiarismConfirmed":
-      case "Cancelled":
+      case "plagiarismconfirmed":
+      case "cancelled":
         return "text-red-500"
-      case "Finished":
+      case "finished":
+      case "completed":
+      case "finalized":
         return "text-green-500"
       default:
         return "text-gray-400"
@@ -338,7 +343,17 @@ const Leaderboard = () => {
                                   round.status
                                 )}`}
                               >
-                                {round.status}
+                                {(() => {
+                                  if (!round.status) return ""
+                                  const statusLower = round.status
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "")
+                                  const translationKey = `contest.statusLabels.${statusLower}`
+                                  const translated = t(translationKey)
+                                  return translated !== translationKey
+                                    ? translated
+                                    : round.status
+                                })()}
                               </span>
                             )}
                           </p>

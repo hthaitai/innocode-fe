@@ -1,10 +1,11 @@
-import React, { useCallback, useState, useEffect } from "react";
-import { Icon } from "@iconify/react";
-import { Code, Play, CheckCircle, Upload, X } from "lucide-react";
-import { useDropzone } from "react-dropzone";
-import { toast } from "react-hot-toast";
-import CodeEditor from "./CodeEditor";
-import ErrorMessage from "./ErrorMessage";
+import React, { useCallback, useState, useEffect } from "react"
+import { Icon } from "@iconify/react"
+import { useTranslation } from "react-i18next"
+import { Code, Play, CheckCircle, Upload, X } from "lucide-react"
+import { useDropzone } from "react-dropzone"
+import { toast } from "react-hot-toast"
+import CodeEditor from "./CodeEditor"
+import ErrorMessage from "./ErrorMessage"
 
 /**
  * Component chứa code editor và các controls
@@ -29,67 +30,68 @@ const CodeEditorSection = ({
   isTimeUp = false,
   templateUrl,
 }) => {
-  const [templateCode, setTemplateCode] = useState("");
-  const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
+  const { t } = useTranslation("pages")
+  const [templateCode, setTemplateCode] = useState("")
+  const [isLoadingTemplate, setIsLoadingTemplate] = useState(false)
 
   // Fetch template code from URL
   useEffect(() => {
     if (templateUrl) {
-      setIsLoadingTemplate(true);
+      setIsLoadingTemplate(true)
       fetch(templateUrl)
         .then((response) => {
           if (!response.ok) {
-            throw new Error("Failed to fetch template");
+            throw new Error("Failed to fetch template")
           }
-          return response.text();
+          return response.text()
         })
         .then((text) => {
-          setTemplateCode(text);
-          setIsLoadingTemplate(false);
+          setTemplateCode(text)
+          setIsLoadingTemplate(false)
         })
         .catch((error) => {
-          console.error("Error fetching template:", error);
-          setIsLoadingTemplate(false);
+          console.error("Error fetching template:", error)
+          setIsLoadingTemplate(false)
           // Keep templateCode as empty string if fetch fails
-        });
+        })
     }
-  }, [templateUrl]);
+  }, [templateUrl])
   const handleFileRead = useCallback(
     async (file) => {
       try {
-        const text = await file.text();
-        setCode(text);
-        toast.success("File loaded successfully");
+        const text = await file.text()
+        setCode(text)
+        toast.success(t("autoEvaluation.fileLoaded"))
       } catch (error) {
-        console.error("Error reading file:", error);
-        toast.error("Failed to read file. Please try again.");
+        console.error("Error reading file:", error)
+        toast.error("Failed to read file. Please try again.")
       }
     },
     [setCode]
-  );
+  )
 
   const onDrop = useCallback(
     (acceptedFiles, rejectedFiles) => {
       if (isTimeUp) {
-        toast.error("Time is up! You can no longer upload files.");
-        return;
+        toast.error(t("autoEvaluation.timeUpNotice"))
+        return
       }
 
       if (rejectedFiles.length > 0) {
-        const rejection = rejectedFiles[0];
+        const rejection = rejectedFiles[0]
         if (rejection.errors[0].code === "file-too-large") {
-          toast.error("File size must be less than 10MB");
+          toast.error(t("autoEvaluation.fileTooLarge"))
         } else if (rejection.errors[0].code === "file-invalid-type") {
-          toast.error("Only .py (Python) files are allowed");
+          toast.error(t("autoEvaluation.invalidFileType"))
         }
       }
 
       if (acceptedFiles.length > 0) {
-        handleFileRead(acceptedFiles[0]);
+        handleFileRead(acceptedFiles[0])
       }
     },
     [handleFileRead, isTimeUp]
-  );
+  )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -100,14 +102,14 @@ const CodeEditorSection = ({
     maxSize: 10 * 1024 * 1024, //
     multiple: false,
     disabled: isTimeUp,
-  });
+  })
 
   return (
     <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-[#2d3748] flex items-center gap-2">
           <Code size={20} className="text-[#ff6b35]" />
-          Your Solution
+          {t("autoEvaluation.yourSolution")}
         </h2>
         <button
           onClick={() => setTheme(theme === "vs-dark" ? "vs-light" : "vs-dark")}
@@ -127,7 +129,7 @@ const CodeEditorSection = ({
       </div>
 
       <div className="mb-4 font-semibold">
-        <span>Language: </span>
+        <span>{t("autoEvaluation.language")} </span>
         <span className="text-[#2d3748] rounded-sm bg-gray-300 px-2 py-1 font-medium">
           {language}
         </span>
@@ -138,7 +140,9 @@ const CodeEditorSection = ({
         <div className="mb-4 bg-red-50 border-2 border-red-200 rounded-[8px] p-4">
           <div className="flex items-center gap-2 text-red-700">
             <Icon icon="mdi:alert-circle" width={20} />
-            <span className="font-semibold">Time is up! You can no longer edit or submit your code.</span>
+            <span className="font-semibold">
+              {t("autoEvaluation.timeUpNotice")}
+            </span>
           </div>
         </div>
       )}
@@ -156,13 +160,20 @@ const CodeEditorSection = ({
       >
         {!isTimeUp && <input {...getInputProps()} />}
         <div className="flex items-center justify-center gap-2">
-          <Upload size={18} className={isTimeUp ? "text-gray-400" : "text-[#7A7574]"} />
-          <span className={`text-sm ${isTimeUp ? "text-gray-400" : "text-[#7A7574]"}`}>
+          <Upload
+            size={18}
+            className={isTimeUp ? "text-gray-400" : "text-[#7A7574]"}
+          />
+          <span
+            className={`text-sm ${
+              isTimeUp ? "text-gray-400" : "text-[#7A7574]"
+            }`}
+          >
             {isTimeUp
-              ? "File upload disabled (Time is up)"
+              ? t("autoEvaluation.timeUpUploadDisabled")
               : isDragActive
-              ? "Drop Python file here..."
-              : "Drag & drop a .py file here, or click to browse"}
+              ? t("autoEvaluation.dropFile")
+              : t("autoEvaluation.dragDropOrClick")}
           </span>
         </div>
       </div>
@@ -175,7 +186,9 @@ const CodeEditorSection = ({
               width="32"
               className="mx-auto mb-2 text-[#ff6b35] animate-spin"
             />
-            <p className="text-[#7A7574]">Loading template...</p>
+            <p className="text-[#7A7574]">
+              {t("autoEvaluation.loadingTemplate")}
+            </p>
           </div>
         </div>
       ) : (
@@ -194,7 +207,7 @@ const CodeEditorSection = ({
       {code && (
         <div className="flex items-center gap-1 mt-2 text-xs text-[#7A7574]">
           <Icon icon="mdi:content-save" width={14} />
-          <span>Auto-saved</span>
+          <span>{t("autoEvaluation.autoSaved")}</span>
         </div>
       )}
 
@@ -205,7 +218,7 @@ const CodeEditorSection = ({
           className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
         >
           <Icon icon="mdi:delete" width={14} />
-          Clear
+          {t("autoEvaluation.clear")}
         </button>
       )}
 
@@ -221,12 +234,12 @@ const CodeEditorSection = ({
           {submitting ? (
             <>
               <Icon icon="mdi:loading" className="animate-spin" width={16} />
-              Running...
+              {t("autoEvaluation.running")}
             </>
           ) : (
             <>
               <Play size={16} />
-              Run Code
+              {t("autoEvaluation.runCode")}
             </>
           )}
         </button>
@@ -234,19 +247,25 @@ const CodeEditorSection = ({
           onClick={onFinalSubmit}
           disabled={finalSubmitting || !submissionId || !hasRunCode || isTimeUp}
           className={`flex-1 button-orange flex items-center justify-center gap-2 ${
-            !submissionId || !hasRunCode || isTimeUp ? "opacity-50 cursor-not-allowed" : ""
+            !submissionId || !hasRunCode || isTimeUp
+              ? "opacity-50 cursor-not-allowed"
+              : ""
           }`}
-          title={!hasRunCode ? "Please run your code at least once before submitting" : ""}
+          title={
+            !hasRunCode
+              ? "Please run your code at least once before submitting"
+              : ""
+          }
         >
           {finalSubmitting ? (
             <>
               <Icon icon="mdi:loading" className="animate-spin" width={16} />
-              Submitting...
+              {t("autoEvaluation.submitting")}
             </>
           ) : (
             <>
               <CheckCircle size={16} />
-              Submit
+              {t("autoEvaluation.submit")}
             </>
           )}
         </button>
@@ -256,11 +275,11 @@ const CodeEditorSection = ({
       {submitError && (
         <ErrorMessage
           type="error"
-          title="Run Code Error"
+          title={t("autoEvaluation.runCodeError")}
           message={
             submitError?.data?.errorMessage ||
             submitError?.message ||
-            "Failed to submit code"
+            t("autoEvaluation.submitError")
           }
         />
       )}
@@ -268,13 +287,13 @@ const CodeEditorSection = ({
       {finalSubmitError && (
         <ErrorMessage
           type="error"
-          title="Submit Error"
+          title={t("autoEvaluation.submitError")}
           message={
             finalSubmitError?.data?.errorMessage ||
             finalSubmitError?.data?.message ||
             finalSubmitError?.data?.title ||
             finalSubmitError?.message ||
-            "Failed to submit final test"
+            t("autoEvaluation.submitError")
           }
         />
       )}
@@ -282,12 +301,12 @@ const CodeEditorSection = ({
       {finalSubmitResult && (
         <ErrorMessage
           type="success"
-          title="Submission Successful!"
-          message="Your code has been submitted for final evaluation."
+          title={t("autoEvaluation.submissionSuccessful")}
+          message={t("autoEvaluation.submittedForFinal")}
         />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default CodeEditorSection;
+export default CodeEditorSection
