@@ -11,6 +11,19 @@ const ConfirmModal = ({
 }) => {
   const { t } = useTranslation("common")
 
+  const handleConfirm = async () => {
+    try {
+      // Call the onConfirm callback
+      await onConfirm()
+      // Automatically close modal after successful confirmation
+      onClose()
+    } catch (error) {
+      // If onConfirm throws an error, don't close the modal
+      // This allows users to see error messages and try again
+      console.error("Confirm action failed:", error)
+    }
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -28,7 +41,7 @@ const ConfirmModal = ({
           </button>
           <button
             className="button-orange min-w-[100px] flex items-center justify-center gap-2"
-            onClick={onConfirm}
+            onClick={handleConfirm}
             disabled={isLoading}
           >
             {isLoading && (

@@ -5,10 +5,15 @@ const ConfirmDeleteModal = ({ isOpen, item, message, onConfirm, onClose }) => {
   const { t } = useTranslation("common")
 
   const handleConfirm = async () => {
-    if (onConfirm) {
-      await onConfirm(onClose)
-    } else {
+    try {
+      if (onConfirm) {
+        await onConfirm()
+      }
+      // Automatically close modal after successful confirmation
       onClose()
+    } catch (error) {
+      // If onConfirm throws an error, don't close the modal
+      console.error("Delete action failed:", error)
     }
   }
 

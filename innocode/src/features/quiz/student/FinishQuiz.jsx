@@ -1,51 +1,49 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
-import PageContainer from "@/shared/components/PageContainer";
-import { Icon } from "@iconify/react";
-import quizApi from "@/api/quizApi";
+import React, { useEffect, useState } from "react"
+import { useParams, useNavigate, useLocation } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import PageContainer from "@/shared/components/PageContainer"
+import { Icon } from "@iconify/react"
+import quizApi from "@/api/quizApi"
 
 const FinishQuiz = () => {
-  const { roundId } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const { t, i18n } = useTranslation("results")
+  const { roundId } = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
   // Get contestId from location state or params
-  const contestId = location.state?.contestId;
-  const [myQuiz, setMyQuiz] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const contestId = location.state?.contestId
+  const [myQuiz, setMyQuiz] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     // Check if result data is passed from submit (from MCQTest.jsx)
-    const resultDataFromState = location.state?.resultData;
+    const resultDataFromState = location.state?.resultData
 
     if (resultDataFromState) {
       // Use data from submit response directly (no API call needed)
-      console.log("✅ Using result data from submit:", resultDataFromState);
-      setMyQuiz(resultDataFromState);
-      setLoading(false);
-      return;
+      setMyQuiz(resultDataFromState)
+      setLoading(false)
+      return
     }
 
     // Otherwise, fetch from API (for direct navigation to finish page)
     const fetchMyQuiz = async () => {
       try {
-        const res = await quizApi.getMyQuiz(roundId);
+        const res = await quizApi.getMyQuiz(roundId)
         // Extract the first attempt from the data array
-        const attemptData = res.data?.data?.[0] || res.data?.data || res.data;
-        setMyQuiz(attemptData);
-        console.log("📥 Fetched quiz result from API:", attemptData);
+        const attemptData = res.data?.data?.[0] || res.data?.data || res.data
+        setMyQuiz(attemptData)
       } catch (err) {
         setError(
-          err?.response?.data?.message ||
-            err.message ||
-            "Failed to fetch result"
-        );
+          err?.response?.data?.message || err.message || t("quiz.failedToFetch")
+        )
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    fetchMyQuiz();
-  }, [roundId, location.state]);
+    }
+    fetchMyQuiz()
+  }, [roundId, location.state, t])
 
   if (loading) {
     return (
@@ -53,11 +51,13 @@ const FinishQuiz = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading result...</p>
+            <p className="text-gray-600 font-medium">
+              {t("quiz.loadingResult")}
+            </p>
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   if (error) {
@@ -70,7 +70,7 @@ const FinishQuiz = () => {
               className="w-20 h-20 text-red-500 mx-auto mb-4"
             />
             <h3 className="text-xl font-bold text-gray-800 mb-2">
-              Failed to fetch result
+              {t("quiz.failedToFetch")}
             </h3>
             <p className="text-gray-600 mb-4">{error}</p>
             <button
@@ -82,27 +82,27 @@ const FinishQuiz = () => {
               className="button-orange"
             >
               <Icon icon="mdi:arrow-left" className="inline mr-2" />
-              {contestId ? "Back to Contest Detail" : "Back to Contests"}
+              {contestId ? t("quiz.backToContest") : t("quiz.backToContests")}
             </button>
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   // Format date and time
   const formatDateTime = (dateString) => {
-    if (!dateString) return "--";
-    const date = new Date(dateString);
-    return date.toLocaleString("en-US", {
+    if (!dateString) return "--"
+    const date = new Date(dateString)
+    const locale = i18n.language === "vi" ? "vi-VN" : "en-US"
+    return date.toLocaleString(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    });
-  };
-
+    })
+  }
 
   return (
     <PageContainer bg={false}>
@@ -114,12 +114,8 @@ const FinishQuiz = () => {
               icon="mdi:check-circle"
               className="w-24 h-24 mx-auto mb-4 drop-shadow-lg"
             />
-            <h2 className="text-3xl font-bold mb-2">
-              Quiz Completed Successfully!
-            </h2>
-            <p className="text-green-50 text-lg">
-              Congratulations on completing the quiz
-            </p>
+            <h2 className="text-3xl font-bold mb-2">{t("quiz.completed")}</h2>
+            <p className="text-green-50 text-lg">{t("quiz.congratulations")}</p>
           </div>
 
           {/* Quiz Info Section */}
@@ -131,7 +127,7 @@ const FinishQuiz = () => {
                   {myQuiz.testName}
                 </h3>
                 <p className="text-gray-600">
-                  Submitted by {myQuiz.studentName || "Student"}
+                  {t("quiz.submittedBy")} {myQuiz.studentName || "Student"}
                 </p>
               </div>
             )}
@@ -140,21 +136,22 @@ const FinishQuiz = () => {
             <div className="mb-8">
               <div className="text-center bg-orange-50 rounded-lg p-6 border border-orange-100">
                 <p className="text-sm font-medium text-gray-600 mb-2">
-                  Your Score
+                  {t("quiz.yourScore")}
                 </p>
                 <div className="text-6xl font-bold text-orange-500 mb-2">
                   {myQuiz?.score ?? "--"}
                 </div>
                 {myQuiz?.totalPossibleScore && (
                   <p className="text-gray-500 mb-2">
-                    out of {myQuiz.totalPossibleScore} points
+                    {t("quiz.outOf")} {myQuiz.totalPossibleScore}{" "}
+                    {t("quiz.points")}
                   </p>
                 )}
                 {myQuiz?.correctAnswers !== undefined &&
                   myQuiz?.totalQuestions && (
                     <p className="text-lg font-semibold text-gray-700">
-                      {myQuiz.correctAnswers} / {myQuiz.totalQuestions} correct
-                      answers
+                      {myQuiz.correctAnswers} / {myQuiz.totalQuestions}{" "}
+                      {t("quiz.correctAnswers")}
                       {myQuiz.totalQuestions > 0 && (
                         <span className="text-orange-600 ml-2">
                           (
@@ -184,7 +181,7 @@ const FinishQuiz = () => {
                     </div>
                     <div>
                       <p className="text-xs font-medium text-gray-500 uppercase">
-                        Start Time
+                        {t("quiz.startTime")}
                       </p>
                       <p className="text-sm font-semibold text-gray-800">
                         {formatDateTime(myQuiz.startTime)}
@@ -205,7 +202,9 @@ const FinishQuiz = () => {
                   </div>
                   <div>
                     <p className="text-xs font-medium text-gray-500 uppercase">
-                      {myQuiz?.endTime ? "End Time" : "Submitted At"}
+                      {myQuiz?.endTime
+                        ? t("quiz.endTime")
+                        : t("quiz.submittedAt")}
                     </p>
                     <p className="text-sm font-semibold text-gray-800">
                       {formatDateTime(myQuiz?.endTime || myQuiz?.submittedAt)}
@@ -229,7 +228,9 @@ const FinishQuiz = () => {
               >
                 <Icon icon="mdi:arrow-left" className="m-2 w-5 h-5" />
                 <div className="mr-2">
-                  {contestId ? "Back to Contest Detail" : "Back to Contests"}
+                  {contestId
+                    ? t("quiz.backToContest")
+                    : t("quiz.backToContests")}
                 </div>
               </button>
             </div>
@@ -237,7 +238,7 @@ const FinishQuiz = () => {
         </div>
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default FinishQuiz;
+export default FinishQuiz

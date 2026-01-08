@@ -11,6 +11,7 @@
   "certificate": {
     "noTemplates": "Chưa có mẫu chứng chỉ nào được tạo."
   },
+  "nextProgress": "Tiến trình tiếp theo",
   "notFound": "Không tìm thấy cuộc thi",
   "validation": {
     "imgFile": "Hình ảnh cuộc thi là bắt buộc",
