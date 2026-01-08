@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react"
-import { WifiOff } from "lucide-react"
+import { WifiOff, Trophy } from "lucide-react"
 import { toast } from "react-hot-toast"
 import ToggleSwitchFluent from "@/shared/components/ToggleSwitchFluent"
 import { useToggleFreezeLeaderboardMutation } from "@/services/leaderboardApi"
@@ -18,11 +18,9 @@ const LeaderboardActions = ({ contestId, refetchLeaderboard }) => {
       setIsFrozen(newState)
 
       toast.success(
-        response?.message ??
-          response?.data?.message ??
-          (newState
-            ? t("leaderboard:actions.frozenSuccess")
-            : t("leaderboard:actions.unfrozenSuccess"))
+        newState
+          ? t("leaderboard:actions.frozenSuccess")
+          : t("leaderboard:actions.unfrozenSuccess")
       )
     } catch (error) {
       console.error(error)
@@ -30,7 +28,7 @@ const LeaderboardActions = ({ contestId, refetchLeaderboard }) => {
 
       // Check for specific error message regarding contest status
       if (error?.data?.errorMessage?.includes("Cannot toggle freeze status")) {
-        toast.error(t("errors:leaderboard.toggleFreezeInvalidStatus"))
+        toast.error(t("leaderboard:actions.toggleFreezeInvalidStatus"))
         return
       }
 
@@ -61,26 +59,41 @@ const LeaderboardActions = ({ contestId, refetchLeaderboard }) => {
 
   return (
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white min-h-[70px] flex items-center justify-between px-5">
-      <div className="flex items-center gap-3">
-        {!isFrozen && (
-          <div className="flex items-center gap-1.5">
-            {isConnected ? (
-              <div className="flex items-center gap-1 text-green-600">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs font-medium">
+      <div className="flex items-center gap-5">
+        <Trophy size={20} />
+
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm leading-5">
+              {t("leaderboard:actions.title")}
+            </span>
+            {isFrozen ? (
+              <div className="flex items-center gap-1.5 text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                <span className="text-[10px] uppercase font-bold tracking-wider">
+                  {t("leaderboard:actions.frozen")}
+                </span>
+              </div>
+            ) : isConnected ? (
+              <div className="flex items-center gap-1.5 text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-100">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-[10px] uppercase font-bold tracking-wider">
                   {t("leaderboard:actions.live")}
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-1 text-gray-400">
-                <WifiOff size={14} />
-                <span className="text-xs">
+              <div className="flex items-center gap-1.5 text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">
+                <WifiOff size={10} />
+                <span className="text-[10px] uppercase font-bold tracking-wider">
                   {t("leaderboard:actions.offline")}
                 </span>
               </div>
             )}
           </div>
-        )}
+          <div className="text-xs leading-4 text-[#7A7574]">
+            {t("leaderboard:actions.subtitle")}
+          </div>
+        </div>
       </div>
 
       <ToggleSwitchFluent

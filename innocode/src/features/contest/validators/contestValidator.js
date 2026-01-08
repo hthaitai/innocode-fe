@@ -62,9 +62,10 @@ export const validateContest = (
     errors.registrationEnd = t("contest:validation.regEndAfterStart")
   } else if (
     data.start &&
-    new Date(data.registrationEnd) > new Date(data.start)
+    data.start &&
+    new Date(data.registrationEnd) >= new Date(data.start)
   ) {
-    errors.registrationEnd = t("contest:validation.regEndAfterContestStart")
+    errors.registrationEnd = t("contest:validation.regEndBeforeContestStart")
   } else if (!isEdit && new Date(data.registrationEnd) < now) {
     errors.registrationEnd = t("contest:validation.regEndPast")
   }

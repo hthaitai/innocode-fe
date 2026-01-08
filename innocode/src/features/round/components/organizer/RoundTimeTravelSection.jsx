@@ -25,9 +25,13 @@ const RoundTimeTravelSection = ({ roundId, isRetakeRound, problemType }) => {
       await mutation(roundId).unwrap()
       toast.success(successMessage)
     } catch (error) {
+      console.error(error)
+
       const msg =
         error?.data?.message || error?.data?.errorMessage || errorMessage
       toast.error(msg)
+
+      console.log(msg)
     }
   }
 

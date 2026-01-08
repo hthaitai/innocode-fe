@@ -5,7 +5,8 @@
       "mcqNoQuestions": "Bài thi trắc nghiệm '{{name}}' chưa có câu hỏi.",
       "autoEvalMissingConfig": "Vòng chấm tự động '{{name}}' phải có file mock test hoặc trường hợp kiểm thử.",
       "manualNoRubric": "Vòng chấm thủ công '{{name}}' thiếu tiêu chí chấm điểm (rubric).",
-      "noJudges": "Chưa có giám khảo được phân công cho các bài thi thủ công."
+      "noJudges": "Chưa có giám khảo được phân công cho các bài thi thủ công.",
+      "noRounds": "Không tìm thấy vòng thi nào"
     }
   },
   "certificate": {
@@ -28,6 +29,7 @@
     "regStartPast": "Ngày bắt đầu đăng ký không được trong quá khứ",
     "regEnd": "Ngày kết thúc đăng ký là bắt buộc",
     "regEndAfterStart": "Ngày kết thúc đăng ký phải sau ngày bắt đầu đăng ký",
+    "regEndBeforeContestStart": "Ngày kết thúc đăng ký phải sớm hơn ngày bắt đầu cuộc thi",
     "regEndAfterContestStart": "Ngày kết thúc đăng ký không được sau ngày bắt đầu cuộc thi",
     "regEndPast": "Ngày kết thúc đăng ký không được trong quá khứ",
     "teamMin": "Số thành viên tối thiểu là bắt buộc",

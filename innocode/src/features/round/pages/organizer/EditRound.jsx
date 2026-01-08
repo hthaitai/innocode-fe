@@ -96,6 +96,7 @@ const EditRound = () => {
 
     const formatted = {
       isRetakeRound: round.isRetakeRound,
+      mainRoundId: round.mainRoundId,
       mainRoundName: round.mainRoundName,
       name: round.roundName,
       start: toDatetimeLocal(round.start),

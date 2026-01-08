@@ -11,9 +11,10 @@ import { MissingState } from "@/shared/components/ui/MissingState"
 import { LoadingState } from "@/shared/components/ui/LoadingState"
 import { ErrorState } from "@/shared/components/ui/ErrorState"
 import { formatScore } from "@/shared/utils/formatNumber"
+import { formatDateTime } from "@/shared/utils/dateTime"
 
 const OrganizerLeaderboardMember = () => {
-  const { t } = useTranslation(["leaderboard", "pages"])
+  const { t } = useTranslation(["leaderboard", "pages", "round"])
   const { contestId, teamId, memberId } = useParams()
   const { openModal } = useModal()
 
@@ -142,11 +143,15 @@ const OrganizerLeaderboardMember = () => {
                 <div>
                   <p className="text-[14px] leading-5">{round.roundName}</p>
                   <div className="text-[12px] leading-4 text-[#7A7574] flex gap-[10px]">
-                    <span>{round.roundType || "N/A"}</span>
+                    <span>
+                      {t(`round:info.problemTypes.${round.roundType}`) ||
+                        round.roundType ||
+                        "N/A"}
+                    </span>
                     <span>|</span>
                     <span>
                       {round.completedAt
-                        ? new Date(round.completedAt).toLocaleString()
+                        ? formatDateTime(round.completedAt)
                         : t("leaderboard:notCompleted")}
                     </span>
                   </div>

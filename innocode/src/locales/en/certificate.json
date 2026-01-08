@@ -51,5 +51,8 @@
     "studentName": "Student name",
     "issuedAt": "Issued at",
     "view": "View"
+  },
+  "validation": {
+    "templateName": "Template name is required"
   }
 }

@@ -1,5 +1,6 @@
 {
   "leaderboardTitle": "Leaderboard",
+  "notAvailableYet": "Leaderboard not available yet",
   "awardTeamCertificate": "Award team certificate",
   "issueTeamCertificate": "Issue a certificate for the entire team",
   "award": "Award",
@@ -29,16 +30,24 @@
   "actions": {
     "freeze": "Freeze",
     "unfreeze": "Unfreeze",
-    "frozenSuccess": "Leaderboard frozen successfully",
-    "unfrozenSuccess": "Leaderboard unfrozen successfully",
+    "frozenSuccess": "Contest status changed to Paused successfully",
+    "unfrozenSuccess": "Contest status changed to Ongoing successfully",
+    "toggleFreezeInvalidStatus": "Cannot toggle freeze status. Contest must be Ongoing or Paused",
     "toggleFreezeError": "Failed to toggle freeze",
     "live": "Live",
-    "offline": "Offline"
+    "offline": "Offline",
+    "frozen": "Frozen",
+    "title": "Live Leaderboard",
+    "subtitle": "Manage leaderboard visibility and status"
   },
   "toolbar": {
     "download": "Download",
     "reportDownloading": "Report downloading...",
     "reportUrlNotFound": "Report URL not found",
     "downloadError": "Failed to download report"
+  },
+  "roles": {
+    "leader": "Leader",
+    "member": "Member"
   }
 }

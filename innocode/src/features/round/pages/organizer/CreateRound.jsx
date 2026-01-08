@@ -29,6 +29,8 @@ import {
   CONFLICT_ERROR_REGEX,
 } from "@/features/round/utils/errorUtils"
 
+import { NotificationState } from "../../../../shared/components/ui/NotificationState"
+
 const CreateRound = () => {
   const { contestId } = useParams()
   const { t } = useTranslation(["round", "common", "contest"])
@@ -37,6 +39,7 @@ const CreateRound = () => {
 
   const [form, setForm] = useState(EMPTY_ROUND)
   const [errors, setErrors] = useState({})
+  const [showNotification, setShowNotification] = useState(true)
 
   const {
     data: contest,
@@ -231,6 +234,14 @@ const CreateRound = () => {
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
               {t("create.title")}
             </div>
+            {showNotification && (
+              <div className="mb-1">
+                <NotificationState
+                  message={t("create.retakeRoundHint")}
+                  onClose={() => setShowNotification(false)}
+                />
+              </div>
+            )}
             <RoundForm
               contestId={contestId}
               formData={form}

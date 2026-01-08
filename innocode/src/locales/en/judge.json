@@ -110,7 +110,9 @@
       "submissionOrRubric": "submission or rubric",
       "submission": "submission",
       "validationFailed": "Validation failed",
-      "validationSummary": "Please fix {{count}} error(s)."
+      "validationSummary": "Please fix {{count}} error(s).",
+      "scoreMax": "Score cannot exceed {{max}}",
+      "scoreNegative": "Score cannot be negative"
     },
     "rubricItem": {
       "criteria": "Criteria {{index}}",

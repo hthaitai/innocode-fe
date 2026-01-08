@@ -29,6 +29,7 @@ export const statusColorMap = {
   disqualified: "bg-red-700",
   error: "bg-red-500",
   registrationclosed: "bg-red-600",
+  closed: "bg-red-600",
 
   escalated: "bg-purple-500",
 
@@ -36,17 +37,17 @@ export const statusColorMap = {
   cancelled: "bg-red-500",
   revoked: "bg-red-700",
   expired: "bg-gray-500",
-  pendinginvite: "bg-amber-400", 
+  pendinginvite: "bg-amber-400",
 
   notinvited: "bg-gray-400",
 }
 
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from "react-i18next"
 
 // StatusBadge component
-const StatusBadge = ({ status, translate = false }) => {
-  const { t } = useTranslation('pages')
-  
+const StatusBadge = ({ status, translate = false, label }) => {
+  const { t } = useTranslation("pages")
+
   if (!status) status = "draft"
 
   // Normalize status: lowercase, remove spaces & special chars
@@ -61,37 +62,41 @@ const StatusBadge = ({ status, translate = false }) => {
   const colorClass = statusColorMap[safeStatus] || "bg-gray-500"
 
   // Get display status
-  let displayStatus;
-  
+  let displayStatus
+
   // Check if this is a role registration status (pending, approved, denied)
   const roleRegistrationStatusMap = {
-    'pending': 'roleRegistrations.pending',
-    'approved': 'roleRegistrations.approved',
-    'denied': 'roleRegistrations.denied',
-  };
-  
-  const roleRegistrationKey = roleRegistrationStatusMap[safeStatus];
-  if (roleRegistrationKey) {
+    pending: "roleRegistrations.pending",
+    approved: "roleRegistrations.approved",
+    denied: "roleRegistrations.denied",
+  }
+
+  const roleRegistrationKey = roleRegistrationStatusMap[safeStatus]
+  if (label) {
+    displayStatus = label
+  } else if (roleRegistrationKey) {
     // Use translation for role registration status
-    displayStatus = t(roleRegistrationKey);
+    displayStatus = t(roleRegistrationKey)
   } else if (translate) {
     // Use translation for contest status
     // Map status to translation key
     const statusMap = {
-      'ongoing': 'contest.statusLabels.ongoing',
-      'upcoming': 'contest.statusLabels.upcoming',
-      'completed': 'contest.statusLabels.completed',
-      'published': 'contest.statusLabels.published',
-      'registrationopen': 'contest.statusLabels.registrationOpen',
-      'registrationclosed': 'contest.statusLabels.registrationClosed',
-      'draft': 'contest.statusLabels.draft',
-    };
-    
-    const translationKey = statusMap[safeStatus];
-    displayStatus = translationKey ? t(translationKey) : status
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .replace(/_/g, " ")
-      .trim();
+      ongoing: "contest.statusLabels.ongoing",
+      upcoming: "contest.statusLabels.upcoming",
+      completed: "contest.statusLabels.completed",
+      published: "contest.statusLabels.published",
+      registrationopen: "contest.statusLabels.registrationOpen",
+      registrationclosed: "contest.statusLabels.registrationClosed",
+      draft: "contest.statusLabels.draft",
+    }
+
+    const translationKey = statusMap[safeStatus]
+    displayStatus = translationKey
+      ? t(translationKey)
+      : status
+          .replace(/([a-z])([A-Z])/g, "$1 $2")
+          .replace(/_/g, " ")
+          .trim()
   } else {
     // Format display: split camelCase or snake_case into words
     displayStatus = status

@@ -26,13 +26,13 @@ export default function McqWeightModal({ isOpen, question, testId, onClose }) {
     const value = e.target.value
     setWeight(value)
     if (error) {
-      const validationError = validateWeight(value)
+      const validationError = validateWeight(value, t)
       setError(validationError)
     }
   }
 
   const handleSubmit = async () => {
-    const validationError = validateWeight(weight)
+    const validationError = validateWeight(weight, t)
     if (validationError) {
       setError(validationError)
       return

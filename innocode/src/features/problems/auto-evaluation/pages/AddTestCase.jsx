@@ -43,7 +43,7 @@ export default function AddTestCase() {
     useCreateRoundTestCaseMutation()
 
   const handleSubmit = async () => {
-    const validationErrors = validateTestCase(formData)
+    const validationErrors = validateTestCase(formData, { t })
     setErrors(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
       toast.error(`Please fix ${Object.keys(validationErrors).length} field(s)`)

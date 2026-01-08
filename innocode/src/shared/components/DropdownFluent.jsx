@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { ChevronDown } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 import { EASING } from "./ui/easing"
+import { useTranslation } from "react-i18next"
 
 const DropdownFluent = ({
   label,
@@ -13,6 +14,7 @@ const DropdownFluent = ({
   helperText = "",
   disabled = false,
 }) => {
+  const { t } = useTranslation("common")
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef(null)
   const itemRefs = useRef({}) // refs for each item
@@ -30,9 +32,9 @@ const DropdownFluent = ({
     return (
       options.find((opt) => opt.value === value)?.label ||
       placeholder ||
-      "Select..."
+      t("common.selectPlaceholder")
     )
-  }, [options, value, placeholder])
+  }, [options, value, placeholder, t])
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -169,8 +171,8 @@ const DropdownFluent = ({
             >
               <div className="overflow-y-auto max-h-[200px] overscroll-contain p-1 flex flex-col gap-1">
                 {options.length === 0 ? (
-                  <div className="px-3 py-2 text-sm text-[#7A7574] text-center">
-                    No options available
+                  <div className="py-1.5 px-3 text-sm leading-5 text-[#7A7574] text-center">
+                    {t("common.noOptionsAvailable")}
                   </div>
                 ) : (
                   options.map((option) => (

@@ -142,7 +142,11 @@ const OrganizerLeaderboardTeam = () => {
                       <User size={20} />
                       <div>
                         <p className="text-[14px] leading-5">
-                          {member.memberName} ({member.memberRole})
+                          {member.memberName} (
+                          {t(
+                            `leaderboard:roles.${member.memberRole?.toLowerCase()}`
+                          )}
+                          )
                         </p>
                       </div>
                     </div>

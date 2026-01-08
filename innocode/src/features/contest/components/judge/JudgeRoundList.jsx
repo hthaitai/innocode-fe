@@ -4,7 +4,7 @@ import { ChevronRight, Calendar } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 const JudgeRoundList = ({ rounds, onRoundClick }) => {
-  const { t } = useTranslation("judge")
+  const { t } = useTranslation(["judge", "round"])
 
   return (
     <ul className="space-y-1">
@@ -36,7 +36,10 @@ const JudgeRoundList = ({ rounds, onRoundClick }) => {
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <StatusBadge status={round.status} translate={true} />
+            <StatusBadge
+              status={round.status}
+              label={t(`round:status.${round.status?.toLowerCase()}`)}
+            />
             <ChevronRight size={20} className="text-[#7A7574]" />
           </div>
         </div>

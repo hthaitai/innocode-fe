@@ -1,14 +1,14 @@
 // Validate weight
-export const validateWeight = (value) => {
+export const validateWeight = (value, t = (key) => key) => {
   if (!value || value.trim() === "") {
-    return "Weight is required"
+    return t("round:validation.weight")
   }
   const numValue = Number(value)
   if (isNaN(numValue)) {
-    return "Weight must be a number"
+    return t("round:validation.weightNumber")
   }
   if (numValue <= 0) {
-    return "Weight must be greater than 0"
+    return t("round:validation.weightPositive")
   }
   return ""
 }

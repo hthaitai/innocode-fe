@@ -17,10 +17,32 @@ const StartEndRoundSection = ({ roundId }) => {
       await startRoundNow(roundId).unwrap()
       toast.success(t("actions.startSuccess"))
     } catch (error) {
+      if (
+        error?.data?.errorMessage === "Round already ended. Cannot start now."
+      ) {
+        toast.error(t("errors.roundAlreadyEnded"))
+        return
+      }
+
       const errorMessage =
         error?.data?.message ||
         error?.data?.errorMessage ||
         t("actions.startError")
+
+      const previousRoundRegex =
+        /Cannot start round '(.*?)' because previous round '(.*?)' is not finalized\./
+      const match = errorMessage.match(previousRoundRegex)
+
+      if (match) {
+        toast.error(
+          t("errors.previousRoundNotFinalized", {
+            currentRound: match[1],
+            previousRound: match[2],
+          })
+        )
+        return
+      }
+
       toast.error(errorMessage)
     }
   }

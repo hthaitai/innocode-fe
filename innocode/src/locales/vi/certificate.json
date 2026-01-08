@@ -48,8 +48,11 @@
   "issued": {
     "templateName": "Tên mẫu",
     "teamName": "Tên đội",
-    "studentName": "Tên sinh viên",
-    "issuedAt": "Ngày cấp",
+    "studentName": "Tên thí sinh",
+    "issuedAt": "Cấp ngày",
     "view": "Xem"
+  },
+  "validation": {
+    "templateName": "Tên mẫu chứng chỉ là bắt buộc"
   }
 }

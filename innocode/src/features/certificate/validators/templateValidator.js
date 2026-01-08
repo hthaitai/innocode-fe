@@ -1,10 +1,10 @@
-export const validateTemplate = (data) => {
+export const validateTemplate = (data, { t = (key) => key } = {}) => {
   const errors = {}
 
   // ---- Name ----
   const nameValue = String(data.name ?? "").trim()
   if (!nameValue) {
-    errors.name = "Template name is required"
+    errors.name = t("certificate:validation.templateName")
   }
 
   return errors

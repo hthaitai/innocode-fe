@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import BaseModal from "@/shared/components/BaseModal"
 import TestCaseForm from "./TestCaseForm"
 import { validateTestCase } from "@/shared/validators/testCaseValidator"
+import { useTranslation } from "react-i18next"
 
 export default function TestCaseModal({
   isOpen,
@@ -10,6 +11,7 @@ export default function TestCaseModal({
   onSubmit,
   onClose,
 }) {
+  const { t } = useTranslation(["common", "round"])
   const emptyData = {
     description: "",
     type: "public",
@@ -32,7 +34,7 @@ export default function TestCaseModal({
 
   // --- Submit handler ---
   const handleSubmit = async () => {
-    const validationErrors = validateTestCase(formData)
+    const validationErrors = validateTestCase(formData, { t })
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length === 0) {

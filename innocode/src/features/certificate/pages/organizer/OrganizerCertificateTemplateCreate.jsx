@@ -45,7 +45,7 @@ export default function OrganizerCertificateTemplateCreate() {
   const handleSubmit = async () => {
     if (submitting) return
 
-    const validationErrors = validateTemplate(formData)
+    const validationErrors = validateTemplate(formData, { t })
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)

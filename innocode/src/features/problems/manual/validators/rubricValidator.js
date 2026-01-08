@@ -1,19 +1,18 @@
-export const validateRubric = (data) => {
+export const validateRubric = (data, { t = (key) => key } = {}) => {
   const errors = {}
 
   // Description
   const descriptionValue = String(data.description ?? "").trim()
   if (!descriptionValue) {
-    errors.description = "Description is required."
+    errors.description = t("round:validation.description")
   } else if (descriptionValue.length > 500) {
-    errors.description = "Description cannot be longer than 500 characters."
+    errors.description = t("round:validation.descriptionMax", { max: 500 })
   }
 
   // Max Score
   if (data.maxScore <= 0) {
-    errors.maxScore = "Max score must be positive."
+    errors.maxScore = t("round:validation.rubric.maxScorePositive")
   }
 
   return errors
 }
-

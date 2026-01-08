@@ -2,6 +2,7 @@
   "create": {
     "title": "Tạo vòng thi",
     "activeRounds": "Các vòng thi đang hoạt động",
+    "retakeRoundHint": "Vòng thi lại phải được tạo ngay sau vòng chính. Vui lòng sắp xếp thứ tự tạo vòng thi cho phù hợp.",
     "submit": "Tạo",
     "submitting": "Đang tạo...",
     "success": "Tạo vòng thi thành công",
@@ -49,6 +50,9 @@
     "templateFile": "File mẫu là bắt buộc",
     "bufferError": "Thời gian bắt đầu phải sau thời gian kết thúc của vòng trước. Sớm nhất: {{date}}.",
     "conflictError": "Thời gian trùng với vòng '{{roundName}}' ({{startDate}} - {{endDate}}).",
+    "roundAlreadyEnded": "Vòng thi đã kết thúc. Không thể bắt đầu ngay.",
+    "previousRoundNotFinalized": "Không thể bắt đầu vòng '{{currentRound}}' vì vòng trước '{{previousRound}}' chưa được hoàn tất.",
+    "retakeRoundPlacement": "Vòng thi lại phải là vòng tiếp theo ngay sau vòng chính (không có vòng nào ở giữa).",
     "unknownError": "Đã xảy ra lỗi không xác định"
   },
   "detail": {
@@ -86,7 +90,10 @@
     "problemTypes": {
       "McqTest": "Trắc nghiệm",
       "AutoEvaluation": "Chấm tự động",
-      "Manual": "Chấm thủ công"
+      "Manual": "Chấm thủ công",
+      "mcq": "Trắc nghiệm",
+      "autoEvaluation": "Chấm tự động",
+      "manual": "Chấm thủ công"
     }
   },
   "openCode": {
@@ -166,6 +173,13 @@
     "error": "Xóa vòng thi thất bại."
   },
   "notFound": "Không tìm thấy vòng thi",
+  "status": {
+    "upcoming": "Sắp diễn ra",
+    "ongoing": "Đang diễn ra",
+    "running": "Đang diễn ra",
+    "completed": "Đã kết thúc",
+    "closed": "Đã đóng"
+  },
   "validation": {
     "retakeSelect": "Vui lòng chọn vòng thi để thi lại",
     "name": "Tên vòng thi là bắt buộc",
@@ -184,6 +198,21 @@
     "startInContest": "Thời gian bắt đầu phải nằm trong thời gian cuộc thi",
     "endInContest": "Thời gian kết thúc phải nằm trong thời gian cuộc thi",
     "overlap": "Thời gian vòng thi trùng với vòng thi khác",
-    "timeLimitNegative": "Giới hạn thời gian không được âm"
+    "timeLimitNegative": "Giới hạn thời gian không được âm",
+    "weight": "Trọng số là bắt buộc",
+    "weightNumber": "Trọng số phải là số",
+    "weightPositive": "Trọng số phải lớn hơn 0",
+    "descriptionMax": "Mô tả không được vượt quá {{max}} ký tự",
+    "rubric": {
+      "maxScorePositive": "Điểm tối đa phải là số dương"
+    },
+    "testCase": {
+      "description": "Mô tả là bắt buộc",
+      "input": "Input là bắt buộc",
+      "expectedOutput": "Expected output là bắt buộc",
+      "limit": "phải từ 255 ký tự trở xuống",
+      "timeLimit": "Giới hạn thời gian phải là số nguyên dương nếu được cung cấp",
+      "memoryLimit": "Giới hạn bộ nhớ phải là số nguyên dương nếu được cung cấp"
+    }
   }
 }

@@ -47,7 +47,7 @@ export default function RubricModal({
       formData.maxScore !== initialData.maxScore
 
   const handleSubmit = async () => {
-    const validationErrors = validateRubric(formData)
+    const validationErrors = validateRubric(formData, { t })
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length > 0) {

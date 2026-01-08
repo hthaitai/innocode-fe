@@ -75,7 +75,7 @@ export default function EditTestCase() {
   const handleSubmit = async () => {
     if (!formData) return
 
-    const validationErrors = validateTestCase(formData, { isEdit: true })
+    const validationErrors = validateTestCase(formData, { isEdit: true, t })
     setErrors(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
       toast.error(`Please fix ${Object.keys(validationErrors).length} field(s)`)

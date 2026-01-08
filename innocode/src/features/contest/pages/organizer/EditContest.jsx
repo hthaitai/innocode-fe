@@ -136,6 +136,20 @@ export default function EditContest() {
         return
       }
 
+      if (
+        err?.data?.errorCode === "BADREQUEST" &&
+        err?.data?.errorMessage ===
+          "Registration end date must be earlier than contest start date."
+      ) {
+        const errorMessage = t("contest:validation.regEndBeforeContestStart")
+        toast.error(errorMessage)
+        setErrors((prev) => ({
+          ...prev,
+          registrationEnd: errorMessage,
+        }))
+        return
+      }
+
       toast.error(
         err?.data?.errorMessage ||
           t("organizerContestForm.messages.updateError")

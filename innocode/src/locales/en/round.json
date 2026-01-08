@@ -2,6 +2,7 @@
   "create": {
     "title": "Create a round",
     "activeRounds": "Active rounds",
+    "retakeRoundHint": "Retake rounds must be created immediately after the main round. Please plan your round creation order accordingly.",
     "submit": "Create",
     "submitting": "Creating...",
     "success": "Round created successfully",
@@ -49,6 +50,9 @@
     "templateFile": "Template file is required",
     "bufferError": "Round start must be after previous round buffer. Earliest allowed: {{date}}.",
     "conflictError": "Round dates conflict with existing round '{{roundName}}' ({{startDate}} - {{endDate}}).",
+    "roundAlreadyEnded": "Round already ended. Cannot start now.",
+    "previousRoundNotFinalized": "Cannot start round '{{currentRound}}' because previous round '{{previousRound}}' is not finalized.",
+    "retakeRoundPlacement": "Retake round must be the immediate next round after its main round (no rounds in between).",
     "unknownError": "An unknown error occurred"
   },
   "detail": {
@@ -86,7 +90,10 @@
     "problemTypes": {
       "McqTest": "MCQ Test",
       "AutoEvaluation": "Auto Evaluation",
-      "Manual": "Manual Evaluation"
+      "Manual": "Manual Evaluation",
+      "mcq": "MCQ Test",
+      "autoEvaluation": "Auto Evaluation",
+      "manual": "Manual Evaluation"
     }
   },
   "openCode": {
@@ -166,6 +173,13 @@
     "error": "Failed to delete round."
   },
   "notFound": "Round Not Found",
+  "status": {
+    "upcoming": "Upcoming",
+    "ongoing": "Ongoing",
+    "running": "Running",
+    "completed": "Completed",
+    "closed": "Closed"
+  },
   "validation": {
     "retakeSelect": "Please select a round to retake",
     "name": "Round name is required",
@@ -184,6 +198,21 @@
     "startInContest": "Start time must be within contest period",
     "endInContest": "End time must be within contest period",
     "overlap": "Round time overlaps with an existing round",
-    "timeLimitNegative": "Time limit cannot be negative"
+    "timeLimitNegative": "Time limit cannot be negative",
+    "weight": "Weight is required",
+    "weightNumber": "Weight must be a number",
+    "weightPositive": "Weight must be greater than 0",
+    "descriptionMax": "Description cannot exceed {{max}} characters",
+    "rubric": {
+      "maxScorePositive": "Max score must be positive"
+    },
+    "testCase": {
+      "description": "Description is required",
+      "input": "Input is required",
+      "expectedOutput": "Expected output is required",
+      "limit": "must be 255 characters or less",
+      "timeLimit": "Time limit must be a positive integer if provided",
+      "memoryLimit": "Memory limit must be a positive integer if provided"
+    }
   }
 }

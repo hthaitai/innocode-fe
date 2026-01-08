@@ -1,4 +1,4 @@
-export const validateScores = (scores, rubric) => {
+export const validateScores = (scores, rubric, t = (key) => key) => {
   const errors = {}
 
   scores.forEach((s) => {
@@ -15,9 +15,11 @@ export const validateScores = (scores, rubric) => {
 
     // Validate Score
     if (s.score > rubricItem.maxScore) {
-      errors[s.rubricId].score = `Score cannot exceed ${rubricItem.maxScore}`
+      errors[s.rubricId].score = t("judge:evaluation.errors.scoreMax", {
+        max: rubricItem.maxScore,
+      })
     } else if (s.score < 0) {
-      errors[s.rubricId].score = "Score cannot be negative"
+      errors[s.rubricId].score = t("judge:evaluation.errors.scoreNegative")
     }
 
     // Validate Note

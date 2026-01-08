@@ -14,6 +14,15 @@ export const formatPublishError = (errorMessage) => {
   // "Contest end is too early to cover deadlines. Suggested end >= 2026-01-11 11:34:00 UTC."
   const endTooEarlyRegex =
     /Contest end is too early to cover deadlines\. Suggested end >= (.*?)(?:\.| UTC\.)$/
+
+  // Case 0: No rounds found (exact match or with period)
+  if (
+    errorMessage === "No rounds found" ||
+    errorMessage === "No rounds found."
+  ) {
+    return i18n.t("contest:publish.errors.noRounds")
+  }
+
   const endTooEarlyMatch = errorMessage.match(endTooEarlyRegex)
 
   if (endTooEarlyMatch) {

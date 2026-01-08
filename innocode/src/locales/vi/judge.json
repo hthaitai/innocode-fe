@@ -110,7 +110,9 @@
       "submissionOrRubric": "bài nộp hoặc rubric",
       "submission": "bài nộp",
       "validationFailed": "Xác thực thất bại",
-      "validationSummary": "Vui lòng sửa {{count}} lỗi."
+      "validationSummary": "Vui lòng sửa {{count}} lỗi.",
+      "scoreMax": "Điểm không được vượt quá {{max}}",
+      "scoreNegative": "Điểm không được âm"
     },
     "rubricItem": {
       "criteria": "Tiêu chí {{index}}",

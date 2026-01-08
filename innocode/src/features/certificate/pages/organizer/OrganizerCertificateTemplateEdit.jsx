@@ -90,7 +90,7 @@ export default function OrganizerCertificateTemplateEdit() {
       return
     }
 
-    const validationErrors = validateTemplate(formData)
+    const validationErrors = validateTemplate(formData, { t })
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)

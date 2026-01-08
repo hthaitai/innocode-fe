@@ -27,6 +27,14 @@ export const formatRoundError = (errorMessage) => {
     return i18n.t("round:errors.bufferError", { date: formattedDate })
   }
 
+  // Check for retake round placement error
+  if (
+    errorMessage ===
+    "Retake round must be the immediate next round after its main round (no rounds in between)."
+  ) {
+    return i18n.t("round:errors.retakeRoundPlacement")
+  }
+
   // Check for round date conflict error
   // "Round dates conflict with existing round '1' (2026-01-11T12:48:00Z - 2026-01-12T09:48:00Z)."
   match = errorMessage.match(CONFLICT_ERROR_REGEX)

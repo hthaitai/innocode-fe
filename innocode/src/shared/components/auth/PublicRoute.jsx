@@ -26,6 +26,9 @@ const PublicRoute = ({ children }) => {
     if (user?.role === "organizer") {
       return <Navigate to="/organizer/contests" replace />
     }
+    if (user?.role === "judge") {
+      return <Navigate to="/judge/contests" replace />
+    }
     return <Navigate to="/" replace />
   }
 

@@ -14,10 +14,10 @@ import RubricList from "../../components/RubricList"
 import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 import { validateScores } from "../../validators/evaluationValidator"
-import { AlertTriangle } from "lucide-react"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
+import { WarningState } from "../../../../shared/components/ui/WarningState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { useTranslation } from "react-i18next"
 
@@ -132,7 +132,7 @@ const JudgeManualEvaluationsPage = () => {
 
   const handleSubmitEvaluation = async () => {
     // Run centralized validator
-    const validationErrors = validateScores(scores, criteria)
+    const validationErrors = validateScores(scores, criteria, t)
     setErrors(validationErrors)
 
     // Stop submission if there are errors
@@ -175,17 +175,14 @@ const JudgeManualEvaluationsPage = () => {
       <AnimatedSection>
         <div className="space-y-5">
           {!isEditable && (
-            <div className="flex items-center gap-5 border border-yellow-400 bg-yellow-100 text-yellow-800 rounded-[5px] px-5 min-h-[70px] text-sm leading-5">
-              <AlertTriangle className="w-5 h-5" />
-              <span>
-                {t("evaluation.alert", {
-                  status: t(
-                    `manualSubmissions.filter.${submission.status}`,
-                    submission.status
-                  ).toLowerCase(),
-                })}
-              </span>
-            </div>
+            <WarningState
+              message={t("evaluation.alert", {
+                status: t(
+                  `manualSubmissions.filter.${submission.status}`,
+                  submission.status
+                ).toLowerCase(),
+              })}
+            />
           )}
 
           <SubmissionInfoSection

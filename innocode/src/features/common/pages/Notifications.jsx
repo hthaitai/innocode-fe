@@ -39,6 +39,8 @@ const Notifications = () => {
     }
   )
 
+  console.log(notificationsData)
+
   const [readNotification] = useReadNotificationMutation()
   const [readAllNotifications] = useReadAllNotificationsMutation()
 

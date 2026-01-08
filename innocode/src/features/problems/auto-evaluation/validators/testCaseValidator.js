@@ -1,4 +1,7 @@
-export const validateTestCase = (data, { isEdit = false } = {}) => {
+export const validateTestCase = (
+  data,
+  { isEdit = false, t = (key) => key } = {}
+) => {
   const errors = {}
 
   // Trim values early
@@ -8,37 +11,37 @@ export const validateTestCase = (data, { isEdit = false } = {}) => {
 
   // Description
   if (!description) {
-    errors.description = "Description is required"
+    errors.description = t("round:validation.testCase.description")
   } else if (description.length > 255) {
-    errors.description = "Description must be 255 characters or less"
+    errors.description = t("round:validation.testCase.limit")
   }
 
   // Input
   if (!input) {
-    errors.input = "Input is required"
+    errors.input = t("round:validation.testCase.input")
   } else if (input.length > 255) {
-    errors.input = "Input must be 255 characters or less"
+    errors.input = t("round:validation.testCase.limit")
   }
 
   // Expected Output
   if (!expectedOutput) {
-    errors.expectedOutput = "Expected output is required"
+    errors.expectedOutput = t("round:validation.testCase.expectedOutput")
   } else if (expectedOutput.length > 255) {
-    errors.expectedOutput = "Expected output must be 255 characters or less"
+    errors.expectedOutput = t("round:validation.testCase.limit")
   }
 
   // Weight
   if (data.weight == null || data.weight <= 0) {
-    errors.weight = "Weight must be greater than 0"
+    errors.weight = t("round:validation.weightPositive")
   }
 
   // Optional limits
   if (data.timeLimitMs != null && data.timeLimitMs <= 0) {
-    errors.timeLimitMs = "Time limit must be a positive integer if provided"
+    errors.timeLimitMs = t("round:validation.testCase.timeLimit")
   }
 
   if (data.memoryKb != null && data.memoryKb <= 0) {
-    errors.memoryKb = "Memory limit must be a positive integer if provided"
+    errors.memoryKb = t("round:validation.testCase.memoryLimit")
   }
 
   return errors

@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import { useTranslation } from "react-i18next"
 import { toast } from "react-hot-toast"
 import PageContainer from "@/shared/components/PageContainer"
@@ -24,20 +25,24 @@ import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 
 const OrganizerLeaderboard = () => {
-  const { t } = useTranslation(["leaderboard", "pages"])
+  const { t } = useTranslation(["leaderboard", "pages", "common", "contest"])
   const { contestId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
 
+  const isValidContestGuid = uuidValidate(contestId)
+
   const {
     data: contest,
     isLoading: contestLoading,
+    isError: isContestError,
     error: contestError,
   } = useGetContestByIdQuery(contestId)
 
   const {
     data: leaderboardData,
     isLoading: leaderboardLoading,
+    isError: isLeaderboardError,
     error: leaderboardError,
     refetch: refetchLeaderboard,
   } = useGetLeaderboardByContestQuery({ contestId, pageNumber, pageSize })
@@ -45,9 +50,12 @@ const OrganizerLeaderboard = () => {
   const entries = leaderboardData?.data?.teamIdList ?? []
   const pagination = leaderboardData?.additionalData ?? {}
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD(
-    contest?.name ?? "Contest"
-  )
+  const isContestNotFound = !isValidContestGuid || contestError?.status === 404
+
+  const breadcrumbItems = isContestNotFound
+    ? BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(t("contest:notFound"))
+    : BREADCRUMBS.ORGANIZER_LEADERBOARD(contest?.name ?? "Contest")
+
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_LEADERBOARD(contestId)
 
   if (contestLoading || leaderboardLoading) {
@@ -61,24 +69,30 @@ const OrganizerLeaderboard = () => {
     )
   }
 
-  if (contestError || leaderboardError) {
+  if (isContestError || !contest || !isValidContestGuid) {
+    const isContestNotFound =
+      contestError?.status === 404 || !contest || !isValidContestGuid
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        {isContestNotFound ? (
+          <MissingState itemName={t("common:common.contest")} />
+        ) : (
+          <ErrorState itemName={t("common:common.contest")} />
+        )}
+      </PageContainer>
+    )
+  }
+
+  if (isLeaderboardError && leaderboardError?.status !== 404) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
         <ErrorState itemName="leaderboard" />
-      </PageContainer>
-    )
-  }
-
-  if (!contest) {
-    return (
-      <PageContainer
-        breadcrumb={breadcrumbItems}
-        breadcrumbPaths={breadcrumbPaths}
-      >
-        <MissingState itemName="contest" />
       </PageContainer>
     )
   }
@@ -99,12 +113,18 @@ const OrganizerLeaderboard = () => {
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">
               {t("leaderboard:leaderboardTitle")}
             </div>
-            <ManageLeaderboard
-              contestId={contestId}
-              entries={entries}
-              pagination={pagination}
-              setPageNumber={setPageNumber}
-            />
+            {leaderboardError?.status === 404 ? (
+              <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
+                {t("leaderboard:notAvailableYet")}
+              </div>
+            ) : (
+              <ManageLeaderboard
+                contestId={contestId}
+                entries={entries}
+                pagination={pagination}
+                setPageNumber={setPageNumber}
+              />
+            )}
           </div>
         </div>
       </AnimatedSection>

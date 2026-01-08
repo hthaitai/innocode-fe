@@ -36,43 +36,34 @@ const LanguageSwitcher = () => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`text-sm leading-5 flex gap-3 justify-between items-center cursor-pointer border rounded-[5px] px-3 min-h-[32px] min-w-[130px] w-max bg-white transition-colors duration-150 ${
+        className={`text-sm leading-5 flex gap-2 items-center justify-center cursor-pointer border rounded-[5px] px-3 min-h-[32px] min-w-[130px] w-max bg-white transition-colors duration-150 ${
           isOpen
             ? "border-[#ECECEC] border-b-[#D3D3D3]"
             : "border-[#ECECEC] border-b-[#D3D3D3]"
         }`}
         aria-label="Change language"
       >
-        <div className="flex items-center gap-2">
-          <Icon icon={currentLanguage.icon} width="20" />
-          <span className="hidden sm:inline truncate">
-            {currentLanguage.name}
-          </span>
-        </div>
-        <Icon
-          icon="mdi:chevron-down"
-          className={`transition-transform duration-200 flex-shrink-0 text-[#7A7574] ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          width="16"
-        />
+        <Icon icon={currentLanguage.icon} width="20" />
+        <span className="hidden sm:inline truncate">
+          {currentLanguage.name}
+        </span>
       </button>
 
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ y: -10, opacity: 0 }}
+            initial={{ y: -20, opacity: 0 }}
             animate={{
               y: 0,
               opacity: 1,
-              transition: { duration: 0.3, ease: EASING.fluentOut },
+              transition: { duration: 0.5, ease: EASING.fluentOut },
             }}
             exit={{
               y: -10,
               opacity: 0,
-              transition: { duration: 0.2, ease: EASING.fluentOut },
+              transition: { duration: 0.25, ease: EASING.fluentOut },
             }}
-            className="absolute right-0 w-40 bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg overflow-hidden py-1 z-150"
+            className="absolute right-0 w-40 bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg overflow-hidden mt-2 z-150"
           >
             <div className="flex flex-col gap-1 p-1">
               {languages.map((lang) => {
