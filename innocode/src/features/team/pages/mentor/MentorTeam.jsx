@@ -256,7 +256,8 @@ const MentorTeam = () => {
       setActiveTab("myTeam")
       setTeamName("")
     } catch (error) {
-      const errorMessage = translateApiError(error, "errors") || t("team.failedToCreateTeam")
+      const errorMessage =
+        translateApiError(error, "errors") || t("team.failedToCreateTeam")
       setErrors({ submit: errorMessage })
     }
   }
@@ -334,8 +335,9 @@ const MentorTeam = () => {
       await Promise.all([refetchMyTeam(), refetchInvites()])
     } catch (error) {
       // Use translateApiError to get translated error message
-      const errorMessage = translateApiError(error, "errors") || t("team.failedToSendInvitation")
-      
+      const errorMessage =
+        translateApiError(error, "errors") || t("team.failedToSendInvitation")
+
       // Special handling for CONFLICT - refresh team data to get updated members
       if (error?.data?.errorCode === "CONFLICT" || error?.status === 409) {
         await refetchMyTeam()
@@ -376,7 +378,8 @@ const MentorTeam = () => {
     } catch (error) {
       // Close modal even on error
       if (onClose) onClose()
-      const errorMessage = translateApiError(error, "errors") || t("team.failedToDeleteTeam")
+      const errorMessage =
+        translateApiError(error, "errors") || t("team.failedToDeleteTeam")
       toast.error(errorMessage)
       setErrors({ submit: errorMessage })
     }
@@ -396,7 +399,8 @@ const MentorTeam = () => {
     } catch (error) {
       // Close modal even on error
       if (onClose) onClose()
-      const errorMessage = translateApiError(error, "errors") || t("team.failedToRemoveMember")
+      const errorMessage =
+        translateApiError(error, "errors") || t("team.failedToRemoveMember")
       toast.error(errorMessage)
       setInviteError(errorMessage)
     }
@@ -434,7 +438,8 @@ const MentorTeam = () => {
       // Refetch to update UI
       await refetchMyTeam()
     } catch (error) {
-      const errorMessage = translateApiError(error, "errors") || t("team.failedToUpdateTeamName")
+      const errorMessage =
+        translateApiError(error, "errors") || t("team.failedToUpdateTeamName")
       toast.error(errorMessage)
       setErrors({ submit: errorMessage })
     }

@@ -821,7 +821,7 @@ const ContestDetail = () => {
                           case "AutoEvaluation":
                             return `/auto-test-result/${contestId}/${round.roundId}`
                           case "Manual":
-                            return `/manual-problem/${contestId}/${round.roundId}`
+                            return `/manual-result/${contestId}/${round.roundId}`
                           default:
                             return null
                         }

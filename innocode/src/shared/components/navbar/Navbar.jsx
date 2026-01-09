@@ -100,7 +100,7 @@ const Navbar = () => {
   // Get user display name
   const getUserDisplayName = () => {
     if (!user) return ""
-    return user.name || user.email?.split("@")[0] || "User"
+    return user.fullName || user.name || user.email?.split("@")[0] || "User"
   }
 
   // Get role badge color

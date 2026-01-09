@@ -28,6 +28,7 @@ import Team from "./features/contest/student/Team"
 import Help from "./features/contest/student/Help"
 import MCQTest from "./features/quiz/student/MCQTest"
 import FinishQuiz from "./features/quiz/student/FinishQuiz"
+import StudentManualResult from "./features/problem/pages/student/StudentManualResult"
 // Auth
 import ManualRubricPage from "./features/problems/manual/pages/ManualRubricPage"
 import ManualResultsPage from "./features/problems/manual/pages/ManualResultsPage"
@@ -433,6 +434,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
             <StudentManualProblem />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "manual-result/:contestId/:roundId",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
+            <StudentManualResult />
           </ProtectedRoute>
         ),
       },
