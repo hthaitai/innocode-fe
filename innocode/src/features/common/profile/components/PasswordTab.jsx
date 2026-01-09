@@ -118,17 +118,17 @@ export default function PasswordTab() {
   }
 
   return (
-    <div className="p-8">
+    <div>
       <div className="mb-8">
-        <h3 className="text-2xl font-bold text-gray-800 mb-2 tracking-tight">
+        <h3 className="text-title-2 text-[#18181B] mb-2 font-bold tracking-tight">
           {t("profile.password.title")}
         </h3>
-        <p className="text-sm text-gray-400 font-medium">
+        <p className="text-body-1 text-[#52525B] font-medium">
           Secure your account by updating your password regularly.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-xl mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-xl">
         {[
           {
             id: "currentPassword",
@@ -156,22 +156,22 @@ export default function PasswordTab() {
           },
         ].map((field) => (
           <div key={field.id} className="group">
-            <label className="block text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-[0.1em] ml-1">
+            <label className="block text-caption-2-strong text-[#A1A1AA] mb-2 uppercase tracking-[0.1em] ml-1">
               {field.label}
             </label>
             <div
-              className={`relative bg-gray-50/50 border rounded-2xl p-1 transition-all duration-300 ${
+              className={`relative bg-white border rounded-[5px] p-1 transition-all duration-300 ${
                 errors[field.id]
                   ? "border-red-400 bg-red-50/30"
-                  : "border-gray-100 focus-within:border-orange-400 focus-within:ring-4 focus-within:ring-orange-50 focus-within:bg-white hover:border-orange-200"
+                  : "border-[#E5E5E5] focus-within:border-orange-400 focus-within:ring-4 focus-within:ring-orange-50 hover:border-orange-200"
               }`}
             >
               <div className="flex items-center gap-3 px-3">
                 <div
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`p-2 rounded-[5px] transition-colors ${
                     errors[field.id]
                       ? "bg-red-50 text-red-500"
-                      : "bg-white shadow-sm text-gray-400 group-focus-within:text-orange-500"
+                      : "bg-white text-[#A1A1AA] group-focus-within:text-[#E05307]"
                   }`}
                 >
                   <Icon icon={field.icon} className="h-5 w-5" />
@@ -181,13 +181,13 @@ export default function PasswordTab() {
                   value={formData[field.id]}
                   onChange={handleChange(field.id)}
                   placeholder={field.placeholder}
-                  className="flex-1 py-3 outline-none bg-transparent text-base text-gray-800 font-semibold placeholder-gray-300"
+                  className="flex-1 py-3 outline-none bg-transparent text-body-1 text-[#18181B] font-semibold placeholder-[#A1A1AA]"
                   disabled={isSubmitting}
                 />
                 <button
                   type="button"
                   onClick={() => field.setShow(!field.show)}
-                  className="p-2 hover:bg-orange-50 rounded-xl transition-all text-gray-400 hover:text-orange-500"
+                  className="p-2 hover:bg-orange-50 rounded-[5px] transition-all text-[#A1A1AA] hover:text-[#E05307]"
                   disabled={isSubmitting}
                 >
                   <Icon
@@ -203,7 +203,7 @@ export default function PasswordTab() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="text-xs text-red-500 font-medium mt-2 ml-2"
+                  className="text-caption-1 text-[#DC2626] font-medium mt-2 ml-2"
                 >
                   {errors[field.id]}
                 </motion.p>
@@ -217,12 +217,12 @@ export default function PasswordTab() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl shadow-sm shadow-green-100/50"
+              className="flex items-center gap-3 p-4 bg-[#F0FDF4] border border-[#dcfce7] rounded-[5px]"
             >
-              <div className="p-2 bg-white rounded-xl shadow-sm text-green-500">
+              <div className="p-2 bg-white rounded-full text-[#166534]">
                 <Icon icon="mdi:check-circle" className="h-5 w-5" />
               </div>
-              <p className="text-sm text-green-700 font-bold">
+              <p className="text-body-1 text-[#166534] font-bold">
                 {successMessage}
               </p>
             </motion.div>
@@ -233,13 +233,12 @@ export default function PasswordTab() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-2xl text-base font-bold shadow-lg shadow-orange-200 transition-all transform active:scale-[0.98] relative overflow-hidden group ${
+            className={`w-full bg-[#E05307] text-white py-3 rounded-[5px] text-body-1-strong shadow-lg transition-all transform active:scale-[0.98] relative overflow-hidden group ${
               isSubmitting
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:shadow-orange-300 hover:-translate-y-0.5"
+                : "hover:bg-[#C2410C]"
             }`}
           >
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="flex items-center justify-center gap-3 relative z-10">
               {isSubmitting ? (
                 <>

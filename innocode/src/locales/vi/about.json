@@ -1,41 +1,72 @@
 {
   "hero": {
-    "title1": "Chúng tôi xây dựng sân khấu.",
-    "title2": "Bạn viết nên tương lai.",
-    "description": "InnoCode là đấu trường hàng đầu cho các nhà phát triển để kiểm tra kỹ năng, cạnh tranh trong các thuật toán quan trọng và đẩy xa ranh giới của những gì có thể trong phần mềm."
+    "title1": "Chào mừng đến với",
+    "title2": "Thử thách InnoCode",
+    "description": "Hệ thống quản lý cuộc thi toàn diện cho các cuộc thi lập trình Python cấp trung học phổ thông. Phát hiện và nuôi dưỡng tài năng trẻ trong lĩnh vực khoa học máy tính."
   },
   "stats": {
-    "activeDevelopers": "Nhà phát triển đang hoạt động",
+    "activeDevelopers": "Lập trình viên tích cực",
     "challengesSolved": "Thử thách đã giải",
     "contestsHosted": "Cuộc thi đã tổ chức",
     "countries": "Quốc gia"
   },
   "mission": {
-    "title": "Kết nối khoảng cách giữa",
-    "titleHighlight": "tiềm năng và thành thạo",
-    "description1": "Chúng tôi bắt đầu InnoCode với một sứ mệnh đơn giản: tạo ra một nền tảng nơi lập trình không chỉ là về cú pháp, mà còn về giải quyết vấn đề, sáng tạo và hiệu suất.",
-    "description2": "Dù bạn là học sinh mới bắt đầu hay kỹ sư cao cấp muốn giữ sự sắc bén, các cuộc thi của chúng tôi cung cấp môi trường hoàn hảo để thử thách bản thân."
+    "title": "Bối cảnh &",
+    "titleHighlight": "Vấn đề",
+    "description1": "Các cuộc thi lập trình rất quan trọng để nuôi dưỡng tài năng, nhưng quy trình tổ chức hiện tại (đăng ký, hướng dẫn, kết quả) thường thủ công và phân mảnh.",
+    "description2": "Thử thách InnoCode hợp lý hóa điều này với hệ thống quản lý tập trung đa trường, chấm điểm tự động và phân tích thời gian thực."
   },
   "features": {
-    "title": "Được xây dựng cho các đối thủ",
-    "subtitle": "Mọi thứ bạn cần để tập trung vào code.",
+    "title": "Giải pháp của chúng tôi",
+    "subtitle": "Những đổi mới chính giải quyết các vấn đề hiện tại",
     "realTimeExecution": {
-      "title": "Thực thi thời gian thực",
-      "description": "Trải nghiệm thực thi code độ trễ cực thấp trong các sandbox biệt lập hỗ trợ hơn 40 ngôn ngữ."
+      "title": "Quản lý Tập trung",
+      "description": "Cổng thông tin thống nhất cho các trường đăng ký đội thi và giáo viên hướng dẫn theo dõi tiến độ của học sinh."
     },
     "globalLeaderboards": {
-      "title": "Bảng xếp hạng toàn cầu",
-      "description": "Cạnh tranh với các nhà phát triển giỏi nhất trên toàn thế giới và leo lên các bậc trong hệ thống ELO động của chúng tôi."
+      "title": "Chấm điểm Tự động",
+      "description": "Chấm điểm code Python tức thì, bảo mật, đảm bảo tính công bằng và minh bạch."
     },
     "instantFeedback": {
-      "title": "Phản hồi tức thì",
-      "description": "Nhận thông tin chi tiết ngay lập tức về độ phức tạp thời gian, sử dụng bộ nhớ và các lỗi trường hợp biên."
+      "title": "Phân tích Thời gian thực",
+      "description": "Bảng xếp hạng trực tiếp và báo cáo toàn diện để quản lý cuộc thi liền mạch."
+    }
+  },
+  "actors": {
+    "title": "Các Đối tượng Tham gia",
+    "subtitle": "Hệ sinh thái kết nối cộng đồng lập trình",
+    "admin": {
+      "title": "Quản trị viên",
+      "description": "Xem nhật ký hoạt động của người dùng và quản lý tài nguyên hệ thống."
+    },
+    "schoolManager": {
+      "title": "Quản lý Trường học",
+      "description": "Tạo và quản lý hồ sơ trường học."
+    },
+    "staff": {
+      "title": "Nhân viên",
+      "description": "Quản lý các trường do quản lý trường cung cấp và duyệt yêu cầu tạo trường."
+    },
+    "organizer": {
+      "title": "Ban Tổ chức",
+      "description": "Tạo luồng cuộc thi và quản lý lịch trình thi đấu."
+    },
+    "student": {
+      "title": "Học sinh",
+      "description": "Tham gia cuộc thi và thử thách lập trình."
+    },
+    "mentor": {
+      "title": "Giáo viên Hướng dẫn",
+      "description": "Tạo đội thi để cho phép học sinh tham gia cuộc thi."
+    },
+    "judge": {
+      "title": "Giám khảo",
+      "description": "Thực hiện chấm điểm thủ công cho các bài kiểm tra cần sự can thiệp của con người."
     }
   },
   "cta": {
-    "title": "Sẵn sàng tham gia bảng xếp hạng?",
-    "description": "Tham gia cùng hàng nghìn nhà phát triển giải quyết thử thách ngay hôm nay. Hoàn toàn miễn phí để bắt đầu.",
-    "button": "Bắt đầu Lập trình Ngay"
+    "title": "Sẵn sàng thi đấu?",
+    "description": "Tham gia nền tảng phục vụ cả phát triển tài năng và tuyển sinh đại học.",
+    "button": "Đăng ký Đội thi Ngay"
   }
 }
-

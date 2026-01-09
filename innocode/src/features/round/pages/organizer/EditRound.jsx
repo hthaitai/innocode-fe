@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
-import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { useNavigate, useParams } from "react-router-dom"
 import {
@@ -22,7 +21,6 @@ import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSectio
 import RoundDateInfo from "@/features/round/components/organizer/RoundDateInfo"
 import RoundsList from "../../components/organizer/RoundsList"
 import { useGetRoundsByContestIdQuery } from "../../../../services/roundApi"
-import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { EMPTY_ROUND } from "../../constants/roundConstants"
 import {
   formatRoundError,
@@ -40,13 +38,11 @@ const EditRound = () => {
     data: contest,
     isLoading: contestLoading,
     isError: isContestError,
-    error: contestError,
   } = useGetContestByIdQuery(contestId)
   const {
     data: round,
     isLoading: roundLoading,
     isError: isRoundError,
-    error: roundError,
   } = useGetRoundByIdQuery(roundId)
   const { data: roundsData, isLoading: roundsLoading } =
     useGetRoundsByContestIdQuery(contestId)
@@ -60,35 +56,14 @@ const EditRound = () => {
   const [updateRound, { isLoading: isUpdating }] = useUpdateRoundMutation()
 
   // Breadcrumbs
-  // Breadcrumbs
-  let breadcrumbItems
-  let breadcrumbPaths
-
-  const isContestNotFound =
-    contestError?.status === 404 || (!contest && isContestError)
-  const isRoundNotFound = roundError?.status === 404 || (!round && isRoundError)
-
-  if (isContestNotFound) {
-    breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(
-      t("contest:notFound")
-    )
-    breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
-  } else if (isRoundNotFound) {
-    breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
-      contest?.name,
-      t("round:notFound")
-    )
-    breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_DETAIL(
-      contestId,
-      roundId
-    )
-  } else {
-    breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_EDIT(
-      contest?.name ?? "Contest",
-      round?.roundName ?? "Round"
-    )
-    breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_EDIT(contestId, roundId)
-  }
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_EDIT(
+    contest?.name ?? t("common:common.contest"),
+    round?.roundName ?? t("common:common.round")
+  )
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_EDIT(
+    contestId,
+    roundId
+  )
 
   // Initialize form data once round is loaded
   useEffect(() => {
@@ -109,6 +84,7 @@ const EditRound = () => {
             type: round.problem?.type || round.problemType,
             testType: round.problem?.testType || "InputOutput",
             templateUrl: round.problem?.templateUrl,
+            mockTestWeight: round.problem?.mockTestWeight,
           }
         : null,
       TemplateFile: null,
@@ -188,6 +164,12 @@ const EditRound = () => {
             "ProblemConfig.TestType",
             formData.problemConfig.testType || "InputOutput"
           )
+          if (formData.problemConfig.testType === "MockTest") {
+            formPayload.append(
+              "ProblemConfig.MockTestWeight",
+              formData.problemConfig.mockTestWeight
+            )
+          }
         }
 
         // Only append TemplateFile if it's actually a File
@@ -237,32 +219,24 @@ const EditRound = () => {
     )
   }
 
-  if (isContestError || !contest) {
+  if (isContestError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isContestNotFound ? (
-          <MissingState itemName={t("common:common.contest")} />
-        ) : (
-          <ErrorState itemName={t("common:common.contest")} />
-        )}
+        <ErrorState itemName={t("common:common.contest")} />
       </PageContainer>
     )
   }
 
-  if (isRoundError || !round) {
+  if (isRoundError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isRoundNotFound ? (
-          <MissingState itemName={t("common:common.round")} />
-        ) : (
-          <ErrorState itemName={t("common:common.round")} />
-        )}
+        <ErrorState itemName={t("common:common.round")} />
       </PageContainer>
     )
   }

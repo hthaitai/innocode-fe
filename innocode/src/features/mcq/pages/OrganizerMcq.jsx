@@ -8,20 +8,27 @@ import { LoadingState } from "../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../shared/components/ui/ErrorState"
 import { useGetRoundMcqsQuery } from "../../../services/mcqApi"
 import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
-import { MissingState } from "../../../shared/components/ui/MissingState"
 import { useTranslation } from "react-i18next"
+import { useGetContestByIdQuery } from "../../../services/contestApi"
 
 const OrganizerMcq = () => {
-  const { t } = useTranslation(["common", "breadcrumbs"])
+  const { t } = useTranslation(["common", "breadcrumbs", "contest", "round"])
   const { contestId, roundId } = useParams()
   const [page, setPage] = useState(1)
   const pageSize = 10
 
   const {
+    data: contest,
+    isLoading: contestLoading,
+    isError: isContestError,
+  } = useGetContestByIdQuery(contestId)
+
+  const {
     data: round,
     isLoading: roundLoading,
-    isError: roundError,
+    isError: isRoundError,
   } = useGetRoundByIdQuery(roundId)
+
   const {
     data: mcqData,
     isLoading: mcqLoading,
@@ -33,12 +40,12 @@ const OrganizerMcq = () => {
   const pagination = mcqData?.additionalData ?? {}
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ(
-    round?.contestName ?? t("common.contest"),
+    contest?.name ?? t("common.contest"),
     round?.roundName ?? t("common.round")
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ(contestId, roundId)
 
-  if (roundLoading || mcqLoading) {
+  if (contestLoading || roundLoading || mcqLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -49,24 +56,35 @@ const OrganizerMcq = () => {
     )
   }
 
-  if (roundError || mcqError) {
+  if (isContestError) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName={t("common.contest")} />
+      </PageContainer>
+    )
+  }
+
+  if (isRoundError) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName={t("common.round")} />
+      </PageContainer>
+    )
+  }
+
+  if (mcqError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
         <ErrorState itemName={t("questions", { ns: "breadcrumbs" })} />
-      </PageContainer>
-    )
-  }
-
-  if (!round) {
-    return (
-      <PageContainer
-        breadcrumb={breadcrumbItems}
-        breadcrumbPaths={breadcrumbPaths}
-      >
-        <MissingState itemName={t("common.round")} />
       </PageContainer>
     )
   }

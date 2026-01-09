@@ -7,7 +7,7 @@ const Footer = () => {
   const { t } = useTranslation(["footer", "common"])
 
   return (
-    <footer className="w-full bg-[#18181B] text-gray-300 py-12 mt-16 border-t border-gray-800">
+    <footer className="w-full bg-[#18181B] text-gray-300 py-12 border-t border-gray-800">
       <div className="container mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Brand Column */}

@@ -1,28 +1,15 @@
-import React, { useCallback, useState, useEffect } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import { validate as uuidValidate } from "uuid"
+import React, { useState } from "react"
+import { useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { toast } from "react-hot-toast"
 import PageContainer from "@/shared/components/PageContainer"
-import TableFluent from "@/shared/components/TableFluent"
-import { Trophy, WifiOff } from "lucide-react"
-import ToggleSwitchFluent from "@/shared/components/ToggleSwitchFluent"
-import { formatDateTime } from "@/shared/utils/dateTime"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-import {
-  useGetLeaderboardByContestQuery,
-  useToggleFreezeLeaderboardMutation,
-} from "@/services/leaderboardApi"
+import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
 import { useGetContestByIdQuery } from "@/services/contestApi"
-import { getContestLeaderboardColumns } from "../../columns/getContestLeaderboardColumns"
-import { useLiveLeaderboard } from "../../hooks/useLiveLeaderboard"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
-import TablePagination from "../../../../shared/components/TablePagination"
 import LeaderboardActions from "../../components/LeaderboardActions"
 import ManageLeaderboard from "../../components/ManageLeaderboard"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
-import { MissingState } from "../../../../shared/components/ui/MissingState"
 
 const OrganizerLeaderboard = () => {
   const { t } = useTranslation(["leaderboard", "pages", "common", "contest"])
@@ -30,13 +17,10 @@ const OrganizerLeaderboard = () => {
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
 
-  const isValidContestGuid = uuidValidate(contestId)
-
   const {
     data: contest,
     isLoading: contestLoading,
     isError: isContestError,
-    error: contestError,
   } = useGetContestByIdQuery(contestId)
 
   const {
@@ -50,11 +34,9 @@ const OrganizerLeaderboard = () => {
   const entries = leaderboardData?.data?.teamIdList ?? []
   const pagination = leaderboardData?.additionalData ?? {}
 
-  const isContestNotFound = !isValidContestGuid || contestError?.status === 404
-
-  const breadcrumbItems = isContestNotFound
-    ? BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(t("contest:notFound"))
-    : BREADCRUMBS.ORGANIZER_LEADERBOARD(contest?.name ?? "Contest")
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD(
+    contest?.name ?? t("common:common.contest")
+  )
 
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_LEADERBOARD(contestId)
 
@@ -69,19 +51,13 @@ const OrganizerLeaderboard = () => {
     )
   }
 
-  if (isContestError || !contest || !isValidContestGuid) {
-    const isContestNotFound =
-      contestError?.status === 404 || !contest || !isValidContestGuid
+  if (isContestError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isContestNotFound ? (
-          <MissingState itemName={t("common:common.contest")} />
-        ) : (
-          <ErrorState itemName={t("common:common.contest")} />
-        )}
+        <ErrorState itemName={t("common:common.contest")} />
       </PageContainer>
     )
   }
@@ -92,7 +68,7 @@ const OrganizerLeaderboard = () => {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="leaderboard" />
+        <ErrorState itemName={t("leaderboard:leaderboardTitle")} />
       </PageContainer>
     )
   }

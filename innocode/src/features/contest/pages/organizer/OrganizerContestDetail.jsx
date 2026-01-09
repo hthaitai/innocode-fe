@@ -11,30 +11,24 @@ import DeleteContestSection from "../../components/organizer/DeleteContestSectio
 import StartEndContestSection from "../../components/organizer/StartEndContestSection"
 import StartEndRegistrationSection from "../../components/organizer/StartEndRegistrationSection"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
-import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
-import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { useTranslation } from "react-i18next"
+import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 
 const OrganizerContestDetail = () => {
   const { contestId } = useParams()
   const { t } = useTranslation(["pages", "contest", "common"])
 
-  const isValidGuid = uuidValidate(contestId)
-
   const {
     data: contest,
     isLoading,
     isError,
-    error,
   } = useGetContestByIdQuery(contestId)
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(
-    !isValidGuid || error?.status === 404
-      ? t("contest:notFound")
-      : contest?.name
+    contest?.name ?? t("common:common.contest")
   )
 
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
@@ -50,19 +44,13 @@ const OrganizerContestDetail = () => {
     )
   }
 
-  if (isError || !contest || !isValidGuid) {
-    const isNotFound = error?.status === 404 || !contest || !isValidGuid
-
+  if (isError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isNotFound ? (
-          <MissingState itemName={t("common:common.contest")} />
-        ) : (
-          <ErrorState itemName={t("common:common.contest")} />
-        )}
+        <ErrorState itemName={t("common:common.contest")} />
       </PageContainer>
     )
   }

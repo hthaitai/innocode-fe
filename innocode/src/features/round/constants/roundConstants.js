@@ -4,7 +4,7 @@ export const EMPTY_ROUND = {
   name: "",
   start: "",
   end: "",
-  timeLimitSeconds: 0,
+  timeLimitSeconds: 60,
   rankCutoff: 0,
   problemType: "",
   mcqTestConfig: { config: "" },

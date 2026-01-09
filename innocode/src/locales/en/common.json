@@ -78,7 +78,7 @@
     "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"?",
     "confirmDelete": "Confirm Delete",
     "thisItem": "this item",
-    "failedToLoadItem": "Failed to load {{item}}. Please try again.",
+    "failedToLoadItem": "Failed to load {{item}}.",
     "itemUnavailable": "This {{item}} is currently unavailable or deleted.",
     "round": "Round",
     "question": "Question",

@@ -1,8 +1,8 @@
 {
   "hero": {
-    "title1": "We build the stage.",
-    "title2": "You write the future.",
-    "description": "InnoCode is the premier arena for developers to test their skills, compete in high-stakes algorithms, and push the boundaries of what's possible in software."
+    "title1": "Welcome to",
+    "title2": "InnoCode Challenge",
+    "description": "A comprehensive contest management system for high school Python programming competitions. Identifying and nurturing young talents in computer science."
   },
   "stats": {
     "activeDevelopers": "Active Developers",
@@ -11,31 +11,62 @@
     "countries": "Countries"
   },
   "mission": {
-    "title": "Bridging the gap between",
-    "titleHighlight": "potential and mastery",
-    "description1": "We started InnoCode with a simple mission: to create a platform where coding isn't just about syntax, but about problem-solving, creativity, and performance.",
-    "description2": "Whether you are a student just starting out or a senior engineer looking to stay sharp, our contests provide the perfect environment to challenge yourself."
+    "title": "Context &",
+    "titleHighlight": "Problems",
+    "description1": "Programming contests are crucial for nurturing talent, but the current organization process (registration, mentoring, results) is often manual and fragmented.",
+    "description2": "InnoCode Challenge streamlines this with a centralized multi-school management system, automated judging, and real-time analytics."
   },
   "features": {
-    "title": "Built for Competitors",
-    "subtitle": "Everything you need to focus on the code.",
+    "title": "Our Solution",
+    "subtitle": "Key innovations solving current problems",
     "realTimeExecution": {
-      "title": "Real-time Execution",
-      "description": "Experience ultra-low latency code execution in isolated sandboxes supporting 40+ languages."
+      "title": "Centralized Management",
+      "description": "Unified portal for schools to register teams and mentors to track student progress."
     },
     "globalLeaderboards": {
-      "title": "Global Leaderboards",
-      "description": "Compete against the best developers worldwide and climb the ranks in our dynamic ELO system."
+      "title": "Automated Judging",
+      "description": "Instant, secure Python code grading ensuring fairness and transparency."
     },
     "instantFeedback": {
-      "title": "Instant Feedback",
-      "description": "Get immediate insights on time complexity, memory usage, and edge case failures."
+      "title": "Real-Time Analytics",
+      "description": "Live leaderboards and comprehensive reporting for seamless contest management."
+    }
+  },
+  "actors": {
+    "title": "System Actors",
+    "subtitle": "Key roles driving the ecosystem",
+    "admin": {
+      "title": "Admin",
+      "description": "See activity logs from other users and manage system resources."
+    },
+    "schoolManager": {
+      "title": "School Manager",
+      "description": "Create and manage school profiles."
+    },
+    "staff": {
+      "title": "Staff",
+      "description": "Manage schools offered by school managers and review creation requests."
+    },
+    "organizer": {
+      "title": "Organizer",
+      "description": "Create contest flows and manage competition schedules."
+    },
+    "student": {
+      "title": "Student",
+      "description": "Join contests and compete in programming challenges."
+    },
+    "mentor": {
+      "title": "Mentor",
+      "description": "Create teams to allow students to join contests."
+    },
+    "judge": {
+      "title": "Judge",
+      "description": "Perform manual evaluation for tests requiring human actions."
     }
   },
   "cta": {
-    "title": "Ready to join the leaderboard?",
-    "description": "Join thousands of developers solving challenges today. It's free to get started.",
-    "button": "Start Coding Now"
+    "title": "Ready to Compete?",
+    "description": "Join the platform serving both talent development and university recruitment.",
+    "button": "Register Your Team"
   }
 }
-

@@ -1,6 +1,5 @@
 import React from "react"
 import { useParams } from "react-router-dom"
-import { validate as uuidValidate } from "uuid"
 import { useTranslation } from "react-i18next"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
@@ -12,7 +11,6 @@ import DeleteRoundSection from "../../components/organizer/DeleteRoundSection"
 import RoundMockTestUpload from "../../components/organizer/RoundMockTestUpload"
 import { useGetRoundByIdQuery } from "../../../../services/roundApi"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
-import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
@@ -23,33 +21,22 @@ const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
   const { t } = useTranslation(["round", "common", "contest"])
 
-  const isValidContestGuid = uuidValidate(contestId)
-  const isValidRoundGuid = uuidValidate(roundId)
-
   const {
     data: contest,
     isLoading: isContestLoading,
     isError: isContestError,
-    error: contestError,
   } = useGetContestByIdQuery(contestId)
 
   const {
     data: round,
     isLoading: isRoundLoading,
     isError: isRoundError,
-    error: roundError,
   } = useGetRoundByIdQuery(roundId)
 
-  const isContestNotFound = !isValidContestGuid || contestError?.status === 404
-
-  const breadcrumbItems = isContestNotFound
-    ? BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(t("contest:notFound"))
-    : BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
-        contest?.name,
-        !isValidRoundGuid || roundError?.status === 404
-          ? t("round:notFound")
-          : round?.roundName
-      )
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
+    contest?.name ?? t("common:common.contest"),
+    round?.roundName ?? t("common:common.round")
+  )
 
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_DETAIL(
     contestId,
@@ -67,36 +54,24 @@ const OrganizerRoundDetail = () => {
     )
   }
 
-  if (isContestError || !contest || !isValidContestGuid) {
-    const isContestNotFound =
-      contestError?.status === 404 || !contest || !isValidContestGuid
+  if (isContestError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isContestNotFound ? (
-          <MissingState itemName={t("common:common.contest")} />
-        ) : (
-          <ErrorState itemName={t("common:common.contest")} />
-        )}
+        <ErrorState itemName={t("common:common.contest")} />
       </PageContainer>
     )
   }
 
-  if (isRoundError || !round || !isValidRoundGuid) {
-    const isRoundNotFound =
-      roundError?.status === 404 || !round || !isValidRoundGuid
+  if (isRoundError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isRoundNotFound ? (
-          <MissingState itemName={t("common:common.round")} />
-        ) : (
-          <ErrorState itemName={t("common:common.round")} />
-        )}
+        <ErrorState itemName={t("common:common.round")} />
       </PageContainer>
     )
   }

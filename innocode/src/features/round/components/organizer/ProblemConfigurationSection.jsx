@@ -92,6 +92,27 @@ export default function ProblemConfigurationSection({
               </div>
             </div>
 
+            {formData.problemConfig?.testType === "MockTest" && (
+              <div className="flex flex-col gap-2">
+                <Label required>{t("form.mockTestWeight")}</Label>
+                <div className="w-[150px]">
+                  <TextFieldFluent
+                    type="number"
+                    value={formData.problemConfig?.mockTestWeight || ""}
+                    onChange={(e) =>
+                      handleNestedChange(
+                        "problemConfig",
+                        "mockTestWeight",
+                        e.target.value
+                      )
+                    }
+                    error={!!errors.mockTestWeight}
+                    helperText={errors.mockTestWeight}
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col gap-2">
               <Label required>{t("form.description")}</Label>
               <TextFieldFluent

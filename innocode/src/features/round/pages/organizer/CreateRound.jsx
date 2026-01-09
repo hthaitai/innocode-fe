@@ -53,23 +53,10 @@ const CreateRound = () => {
   const rounds = roundsData?.data ?? []
 
   // Breadcrumbs
-  let breadcrumbItems
-  let breadcrumbPaths
-
-  const isContestNotFound =
-    contestError?.status === 404 || (!contest && isContestError)
-
-  if (isContestNotFound) {
-    breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(
-      t("contest:notFound")
-    )
-    breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
-  } else {
-    breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_CREATE(
-      contest?.name ?? "Contest"
-    )
-    breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_CREATE(contestId)
-  }
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_CREATE(
+    contest?.name ?? t("common:common.contest")
+  )
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_CREATE(contestId)
 
   const handleSubmit = async () => {
     let validationErrors = validateRound(form, contest, [], { t })
@@ -150,6 +137,12 @@ const CreateRound = () => {
             "ProblemConfig.TestType",
             form.problemConfig.testType || "InputOutput"
           )
+          if (form.problemConfig.testType === "MockTest") {
+            formPayload.append(
+              "ProblemConfig.MockTestWeight",
+              form.problemConfig.mockTestWeight
+            )
+          }
         }
         if (form.TemplateFile) {
           formPayload.append("ProblemConfig.TemplateFile", form.TemplateFile)
@@ -194,17 +187,13 @@ const CreateRound = () => {
     )
   }
 
-  if (isContestError || !contest) {
+  if (isContestError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isContestNotFound ? (
-          <MissingState itemName={t("common:common.contest")} />
-        ) : (
-          <ErrorState itemName={t("common:common.contest")} />
-        )}
+        <ErrorState itemName={t("common:common.contest")} />
       </PageContainer>
     )
   }

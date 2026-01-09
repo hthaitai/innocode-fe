@@ -27,7 +27,7 @@
     "roundName": "Tên vòng thi",
     "startDate": "Ngày bắt đầu",
     "endDate": "Ngày kết thúc",
-    "timeLimit": "Thời gian làm bài (giây)",
+    "timeLimit": "Thời gian làm bài (phút)",
     "teamsAdvancing": "Số đội đi tiếp",
     "enableRankCutoff": "Bật giới hạn đi tiếp",
     "problemType": "Loại đề thi",
@@ -43,7 +43,8 @@
     "inputOutput": "Input/Output",
     "mockTest": "Thi thử",
     "inputOutputLabel": "Nhập / Xuất",
-    "fileBasedLabel": "Nộp file"
+    "fileBasedLabel": "Nộp file",
+    "mockTestWeight": "Trọng số thi thử"
   },
   "contestPeriod": "Thời gian cuộc thi",
   "errors": {
@@ -85,7 +86,9 @@
       "second": " giây",
       "seconds": " giây",
       "team": " đội",
-      "teams": " đội"
+      "teams": " đội",
+      "minute": " phút",
+      "minutes": " phút"
     },
     "problemTypes": {
       "McqTest": "Trắc nghiệm",
@@ -206,6 +209,8 @@
     "rubric": {
       "maxScorePositive": "Điểm tối đa phải là số dương"
     },
+    "mockTestWeight": "Trọng số thi thử là bắt buộc",
+    "mockTestWeightNegative": "Trọng số thi thử không được âm",
     "testCase": {
       "description": "Mô tả là bắt buộc",
       "input": "Input là bắt buộc",

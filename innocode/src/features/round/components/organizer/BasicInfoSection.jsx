@@ -61,8 +61,24 @@ export default function BasicInfoSection({
           <TextFieldFluent
             name="timeLimitSeconds"
             type="number"
-            value={formData.timeLimitSeconds ?? ""}
-            onChange={onChange}
+            value={
+              formData.timeLimitSeconds ? formData.timeLimitSeconds / 60 : ""
+            }
+            onChange={(e) => {
+              const minutes = e.target.value
+              onChange({
+                target: {
+                  name: "timeLimitSeconds",
+                  value: minutes ? minutes * 60 : "",
+                },
+              })
+            }}
+            onKeyDown={(e) => {
+              // Block non-integer usage (decimals, exponents, signs)
+              if (["e", "E", "+", "-", "."].includes(e.key)) {
+                e.preventDefault()
+              }
+            }}
             error={!!errors.timeLimitSeconds}
             helperText={errors.timeLimitSeconds}
           />

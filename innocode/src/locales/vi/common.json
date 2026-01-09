@@ -78,7 +78,7 @@
     "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa \"{{name}}\" không?",
     "confirmDelete": "Xác nhận xóa",
     "thisItem": "mục này",
-    "failedToLoadItem": "Không thể tải {{item}}. Vui lòng thử lại.",
+    "failedToLoadItem": "Không thể tải {{item}}.",
     "itemUnavailable": "{{item}} này hiện không khả dụng hoặc đã bị xóa.",
     "round": "Vòng thi",
     "question": "Câu hỏi",

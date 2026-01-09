@@ -27,7 +27,7 @@
     "roundName": "Round name",
     "startDate": "Start date",
     "endDate": "End date",
-    "timeLimit": "Time limit (seconds)",
+    "timeLimit": "Time limit (minutes)",
     "teamsAdvancing": "Teams advancing",
     "enableRankCutoff": "Enable rank cutoff",
     "problemType": "Problem type",
@@ -43,7 +43,8 @@
     "inputOutput": "Input/Output",
     "mockTest": "Mock Test",
     "inputOutputLabel": "Input / Output",
-    "fileBasedLabel": "File-based"
+    "fileBasedLabel": "File-based",
+    "mockTestWeight": "Mock Test Weight"
   },
   "contestPeriod": "Contest Period",
   "errors": {
@@ -85,7 +86,9 @@
       "second": " second",
       "seconds": " seconds",
       "team": " team",
-      "teams": " teams"
+      "teams": " teams",
+      "minute": " minute",
+      "minutes": " minutes"
     },
     "problemTypes": {
       "McqTest": "MCQ Test",
@@ -206,6 +209,8 @@
     "rubric": {
       "maxScorePositive": "Max score must be positive"
     },
+    "mockTestWeight": "Mock test weight is required",
+    "mockTestWeightNegative": "Mock test weight must be non-negative",
     "testCase": {
       "description": "Description is required",
       "input": "Input is required",

@@ -74,14 +74,14 @@ const InfoField = ({
 
   return (
     <div className="group">
-      <label className="block text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-[0.1em] ml-1">
+      <label className="block text-caption-2-strong text-[#A1A1AA] mb-2 uppercase tracking-[0.1em] ml-1">
         {label}
       </label>
       <div
-        className={`relative bg-gray-50/50 border rounded-2xl p-4 transition-all duration-300 ${
+        className={`relative bg-white border rounded-[5px] p-4 transition-all duration-300 ${
           isEditing
-            ? "border-orange-400 ring-4 ring-orange-50 bg-white shadow-lg"
-            : "border-gray-100 hover:border-orange-200 hover:bg-white hover:shadow-md"
+            ? "border-orange-400 ring-4 ring-orange-50 shadow-lg"
+            : "border-[#E5E5E5] hover:border-orange-200 hover:shadow-md"
         }`}
       >
         <AnimatePresence mode="wait">
@@ -94,8 +94,8 @@ const InfoField = ({
               className="space-y-4"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-orange-50 rounded-lg">
-                  <Icon icon={icon} className="h-5 w-5 text-orange-500" />
+                <div className="p-2 bg-orange-50 rounded-[5px]">
+                  <Icon icon={icon} className="h-5 w-5 text-[#E05307]" />
                 </div>
                 <input
                   type={field === "email" ? "email" : "text"}
@@ -106,7 +106,7 @@ const InfoField = ({
                   }}
                   onKeyDown={handleKeyDown}
                   autoFocus
-                  className="flex-1 text-base text-gray-800 font-semibold bg-transparent border-none outline-none"
+                  className="flex-1 text-body-1 text-[#18181B] font-semibold bg-transparent border-none outline-none"
                   placeholder={t("profile.about.enterPlaceholder", {
                     field: label.toLowerCase(),
                   })}
@@ -117,28 +117,30 @@ const InfoField = ({
                 <motion.p
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="text-xs text-red-500 font-medium ml-12"
+                  className="text-caption-1 text-[#DC2626] font-medium ml-12"
                 >
                   {error}
                 </motion.p>
               )}
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#F3F3F3]">
                 <button
                   onClick={handleCancel}
                   disabled={isLoading}
-                  className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all disabled:opacity-50"
+                  className="px-4 py-2 text-caption-1-strong text-[#52525B] hover:text-[#18181B] hover:bg-[#F3F3F3] rounded-[5px] transition-all disabled:opacity-50"
+                  type="button"
                 >
                   {t("profile.about.cancel")}
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={isLoading || editValue.trim() === value}
-                  className={`px-5 py-2 text-sm font-bold text-white rounded-xl shadow-lg transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`px-5 py-2 text-caption-1-strong text-white rounded-[5px] shadow-lg transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
                     isLoading || editValue.trim() === value
-                      ? "bg-gray-300 shadow-none"
-                      : "bg-gradient-to-r from-orange-500 to-orange-600 hover:shadow-orange-200"
+                      ? "bg-[#A1A1AA] shadow-none"
+                      : "bg-[#E05307] hover:bg-[#C2410C]"
                   }`}
+                  type="button"
                 >
                   {isLoading
                     ? t("profile.about.saving")
@@ -154,17 +156,18 @@ const InfoField = ({
               className="flex items-center justify-between"
             >
               <div className="flex items-center gap-4">
-                <div className="p-2.5 bg-white shadow-sm border border-gray-100 rounded-xl text-gray-400 group-hover:text-orange-500 group-hover:border-orange-100 transition-colors">
+                <div className="p-2.5 bg-white shadow-sm border border-[#E5E5E5] rounded-[5px] text-[#A1A1AA] group-hover:text-[#E05307] group-hover:border-orange-100 transition-colors">
                   <Icon icon={icon} className="h-5 w-5" />
                 </div>
-                <span className="text-base text-gray-700 font-bold tracking-tight">
+                <span className="text-body-1 text-[#18181B] font-bold tracking-tight">
                   {value}
                 </span>
               </div>
               {showEdit && (
                 <button
                   onClick={() => onEdit(field)}
-                  className="p-2 opacity-0 group-hover:opacity-100 hover:bg-orange-50 text-gray-400 hover:text-orange-500 rounded-xl transition-all duration-300"
+                  className="p-2 opacity-0 group-hover:opacity-100 hover:bg-orange-50 text-[#A1A1AA] hover:text-[#E05307] rounded-[5px] transition-all duration-300 pointer-events-auto"
+                  type="button"
                 >
                   <Icon icon="mdi:pencil" className="h-5 w-5" />
                 </button>
@@ -217,9 +220,9 @@ export default function AboutTab({ user }) {
   }
 
   return (
-    <div className="p-8">
+    <div>
       <div className="mb-6">
-        <h3 className="text-2xl font-bold text-gray-800 mb-2">
+        <h3 className="text-title-2 text-[#18181B] mb-2 font-bold">
           {t("profile.about.title")}
         </h3>
       </div>

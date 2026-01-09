@@ -24,28 +24,36 @@ export default function Profile() {
 
   return (
     <PageContainer breadcrumb={BREADCRUMBS.PROFILE}>
-      <div className="max-w-4xl mx-auto">
-        <ProfileHeader user={userMe} role={role} />
+      <AnimatedSection>
+        <div className="space-y-6">
+          <ProfileHeader user={userMe} role={role} />
 
-        <div className="mb-6">
-          <TabNavigation tabs={tabs} activeTab={tab} onTabChange={setTab} />
-        </div>
+          <div>
+            <TabNavigation
+              tabs={tabs}
+              activeTab={tab}
+              onTabChange={setTab}
+              className="mb-4"
+            />
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden relative min-h-[400px]">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={tab}
-              initial={{ opacity: 0, x: tab === "about" ? -20 : 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: tab === "about" ? 20 : -20 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              {tab === "about" && <AboutTab user={userMe} />}
-              {tab === "password" && <PasswordTab />}
-            </motion.div>
-          </AnimatePresence>
+            <div className="bg-white rounded-[5px] border border-[#E5E5E5] min-h-[400px] overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={tab}
+                  initial={{ opacity: 0, x: tab === "about" ? -10 : 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: tab === "about" ? 10 : -10 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  className="p-6"
+                >
+                  {tab === "about" && <AboutTab user={userMe} />}
+                  {tab === "password" && <PasswordTab />}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
-      </div>
+      </AnimatedSection>
     </PageContainer>
   )
 }

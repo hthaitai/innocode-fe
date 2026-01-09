@@ -25,8 +25,8 @@ const RoundInfo = ({ round }) => {
   const formatPenaltyRate = (rate) =>
     rate == null || rate === "" ? "—" : `${(rate * 100).toFixed(0)}%`
 
-  const secondsSuffix = (val) =>
-    Number(val) === 1 ? t("info.suffixes.second") : t("info.suffixes.seconds")
+  const minutesSuffix = (val) =>
+    Number(val) === 1 ? t("info.suffixes.minute") : t("info.suffixes.minutes")
   const teamsSuffix = (val) =>
     Number(val) === 1 ? t("info.suffixes.team") : t("info.suffixes.teams")
 
@@ -56,7 +56,7 @@ const RoundInfo = ({ round }) => {
     { label: t("info.endDate"), value: safe(formatDateTime(round.end)) },
     {
       label: t("info.timeLimit"),
-      value: safe(round.timeLimitSeconds, secondsSuffix),
+      value: safe(round.timeLimitSeconds / 60, minutesSuffix),
     },
     {
       label: t("info.teamsAdvancing"),

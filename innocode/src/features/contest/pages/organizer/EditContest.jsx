@@ -28,7 +28,6 @@ export default function EditContest() {
     data: contest,
     isLoading,
     isError,
-    error,
   } = useGetContestByIdQuery(contestId)
   const [updateContest, { isLoading: updating }] = useUpdateContestMutation()
 
@@ -36,16 +35,11 @@ export default function EditContest() {
   const [originalData, setOriginalData] = useState(null)
   const [errors, setErrors] = useState({})
 
-  const isNotFound = error?.status === 404
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_EDIT(
+    contest?.name ?? t("common:common.contest")
+  )
 
-  const breadcrumbItems = isNotFound
-    ? BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(t("contest:notFound"))
-    : BREADCRUMBS.ORGANIZER_CONTEST_EDIT(
-        contest?.name ?? t("organizerContestForm.breadcrumb")
-      )
-  const breadcrumbPaths = isNotFound
-    ? BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
-    : BREADCRUMB_PATHS.ORGANIZER_CONTEST_EDIT(contestId)
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_EDIT(contestId)
 
   // Initialize form data once contest is loaded
   useEffect(() => {
@@ -168,18 +162,13 @@ export default function EditContest() {
     )
   }
 
-  if (isError || !contest) {
-    const isNotFound = error?.status === 404 || !contest
+  if (isError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isNotFound ? (
-          <MissingState itemName={t("common:common.contest")} />
-        ) : (
-          <ErrorState itemName={t("common:common.contest")} />
-        )}
+        <ErrorState itemName={t("common:common.contest")} />
       </PageContainer>
     )
   }

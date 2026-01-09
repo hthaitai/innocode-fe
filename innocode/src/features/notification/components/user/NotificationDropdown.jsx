@@ -4,10 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useGetNotificationsQuery } from "@/services/notificationApi"
 import { formatDateTime } from "@/shared/utils/dateTime"
-import "./NotificationDropdown.css"
-import {
-  useReadAllNotificationsMutation,
-} from "../../../../services/notificationApi"
+import { useReadAllNotificationsMutation } from "../../../../services/notificationApi"
 import useNotificationNavigation from "../../hooks/useNotificationNavigation"
 import {
   buildInterpolationValues,
@@ -54,7 +51,10 @@ const NotificationDropdown = ({ onClose }) => {
           defaultValue: rawMessage || tCommon("notification.noMessage"),
         })
       } else {
-        message = rawMessage || notification.payload || tCommon("notification.noMessage")
+        message =
+          rawMessage ||
+          notification.payload ||
+          tCommon("notification.noMessage")
       }
 
       return {
@@ -65,7 +65,6 @@ const NotificationDropdown = ({ onClose }) => {
       }
     })
   }, [notificationsData, tCommon, tNotifications])
-
 
   const handleReadAllNotifications = async () => {
     try {
@@ -92,11 +91,13 @@ const NotificationDropdown = ({ onClose }) => {
   }
 
   return (
-    <div className="notification-dropdown">
-      <div className="notification-dropdown-header">
-        <h3 className="notification-title">{tCommon("notification.title")}</h3>
+    <div className="bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg w-[380px] max-h-[500px] flex flex-col overflow-hidden">
+      <div className="p-4 border-b border-[#E5E5E5] flex justify-between items-center bg-white z-10">
+        <h3 className="text-subtitle-2 text-[#18181B] m-0">
+          {tCommon("notification.title")}
+        </h3>
         {notifications.length > 0 && (
-          <span className="notification-count">
+          <span className="text-caption-1-strong text-[#E05307]">
             {
               notifications.filter((notification) => !notification.isRead)
                 .length
@@ -106,19 +107,19 @@ const NotificationDropdown = ({ onClose }) => {
         )}
       </div>
 
-      <div className="notification-list">
+      <div className="overflow-y-auto max-h-[400px]">
         {isLoading ? (
-          <div className="notification-loading">
-            <Icon icon="mdi:loading" width="20" className="spinning" />
+          <div className="flex items-center justify-center p-8 gap-3 text-[#A1A1AA] text-body-1">
+            <Icon icon="mdi:loading" width="20" className="animate-spin" />
             <span>{tCommon("notification.loading")}</span>
           </div>
         ) : error ? (
-          <div className="notification-empty">
+          <div className="flex flex-col items-center justify-center p-8 gap-2 text-[#EF4444] text-body-1">
             <Icon icon="mdi:alert-circle-outline" width="24" />
             <span>{tCommon("notification.errorLoading")}</span>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="notification-empty">
+          <div className="flex flex-col items-center justify-center p-8 gap-2 text-[#A1A1AA] text-body-1">
             <Icon icon="mdi:bell-off-outline" width="24" />
             <span>{tCommon("notification.noNotifications")}</span>
           </div>
@@ -126,21 +127,28 @@ const NotificationDropdown = ({ onClose }) => {
           displayedNotifications.map((notification) => (
             <div
               key={notification.notificationId}
-              className="notification-item"
+              className="flex gap-3 p-4 border-b border-[#F3F3F3] cursor-pointer transition-colors duration-150 last:border-b-0 hover:bg-[#F9FAFB]"
               onClick={() => handleNotificationClick(notification)}
             >
-              <div className="notification-item-icon">
-                <Icon icon="mdi:information-outline" width="20" />
+              <div className="flex-shrink-0 mt-0.5 text-[#52525B]">
+                <Icon
+                  icon={
+                    !notification.isRead
+                      ? "mdi:email-mark-as-unread"
+                      : "mdi:email-open-outline"
+                  }
+                  width="20"
+                />
               </div>
-              <div className="notification-item-content">
+              <div className="flex-1 flex flex-col gap-1">
                 <div
-                  className={`notification-item-message ${
-                    !notification.isRead ? "font-bold" : ""
+                  className={`text-body-1 text-[#18181B] break-words line-clamp-2 ${
+                    !notification.isRead ? "text-body-1-strong" : ""
                   }`}
                 >
                   {notification.message}
                 </div>
-                <div className="notification-item-time">
+                <div className="text-caption-1 text-[#A1A1AA]">
                   {formatDateTime(notification.sentAt)}
                 </div>
               </div>
@@ -150,22 +158,27 @@ const NotificationDropdown = ({ onClose }) => {
       </div>
 
       {/* Footer with actions */}
-      <div className="notification-dropdown-footer">
-        {hasMoreNotifications && (
-          <button className="notification-view-all" onClick={handleViewAll}>
-            <span>{tCommon("notification.viewAll")}</span>
-            <Icon icon="mdi:chevron-right" width="16" />
-          </button>
-        )}
-        {notifications.length > 0 && (
-          <button
-            className="notification-mark-all"
-            onClick={handleReadAllNotifications}
-          >
-            {tCommon("notification.markAllAsRead")}
-          </button>
-        )}
-      </div>
+      {(hasMoreNotifications || notifications.length > 0) && (
+        <div className="p-3 border-t border-[#E5E5E5] flex justify-between items-center bg-[#FAFAFA]">
+          {hasMoreNotifications && (
+            <button
+              className="flex items-center gap-1 bg-transparent border-none text-[#E05307] text-caption-1-strong cursor-pointer hover:underline p-1"
+              onClick={handleViewAll}
+            >
+              <span>{tCommon("notification.viewAll")}</span>
+              <Icon icon="mdi:chevron-right" width="16" />
+            </button>
+          )}
+          {notifications.length > 0 && (
+            <button
+              className={`bg-transparent border-none text-[#52525B] text-caption-1 cursor-pointer hover:text-[#18181B] p-1 ml-auto transition-colors`}
+              onClick={handleReadAllNotifications}
+            >
+              {tCommon("notification.markAllAsRead")}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }

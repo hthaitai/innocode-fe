@@ -87,6 +87,22 @@ export const validateRound = (
     if (data.problemType === "AutoEvaluation" && !data.problemConfig.testType) {
       errors.problemConfigTestType = t("round:validation.testType")
     }
+
+    if (
+      data.problemType === "AutoEvaluation" &&
+      data.problemConfig.testType === "MockTest"
+    ) {
+      if (
+        data.problemConfig.mockTestWeight === undefined ||
+        data.problemConfig.mockTestWeight === null ||
+        data.problemConfig.mockTestWeight === ""
+      ) {
+        errors.mockTestWeight = t("round:validation.mockTestWeight")
+      } else if (Number(data.problemConfig.mockTestWeight) < 0) {
+        errors.mockTestWeight = t("round:validation.mockTestWeightNegative")
+      }
+    }
+
     // Template file validation
     if (!data.TemplateFile) {
       errors.templateFile = t("round:validation.templateFile")
