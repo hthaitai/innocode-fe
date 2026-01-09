@@ -1,41 +1,43 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import PageContainer from "@/shared/components/PageContainer";
-import { Icon } from "@iconify/react";
-import { ArrowLeft, Code, Moon, Sun, Clock } from "lucide-react";
-import useContestDetail from "@/features/contest/hooks/useContestDetail";
-import useStudentAutoEvaluation from "../../hooks/useStudentAutoEvaluation";
+import React, { useState, useEffect, useCallback } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import PageContainer from "@/shared/components/PageContainer"
+import { Icon } from "@iconify/react"
+import { ArrowLeft, Code, Moon, Sun, Clock } from "lucide-react"
+import useContestDetail from "@/features/contest/hooks/useContestDetail"
+import useStudentAutoEvaluation from "../../hooks/useStudentAutoEvaluation"
 import {
   useSubmitFinalAutoTestMutation,
   useSubmitAutoTestMutation,
   useSubmitNullSubmissionMutation,
-} from "@/services/autoEvaluationApi";
-import { toast } from "react-hot-toast";
-import { useRoundTimer } from "../../hooks/useRoundTimer";
-import ProblemDescription from "../../components/student/ProblemDescription";
-import CodeEditorSection from "../../components/student/CodeEditorSection";
-import TestResultsSection from "../../components/student/TestResultsSection";
+} from "@/services/autoEvaluationApi"
+import { toast } from "react-hot-toast"
+import { useRoundTimer } from "../../hooks/useRoundTimer"
+import ProblemDescription from "../../components/student/ProblemDescription"
+import CodeEditorSection from "../../components/student/CodeEditorSection"
+import TestResultsSection from "../../components/student/TestResultsSection"
 
 const StudentAutoEvaluation = () => {
-  const { contestId, roundId } = useParams();
-  const navigate = useNavigate();
+  const { contestId, roundId } = useParams()
+  const navigate = useNavigate()
+  const { t } = useTranslation("pages")
   // Fetch contest data
-  const { contest, loading, error } = useContestDetail(contestId);
+  const { contest, loading, error } = useContestDetail(contestId)
 
   // Theme state - lưu vào localStorage
   const [theme, setTheme] = useState(() => {
-    const savedTheme = localStorage.getItem("codeEditorTheme");
-    return savedTheme || "vs-dark";
-  });
+    const savedTheme = localStorage.getItem("codeEditorTheme")
+    return savedTheme || "vs-dark"
+  })
 
   // Lưu theme vào localStorage khi thay đổi
   useEffect(() => {
-    localStorage.setItem("codeEditorTheme", theme);
-  }, [theme]);
+    localStorage.setItem("codeEditorTheme", theme)
+  }, [theme])
 
   // Extract round and problem data
-  const round = contest?.rounds?.find((r) => r.roundId === roundId);
-  const problem = round?.problem;
+  const round = contest?.rounds?.find((r) => r.roundId === roundId)
+  const problem = round?.problem
 
   // Custom hook auto evaluation - pass problem to check mockTestUrl
   const {
@@ -56,50 +58,53 @@ const StudentAutoEvaluation = () => {
     handleClearCode,
     handleRunCode,
     handleFinalSubmit,
-  } = useStudentAutoEvaluation(contestId, roundId, problem);
+  } = useStudentAutoEvaluation(contestId, roundId, problem)
 
   // Direct submit mutation for auto-submit
-  const [submitFinalAutoTest] = useSubmitFinalAutoTestMutation();
-  const [submitAutoTest] = useSubmitAutoTestMutation();
-  const [submitNullSubmission] = useSubmitNullSubmissionMutation();
+  const [submitFinalAutoTest] = useSubmitFinalAutoTestMutation()
+  const [submitAutoTest] = useSubmitAutoTestMutation()
+  const [submitNullSubmission] = useSubmitNullSubmissionMutation()
 
   // Check if mockTestUrl exists to determine which API to use
-  const useMockTest = problem?.mockTestUrl !== null && problem?.mockTestUrl !== undefined;
+  const useMockTest =
+    problem?.mockTestUrl !== null && problem?.mockTestUrl !== undefined
 
-  const timeLimitMinutes = round?.timeLimitSeconds / 60;
-  const sampleTestCase = testCases?.data?.[0];
+  const timeLimitMinutes = round?.timeLimitSeconds / 60
+  const sampleTestCase = testCases?.data?.[0]
 
   // Auto-submit when time expires (direct submit without modal)
   // Submit ngay cả khi chưa có code (submit code trống)
   const handleAutoSubmit = useCallback(async () => {
-    if (finalSubmitting) return; // Đang submit rồi thì bỏ qua
+    if (finalSubmitting) return // Đang submit rồi thì bỏ qua
 
     try {
-      toast.dismiss();
-      toast.loading("Time is up! Submitting your solution...");
+      toast.dismiss()
+      toast.loading(t("autoEvaluation.timeUpSubmitting"))
 
-      let finalSubmissionId = submissionId;
+      let finalSubmissionId = submissionId
 
       // Nếu chưa có submissionId và không có code, gọi null-submission API
       if (!finalSubmissionId && (!code || code.trim() === "")) {
         try {
-          await submitNullSubmission(roundId).unwrap();
-          toast.dismiss();
-          toast.success(
-            "Null submission submitted! Your score has been added to the leaderboard."
-          );
-          console.log("✅ Null submission submitted for auto evaluation round");
-          return;
+          await submitNullSubmission(roundId).unwrap()
+          toast.dismiss()
+          toast.success(t("autoEvaluation.nullSubmissionSuccess"))
+          console.log("✅ Null submission submitted for auto evaluation round")
+          return
         } catch (error) {
-          console.error("❌ Failed to submit null submission:", error);
-          toast.dismiss();
+          console.error("❌ Failed to submit null submission:", error)
+          toast.dismiss()
           toast.error(
-            `Failed to submit. ${error?.data?.errorMessage || error?.message || "Unknown error"}`,
+            `${t("autoEvaluation.errorOccurred")}. ${
+              error?.data?.errorMessage ||
+              error?.message ||
+              t("common.unknownError")
+            }`,
             {
               duration: 3000,
             }
-          );
-          return;
+          )
+          return
         }
       }
 
@@ -110,43 +115,44 @@ const StudentAutoEvaluation = () => {
             roundId,
             code: code || "", // Submit code hiện tại hoặc code trống
             useMockTest: useMockTest, // Use mock test endpoint if mockTestUrl is not null
-          }).unwrap();
+          }).unwrap()
 
-          finalSubmissionId =
-            result?.data?.submissionId || result?.submissionId;
+          finalSubmissionId = result?.data?.submissionId || result?.submissionId
 
           if (!finalSubmissionId) {
-            throw new Error("Failed to get submission ID");
+            throw new Error("Failed to get submission ID")
           }
 
           // Đợi một chút để submission được xử lý
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          await new Promise((resolve) => setTimeout(resolve, 500))
         } catch (error) {
-          console.error("❌ Failed to submit code:", error);
-          toast.dismiss();
+          console.error("❌ Failed to submit code:", error)
+          toast.dismiss()
           toast.error(
-            `Failed to submit code. ${error?.data?.errorMessage || error?.message || "Unknown error"}`,
+            `${t("autoEvaluation.errorOccurred")}. ${
+              error?.data?.errorMessage ||
+              error?.message ||
+              t("common.unknownError")
+            }`,
             {
-              duration: 3000, // Tự động tắt sau 3 giây
+              duration: 3000,
             }
-          );
-          return;
+          )
+          return
         }
       }
 
       // Submit final với submissionId
-      await submitFinalAutoTest(finalSubmissionId).unwrap();
+      await submitFinalAutoTest(finalSubmissionId).unwrap()
 
-      toast.dismiss();
-      toast.success(
-        "Submission accepted! Your score has been added to the leaderboard."
-      );
+      toast.dismiss()
+      toast.success(t("autoEvaluation.submissionSuccess"))
     } catch (error) {
-      console.error("❌ Failed to auto-submit:", error);
-      toast.dismiss();
+      console.error("❌ Failed to auto-submit:", error)
+      toast.dismiss()
       toast.error(
-        error?.data?.errorMessage || "Failed to auto-submit. Please try again."
-      );
+        error?.data?.errorMessage || t("autoEvaluation.errorOccurred")
+      )
     }
   }, [
     submissionId,
@@ -158,13 +164,13 @@ const StudentAutoEvaluation = () => {
     roundId,
     code,
     submitNullSubmission,
-  ]);
+  ])
 
   // Timer for round
   const { timeRemaining, formatTime, isExpired } = useRoundTimer(
     round,
     handleAutoSubmit
-  );
+  )
   // Loading state
   if (loading || testCaseLoading) {
     return (
@@ -176,11 +182,13 @@ const StudentAutoEvaluation = () => {
               width="48"
               className="mx-auto mb-2 text-[#ff6b35] animate-spin"
             />
-            <p className="text-[#7A7574]">Loading problem...</p>
+            <p className="text-[#7A7574]">
+              {t("autoEvaluation.loadingProblem")}
+            </p>
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   // Error state
@@ -194,17 +202,18 @@ const StudentAutoEvaluation = () => {
             className="mx-auto mb-2 text-red-500"
           />
           <p className="text-[#7A7574]">
-            {testCaseError?.data?.errorMessage || "An error occurred"}
+            {testCaseError?.data?.errorMessage ||
+              t("autoEvaluation.errorOccurred")}
           </p>
           <button
             onClick={() => navigate(`/contest-detail/${contestId}`)}
             className="button-orange mt-4"
           >
-            Back to Contest
+            {t("autoEvaluation.backToContest")}
           </button>
         </div>
       </div>
-    );
+    )
   }
 
   // Not found state
@@ -217,16 +226,18 @@ const StudentAutoEvaluation = () => {
             width="48"
             className="mx-auto mb-2 text-[#7A7574]"
           />
-          <p className="text-[#7A7574]">Problem not found</p>
+          <p className="text-[#7A7574]">
+            {t("autoEvaluation.problemNotFound")}
+          </p>
           <button
             onClick={() => navigate(`/contest-detail/${contestId}`)}
             className="button-orange mt-4"
           >
-            Back to Contest
+            {t("autoEvaluation.backToContest")}
           </button>
         </div>
       </div>
-    );
+    )
   }
   return (
     <div className="w-full mt-[10px] mx-auto">
@@ -238,7 +249,7 @@ const StudentAutoEvaluation = () => {
             className="flex items-center gap-2 text-[#7A7574] hover:text-[#ff6b35] transition-colors"
           >
             <ArrowLeft size={16} />
-            <span className="text-sm">Back to Contest</span>
+            <span className="text-sm">{t("autoEvaluation.backToContest")}</span>
           </button>
 
           {/* Timer */}
@@ -247,7 +258,9 @@ const StudentAutoEvaluation = () => {
               <div className="flex items-center gap-2">
                 <Clock size={18} className="text-[#7A7574]" />
                 <div className="text-right">
-                  <p className="text-xs text-[#7A7574]">Time Remaining</p>
+                  <p className="text-xs text-[#7A7574]">
+                    {t("autoEvaluation.timeRemaining")}
+                  </p>
                   <p
                     className={`text-lg font-bold ${
                       timeRemaining < 300 ? "text-red-600" : "text-[#2d3748]"
@@ -267,7 +280,7 @@ const StudentAutoEvaluation = () => {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-[#2d3748]">
-              {round.roundName || "Name unknown"}
+              {round.roundName || t("common.nameUnknown")}
             </h1>
           </div>
         </div>
@@ -306,7 +319,7 @@ const StudentAutoEvaluation = () => {
       {/* Test Results Section */}
       <TestResultsSection testResult={testResult} isLoading={resultLoading} />
     </div>
-  );
-};
+  )
+}
 
-export default StudentAutoEvaluation;
+export default StudentAutoEvaluation

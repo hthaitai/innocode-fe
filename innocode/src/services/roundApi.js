@@ -79,14 +79,20 @@ export const roundApi = api.injectEndpoints({
         url: `rounds/${id}/start-now`,
         method: "PUT",
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Rounds", id }],
+      invalidatesTags: (result, error, id) => [
+        { type: "Rounds", id },
+        { type: "RoundTimeline", id },
+      ],
     }),
     endRoundNow: builder.mutation({
       query: (id) => ({
         url: `rounds/${id}/end-now`,
         method: "PUT",
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Rounds", id }],
+      invalidatesTags: (result, error, id) => [
+        { type: "Rounds", id },
+        { type: "RoundTimeline", id },
+      ],
     }),
     uploadMockTest: builder.mutation({
       query: ({ roundId, file }) => {
@@ -110,6 +116,13 @@ export const roundApi = api.injectEndpoints({
         { type: "Rounds", id: roundId },
       ],
     }),
+    getRoundTimeline: builder.query({
+      query: (roundId) => `rounds/${roundId}/timeline`,
+      transformResponse: (response) => response.data,
+      providesTags: (result, error, roundId) => [
+        { type: "RoundTimeline", id: roundId },
+      ],
+    }),
     appealSubmitEnd: builder.mutation({
       query: (roundId) => ({
         url: `rounds/${roundId}/time-travel/appeal-submit-end`,
@@ -117,6 +130,7 @@ export const roundApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, roundId) => [
         { type: "Rounds", id: roundId },
+        { type: "RoundTimeline", id: roundId },
       ],
     }),
     appealReviewEnd: builder.mutation({
@@ -126,6 +140,7 @@ export const roundApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, roundId) => [
         { type: "Rounds", id: roundId },
+        { type: "RoundTimeline", id: roundId },
       ],
     }),
     judgeDeadlineEnd: builder.mutation({
@@ -135,6 +150,7 @@ export const roundApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, roundId) => [
         { type: "Rounds", id: roundId },
+        { type: "RoundTimeline", id: roundId },
       ],
     }),
     finalizeRound: builder.mutation({
@@ -144,6 +160,7 @@ export const roundApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, roundId) => [
         { type: "Rounds", id: roundId },
+        { type: "RoundTimeline", id: roundId },
       ],
     }),
   }),
@@ -159,6 +176,7 @@ export const {
   useEndRoundNowMutation,
   useUploadMockTestMutation,
   useGetRoundMockTestUrlQuery,
+  useGetRoundTimelineQuery,
   useAppealSubmitEndMutation,
   useAppealReviewEndMutation,
   useJudgeDeadlineEndMutation,

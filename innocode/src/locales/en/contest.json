@@ -12,6 +12,7 @@
   "certificate": {
     "noTemplates": "No templates created yet."
   },
+  "nextProgress": "Next progress",
   "notFound": "Contest Not Found",
   "validation": {
     "imgFile": "Contest image is required",

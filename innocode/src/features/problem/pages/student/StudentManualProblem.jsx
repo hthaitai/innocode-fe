@@ -1,39 +1,42 @@
-import React, { useCallback, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import PageContainer from "@/shared/components/PageContainer";
-import { Icon } from "@iconify/react";
-import { ArrowLeft, FileText, Upload, Clock, Calendar, X } from "lucide-react";
-import useContestDetail from "@/features/contest/hooks/useContestDetail";
-import { useRoundTimer } from "../../hooks/useRoundTimer";
-import { useDropzone } from "react-dropzone";
-import { toast } from "react-hot-toast";
+import React, { useCallback, useState } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import PageContainer from "@/shared/components/PageContainer"
+import { Icon } from "@iconify/react"
+import { ArrowLeft, FileText, Upload, Clock, Calendar, X } from "lucide-react"
+import useContestDetail from "@/features/contest/hooks/useContestDetail"
+import { useRoundTimer } from "../../hooks/useRoundTimer"
+import { useDropzone } from "react-dropzone"
+import { toast } from "react-hot-toast"
 import {
   useSaveManualSubmissionMutation,
   useFinishRoundMutation,
   useSubmitNullSubmissionMutation,
-} from "@/services/manualProblemApi";
-import { useModal } from "@/shared/hooks/useModal";
+} from "@/services/manualProblemApi"
+import { useModal } from "@/shared/hooks/useModal"
+import { useTranslation } from "react-i18next"
 
 const StudentManualProblem = () => {
-  const { contestId, roundId } = useParams();
-  const navigate = useNavigate();
-  const { openModal } = useModal();
+  const { contestId, roundId } = useParams()
+  const navigate = useNavigate()
+  const { openModal } = useModal()
+  const { t } = useTranslation("pages")
+  const { t: tError } = useTranslation("errors")
 
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [savedSubmissionId, setSavedSubmissionId] = useState(null); // Store submissionId after save
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [savedSubmissionId, setSavedSubmissionId] = useState(null) // Store submissionId after save
 
   // RTK Query mutations
   const [saveManualSubmission, { isLoading: saving }] =
-    useSaveManualSubmissionMutation();
-  const [finishRound, { isLoading: finishing }] = useFinishRoundMutation();
-  const [submitNullSubmission] = useSubmitNullSubmissionMutation();
+    useSaveManualSubmissionMutation()
+  const [finishRound, { isLoading: finishing }] = useFinishRoundMutation()
+  const [submitNullSubmission] = useSubmitNullSubmissionMutation()
 
   // ✅ Fetch contest data to get round information
-  const { contest, loading, error } = useContestDetail(contestId);
+  const { contest, loading, error } = useContestDetail(contestId)
 
   // ✅ Find the specific round by roundId
-  const round = contest?.rounds?.find((r) => r.roundId === roundId);
-  const problem = round?.problem;
+  const round = contest?.rounds?.find((r) => r.roundId === roundId)
+  const problem = round?.problem
 
   // Auto-submit when time expires (direct submit without modal)
   // Submit ngay cả khi chưa có file (submit file trống)
@@ -42,50 +45,58 @@ const StudentManualProblem = () => {
       try {
         // Nếu không có saved submission, gọi null-submission API
         if (!savedSubmissionId) {
-          await submitNullSubmission(roundId).unwrap();
-          console.log("✅ Null submission submitted for manual round");
+          await submitNullSubmission(roundId).unwrap()
+          console.log("✅ Null submission submitted for manual round")
         } else {
           // Nếu có saved submission, finish round như bình thường
-          await finishRound(roundId).unwrap();
+          await finishRound(roundId).unwrap()
         }
       } catch (err) {
         // Silent error handling - no UI feedback
-        console.error("Auto-submit failed:", err);
+        console.error("Auto-submit failed:", err)
       }
     }
-  }, [finishing, finishRound, roundId, savedSubmissionId, submitNullSubmission]);
+  }, [finishing, finishRound, roundId, savedSubmissionId, submitNullSubmission])
 
   // Timer for round
   const { timeRemaining, formatTime, isExpired } = useRoundTimer(
     round,
     handleAutoSubmit
-  );
+  )
 
   const onDrop = useCallback(
     (acceptedFiles, rejectedFiles) => {
       if (isExpired) {
-        toast.dismiss();
-        toast.error("Time is up! You can no longer upload files.");
-        return;
+        toast.dismiss()
+        toast.error(t("manualProblemPage.timeIsUp"))
+        return
       }
 
       if (rejectedFiles.length > 0) {
-        const rejection = rejectedFiles[0];
-        toast.dismiss();
+        const rejection = rejectedFiles[0]
+        toast.dismiss()
         if (rejection.errors[0].code === "file-too-large") {
-          toast.error("File size must be less than 10MB");
+          toast.error(
+            t("manualProblemPage.fileTooLarge", {
+              defaultValue: "File size must be less than 10MB",
+            })
+          )
         } else if (rejection.errors[0].code === "file-invalid-type") {
-          toast.error("Only .zip and .rar files are allowed");
+          toast.error(
+            t("manualProblemPage.invalidFileType", {
+              defaultValue: "Only .zip and .rar files are allowed",
+            })
+          )
         }
       }
 
       if (acceptedFiles.length > 0) {
-        setSelectedFile(acceptedFiles[0]);
-        setSavedSubmissionId(null); // Reset saved submissionId when new file is selected
+        setSelectedFile(acceptedFiles[0])
+        setSavedSubmissionId(null) // Reset saved submissionId when new file is selected
       }
     },
     [isExpired]
-  );
+  )
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
@@ -97,106 +108,138 @@ const StudentManualProblem = () => {
     maxSize: 10 * 1024 * 1024,
     multiple: false,
     disabled: isExpired,
-  });
+  })
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
-  };
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const sizes = ["Bytes", "KB", "MB", "GB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i]
+  }
   const handleRemoveFile = () => {
-    setSelectedFile(null);
-    setSavedSubmissionId(null); // Reset saved submissionId when file is removed
-  };
+    setSelectedFile(null)
+    setSavedSubmissionId(null) // Reset saved submissionId when file is removed
+  }
+
+  // Helper function to translate error messages
+  const getErrorMessage = (err) => {
+    const errorCode = err?.data?.errorCode
+    const errorMessage = err?.data?.errorMessage || err?.message
+
+    // Check for specific error messages
+    if (errorMessage) {
+      if (errorMessage.includes("already finished this round")) {
+        return tError("submission.forbiddenCannotExecute")
+      }
+    }
+
+    // Try to find translation key from error code
+    if (errorCode) {
+      const translationKey = `submission.${
+        errorCode.charAt(0).toLowerCase() + errorCode.slice(1).replace(/_/g, "")
+      }`
+      const translated = tError(translationKey, { defaultValue: null })
+      if (translated) return translated
+    }
+
+    // Fallback to original error message
+    return errorMessage || tError("common.unexpectedError")
+  }
 
   // Handle Save: Save file without finishing
   const handleSave = async () => {
     if (!selectedFile) {
-      toast.dismiss();
-      toast.error("Please select a file to save");
-      return;
+      toast.dismiss()
+      toast.error(t("manualProblemPage.pleaseSelectFileToSave"))
+      return
     }
 
     // Check if file is empty
     if (selectedFile.size === 0) {
-      toast.dismiss();
-      toast.error("Cannot save empty file. Please select a valid file.");
-      return;
+      toast.dismiss()
+      toast.error(t("manualProblemPage.cannotSaveEmptyFile"))
+      return
     }
 
     try {
       const response = await saveManualSubmission({
         roundId,
         file: selectedFile,
-      }).unwrap();
+      }).unwrap()
 
       // Extract submissionId from response
       // Response structure: { data: 'submissionId', message: '...', statusCode: 201 }
-      const submissionId = response?.data || response;
+      const submissionId = response?.data || response
 
       if (!submissionId) {
-        console.error("❌ No submission ID in response:", response);
-        toast.error("Failed to get submission ID. Please try again.");
-        return;
+        console.error("❌ No submission ID in response:", response)
+        toast.error(
+          t("manualProblemPage.failedToGetSubmissionId", {
+            defaultValue: "Failed to get submission ID. Please try again.",
+          })
+        )
+        return
       }
 
-      console.log("✅ File saved, submissionId:", submissionId);
-      setSavedSubmissionId(submissionId);
-      toast.dismiss();
-      toast.success("File saved successfully! You can submit it later.");
+      console.log("✅ File saved, submissionId:", submissionId)
+      setSavedSubmissionId(submissionId)
+      toast.dismiss()
+      toast.success(t("manualProblemPage.fileSavedSuccess"))
     } catch (err) {
-      toast.dismiss();
-      toast.error(
-        `Failed to save: ${
-          err?.data?.errorMessage ||
-          err?.data?.message ||
-          err?.message ||
-          "Unknown error"
-        }`
-      );
+      console.error("❌ Save file error:", err)
+      console.error("Error details:", {
+        data: err?.data,
+        message: err?.message,
+        status: err?.status,
+      })
+      toast.dismiss()
+      toast.error(getErrorMessage(err))
     }
-  };
+  }
 
   // Handle Submit: Finish the round
   const handleSubmit = () => {
     if (!savedSubmissionId) {
-      toast.dismiss();
-      toast.error("Please save your file first before submitting");
-      return;
+      toast.dismiss()
+      toast.error(t("manualProblemPage.pleaseSaveFirst"))
+      return
     }
 
     if (!selectedFile) {
-      toast.dismiss();
-      toast.error("File not found. Please select a file and save it first.");
-      return;
+      toast.dismiss()
+      toast.error(t("manualProblemPage.fileNotFound"))
+      return
     }
 
     // Check if file is empty
     if (selectedFile.size === 0) {
-      toast.dismiss();
-      toast.error("Cannot submit empty file. Please select a valid file.");
-      return;
+      toast.dismiss()
+      toast.error(t("manualProblemPage.cannotSubmitEmptyFile"))
+      return
     }
 
     // Show confirm modal
     openModal("confirm", {
-      title: "Confirm Submission",
+      title: t("manualProblemPage.confirmSubmission"),
       description: (
         <div className="space-y-3">
           <p className="text-[#2d3748]">
-            Are you sure you want to submit{" "}
+            {t("manualProblemPage.areYouSureSubmit")}{" "}
             <strong>"{selectedFile.name}"</strong>?
           </p>
           <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-3">
             <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-[#7A7574]">File name:</span>
+              <span className="text-[#7A7574]">
+                {t("manualProblemPage.fileName")}
+              </span>
               <span className="font-semibold text-[#2d3748]">
                 {selectedFile.name}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-[#7A7574]">File size:</span>
+              <span className="text-[#7A7574]">
+                {t("manualProblemPage.fileSize")}
+              </span>
               <span className="font-semibold text-[#2d3748]">
                 {formatFileSize(selectedFile.size)}
               </span>
@@ -210,8 +253,7 @@ const StudentManualProblem = () => {
                 className="text-yellow-600 flex-shrink-0 mt-0.5"
               />
               <p className="text-sm text-yellow-800">
-                This will mark the round as finished. Once submitted, you cannot
-                change your submission.
+                {t("manualProblemPage.markRoundFinished")}
               </p>
             </div>
           </div>
@@ -219,40 +261,39 @@ const StudentManualProblem = () => {
       ),
       onConfirm: async () => {
         try {
-          await finishRound(roundId).unwrap();
-          toast.dismiss();
-          toast.success("Solution submitted and round finished successfully!");
+          await finishRound(roundId).unwrap()
+          toast.dismiss()
+          toast.success(t("manualProblemPage.submittedAndFinished"))
 
           // Navigate back to contest detail
-          setSelectedFile(null);
-          setSavedSubmissionId(null);
-          navigate(`/contest-detail/${contestId}`);
+          setSelectedFile(null)
+          setSavedSubmissionId(null)
+          navigate(`/contest-detail/${contestId}`)
         } catch (err) {
-          toast.dismiss();
-          toast.error(
-            `Failed to submit: ${
-              err?.data?.errorMessage ||
-              err?.data?.message ||
-              err?.message ||
-              "Unknown error"
-            }`
-          );
+          console.error("❌ Submit error:", err)
+          console.error("Error details:", {
+            data: err?.data,
+            message: err?.message,
+            status: err?.status,
+          })
+          toast.dismiss()
+          toast.error(getErrorMessage(err))
         }
       },
-    });
-  };
+    })
+  }
   // ✅ Format date helper
   const formatDate = (dateString) => {
-    if (!dateString) return "TBA";
-    const date = new Date(dateString);
+    if (!dateString) return "TBA"
+    const date = new Date(dateString)
     return date.toLocaleString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    });
-  };
+    })
+  }
 
   // Loading state
   if (loading) {
@@ -265,11 +306,13 @@ const StudentManualProblem = () => {
               width="48"
               className="mx-auto mb-2 text-[#ff6b35] animate-spin"
             />
-            <p className="text-[#7A7574]">Loading problem...</p>
+            <p className="text-[#7A7574]">
+              {t("manualProblemPage.loadingProblem")}
+            </p>
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   // Error state
@@ -283,7 +326,9 @@ const StudentManualProblem = () => {
               width="48"
               className="mx-auto mb-2 text-red-500"
             />
-            <p className="text-[#7A7574]">Failed to load problem</p>
+            <p className="text-[#7A7574]">
+              {t("manualProblemPage.failedToLoadProblem")}
+            </p>
             <p className="text-sm text-[#7A7574] mt-1">{error}</p>
             <button
               onClick={() => navigate(`/contest-detail/${contestId}`)}
@@ -294,7 +339,7 @@ const StudentManualProblem = () => {
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   // Not found state
@@ -308,7 +353,9 @@ const StudentManualProblem = () => {
               width="48"
               className="mx-auto mb-2 text-[#7A7574]"
             />
-            <p className="text-[#7A7574]">Problem not found</p>
+            <p className="text-[#7A7574]">
+              {t("manualProblemPage.problemNotFound")}
+            </p>
             <button
               onClick={() => navigate(`/contest-detail/${contestId}`)}
               className="button-orange mt-4"
@@ -318,7 +365,7 @@ const StudentManualProblem = () => {
           </div>
         </div>
       </PageContainer>
-    );
+    )
   }
 
   return (
@@ -332,7 +379,9 @@ const StudentManualProblem = () => {
               className="flex items-center gap-2 text-[#7A7574] hover:text-[#ff6b35] transition-colors"
             >
               <ArrowLeft size={16} />
-              <span className="text-sm">Back to Contest</span>
+              <span className="text-sm">
+                {t("manualProblemPage.backToContest")}
+              </span>
             </button>
 
             {/* Timer */}
@@ -340,7 +389,9 @@ const StudentManualProblem = () => {
               <div className="flex items-center gap-2">
                 <Clock size={18} className="text-[#7A7574]" />
                 <div className="text-right">
-                  <p className="text-xs text-[#7A7574]">Time Remaining</p>
+                  <p className="text-xs text-[#7A7574]">
+                    {t("manualProblemPage.timeRemaining")}
+                  </p>
                   <p
                     className={`text-lg font-bold ${
                       timeRemaining < 300 ? "text-red-600" : "text-[#2d3748]"
@@ -387,7 +438,9 @@ const StudentManualProblem = () => {
             <div className="flex items-center gap-2 text-sm">
               <Calendar size={16} className="text-[#7A7574]" />
               <div>
-                <div className="text-[#7A7574] text-xs">Start Time</div>
+                <div className="text-[#7A7574] text-xs">
+                  {t("manualProblemPage.startTime")}
+                </div>
                 <div className="font-medium text-[#2d3748]">
                   {formatDate(round.start)}
                 </div>
@@ -399,19 +452,19 @@ const StudentManualProblem = () => {
         {/* Problem Description */}
         <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6 mb-4">
           <h2 className="text-lg font-semibold text-[#2d3748] mb-4">
-            Problem Description
+            {t("manualProblemPage.problemDescription")}
           </h2>
           <div className="text-[#4a5568] space-y-3">
             {problem.description ? (
               <div className="whitespace-pre-line">{problem.description}</div>
             ) : (
-              <p>There are no scription!.</p>
+              <p>{t("manualProblemPage.noDescription")}</p>
             )}
 
             {/* Problem Details */}
             <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4 mt-4">
               <h3 className="font-semibold text-[#2d3748] mb-2 text-sm">
-                Problem Details
+                {t("manualProblemPage.problemDetails")}
               </h3>
               <div className="space-y-2 text-sm">
                 {problem.language && (
@@ -421,7 +474,9 @@ const StudentManualProblem = () => {
                       width="16"
                       className="text-[#7A7574]"
                     />
-                    <span className="text-[#7A7574]">Language:</span>
+                    <span className="text-[#7A7574]">
+                      {t("manualProblemPage.language")}
+                    </span>
                     <span className="text-[#2d3748] font-medium">
                       {problem.language}
                     </span>
@@ -436,7 +491,7 @@ const StudentManualProblem = () => {
                 className="inline mr-1"
                 width="16"
               />
-              Your submission will be manually reviewed and scored by the judge.
+              {t("manualProblemPage.manualReviewNote")}
             </p>
           </div>
         </div>
@@ -445,7 +500,7 @@ const StudentManualProblem = () => {
         <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6">
           <h2 className="text-lg font-semibold text-[#2d3748] mb-4 flex items-center gap-2">
             <Upload size={20} className="text-[#ff6b35]" />
-            Submit Your Solution
+            {t("manualProblemPage.submitYourSolution")}
           </h2>
 
           {/* Time Up Warning */}
@@ -454,7 +509,7 @@ const StudentManualProblem = () => {
               <div className="flex items-center gap-2 text-red-700">
                 <Icon icon="mdi:alert-circle" width={20} />
                 <span className="font-semibold">
-                  Time is up! You can no longer upload or submit files.
+                  {t("manualProblemPage.timeIsUp")}
                 </span>
               </div>
             </div>
@@ -494,8 +549,8 @@ const StudentManualProblem = () => {
                   {!isExpired && (
                     <button
                       onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveFile();
+                        e.stopPropagation()
+                        handleRemoveFile()
                       }}
                       className="p-1 hover:bg-[#fde8e8] rounded transition-colors"
                       title="Remove file"
@@ -518,19 +573,19 @@ const StudentManualProblem = () => {
                     }`}
                   >
                     {isExpired
-                      ? "File upload disabled (Time is up)"
+                      ? t("manualProblemPage.fileUploadDisabled")
                       : isDragActive
-                      ? "Drop the file here..."
-                      : "Drag and drop your solution file here, or click to browse"}
+                      ? t("manualProblemPage.dropFileHere")
+                      : t("manualProblemPage.dragAndDropFile")}
                   </p>
                   <div className="button-orange inline-flex items-center gap-2">
                     <div className="ml-[5px]">
                       <Icon icon="mdi:file-upload" />
                     </div>
-                    Choose File
+                    {t("manualProblemPage.chooseFile")}
                   </div>
                   <p className="text-xs text-[#7A7574] mt-3">
-                    Accepted formats: .rar, .zip (Max 10MB)
+                    {t("manualProblemPage.acceptedFormats")}
                   </p>
                 </>
               )}
@@ -546,13 +601,13 @@ const StudentManualProblem = () => {
                   !selectedFile ||
                   (selectedFile && selectedFile.size === 0) ||
                   round.status !== "Opened" ||
-                  isExpired;
+                  isExpired
                 if (isDisabled) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  return;
+                  e.preventDefault()
+                  e.stopPropagation()
+                  return
                 }
-                handleSave();
+                handleSave()
               }}
               className="button-white disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
               disabled={
@@ -565,11 +620,11 @@ const StudentManualProblem = () => {
               }
               title={
                 isExpired
-                  ? "Time is up"
+                  ? t("manualProblemPage.timeIsUpDisabled")
                   : !selectedFile
-                  ? "Please select a file"
+                  ? t("manualProblemPage.pleaseSelectFile")
                   : selectedFile && selectedFile.size === 0
-                  ? "File is empty"
+                  ? t("manualProblemPage.fileIsEmpty")
                   : ""
               }
             >
@@ -580,10 +635,10 @@ const StudentManualProblem = () => {
                     className="inline mr-2 animate-spin"
                     width="16"
                   />
-                  Saving...
+                  {t("manualProblemPage.saving")}
                 </>
               ) : (
-                "Save"
+                t("manualProblemPage.save")
               )}
             </button>
             <button
@@ -595,13 +650,13 @@ const StudentManualProblem = () => {
                   !selectedFile ||
                   (selectedFile && selectedFile.size === 0) ||
                   round.status !== "Opened" ||
-                  isExpired;
+                  isExpired
                 if (isDisabled) {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  return;
+                  e.preventDefault()
+                  e.stopPropagation()
+                  return
                 }
-                handleSubmit();
+                handleSubmit()
               }}
               className="button-orange disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
               disabled={
@@ -615,13 +670,13 @@ const StudentManualProblem = () => {
               }
               title={
                 isExpired
-                  ? "Time is up"
+                  ? t("manualProblemPage.timeIsUpDisabled")
                   : !savedSubmissionId
-                  ? "Please save your file first"
+                  ? t("manualProblemPage.pleaseSaveFirst")
                   : !selectedFile
-                  ? "File not found"
+                  ? t("manualProblemPage.fileNotFound")
                   : selectedFile && selectedFile.size === 0
-                  ? "File is empty"
+                  ? t("manualProblemPage.fileIsEmpty")
                   : ""
               }
             >
@@ -632,10 +687,10 @@ const StudentManualProblem = () => {
                     className="inline mr-2 animate-spin"
                     width="16"
                   />
-                  Submitting...
+                  {t("manualProblemPage.submitting")}
                 </>
               ) : (
-                "Submit"
+                t("manualProblemPage.submit")
               )}
             </button>
           </div>
@@ -651,18 +706,24 @@ const StudentManualProblem = () => {
             />
             <div className="text-sm">
               <p className="font-semibold text-[#2d3748] mb-1">
-                Important Instructions
+                {t("manualProblemPage.importantInstructions")}
               </p>
               <ul className="text-[#4a5568] space-y-1 list-disc list-inside">
-                <li>Make sure your file is properly formatted</li>
-                <li>Include all required documentation</li>
+                <li>{t("manualProblemPage.makeProperlyFormatted")}</li>
+                <li>{t("manualProblemPage.includeDocumentation")}</li>
                 <li>
-                  <strong>Save:</strong> Save your file first (required before
-                  submitting)
+                  <strong>{t("manualProblemPage.save")}:</strong>{" "}
+                  {t("manualProblemPage.saveInstruction").replace(
+                    /^Save: /,
+                    ""
+                  )}
                 </li>
                 <li>
-                  <strong>Submit:</strong> Submit and finish the round (marks
-                  round as finished) - Only available after saving
+                  <strong>{t("manualProblemPage.submit")}:</strong>{" "}
+                  {t("manualProblemPage.submitInstruction").replace(
+                    /^Submit: /,
+                    ""
+                  )}
                 </li>
               </ul>
               {savedSubmissionId && (
@@ -672,7 +733,7 @@ const StudentManualProblem = () => {
                     className="inline mr-1 text-green-600"
                     width="14"
                   />
-                  File saved successfully. You can submit it now.
+                  {t("manualProblemPage.fileSavedCanSubmit")}
                 </div>
               )}
             </div>
@@ -680,7 +741,7 @@ const StudentManualProblem = () => {
         </div>
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default StudentManualProblem;
+export default StudentManualProblem

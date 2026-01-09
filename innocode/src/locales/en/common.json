@@ -39,6 +39,7 @@
     "schoolmanager": "School Manager"
   },
   "common": {
+    "locale": "en",
     "timeExpired": "Time expired",
     "contest": "Contest",
     "loading": "Loading...",

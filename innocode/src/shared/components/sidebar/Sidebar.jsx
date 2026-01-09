@@ -180,7 +180,9 @@ const Sidebar = () => {
         </div>
 
         <div>
-          <div className="text-sm leading-5 font-medium">{user?.name}</div>
+          <div className="text-sm leading-5 font-medium">
+            {user?.fullName || user?.name}
+          </div>
           <div className="text-xs leading-4">
             {t(`roles.${role}`, role.charAt(0).toUpperCase() + role.slice(1))}{" "}
             {t("sidebar.account")}

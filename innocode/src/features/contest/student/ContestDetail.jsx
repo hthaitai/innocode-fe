@@ -821,7 +821,7 @@ const ContestDetail = () => {
                           case "AutoEvaluation":
                             return `/auto-test-result/${contestId}/${round.roundId}`
                           case "Manual":
-                            return `/manual-problem/${contestId}/${round.roundId}`
+                            return `/manual-result/${contestId}/${round.roundId}`
                           default:
                             return null
                         }
@@ -900,6 +900,10 @@ const ContestDetail = () => {
                                     ? "bg-[#fde8e8] text-[#d93025]"
                                     : round.status === "Opened"
                                     ? "bg-[#e6f4ea] text-[#34a853]"
+                                    : round.status === "Finalized"
+                                    ? "bg-[#e6f4ea] text-[#34a853]"
+                                    : round.status === "Incoming"
+                                    ? "bg-[#C6E2FF] text-[#6C7B8B]"
                                     : "bg-[#fef7e0] text-[#fbbc05]"
                                 }`}
                               >
@@ -907,7 +911,9 @@ const ContestDetail = () => {
                                   const status = round.status
                                   if (!status) return ""
 
-                                  const statusLower = status.toLowerCase()
+                                  const statusLower = status
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "")
                                   const translationKey = `contest.statusLabels.${statusLower}`
 
                                   // Try to get translation, fallback to original status

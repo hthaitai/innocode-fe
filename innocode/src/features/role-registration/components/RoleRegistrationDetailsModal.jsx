@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import BaseModal from "@/shared/components/BaseModal";
-import { useGetRoleRegistrationByIdQuery } from "@/services/roleRegistrationApi";
-import { useModal } from "@/shared/hooks/useModal";
+import React, { useState } from "react"
+import BaseModal from "@/shared/components/BaseModal"
+import { useGetRoleRegistrationByIdQuery } from "@/services/roleRegistrationApi"
+import { useModal } from "@/shared/hooks/useModal"
 
 const RoleRegistrationDetailsModal = ({
   isOpen,
@@ -9,18 +9,18 @@ const RoleRegistrationDetailsModal = ({
   registrationId,
   onSuccess,
 }) => {
-  const { closeModal } = useModal();
+  const { closeModal } = useModal()
   // isOpen is passed from ModalContext, default to true if not provided
-  const modalIsOpen = isOpen !== undefined ? isOpen : true;
-  
+  const modalIsOpen = isOpen !== undefined ? isOpen : true
+
   // Use closeModal from useModal hook, fallback to onClose prop
   const handleClose = () => {
     if (onClose) {
-      onClose();
+      onClose()
     } else {
-      closeModal();
+      closeModal()
     }
-  };
+  }
 
   const {
     data: registration,
@@ -29,7 +29,7 @@ const RoleRegistrationDetailsModal = ({
     error: queryError,
   } = useGetRoleRegistrationByIdQuery(registrationId, {
     skip: !registrationId || !modalIsOpen,
-  });
+  })
 
   if (isLoading) {
     return (
@@ -43,7 +43,7 @@ const RoleRegistrationDetailsModal = ({
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
         </div>
       </BaseModal>
-    );
+    )
   }
 
   if (queryError) {
@@ -66,7 +66,7 @@ const RoleRegistrationDetailsModal = ({
           </p>
         </div>
       </BaseModal>
-    );
+    )
   }
 
   if (!registration && !isLoading) {
@@ -81,7 +81,7 @@ const RoleRegistrationDetailsModal = ({
           Registration not found
         </div>
       </BaseModal>
-    );
+    )
   }
 
   const StatusBadge = ({ status }) => {
@@ -98,9 +98,9 @@ const RoleRegistrationDetailsModal = ({
         label: "Denied",
         className: "bg-red-100 text-red-800 border-red-200",
       },
-    };
+    }
 
-    const config = statusConfig[status?.toLowerCase()] || statusConfig.pending;
+    const config = statusConfig[status?.toLowerCase()] || statusConfig.pending
 
     return (
       <span
@@ -108,13 +108,13 @@ const RoleRegistrationDetailsModal = ({
       >
         {config.label}
       </span>
-    );
-  };
+    )
+  }
 
   return (
     <BaseModal
       isOpen={modalIsOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title="Role Registration Details"
       size="lg"
     >
@@ -243,15 +243,13 @@ const RoleRegistrationDetailsModal = ({
             <div className="space-y-2">
               {(registration.evidences || registration.evidenceFiles || []).map(
                 (evidence, index) => {
-                  const evidenceUrl = evidence.url || evidence;
+                  const evidenceUrl = evidence.url || evidence
                   const evidenceName =
                     evidence.name ||
-                    `Document ${index + 1}${
-                      evidence.type ? evidence.type : ""
-                    }`;
-                  const evidenceType = evidence.type || "";
-                  const evidenceNote = evidence.note;
-                  const evidenceDate = evidence.createdAt;
+                    `Document ${index + 1}${evidence.type ? evidence.type : ""}`
+                  const evidenceType = evidence.type || ""
+                  const evidenceNote = evidence.note
+                  const evidenceDate = evidence.createdAt
 
                   return (
                     <div
@@ -300,7 +298,7 @@ const RoleRegistrationDetailsModal = ({
                         )}
                       </div>
                     </div>
-                  );
+                  )
                 }
               )}
             </div>
@@ -317,7 +315,7 @@ const RoleRegistrationDetailsModal = ({
         ) : null}
       </div>
     </BaseModal>
-  );
-};
+  )
+}
 
-export default RoleRegistrationDetailsModal;
+export default RoleRegistrationDetailsModal

@@ -399,6 +399,20 @@ export const AuthProvider = ({ children }) => {
     setUser(null)
   }
 
+  // Update user data (useful for profile updates)
+  const updateUser = (updatedUserData) => {
+    // Get current user from localStorage or JWT
+    const currentStoredUser = localStorage.getItem("user")
+    const baseUser = currentStoredUser
+      ? JSON.parse(currentStoredUser)
+      : authService.getUser()
+
+    // Merge with updated data
+    const newUser = { ...baseUser, ...updatedUserData }
+    setUser(newUser)
+    localStorage.setItem("user", JSON.stringify(newUser))
+  }
+
   // Computed value: check if user is authenticated
   const isAuthenticated = !!token && !!user
 
@@ -417,6 +431,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         clearAuth,
+        updateUser,
         loading,
       }}
     >

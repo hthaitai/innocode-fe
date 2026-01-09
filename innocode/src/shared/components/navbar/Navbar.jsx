@@ -34,6 +34,28 @@ const Navbar = () => {
     }
   }
 
+  // Get user display name
+  const getUserDisplayName = () => {
+    if (!user) return ""
+    return user.fullName || user.name || user.email?.split("@")[0] || "User"
+  }
+
+  // Get role badge color
+  const getRoleBadgeClass = (role) => {
+    switch (role) {
+      case "admin":
+        return "role-badge-admin"
+      case "organizer":
+        return "role-badge-organizer"
+      case "student":
+        return "role-badge-student"
+      case "judge":
+        return "role-badge-judge"
+      default:
+        return "role-badge-default"
+    }
+  }
+
   const navLinks = [
     { name: t("navbar.home"), key: "home", to: "/" },
     { name: t("navbar.contests"), key: "contests", to: getContestsLink() },

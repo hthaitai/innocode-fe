@@ -225,6 +225,7 @@ const ContestTimeline = ({ timeline, loading }) => {
             {t("contest.timelineDescription")}
           </p>
 
+          {/* Vertical Timeline */}
           <div className="relative pl-4 ml-2">
             {/* Main Vertical Track */}
             <div className="absolute left-[3px] top-2 bottom-2 w-[2px] bg-gray-100"></div>
@@ -233,6 +234,10 @@ const ContestTimeline = ({ timeline, loading }) => {
               {phases.map((phase, index) => {
                 const isCompleted = index < currentPhaseIndex
                 const isActive = index === currentPhaseIndex
+                const isFuture = index > currentPhaseIndex
+                const isLast = index === phases.length - 1
+                const nextPhase =
+                  index < phases.length - 1 ? phases[index + 1] : null
 
                 return (
                   <div key={phase.key} className="relative pl-10">
@@ -258,6 +263,24 @@ const ContestTimeline = ({ timeline, loading }) => {
                       )}
                     </div>
 
+                    {/* Connecting Line Overlay - Only for active phase */}
+                    {isActive && !isLast && (
+                      <div className="absolute left-[-4px] top-6 w-[2px] bottom-[-24px] z-[5]">
+                        <div
+                          className="w-full h-full bg-gradient-to-b from-[#ff6b35] to-gray-100"
+                          style={{
+                            backgroundSize: "100% 200%",
+                            animation: "shimmerVertical 5s infinite",
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Completed Line Overlay */}
+                    {isCompleted && !isLast && (
+                      <div className="absolute left-[-4px] top-6 w-[2px] bottom-[-24px] z-[5] bg-[#ff6b35]"></div>
+                    )}
+
                     {/* Content */}
                     <div
                       className={`flex flex-col md:flex-row md:items-center justify-between gap-2 p-3 rounded-[8px] transition-all duration-300 ${
@@ -278,9 +301,15 @@ const ContestTimeline = ({ timeline, loading }) => {
                         >
                           {phase.label}
                         </span>
-                        {isActive && (
-                          <span className="text-[10px] font-bold text-orange-600 uppercase tracking-wider mt-0.5">
-                            {t("contest.currentlyActive")}
+                        {isActive && nextPhase && (
+                          <span className="text-[11px] font-semibold text-orange-600 mt-1 flex items-center gap-1.5">
+                            <span className="opacity-70">
+                              {t("contest:nextProgress")}
+                            </span>
+                            <span className="opacity-50">→</span>
+                            <span className="opacity-90">
+                              {nextPhase.label}
+                            </span>
                           </span>
                         )}
                       </div>
@@ -303,6 +332,18 @@ const ContestTimeline = ({ timeline, loading }) => {
           </div>
         </div>
       </div>
+
+      {/* Add shimmer animation for vertical */}
+      <style jsx>{`
+        @keyframes shimmerVertical {
+          0% {
+            background-position: 0 200%;
+          }
+          100% {
+            background-position: 0 -200%;
+          }
+        }
+      `}</style>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react"
 import { toast } from "react-hot-toast"
 import { useUpdateUserMeMutation } from "../../../../services/userApi"
 import { motion, AnimatePresence } from "framer-motion"
+import { useAuth } from "../../../../context/AuthContext"
 
 const InfoField = ({
   label,
@@ -182,6 +183,7 @@ const InfoField = ({
 
 export default function AboutTab({ user }) {
   const { t } = useTranslation("pages")
+  const { updateUser } = useAuth()
   const details = user?.details || {}
   const [editingField, setEditingField] = useState(null)
   const [updateUserMe, { isLoading }] = useUpdateUserMeMutation()
@@ -201,6 +203,10 @@ export default function AboutTab({ user }) {
       }
 
       await updateUserMe(payload).unwrap()
+
+      // Update AuthContext with new user data
+      updateUser({ [editingField]: newValue })
+
       const fieldName =
         editingField === "fullName"
           ? t("profile.about.fullName")

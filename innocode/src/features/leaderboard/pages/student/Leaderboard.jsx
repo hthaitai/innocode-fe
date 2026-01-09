@@ -252,15 +252,20 @@ const Leaderboard = () => {
   // Get status color class based on status
   const getStatusColorClass = (status) => {
     if (!status) return "text-gray-400"
+    const s = status.toLowerCase().replace(/\s+/g, "")
 
-    switch (status) {
-      case "Pending":
-      case "PlagiarismSuspected":
+    switch (s) {
+      case "pending":
+      case "plagiarismsuspected":
+      case "incoming":
+      case "upcoming":
         return "text-yellow-500"
-      case "PlagiarismConfirmed":
-      case "Cancelled":
+      case "plagiarismconfirmed":
+      case "cancelled":
         return "text-red-500"
-      case "Finished":
+      case "finished":
+      case "completed":
+      case "finalized":
         return "text-green-500"
       default:
         return "text-gray-400"
@@ -302,9 +307,6 @@ const Leaderboard = () => {
                     <p className="font-medium text-gray-900">
                       {member.memberName || t("leaderboard.unknownMember")}
                     </p>
-                    <p className="text-xs text-gray-500 capitalize">
-                      {member.memberRole || t("leaderboard.memberRole")}
-                    </p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -330,7 +332,7 @@ const Leaderboard = () => {
                         className="bg-gray-50 rounded px-3 py-2 border border-gray-200"
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <p className="text-xs font-medium text-gray-700 truncate">
+                          <p className="text-xs font-medium text-gray-700 ">
                             {round.roundName || t("leaderboard.round")}{" "}
                             {round.status && (
                               <span
@@ -338,12 +340,22 @@ const Leaderboard = () => {
                                   round.status
                                 )}`}
                               >
-                                {round.status}
+                                {(() => {
+                                  if (!round.status) return ""
+                                  const statusLower = round.status
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "")
+                                  const translationKey = `contest.statusLabels.${statusLower}`
+                                  const translated = t(translationKey)
+                                  return translated !== translationKey
+                                    ? translated
+                                    : round.status
+                                })()}
                               </span>
                             )}
                           </p>
-                          <span className="text-xs font-bold text-blue-600 ml-2">
-                            {formatScore(round.score)}
+                          <span className="text-xs font-bold text-nowrap text-blue-600 ml-2">
+                            {formatScore(round.score)} pts
                           </span>
                         </div>
                         <div className="flex items-center gap-1 mt-1">
