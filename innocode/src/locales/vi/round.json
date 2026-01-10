@@ -44,7 +44,9 @@
     "mockTest": "Thi thử",
     "inputOutputLabel": "Nhập / Xuất",
     "fileBasedLabel": "Nộp file",
-    "mockTestWeight": "Trọng số thi thử"
+    "mockTestWeight": "Trọng số thi thử",
+    "downloadTemplateLabel": "Tải xuống file mẫu",
+    "uploadTemplateLabel": "Tải lên file mẫu"
   },
   "contestPeriod": "Thời gian cuộc thi",
   "errors": {
@@ -58,7 +60,9 @@
   },
   "detail": {
     "relatedSettings": "Cài đặt liên quan",
-    "moreActions": "Thao tác khác"
+    "moreActions": "Thao tác khác",
+    "downloadTemplate": "Tải file mẫu",
+    "templateFile": "File mẫu"
   },
   "info": {
     "title": "Thông tin vòng thi",
@@ -112,7 +116,10 @@
     "download": "Tải xuống",
     "errorExtension": "Chỉ chấp nhận file .py",
     "success": "Tải lên mock test thành công",
-    "errorGeneric": "Tải lên thất bại"
+    "errorGeneric": "Tải lên thất bại",
+    "templateTitle": "Tải mẫu mock test",
+    "templateDescription": "Tải xuống mẫu chuẩn cho ban tổ chức",
+    "downloadTemplate": "Tải file mẫu"
   },
   "settings": {
     "rubric": "Tiêu chí đánh giá",

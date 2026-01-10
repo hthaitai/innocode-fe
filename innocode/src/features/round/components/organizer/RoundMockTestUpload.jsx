@@ -1,7 +1,7 @@
 import React, { useRef } from "react"
 import { useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { FileUp, FileCode } from "lucide-react"
+import { FileUp, FileCode, Upload } from "lucide-react"
 import {
   useUploadMockTestMutation,
   useGetRoundMockTestUrlQuery,
@@ -55,7 +55,7 @@ const RoundMockTestUpload = ({ roundId }) => {
             className="flex gap-5 items-center cursor-pointer"
             onClick={triggerFileUpload}
           >
-            <FileCode size={20} />
+            <Upload size={20} />
             <div>
               <p className="text-[14px] leading-[20px]">
                 {t("mockTest.title")}

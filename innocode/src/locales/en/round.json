@@ -10,7 +10,7 @@
     "errorGeneric": "Failed to create round"
   },
   "edit": {
-    "title": "Edit Round",
+    "title": "Edit round",
     "activeRounds": "Active rounds",
     "sectionTitle": "Edit round",
     "submit": "Save",
@@ -41,10 +41,12 @@
     "manual": "Manual test",
     "auto": "Auto test",
     "inputOutput": "Input/Output",
-    "mockTest": "Mock Test",
+    "mockTest": "Mock test",
     "inputOutputLabel": "Input / Output",
     "fileBasedLabel": "File-based",
-    "mockTestWeight": "Mock Test Weight"
+    "mockTestWeight": "Mock test weight",
+    "downloadTemplateLabel": "Download template file",
+    "uploadTemplateLabel": "Upload template file"
   },
   "contestPeriod": "Contest Period",
   "errors": {
@@ -58,7 +60,9 @@
   },
   "detail": {
     "relatedSettings": "Related settings",
-    "moreActions": "More Actions"
+    "moreActions": "More actions",
+    "downloadTemplate": "Download template",
+    "templateFile": "Template file"
   },
   "info": {
     "title": "Round information",
@@ -79,7 +83,7 @@
       "mcq": "Multiple Choice Questions (MCQ)",
       "auto": "Auto Evaluation (Auto-graded Coding)",
       "manual": "Manual Evaluation (Judge Review)",
-      "mockTest": "Mock Test",
+      "mockTest": "Mock test",
       "inputOutput": "Input/Output"
     },
     "suffixes": {
@@ -91,12 +95,12 @@
       "minutes": " minutes"
     },
     "problemTypes": {
-      "McqTest": "MCQ Test",
-      "AutoEvaluation": "Auto Evaluation",
-      "Manual": "Manual Evaluation",
-      "mcq": "MCQ Test",
-      "autoEvaluation": "Auto Evaluation",
-      "manual": "Manual Evaluation"
+      "McqTest": "MCQ test",
+      "AutoEvaluation": "Auto evaluation",
+      "Manual": "Manual evaluation",
+      "mcq": "MCQ test",
+      "autoEvaluation": "Auto evaluation",
+      "manual": "Manual evaluation"
     }
   },
   "openCode": {
@@ -112,7 +116,10 @@
     "download": "Download",
     "errorExtension": "Only .py files are allowed",
     "success": "Mock test uploaded successfully",
-    "errorGeneric": "Failed to upload mock test"
+    "errorGeneric": "Failed to upload mock test",
+    "templateTitle": "Download mock test template",
+    "templateDescription": "Download the standard template for organizer",
+    "downloadTemplate": "Download template"
   },
   "settings": {
     "rubric": "Manage rubric",
@@ -169,13 +176,13 @@
   },
   "delete": {
     "title": "Delete round",
-    "deleteBtn": "Delete Round",
+    "deleteBtn": "Delete round",
     "deleting": "Deleting...",
     "confirmMessage": "Are you sure you want to delete \"{{name}}\"?",
     "success": "Round deleted successfully!",
     "error": "Failed to delete round."
   },
-  "notFound": "Round Not Found",
+  "notFound": "Round not found",
   "status": {
     "upcoming": "Upcoming",
     "ongoing": "Ongoing",

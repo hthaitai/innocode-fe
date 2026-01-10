@@ -4,6 +4,7 @@ import DropdownFluent from "@/shared/components/DropdownFluent"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { AnimatePresence, motion } from "framer-motion"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import StudentMockTestTemplateDownload from "./StudentMockTestTemplateDownload"
 
 export default function ProblemConfigurationSection({
   formData,
@@ -95,21 +96,19 @@ export default function ProblemConfigurationSection({
             {formData.problemConfig?.testType === "MockTest" && (
               <div className="flex flex-col gap-2">
                 <Label required>{t("form.mockTestWeight")}</Label>
-                <div className="w-[150px]">
-                  <TextFieldFluent
-                    type="number"
-                    value={formData.problemConfig?.mockTestWeight || ""}
-                    onChange={(e) =>
-                      handleNestedChange(
-                        "problemConfig",
-                        "mockTestWeight",
-                        e.target.value
-                      )
-                    }
-                    error={!!errors.mockTestWeight}
-                    helperText={errors.mockTestWeight}
-                  />
-                </div>
+                <TextFieldFluent
+                  type="number"
+                  value={formData.problemConfig?.mockTestWeight || ""}
+                  onChange={(e) =>
+                    handleNestedChange(
+                      "problemConfig",
+                      "mockTestWeight",
+                      e.target.value
+                    )
+                  }
+                  error={!!errors.mockTestWeight}
+                  helperText={errors.mockTestWeight}
+                />
               </div>
             )}
 
@@ -139,8 +138,12 @@ export default function ProblemConfigurationSection({
               />
             </div>
 
+            {formData.problemConfig?.testType === "MockTest" && (
+              <StudentMockTestTemplateDownload />
+            )}
+
             <div className="flex flex-col gap-2">
-              <Label>{t("form.templateFile")}</Label>
+              <Label>{t("form.uploadTemplateLabel")}</Label>
               <div>
                 <input
                   type="file"
@@ -212,7 +215,7 @@ export default function ProblemConfigurationSection({
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>{t("form.templateFile")}</Label>
+              <Label>{t("form.uploadTemplateLabel")}</Label>
               <div>
                 <input
                   type="file"

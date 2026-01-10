@@ -163,6 +163,14 @@ export const roundApi = api.injectEndpoints({
         { type: "RoundTimeline", id: roundId },
       ],
     }),
+    getOrganizerMockTestTemplate: builder.query({
+      query: () => "auto-test/mock-test/organizer-template",
+      transformResponse: (response) => response.data,
+    }),
+    getStudentMockTestTemplate: builder.query({
+      query: () => "auto-test/mock-test/student-template",
+      transformResponse: (response) => response.data,
+    }),
   }),
 })
 
@@ -181,4 +189,6 @@ export const {
   useAppealReviewEndMutation,
   useJudgeDeadlineEndMutation,
   useFinalizeRoundMutation,
+  useGetOrganizerMockTestTemplateQuery,
+  useGetStudentMockTestTemplateQuery,
 } = roundApi

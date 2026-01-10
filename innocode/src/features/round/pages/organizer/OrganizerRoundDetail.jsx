@@ -9,6 +9,7 @@ import StartEndRoundSection from "../../components/organizer/StartEndRoundSectio
 import RoundRelatedSettings from "../../components/organizer/RoundRelatedSettings"
 import DeleteRoundSection from "../../components/organizer/DeleteRoundSection"
 import RoundMockTestUpload from "../../components/organizer/RoundMockTestUpload"
+import RoundMockTestTemplateDownload from "../../components/organizer/RoundMockTestTemplateDownload"
 import { useGetRoundByIdQuery } from "../../../../services/roundApi"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
@@ -96,7 +97,10 @@ const OrganizerRoundDetail = () => {
             <div className="space-y-1">
               {round.problemType === "AutoEvaluation" &&
                 round.problem?.testType === "MockTest" && (
-                  <RoundMockTestUpload roundId={round.roundId} />
+                  <>
+                    <RoundMockTestTemplateDownload />
+                    <RoundMockTestUpload roundId={round.roundId} />
+                  </>
                 )}
 
               <RoundRelatedSettings contestId={contestId} round={round} />
