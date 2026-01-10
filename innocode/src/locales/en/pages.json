@@ -1090,6 +1090,16 @@
       "contests": "contests",
       "contestStatusBreakdown": "Contest Status Breakdown"
     },
+    "status": {
+      "live": "Live Updates",
+      "offline": "Offline"
+    },
+    "notifications": {
+      "contestCreated": "A new contest has been created!",
+      "teamRegistered": "A new team has registered!",
+      "statusChanged": "A contest status has been updated.",
+      "certificateIssued": "New certificates have been issued!"
+    },
     "timeRange": {
       "title": "Time Range",
       "allTime": "All Time",
@@ -1102,39 +1112,42 @@
       "endDate": "End Date"
     },
     "contestAnalytics": {
-      "totalContests": "Total Contests",
-      "ongoingContests": "Ongoing Contests",
-      "completedContests": "Completed Contests",
-      "recentContests": "Recent Contests",
-      "contestName": "Contest Name",
-      "participants": "Participants",
-      "status": "Status",
-      "endDate": "End Date"
+      "title": "CONTEST ANALYTICS",
+      "contestCreationTrend": "Contest Creation Trend",
+      "teamRegistrationTrend": "Team Registration Trend",
+      "contestStatusDistribution": "Contest Status Distribution",
+      "showsContestCreation": "Shows how many contests were created each month",
+      "showsTeamRegistration": "Shows how many teams registered each month",
+      "note": "Note: Draft and Cancelled contests excluded for clarity"
     },
     "topPerformance": {
+      "title": "TOP PERFORMANCE RANKINGS",
       "topStudents": "Top Students",
-      "topSchools": "Top Schools",
+      "topMentors": "Top Mentors",
+      "topOrganizers": "Top Organizers",
       "rank": "Rank",
-      "studentName": "Student Name",
+      "studentName": "Student",
+      "mentorName": "Mentor",
+      "organizerName": "Organizer",
       "school": "School",
-      "points": "Points",
-      "contestsJoined": "Contests Joined",
-      "avgScore": "Avg Score",
-      "students": "Students",
-      "contests": "Contests"
+      "certificates": "Certificates",
+      "totalCertificates": "Total Certs",
+      "teamCertificates": "Team Certs",
+      "individualCertificates": "Indiv Certs",
+      "teamsManaged": "Teams Managed",
+      "completedContests": "Completed Contests",
+      "totalTeams": "Total Teams"
     },
     "schoolMetric": {
+      "title": "SCHOOL METRICS",
+      "regionalInsights": "REGIONAL INSIGHTS",
       "totalSchools": "Total Schools",
-      "totalStudents": "Total Students",
-      "provinces": "Provinces",
-      "activeSchools": "Active Schools",
-      "schoolsByProvince": "Schools by Province",
+      "top5Schools": "Top 5 Schools",
+      "teamsByProvince": "Teams by Province",
       "province": "Province",
-      "schools": "Schools",
-      "students": "Students",
-      "participation": "Participation",
-      "recentSchools": "Recent Schools",
-      "contests": "Contests"
+      "totalTeams": "Total Teams",
+      "totalStudents": "Total Students",
+      "totalCertificates": "Total Certificates"
     }
   }
 }

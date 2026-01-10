@@ -2,7 +2,9 @@ import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Trophy, Users, UsersRound, TrendingUp, Calendar } from "lucide-react"
 import { useGetDashboardMetricsQuery } from "@/services/dashboardApi"
+import { useDashboardSignalR } from "@/shared/hooks/useDashboardSignalR"
 import TimeRangeFilter, { TimeRangePredefined } from "./TimeRangeFilter"
+import toast from "react-hot-toast"
 import "@/styles/typography.css"
 
 const OverviewTab = () => {
@@ -22,11 +24,59 @@ const OverviewTab = () => {
     data: metrics,
     isLoading,
     error,
+    refetch,
   } = useGetDashboardMetricsQuery({
     timeRangePredefined: timeRange,
     startDate: timeRange === TimeRangePredefined.Custom ? startDate : undefined,
     endDate: timeRange === TimeRangePredefined.Custom ? endDate : undefined,
   })
+
+  // SignalR Handler
+  const handleSignalRUpdate = (eventName, data) => {
+    // Refresh data
+    refetch()
+
+    // Show notification based on event
+    // The user's log shows lowercase keys: {message: '...', timestamp: '...'}
+    const message = data?.message || data?.Message
+    const timestamp = data?.timestamp || data?.Timestamp
+
+    if (import.meta.env.VITE_ENV === "development" && timestamp) {
+      console.log(`🕒 Event timestamp: ${new Date(timestamp).toLocaleString()}`)
+    }
+
+    switch (eventName) {
+      case "ContestCreated":
+        toast.success(message || t("dashboard.notifications.contestCreated"), {
+          icon: "🎉",
+        })
+        break
+      case "TeamRegistered":
+        toast.success(message || t("dashboard.notifications.teamRegistered"), {
+          icon: "👥",
+        })
+        break
+      case "ContestStatusChanged":
+        // Correcting toast.info -> toast() as react-hot-toast doesn't have .info
+        toast(message || t("dashboard.notifications.statusChanged"), {
+          icon: "📝",
+        })
+        break
+      case "CertificateIssued":
+        toast.success(
+          message || t("dashboard.notifications.certificateIssued"),
+          {
+            icon: "🏆",
+          }
+        )
+        break
+      default:
+        break
+    }
+  }
+
+  // SignalR for real-time updates
+  const { isConnected } = useDashboardSignalR(handleSignalRUpdate)
 
   if (isLoading) {
     return (
@@ -114,14 +164,30 @@ const OverviewTab = () => {
 
   return (
     <div className="space-y-6">
-      {/* Time Range Filter */}
-      <TimeRangeFilter
-        selectedRange={timeRange}
-        onRangeChange={handleTimeRangeChange}
-        startDate={startDate}
-        endDate={endDate}
-        onDateChange={handleDateChange}
-      />
+      {/* Time Range Filter & Hub Status */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <TimeRangeFilter
+          selectedRange={timeRange}
+          onRangeChange={handleTimeRangeChange}
+          startDate={startDate}
+          endDate={endDate}
+          onDateChange={handleDateChange}
+        />
+
+        {/* Hub Status Indicator */}
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E5E5E5] rounded-[5px]">
+          <div
+            className={`w-2 h-2 rounded-full ${
+              isConnected ? "bg-green-500 animate-pulse" : "bg-gray-300"
+            }`}
+          />
+          <span className="text-caption-1 text-gray-600">
+            {isConnected
+              ? t("dashboard.status.live", "Live Updates")
+              : t("dashboard.status.offline", "Offline")}
+          </span>
+        </div>
+      </div>
 
       {/* Top Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -1077,6 +1077,16 @@
       "contests": "cuộc thi",
       "contestStatusBreakdown": "Phân bổ trạng thái cuộc thi"
     },
+    "status": {
+      "live": "Cập nhật trực tiếp",
+      "offline": "Ngoại tuyến"
+    },
+    "notifications": {
+      "contestCreated": "Một cuộc thi mới vừa được tạo!",
+      "teamRegistered": "Một đội thi mới vừa đăng ký!",
+      "statusChanged": "Trạng thái cuộc thi đã được cập nhật.",
+      "certificateIssued": "Chứng chỉ mới đã được cấp!"
+    },
     "timeRange": {
       "title": "Khoảng thời gian",
       "allTime": "Tất cả",
@@ -1089,39 +1099,42 @@
       "endDate": "Ngày kết thúc"
     },
     "contestAnalytics": {
-      "totalContests": "Tổng số cuộc thi",
-      "ongoingContests": "Cuộc thi đang diễn ra",
-      "completedContests": "Cuộc thi đã hoàn thành",
-      "recentContests": "Cuộc thi gần đây",
-      "contestName": "Tên cuộc thi",
-      "participants": "Người tham gia",
-      "status": "Trạng thái",
-      "endDate": "Ngày kết thúc"
+      "title": "PHÂN TÍCH CUỘC THI",
+      "contestCreationTrend": "Xu hướng tạo cuộc thi",
+      "teamRegistrationTrend": "Xu hướng đăng ký đội",
+      "contestStatusDistribution": "Phân bố trạng thái cuộc thi",
+      "showsContestCreation": "Hiển thị số lượng cuộc thi được tạo theo từng tháng",
+      "showsTeamRegistration": "Hiển thị số lượng đội đăng ký theo từng tháng",
+      "note": "Lưu ý: Các cuộc thi Nháp và Đã hủy không được tính để đảm bảo tính rõ ràng"
     },
     "topPerformance": {
-      "topStudents": "Học sinh xuất sắc",
-      "topSchools": "Trường học xuất sắc",
+      "title": "BẢNG XẾP HẠNG XUẤT SẮC",
+      "topStudents": "Top học sinh",
+      "topMentors": "Top người hướng dẫn",
+      "topOrganizers": "Top người tổ chức",
       "rank": "Hạng",
-      "studentName": "Tên học sinh",
+      "studentName": "Học sinh",
+      "mentorName": "Người hướng dẫn",
+      "organizerName": "Người tổ chức",
       "school": "Trường học",
-      "points": "Điểm",
-      "contestsJoined": "Cuộc thi tham gia",
-      "avgScore": "Điểm TB",
-      "students": "Học sinh",
-      "contests": "Cuộc thi"
+      "certificates": "Chứng chỉ",
+      "totalCertificates": "Tổng chứng chỉ",
+      "teamCertificates": "Chứng chỉ đội",
+      "individualCertificates": "Chứng chỉ cá nhân",
+      "teamsManaged": "Đội phụ trách",
+      "completedContests": "Cuộc thi đã xong",
+      "totalTeams": "Tổng số đội"
     },
     "schoolMetric": {
-      "totalSchools": "Tổng số trường học",
-      "totalStudents": "Tổng số học sinh",
-      "provinces": "Tỉnh/Thành phố",
-      "activeSchools": "Trường học hoạt động",
-      "schoolsByProvince": "Trường học theo tỉnh/thành phố",
+      "title": "THỐNG KÊ TRƯỜNG HỌC",
+      "regionalInsights": "THÔNG TIN THEO KHU VỰC",
+      "totalSchools": "Tổng số trường",
+      "top5Schools": "Top 5 Trường tiêu biểu",
+      "teamsByProvince": "Số đội theo Tỉnh/Thành",
       "province": "Tỉnh/Thành phố",
-      "schools": "Trường học",
-      "students": "Học sinh",
-      "participation": "Tỷ lệ tham gia",
-      "recentSchools": "Trường học mới",
-      "contests": "Cuộc thi"
+      "totalTeams": "Tổng số đội",
+      "totalStudents": "Tổng số học sinh",
+      "totalCertificates": "Tổng chứng chỉ"
     }
   }
 }

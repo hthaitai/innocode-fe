@@ -14,7 +14,7 @@ const allMenus = {
   dashboard: {
     path: "/dashboard",
     labelKey: "sidebar.dashboard",
-    icon: "lucide:layout-dashboard",
+    icon: "lucide:chart-spline",
   },
   activityLogs: {
     path: "/activity-logs",
