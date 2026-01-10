@@ -185,23 +185,16 @@
     "rankCutoff": "Rank Cutoff",
     "registerBeforeDeadline": "Make sure to register before the deadline. Late registrations will not be accepted.",
     "statusLabels": {
+      "published": "Published",
+      "registrationopen": "Registration Open",
+      "registrationclosed": "Registration Closed",
       "ongoing": "Ongoing",
-      "upcoming": "Upcoming",
+      "paused": "Paused",
       "completed": "Completed",
-      "published": "Published", 
-      "registrationOpen": "Registration Open",
-      "registrationClosed": "Registration Closed",
+      "delayed": "Delayed",
       "draft": "Draft",
-      "opened": "Opened",
-      "closed": "Closed",
-      "scheduled": "Scheduled",
-      "finalized": "Finalized",
-      "incoming": "Incoming",
-      "pending": "Pending",
-      "plagiarismsuspected": "Plagiarism Suspected",
-      "plagiarismconfirmed": "Plagiarism Confirmed",
       "cancelled": "Cancelled",
-      "finished": "Finished"
+      "totalvalidcontests": "Total Valid Contests"
     },
     "openCodeModal": {
       "title": "Enter Open Code",
@@ -1075,5 +1068,73 @@
     "judgedBy": "Judged By",
     "evaluationCriteria": "Evaluation Criteria",
     "criteria": "Criteria"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "View system overview and statistics",
+    "tabs": {
+      "overview": "Overview",
+      "contestAnalytics": "Contest Analytics",
+      "topPerformance": "Top Performance",
+      "schoolMetric": "School Metric"
+    },
+    "overview": {
+      "totalContests": "Total Contests",
+      "totalTeams": "Total Teams",
+      "totalStudents": "Total Students",
+      "contestGrowthRate": "Contest Growth Rate",
+      "growthComparison": "vs 2 months ago",
+      "increase": "Increase",
+      "decrease": "Decrease",
+      "newContestsLastMonth": "New Contests Last Month",
+      "contests": "contests",
+      "contestStatusBreakdown": "Contest Status Breakdown"
+    },
+    "timeRange": {
+      "title": "Time Range",
+      "allTime": "All Time",
+      "currentMonth": "Current Month",
+      "last3Months": "Last 3 Months",
+      "last6Months": "Last 6 Months",
+      "currentYear": "Current Year",
+      "custom": "Custom",
+      "startDate": "Start Date",
+      "endDate": "End Date"
+    },
+    "contestAnalytics": {
+      "totalContests": "Total Contests",
+      "ongoingContests": "Ongoing Contests",
+      "completedContests": "Completed Contests",
+      "recentContests": "Recent Contests",
+      "contestName": "Contest Name",
+      "participants": "Participants",
+      "status": "Status",
+      "endDate": "End Date"
+    },
+    "topPerformance": {
+      "topStudents": "Top Students",
+      "topSchools": "Top Schools",
+      "rank": "Rank",
+      "studentName": "Student Name",
+      "school": "School",
+      "points": "Points",
+      "contestsJoined": "Contests Joined",
+      "avgScore": "Avg Score",
+      "students": "Students",
+      "contests": "Contests"
+    },
+    "schoolMetric": {
+      "totalSchools": "Total Schools",
+      "totalStudents": "Total Students",
+      "provinces": "Provinces",
+      "activeSchools": "Active Schools",
+      "schoolsByProvince": "Schools by Province",
+      "province": "Province",
+      "schools": "Schools",
+      "students": "Students",
+      "participation": "Participation",
+      "recentSchools": "Recent Schools",
+      "contests": "Contests"
+    }
   }
 }

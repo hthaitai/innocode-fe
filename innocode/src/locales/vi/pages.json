@@ -185,23 +185,16 @@
     "importantNotice": "Thông báo quan trọng",
     "registerBeforeDeadline": "Hãy đảm bảo đăng ký trước hạn chót. Các đăng ký muộn sẽ không được chấp nhận.",
     "statusLabels": {
-      "ongoing": "Đang diễn ra",
-      "upcoming": "Sắp tới",
-      "completed": "Đã kết thúc",
       "published": "Đã công bố",
-      "registrationOpen": "Đang mở đăng ký",
-      "registrationClosed": "Đã đóng đăng ký",
+      "registrationopen": "Đang mở đăng ký",
+      "registrationclosed": "Đã đóng đăng ký",
+      "ongoing": "Đang diễn ra",
+      "paused": "Tạm dừng",
+      "completed": "Đã kết thúc",
+      "delayed": "Bị trễ",
       "draft": "Nháp",
-      "opened": "Đang mở",
-      "closed": "Đã đóng",
-      "scheduled": "Đã lên lịch",
-      "finalized": "Đã kết thúc",
-      "incoming": "Sắp tới",
-      "pending": "Đang chờ",
-      "plagiarismsuspected": "Nghi vấn đạo văn",
-      "plagiarismconfirmed": "Xác nhận đạo văn",
       "cancelled": "Đã hủy",
-      "finished": "Đã hoàn thành"
+      "totalvalidcontests": "Tổng cuộc thi hợp lệ"
     },
     "openCodeModal": {
       "title": "Nhập mã mở vòng thi",
@@ -1062,5 +1055,73 @@
     "judgedBy": "Chấm bởi",
     "evaluationCriteria": "Tiêu chí đánh giá",
     "criteria": "Tiêu chí"
+  },
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "description": "Xem tổng quan và thống kê hệ thống",
+    "tabs": {
+      "overview": "Tổng quan",
+      "contestAnalytics": "Phân tích cuộc thi",
+      "topPerformance": "Thành tích xuất sắc",
+      "schoolMetric": "Chỉ số trường học"
+    },
+    "overview": {
+      "totalContests": "Tổng số cuộc thi",
+      "totalTeams": "Tổng số đội",
+      "totalStudents": "Tổng số học sinh",
+      "contestGrowthRate": "Tỷ lệ tăng trưởng cuộc thi",
+      "growthComparison": "so với 2 tháng trước",
+      "increase": "Tăng",
+      "decrease": "Giảm",
+      "newContestsLastMonth": "Cuộc thi mới tháng trước",
+      "contests": "cuộc thi",
+      "contestStatusBreakdown": "Phân bổ trạng thái cuộc thi"
+    },
+    "timeRange": {
+      "title": "Khoảng thời gian",
+      "allTime": "Tất cả",
+      "currentMonth": "Tháng hiện tại",
+      "last3Months": "3 tháng gần đây",
+      "last6Months": "6 tháng gần đây",
+      "currentYear": "Năm hiện tại",
+      "custom": "Tùy chỉnh",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc"
+    },
+    "contestAnalytics": {
+      "totalContests": "Tổng số cuộc thi",
+      "ongoingContests": "Cuộc thi đang diễn ra",
+      "completedContests": "Cuộc thi đã hoàn thành",
+      "recentContests": "Cuộc thi gần đây",
+      "contestName": "Tên cuộc thi",
+      "participants": "Người tham gia",
+      "status": "Trạng thái",
+      "endDate": "Ngày kết thúc"
+    },
+    "topPerformance": {
+      "topStudents": "Học sinh xuất sắc",
+      "topSchools": "Trường học xuất sắc",
+      "rank": "Hạng",
+      "studentName": "Tên học sinh",
+      "school": "Trường học",
+      "points": "Điểm",
+      "contestsJoined": "Cuộc thi tham gia",
+      "avgScore": "Điểm TB",
+      "students": "Học sinh",
+      "contests": "Cuộc thi"
+    },
+    "schoolMetric": {
+      "totalSchools": "Tổng số trường học",
+      "totalStudents": "Tổng số học sinh",
+      "provinces": "Tỉnh/Thành phố",
+      "activeSchools": "Trường học hoạt động",
+      "schoolsByProvince": "Trường học theo tỉnh/thành phố",
+      "province": "Tỉnh/Thành phố",
+      "schools": "Trường học",
+      "students": "Học sinh",
+      "participation": "Tỷ lệ tham gia",
+      "recentSchools": "Trường học mới",
+      "contests": "Cuộc thi"
+    }
   }
 }
