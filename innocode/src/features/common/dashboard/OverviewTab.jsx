@@ -64,6 +64,11 @@ const OverviewTab = () => {
     }
   }
 
+  // Filter out totalValidContests as it's a summary metric, not a specific status
+  statusBreakdown = statusBreakdown.filter(
+    (item) => item.status.toLowerCase() !== "totalvalidcontests"
+  )
+
   const totalStatuses = statusBreakdown.reduce(
     (sum, item) => sum + item.count,
     0
