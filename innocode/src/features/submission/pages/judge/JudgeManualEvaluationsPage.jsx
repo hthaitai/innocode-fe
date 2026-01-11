@@ -7,7 +7,7 @@ import {
   useEvaluateSubmissionMutation,
   useFetchSubmissionByIdQuery,
 } from "../../../../services/submissionApi"
-import { useGetRoundByIdQuery } from "../../../../services/roundApi"
+import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { useFetchRubricQuery } from "../../../../services/manualProblemApi"
 import SubmissionInfoSection from "../../components/SubmissionInfoSection"
 import RubricList from "../../components/RubricList"
@@ -26,7 +26,14 @@ const JudgeManualEvaluationsPage = () => {
   const { contestId, roundId, submissionId } = useParams()
   const navigate = useNavigate()
 
-  const { data: round } = useGetRoundByIdQuery(roundId)
+  // Refactored to avoid restricted round API
+  const {
+    data: contestData,
+    isLoading: isContestLoading,
+    isError: isContestError,
+  } = useGetContestByIdQuery(contestId)
+
+  const round = contestData?.rounds?.find((r) => r.roundId === roundId)
 
   const {
     data: submission,
@@ -81,7 +88,12 @@ const JudgeManualEvaluationsPage = () => {
     }
   }, [criteria, submission])
 
-  if (submissionLoading || rubricLoading || downloadLoading) {
+  if (
+    submissionLoading ||
+    rubricLoading ||
+    downloadLoading ||
+    isContestLoading
+  ) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -92,7 +104,7 @@ const JudgeManualEvaluationsPage = () => {
     )
   }
 
-  if (submissionError || rubricError || downloadError) {
+  if (submissionError || rubricError || downloadError || isContestError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}

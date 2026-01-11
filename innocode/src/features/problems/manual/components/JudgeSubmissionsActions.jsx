@@ -21,18 +21,18 @@ const JudgeSubmissionsActions = ({ statusFilter, setStatusFilter }) => {
               value: "Finished",
               label: t("manualSubmissions.filter.Finished"),
             },
-            {
-              value: "Cancelled",
-              label: t("manualSubmissions.filter.Cancelled"),
-            },
-            {
-              value: "PlagiarismConfirmed",
-              label: t("manualSubmissions.filter.PlagiarismConfirmed"),
-            },
-            {
-              value: "PlagiarismSuspected",
-              label: t("manualSubmissions.filter.PlagiarismSuspected"),
-            },
+            // {
+            //   value: "Cancelled",
+            //   label: t("manualSubmissions.filter.Cancelled"),
+            // },
+            // {
+            //   value: "PlagiarismConfirmed",
+            //   label: t("manualSubmissions.filter.PlagiarismConfirmed"),
+            // },
+            // {
+            //   value: "PlagiarismSuspected",
+            //   label: t("manualSubmissions.filter.PlagiarismSuspected"),
+            // },
           ]}
         />
       </div>
