@@ -568,9 +568,9 @@ const ContestDetail = () => {
                     upcoming: "contest.statusLabels.upcoming",
                     completed: "contest.statusLabels.completed",
                     published: "contest.statusLabels.published",
-                    registrationopen: "contest.statusLabels.registrationOpen",
+                    registrationopen: "contest.statusLabels.registrationopen",
                     registrationclosed:
-                      "contest.statusLabels.registrationClosed",
+                      "contest.statusLabels.registrationclosed",
                     draft: "contest.statusLabels.draft",
                   }
 

@@ -185,23 +185,16 @@
     "rankCutoff": "Rank Cutoff",
     "registerBeforeDeadline": "Make sure to register before the deadline. Late registrations will not be accepted.",
     "statusLabels": {
+      "published": "Published",
+      "registrationopen": "Registration Open",
+      "registrationclosed": "Registration Closed",
       "ongoing": "Ongoing",
-      "upcoming": "Upcoming",
+      "paused": "Paused",
       "completed": "Completed",
-      "published": "Published", 
-      "registrationOpen": "Registration Open",
-      "registrationClosed": "Registration Closed",
+      "delayed": "Delayed",
       "draft": "Draft",
-      "opened": "Opened",
-      "closed": "Closed",
-      "scheduled": "Scheduled",
-      "finalized": "Finalized",
-      "incoming": "Incoming",
-      "pending": "Pending",
-      "plagiarismsuspected": "Plagiarism Suspected",
-      "plagiarismconfirmed": "Plagiarism Confirmed",
       "cancelled": "Cancelled",
-      "finished": "Finished"
+      "totalvalidcontests": "Total Valid Contests"
     },
     "openCodeModal": {
       "title": "Enter Open Code",
@@ -1075,5 +1068,86 @@
     "judgedBy": "Judged By",
     "evaluationCriteria": "Evaluation Criteria",
     "criteria": "Criteria"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "View system overview and statistics",
+    "tabs": {
+      "overview": "Overview",
+      "contestAnalytics": "Contest Analytics",
+      "topPerformance": "Top Performance",
+      "schoolMetric": "School Metric"
+    },
+    "overview": {
+      "totalContests": "Total Contests",
+      "totalTeams": "Total Teams",
+      "totalStudents": "Total Students",
+      "contestGrowthRate": "Contest Growth Rate",
+      "growthComparison": "vs 2 months ago",
+      "increase": "Increase",
+      "decrease": "Decrease",
+      "newContestsLastMonth": "New Contests Last Month",
+      "contests": "contests",
+      "contestStatusBreakdown": "Contest Status Breakdown"
+    },
+    "status": {
+      "live": "Live Updates",
+      "offline": "Offline"
+    },
+    "notifications": {
+      "contestCreated": "A new contest has been created!",
+      "teamRegistered": "A new team has registered!",
+      "statusChanged": "A contest status has been updated.",
+      "certificateIssued": "New certificates have been issued!"
+    },
+    "timeRange": {
+      "title": "Time Range",
+      "allTime": "All Time",
+      "currentMonth": "Current Month",
+      "last3Months": "Last 3 Months",
+      "last6Months": "Last 6 Months",
+      "currentYear": "Current Year",
+      "custom": "Custom",
+      "startDate": "Start Date",
+      "endDate": "End Date"
+    },
+    "contestAnalytics": {
+      "title": "CONTEST ANALYTICS",
+      "contestCreationTrend": "Contest Creation Trend",
+      "teamRegistrationTrend": "Team Registration Trend",
+      "contestStatusDistribution": "Contest Status Distribution",
+      "showsContestCreation": "Shows how many contests were created each month",
+      "showsTeamRegistration": "Shows how many teams registered each month",
+      "note": "Note: Draft and Cancelled contests excluded for clarity"
+    },
+    "topPerformance": {
+      "title": "TOP PERFORMANCE RANKINGS",
+      "topStudents": "Top Students",
+      "topMentors": "Top Mentors",
+      "topOrganizers": "Top Organizers",
+      "rank": "Rank",
+      "studentName": "Student",
+      "mentorName": "Mentor",
+      "organizerName": "Organizer",
+      "school": "School",
+      "certificates": "Certificates",
+      "totalCertificates": "Total Certs",
+      "teamCertificates": "Team Certs",
+      "individualCertificates": "Indiv Certs",
+      "teamsManaged": "Teams Managed",
+      "completedContests": "Completed Contests",
+      "totalTeams": "Total Teams"
+    },
+    "schoolMetric": {
+      "title": "SCHOOL METRICS",
+      "regionalInsights": "REGIONAL INSIGHTS",
+      "totalSchools": "Total Schools",
+      "top5Schools": "Top 5 Schools",
+      "teamsByProvince": "Teams by Province",
+      "province": "Province",
+      "totalTeams": "Total Teams",
+      "totalStudents": "Total Students",
+      "totalCertificates": "Total Certificates"
+    }
   }
 }

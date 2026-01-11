@@ -14,6 +14,7 @@ import About from "./features/common/pages/About"
 import Policy from "./features/common/pages/Policy"
 import Profile from "./features/common/profile/pages/Profile"
 import Dashboard from "./features/common/pages/Dashboard"
+import ActivityLogs from "./features/common/pages/ActivityLogs"
 import Notifications from "./features/common/pages/Notifications"
 import TeamInviteNotification from "./features/notification/pages/TeamInviteNotification"
 import Unauthorized from "./features/common/pages/Unauthorized"
@@ -344,6 +345,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "activity-logs",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <ActivityLogs />
           </ProtectedRoute>
         ),
       },

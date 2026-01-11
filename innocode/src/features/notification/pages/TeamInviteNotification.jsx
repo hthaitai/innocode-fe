@@ -109,7 +109,10 @@ const TeamInviteNotification = () => {
       setMessage(successMessage)
       toast.success(successMessage)
 
-      setTimeout(() => navigate("/notifications"), 2000)
+      setTimeout(
+        () => navigate(`/contest-detail/${parsedPayload.contestId}`),
+        2000
+      )
     } catch (error) {
       console.error(`❌ ${actionType} invite error:`, error)
 
@@ -201,7 +204,21 @@ const TeamInviteNotification = () => {
               </p>
               {parsedPayload.contestName && (
                 <p className="text-sm text-gray-500 mb-6">
-                  Contest: {parsedPayload.contestName}
+                  Contest:{" "}
+                  {parsedPayload.contestId ? (
+                    <button
+                      onClick={() =>
+                        navigate(`/contest-detail/${parsedPayload.contestId}`)
+                      }
+                      className="text-orange-500 cursor-pointer hover:text-orange-600 hover:underline font-medium transition-colors"
+                    >
+                      {parsedPayload.contestName}
+                    </button>
+                  ) : (
+                    <span className="font-medium">
+                      {parsedPayload.contestName}
+                    </span>
+                  )}
                 </p>
               )}
 

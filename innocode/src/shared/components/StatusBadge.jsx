@@ -85,8 +85,8 @@ const StatusBadge = ({ status, translate = false, label }) => {
       upcoming: "contest.statusLabels.upcoming",
       completed: "contest.statusLabels.completed",
       published: "contest.statusLabels.published",
-      registrationopen: "contest.statusLabels.registrationOpen",
-      registrationclosed: "contest.statusLabels.registrationClosed",
+      registrationopen: "contest.statusLabels.registrationopen",
+      registrationclosed: "contest.statusLabels.registrationclosed",
       draft: "contest.statusLabels.draft",
     }
 
