@@ -20,11 +20,7 @@ export default function TabNavigation({
       px-3
       h-[32px]
       border-b-2
-      ${
-        isActive
-          ? "border-orange-400"
-          : "border-transparent"
-      }
+      ${isActive ? "border-orange-400" : "border-transparent"}
       transition-colors
     `
   }

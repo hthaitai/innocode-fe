@@ -185,23 +185,16 @@
     "importantNotice": "Thông báo quan trọng",
     "registerBeforeDeadline": "Hãy đảm bảo đăng ký trước hạn chót. Các đăng ký muộn sẽ không được chấp nhận.",
     "statusLabels": {
-      "ongoing": "Đang diễn ra",
-      "upcoming": "Sắp tới",
-      "completed": "Đã kết thúc",
       "published": "Đã công bố",
-      "registrationOpen": "Đang mở đăng ký",
-      "registrationClosed": "Đã đóng đăng ký",
+      "registrationopen": "Đang mở đăng ký",
+      "registrationclosed": "Đã đóng đăng ký",
+      "ongoing": "Đang diễn ra",
+      "paused": "Tạm dừng",
+      "completed": "Đã kết thúc",
+      "delayed": "Bị trễ",
       "draft": "Nháp",
-      "opened": "Đang mở",
-      "closed": "Đã đóng",
-      "scheduled": "Đã lên lịch",
-      "finalized": "Đã kết thúc",
-      "incoming": "Sắp tới",
-      "pending": "Đang chờ",
-      "plagiarismsuspected": "Nghi vấn đạo văn",
-      "plagiarismconfirmed": "Xác nhận đạo văn",
       "cancelled": "Đã hủy",
-      "finished": "Đã hoàn thành"
+      "totalvalidcontests": "Tổng cuộc thi hợp lệ"
     },
     "openCodeModal": {
       "title": "Nhập mã mở vòng thi",
@@ -1062,5 +1055,86 @@
     "judgedBy": "Chấm bởi",
     "evaluationCriteria": "Tiêu chí đánh giá",
     "criteria": "Tiêu chí"
+  },
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "description": "Xem tổng quan và thống kê hệ thống",
+    "tabs": {
+      "overview": "Tổng quan",
+      "contestAnalytics": "Phân tích cuộc thi",
+      "topPerformance": "Thành tích xuất sắc",
+      "schoolMetric": "Chỉ số trường học"
+    },
+    "overview": {
+      "totalContests": "Tổng số cuộc thi",
+      "totalTeams": "Tổng số đội",
+      "totalStudents": "Tổng số học sinh",
+      "contestGrowthRate": "Tỷ lệ tăng trưởng cuộc thi",
+      "growthComparison": "so với 2 tháng trước",
+      "increase": "Tăng",
+      "decrease": "Giảm",
+      "newContestsLastMonth": "Cuộc thi mới tháng trước",
+      "contests": "cuộc thi",
+      "contestStatusBreakdown": "Phân bổ trạng thái cuộc thi"
+    },
+    "status": {
+      "live": "Cập nhật trực tiếp",
+      "offline": "Ngoại tuyến"
+    },
+    "notifications": {
+      "contestCreated": "Một cuộc thi mới vừa được tạo!",
+      "teamRegistered": "Một đội thi mới vừa đăng ký!",
+      "statusChanged": "Trạng thái cuộc thi đã được cập nhật.",
+      "certificateIssued": "Chứng chỉ mới đã được cấp!"
+    },
+    "timeRange": {
+      "title": "Khoảng thời gian",
+      "allTime": "Tất cả",
+      "currentMonth": "Tháng hiện tại",
+      "last3Months": "3 tháng gần đây",
+      "last6Months": "6 tháng gần đây",
+      "currentYear": "Năm hiện tại",
+      "custom": "Tùy chỉnh",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc"
+    },
+    "contestAnalytics": {
+      "title": "PHÂN TÍCH CUỘC THI",
+      "contestCreationTrend": "Xu hướng tạo cuộc thi",
+      "teamRegistrationTrend": "Xu hướng đăng ký đội",
+      "contestStatusDistribution": "Phân bố trạng thái cuộc thi",
+      "showsContestCreation": "Hiển thị số lượng cuộc thi được tạo theo từng tháng",
+      "showsTeamRegistration": "Hiển thị số lượng đội đăng ký theo từng tháng",
+      "note": "Lưu ý: Các cuộc thi Nháp và Đã hủy không được tính để đảm bảo tính rõ ràng"
+    },
+    "topPerformance": {
+      "title": "BẢNG XẾP HẠNG XUẤT SẮC",
+      "topStudents": "Top học sinh",
+      "topMentors": "Top người hướng dẫn",
+      "topOrganizers": "Top người tổ chức",
+      "rank": "Hạng",
+      "studentName": "Học sinh",
+      "mentorName": "Người hướng dẫn",
+      "organizerName": "Người tổ chức",
+      "school": "Trường học",
+      "certificates": "Chứng chỉ",
+      "totalCertificates": "Tổng chứng chỉ",
+      "teamCertificates": "Chứng chỉ đội",
+      "individualCertificates": "Chứng chỉ cá nhân",
+      "teamsManaged": "Đội phụ trách",
+      "completedContests": "Cuộc thi đã xong",
+      "totalTeams": "Tổng số đội"
+    },
+    "schoolMetric": {
+      "title": "THỐNG KÊ TRƯỜNG HỌC",
+      "regionalInsights": "THÔNG TIN THEO KHU VỰC",
+      "totalSchools": "Tổng số trường",
+      "top5Schools": "Top 5 Trường tiêu biểu",
+      "teamsByProvince": "Số đội theo Tỉnh/Thành",
+      "province": "Tỉnh/Thành phố",
+      "totalTeams": "Tổng số đội",
+      "totalStudents": "Tổng số học sinh",
+      "totalCertificates": "Tổng chứng chỉ"
+    }
   }
 }

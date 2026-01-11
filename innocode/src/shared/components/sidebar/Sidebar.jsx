@@ -14,7 +14,12 @@ const allMenus = {
   dashboard: {
     path: "/dashboard",
     labelKey: "sidebar.dashboard",
-    icon: "lucide:layout-dashboard",
+    icon: "lucide:chart-spline",
+  },
+  activityLogs: {
+    path: "/activity-logs",
+    labelKey: "sidebar.activityLogs",
+    icon: "lucide:history",
   },
 
   // Student menus
@@ -135,7 +140,14 @@ const menuByRole = {
     "notifications",
   ],
   judge: ["profile", "judgeContests", "notifications", "help"],
-  admin: ["profile", "dashboard", "userManagement", "notifications", "help"],
+  admin: [
+    "profile",
+    "dashboard",
+    "activityLogs",
+    "userManagement",
+    "notifications",
+    "help",
+  ],
   schoolmanager: [
     "profile",
     "schoolManager",
