@@ -30,7 +30,6 @@ const Leaderboard = () => {
   const { contests, loading: contestsLoading } = useContests()
 
   const [expandedTeamId, setExpandedTeamId] = useState(null)
-  const [liveData, setLiveData] = useState(null)
 
   // Toggle team expansion
   const toggleTeamExpansion = (teamId) => {
@@ -96,48 +95,15 @@ const Leaderboard = () => {
     skip: !selectedContestId,
   })
 
-  // Handle live updates from SignalR
-  const handleLiveUpdate = useCallback((data) => {
-    console.log("🔄 ========== HANDLE LIVE UPDATE ==========")
-    console.log("🔄 Raw data received in component:", data)
-    console.log("🔄 Data type:", typeof data)
-    console.log("�� Is array:", Array.isArray(data))
-    console.log("🔄 Data structure:", {
-      isArray: Array.isArray(data),
-      hasTeams: !!data?.teams,
-      hasTeamIdList: !!data?.teamIdList,
-      hasEntries: !!data?.entries,
-      keys: data ? Object.keys(data) : "null",
-    })
-
-    // Update live data state
-    // The data structure might be: { teams: [...] } or just the teams array
-    const updatedData = Array.isArray(data)
-      ? { teams: data }
-      : data?.teams
-      ? data
-      : { teams: data?.teamIdList || data?.entries || [] }
-
-    console.log("🔄 Processed updatedData:", updatedData)
-    console.log("🔄 Teams count:", updatedData?.teams?.length || 0)
-    if (updatedData?.teams?.length > 0) {
-      console.log("🔄 First team:", updatedData.teams[0])
-    }
-    console.log("🔄 ========================================")
-
-    setLiveData(updatedData)
-  }, [])
-
-  // Connect to live leaderboard hub - ensure this is always called
+  // Connect to live leaderboard hub - pass refetch function to trigger updates
   const { isConnected, connectionError } = useLiveLeaderboard(
     selectedContestId || null, // Always pass a value, never undefined
-    handleLiveUpdate,
+    refetch, // Pass refetch function to trigger when updates are received
     !!selectedContestId
   )
 
-  // Reset live data and refetch when contest changes
+  // Refetch when contest changes
   useEffect(() => {
-    setLiveData(null)
     if (selectedContestId) {
       // Refetch leaderboard data when contest changes
       refetch()
@@ -168,14 +134,12 @@ const Leaderboard = () => {
     }
   }, [leaderboardData, selectedContestId, loading, error])
 
-  // Handle data structure - Use live data if available, otherwise use initial data
-  // Priority: liveData > leaderboardData
-  const currentData = liveData || leaderboardData
-  const entries = Array.isArray(currentData)
-    ? currentData // Fallback for old format
-    : currentData?.teams ||
-      currentData?.teamIdList ||
-      currentData?.entries ||
+  // Handle data structure - Use RTK Query data (will be updated via refetch)
+  const entries = Array.isArray(leaderboardData)
+    ? leaderboardData // Fallback for old format
+    : leaderboardData?.teams ||
+      leaderboardData?.teamIdList ||
+      leaderboardData?.entries ||
       []
 
   // Debug: Log entries
@@ -195,12 +159,12 @@ const Leaderboard = () => {
 
   // Get contest info from selected contest or from data
   const contestInfo = {
-    contestName: selectedContest?.name || currentData?.contestName || null,
+    contestName: selectedContest?.name || leaderboardData?.contestName || null,
     contestId: selectedContestId,
     totalTeamCount: Array.isArray(entries)
       ? entries.length
-      : currentData?.totalTeamCount || 0,
-    snapshotAt: currentData?.snapshotAt || null,
+      : leaderboardData?.totalTeamCount || 0,
+    snapshotAt: leaderboardData?.snapshotAt || null,
   }
 
   // Dynamic breadcrumb based on selected contest
@@ -213,7 +177,7 @@ const Leaderboard = () => {
       const contestName =
         contestDetail?.name || // From useContestDetail (immediate when URL has contestId)
         selectedContest?.name || // From availableContests
-        currentData?.contestName || // From leaderboard data
+        leaderboardData?.contestName || // From leaderboard data
         contestInfo?.contestName || // From contest info
         "Contest"
 
@@ -230,7 +194,7 @@ const Leaderboard = () => {
     urlContestId,
     selectedContestId,
     selectedContest,
-    currentData,
+    leaderboardData,
     contestInfo,
     contestDetail,
   ])
@@ -489,12 +453,6 @@ const Leaderboard = () => {
                       {" "}
                       • {t("leaderboard.lastUpdated")}{" "}
                       {formatDateTime(contestInfo.snapshotAt)}
-                    </span>
-                  )}
-                  {isConnected && liveData && (
-                    <span className="text-green-600">
-                      {" "}
-                      • {t("leaderboard.updatedJustNow")}
                     </span>
                   )}
                 </p>
