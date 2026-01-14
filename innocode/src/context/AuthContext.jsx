@@ -349,12 +349,35 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
+    // Listen for manual refresh requests (e.g., after profile update)
+    const handleRefreshUserData = async () => {
+      try {
+        if (import.meta.env.VITE_ENV === "development") {
+          console.log("🔄 Manual user data refresh requested")
+        }
+        await refreshTokenIfNeeded()
+        // Force refresh even if not needed
+        const data = await authService.refreshToken()
+        setToken(data.token)
+        setUser(data.user)
+        if (import.meta.env.VITE_ENV === "development") {
+          console.log("✅ User data refreshed successfully")
+        }
+      } catch (error) {
+        if (import.meta.env.VITE_ENV === "development") {
+          console.error("❌ Manual user data refresh failed:", error)
+        }
+      }
+    }
+
     window.addEventListener("tokenRefreshed", handleTokenRefresh)
+    window.addEventListener("refreshUserData", handleRefreshUserData)
 
     return () => {
       window.removeEventListener("tokenRefreshed", handleTokenRefresh)
+      window.removeEventListener("refreshUserData", handleRefreshUserData)
     }
-  }, [])
+  }, [refreshTokenIfNeeded])
 
   const login = async (credentials) => {
     const data = await authService.login(credentials)
@@ -394,23 +417,8 @@ export const AuthProvider = ({ children }) => {
     stopTokenRefreshInterval()
     localStorage.removeItem("token")
     localStorage.removeItem("refreshToken")
-    localStorage.removeItem("user")
     setToken(null)
     setUser(null)
-  }
-
-  // Update user data (useful for profile updates)
-  const updateUser = (updatedUserData) => {
-    // Get current user from localStorage or JWT
-    const currentStoredUser = localStorage.getItem("user")
-    const baseUser = currentStoredUser
-      ? JSON.parse(currentStoredUser)
-      : authService.getUser()
-
-    // Merge with updated data
-    const newUser = { ...baseUser, ...updatedUserData }
-    setUser(newUser)
-    localStorage.setItem("user", JSON.stringify(newUser))
   }
 
   // Computed value: check if user is authenticated
@@ -431,7 +439,6 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         clearAuth,
-        updateUser,
         loading,
       }}
     >

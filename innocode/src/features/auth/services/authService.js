@@ -66,7 +66,7 @@ const clearAuthData = () => {
   // Clear localStorage
   localStorage.removeItem("token")
   localStorage.removeItem("refreshToken")
-  localStorage.removeItem("user")
+  // No longer storing user separately - it's decoded from JWT
 
   // Xóa tất cả code và test results từ auto evaluation để tránh dữ liệu của tài khoản cũ
   const keysToRemove = []
@@ -102,9 +102,6 @@ export const authService = {
 
       // Decode user info from JWT token
       const user = decodeJWT(apiData.token)
-
-      // Store user in localStorage for easy access and updates
-      localStorage.setItem("user", JSON.stringify(user))
 
       // Check if different user is logging in - clear old user's session data
       const previousUserId = sessionStorage.getItem("current_user_id")
@@ -164,9 +161,6 @@ export const authService = {
 
       // Decode user info from JWT token
       const user = decodeJWT(apiData.token)
-
-      // Store user in localStorage for easy access and updates
-      localStorage.setItem("user", JSON.stringify(user))
 
       // Check if different user is registering - clear old user's session data
       const previousUserId = sessionStorage.getItem("current_user_id")
@@ -280,19 +274,9 @@ export const authService = {
     return true
   },
 
-  // Helper: Get user by checking localStorage first, then decoding JWT token
+  // Helper: Get user by decoding JWT token
+  // Always returns fresh data from token - no caching
   getUser() {
-    // First check if we have updated user data in localStorage
-    const storedUser = localStorage.getItem("user")
-    if (storedUser && storedUser !== "null") {
-      try {
-        return JSON.parse(storedUser)
-      } catch (e) {
-        // If parsing fails, fall back to JWT decode
-      }
-    }
-
-    // Fall back to decoding JWT token
     const token = this.getToken()
     if (!token) {
       return null
@@ -334,9 +318,6 @@ export const authService = {
 
       // Decode user info from new JWT token
       const user = decodeJWT(apiData.token)
-
-      // Store user in localStorage for easy access and updates
-      localStorage.setItem("user", JSON.stringify(user))
 
       return {
         token: apiData.token,
