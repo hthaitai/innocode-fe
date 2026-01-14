@@ -10,6 +10,7 @@ import ManageRounds from "../../components/organizer/ManageRounds"
 import DeleteContestSection from "../../components/organizer/DeleteContestSection"
 import StartEndContestSection from "../../components/organizer/StartEndContestSection"
 import StartEndRegistrationSection from "../../components/organizer/StartEndRegistrationSection"
+import CancelContestSection from "../../components/organizer/CancelContestSection"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
@@ -108,6 +109,7 @@ const OrganizerContestDetail = () => {
             <div className="space-y-1">
               <StartEndRegistrationSection contestId={contestId} />
               <StartEndContestSection contestId={contestId} />
+              <CancelContestSection contest={contest} />
               <DeleteContestSection contest={contest} />
             </div>
           </div>

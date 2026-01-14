@@ -15,9 +15,10 @@ const DeleteRoundSection = ({ round, contestId }) => {
   const handleDelete = useCallback(() => {
     if (!round) return
 
-    openModal("confirmDelete", {
-      message: t("delete.confirmMessage", { name: round.name }),
-      onConfirm: async (onClose) => {
+    openModal("confirm", {
+      title: t("delete.title"),
+      description: t("delete.confirmMessage", { name: round.name }),
+      onConfirm: async () => {
         try {
           await deleteRound(round.roundId).unwrap()
           toast.success(t("delete.success"))
@@ -25,8 +26,6 @@ const DeleteRoundSection = ({ round, contestId }) => {
         } catch (err) {
           console.error("❌ Failed to delete round:", err)
           toast.error(t("delete.error"))
-        } finally {
-          onClose()
         }
       },
     })

@@ -48,12 +48,47 @@ export const dashboardApi = api.injectEndpoints({
       }),
       transformResponse: (response) => response.data,
     }),
+
+    // ========== Organizer Dashboard Endpoints ==========
+    getOrganizerDashboardMetrics: builder.query({
+      query: (params = {}) => ({
+        url: "organizer-dashboards",
+        params: {
+          organizerId: params.organizerId,
+          startDate: params.startDate,
+          endDate: params.endDate,
+          timeRangePredefined: params.timeRangePredefined,
+        },
+      }),
+      transformResponse: (response) => response.data,
+    }),
+    getOrganizerDashboardContests: builder.query({
+      query: (params = {}) => ({
+        url: "organizer-dashboards/contests",
+        params: {
+          page: params.page,
+          size: params.size,
+        },
+      }),
+      transformResponse: (response) => response.data,
+    }),
+    getOrganizerContestDetails: builder.query({
+      query: (contestId) => ({
+        url: `organizer-dashboards/contests/${contestId}`,
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 })
 
 export const {
+  // Admin Dashboard Hooks
   useGetDashboardMetricsQuery,
   useGetDashboardChartsQuery,
   useGetTopPerformersQuery,
   useGetSchoolMetricsQuery,
+  // Organizer Dashboard Hooks
+  useGetOrganizerDashboardMetricsQuery,
+  useGetOrganizerDashboardContestsQuery,
+  useGetOrganizerContestDetailsQuery,
 } = dashboardApi

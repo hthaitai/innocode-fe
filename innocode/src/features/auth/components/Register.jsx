@@ -13,6 +13,7 @@ import {
 } from "@/shared/services/emailService"
 import { Icon } from "@iconify/react"
 import DropdownFluent from "@/shared/components/DropdownFluent"
+import TypingBackground from "./TypingBackground"
 
 const Register = () => {
   const { t } = useTranslation(["pages", "common", "validation"])
@@ -467,15 +468,10 @@ const Register = () => {
           </div>
         </div>
       </div>
-      <div className="login-background">
-        <div className="typing-container">
-          <h1 className="typing-text">
-            {typedText}
-            <span className="typing-cursor">|</span>
-          </h1>
-          <p className="typing-subtitle">{t("auth:registerSubtitle")}</p>
-        </div>
-      </div>
+      <TypingBackground
+        typedText={typedText}
+        subtitle={t("auth:registerSubtitle")}
+      />
     </div>
   )
 }

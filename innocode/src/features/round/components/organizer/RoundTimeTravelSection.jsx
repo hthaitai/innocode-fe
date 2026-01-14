@@ -27,8 +27,23 @@ const RoundTimeTravelSection = ({ roundId, isRetakeRound, problemType }) => {
     } catch (error) {
       console.error(error)
 
-      const msg =
+      let msg =
         error?.data?.message || error?.data?.errorMessage || errorMessage
+
+      if (msg === "Cannot fast-forward appeal submit before round starts.") {
+        msg = t("errors.fastForwardAppealSubmitBeforeRoundStart")
+      } else if (
+        msg === "Cannot fast-forward appeal review before round starts."
+      ) {
+        msg = t("errors.fastForwardAppealReviewBeforeRoundStart")
+      } else if (
+        msg === "Finalize is only allowed after all deadlines are completed."
+      ) {
+        msg = t("errors.finalizeBeforeDeadlines")
+      } else if (msg === "Judge deadline cannot be before round end.") {
+        msg = t("errors.judgeDeadlineBeforeRoundEnd")
+      }
+
       toast.error(msg)
 
       console.log(msg)

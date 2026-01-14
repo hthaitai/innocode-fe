@@ -45,6 +45,11 @@ const allMenus = {
     icon: "lucide:notebook-pen",
   },
   // Organizer menus
+  organizerDashboard: {
+    path: "/organizer/dashboard",
+    labelKey: "sidebar.dashboard",
+    icon: "lucide:chart-spline",
+  },
   organizerContests: {
     path: "/organizer/contests",
     labelKey: "sidebar.contests",
@@ -121,7 +126,12 @@ const menuByRole = {
     "certificate",
     "notifications",
   ],
-  organizer: ["profile", "organizerContests", "notifications"],
+  organizer: [
+    "profile",
+    "organizerDashboard",
+    "organizerContests",
+    "notifications",
+  ],
   mentor: [
     "profile",
     "contests",

@@ -6,12 +6,12 @@ export const statusColorMap = {
   inactive: "bg-gray-400",
   blocked: "bg-gray-700",
 
-  published: "bg-blue-400",
-  open: "bg-blue-500",
-  registrationopen: "bg-blue-500",
-  running: "bg-blue-600",
-  ongoing: "bg-blue-700",
-  active: "bg-blue-600",
+  published: "bg-purple-500",
+  open: "bg-cyan-500",
+  registrationopen: "bg-cyan-500",
+  running: "bg-green-500",
+  ongoing: "bg-green-500",
+  active: "bg-green-500",
 
   pending: "bg-amber-400",
   pending_review: "bg-amber-500",
@@ -20,7 +20,7 @@ export const statusColorMap = {
   upcoming: "bg-amber-300",
 
   finalized: "bg-green-700",
-  completed: "bg-green-500",
+  completed: "bg-blue-500",
   approved: "bg-green-600",
   resolved: "bg-green-500",
 
@@ -28,13 +28,15 @@ export const statusColorMap = {
   denied: "bg-red-600",
   disqualified: "bg-red-700",
   error: "bg-red-500",
-  registrationclosed: "bg-red-600",
+  registrationclosed: "bg-slate-500",
   closed: "bg-red-600",
 
   escalated: "bg-purple-500",
 
   accepted: "bg-green-600",
   cancelled: "bg-red-500",
+  paused: "bg-yellow-500",
+  delayed: "bg-orange-500",
   revoked: "bg-red-700",
   expired: "bg-gray-500",
   pendinginvite: "bg-amber-400",
@@ -88,6 +90,9 @@ const StatusBadge = ({ status, translate = false, label }) => {
       registrationopen: "contest.statusLabels.registrationopen",
       registrationclosed: "contest.statusLabels.registrationclosed",
       draft: "contest.statusLabels.draft",
+      cancelled: "contest.statusLabels.cancelled",
+      paused: "contest.statusLabels.paused",
+      delayed: "contest.statusLabels.delayed",
     }
 
     const translationKey = statusMap[safeStatus]

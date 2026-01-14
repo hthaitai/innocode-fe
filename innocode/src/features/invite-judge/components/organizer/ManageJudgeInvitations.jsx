@@ -134,8 +134,6 @@ const ManageJudgeInvitations = ({
 
   return (
     <div>
-      {/* <JudgeInvitationsToolbar /> */}
-
       <TableFluent data={judges} columns={columns} />
 
       <TablePagination pagination={pagination} onPageChange={setPageNumber} />

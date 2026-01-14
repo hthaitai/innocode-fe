@@ -46,7 +46,14 @@
     "fieldMax": "{{label}} không được quá 365 ngày",
     "teamLimit": "Giới hạn số đội là bắt buộc",
     "teamLimitRange": "Giới hạn số đội phải từ 1 đến 10000",
-    "contestNameExists": "Tên cuộc thi đã tồn tại trong năm nay."
+    "contestNameExists": "Tên cuộc thi đã tồn tại trong năm nay.",
+    "registrationEndEarlierThanStart": "Thời gian kết thúc đăng ký sớm hơn hoặc bằng thời gian bắt đầu được yêu cầu.",
+    "registrationEndAfterContestStart": "Thời gian kết thúc đăng ký không được sau thời gian bắt đầu cuộc thi.",
+    "contestEnded": "Cuộc thi đã kết thúc. Không thể bắt đầu ngay.",
+    "contestNotStartedFuture": "Cuộc thi chưa bắt đầu (thời gian bắt đầu là trong tương lai).",
+    "registrationEndBeforeStart": "Thời gian kết thúc đăng ký không được trước thời gian bắt đầu đăng ký.",
+    "registrationNotEnded": "Đăng ký chưa kết thúc. Không thể bắt đầu cuộc thi ngay.",
+    "roundsEndAfterNow": "Không thể kết thúc cuộc thi vì vẫn còn một hoặc nhiều vòng thi chưa kết thúc."
   },
   "suggestion": {
     "useSuggestedName": "Sử dụng tên gợi ý:"

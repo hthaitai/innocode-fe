@@ -126,7 +126,7 @@ const DropdownFluent = ({
       <div className="relative w-full" ref={dropdownRef}>
         <div
           onClick={toggleDropdown}
-          className={`text-sm leading-5 flex gap-3 justify-between items-center cursor-pointer border border-b-[#D3D3D3] rounded-[5px] px-3 py-1.5 min-h-[32px] bg-white transition-colors duration-150 ${borderClass} ${
+          className={`text-sm leading-5 flex gap-3 justify-between items-center cursor-pointer border border-b-[#D3D3D3] rounded-[5px] px-3 min-h-[32px] bg-white transition-colors duration-150 ${borderClass} ${
             disabled
               ? "opacity-60 cursor-not-allowed"
               : isOpen
@@ -160,16 +160,16 @@ const DropdownFluent = ({
                 opacity: 0,
                 transition: { duration: 0.25, ease: EASING.fluentOut },
               }}
-              className="absolute left-0 top-full bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg overflow-hidden w-full z-50 "
+              className="absolute left-0 top-full bg-white border border-[#E5E5E5] rounded-[5px] shadow-lg overflow-hidden w-full z-[9999]"
               style={{
-                maxHeight: "200px",
+                maxHeight: "400px",
                 width: "max-content",
                 maxWidth: "364px",
                 minWidth: dropdownRef.current?.offsetWidth,
                 ...dropdownPosition, // apply calculated position
               }}
             >
-              <div className="overflow-y-auto max-h-[200px] overscroll-contain p-1 flex flex-col gap-1">
+              <div className="overflow-y-auto max-h-[400px] overscroll-contain p-1 flex flex-col gap-1">
                 {options.length === 0 ? (
                   <div className="py-1.5 px-3 text-sm leading-5 text-[#7A7574] text-center">
                     {t("common.noOptionsAvailable")}

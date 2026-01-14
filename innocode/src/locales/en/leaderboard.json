@@ -38,7 +38,11 @@
     "offline": "Offline",
     "frozen": "Frozen",
     "title": "Live Leaderboard",
-    "subtitle": "Manage leaderboard visibility and status"
+    "subtitle": "Manage leaderboard visibility and status",
+    "confirmFreezeTitle": "Freeze Leaderboard",
+    "confirmFreezeMessage": "Are you sure you want to freeze the leaderboard? Updates will stop for participants.",
+    "confirmUnfreezeTitle": "Unfreeze Leaderboard",
+    "confirmUnfreezeMessage": "Are you sure you want to unfreeze the leaderboard? Live updates will resume."
   },
   "toolbar": {
     "download": "Download",

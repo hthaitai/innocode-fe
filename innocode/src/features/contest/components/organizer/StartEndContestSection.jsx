@@ -11,17 +11,25 @@ const StartEndContestSection = ({ contestId }) => {
   const [startContestNow, { isLoading: isStarting }] =
     useStartContestNowMutation()
   const [endContestNow, { isLoading: isEnding }] = useEndContestNowMutation()
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["pages", "contest"])
 
   const handleStartNow = async () => {
     try {
       await startContestNow(contestId).unwrap()
       toast.success(t("organizerContestDetail.control.startSuccess"))
     } catch (error) {
-      const errorMessage =
-        error?.data?.message ||
-        error?.data?.errorMessage ||
-        t("organizerContestDetail.control.startError")
+      let errorMessage = error?.data?.message || error?.data?.errorMessage
+
+      if (errorMessage === "Contest already ended. Cannot start now.") {
+        errorMessage = t("contest:validation.contestEnded")
+      } else if (
+        errorMessage ===
+        "Registration has not ended yet. Cannot start contest now."
+      ) {
+        errorMessage = t("contest:validation.registrationNotEnded")
+      } else if (!errorMessage) {
+        errorMessage = t("organizerContestDetail.control.startError")
+      }
       toast.error(errorMessage)
     }
   }
@@ -31,10 +39,21 @@ const StartEndContestSection = ({ contestId }) => {
       await endContestNow(contestId).unwrap()
       toast.success(t("organizerContestDetail.control.endSuccess"))
     } catch (error) {
-      const errorMessage =
-        error?.data?.message ||
-        error?.data?.errorMessage ||
-        t("organizerContestDetail.control.endError")
+      let errorMessage = error?.data?.message || error?.data?.errorMessage
+
+      if (
+        errorMessage ===
+        "Contest has not started yet (start time is in the future)."
+      ) {
+        errorMessage = t("contest:validation.contestNotStartedFuture")
+      } else if (
+        errorMessage ===
+        "Cannot end contest now because some rounds end after now."
+      ) {
+        errorMessage = t("contest:validation.roundsEndAfterNow")
+      } else if (!errorMessage) {
+        errorMessage = t("organizerContestDetail.control.endError")
+      }
       toast.error(errorMessage)
     }
   }

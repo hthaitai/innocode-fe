@@ -161,10 +161,10 @@ const PublishContestSection = ({ contest }) => {
               {t("organizerContestDetail.publish.title")}
             </p>
             <p className="text-[12px] leading-[16px] text-[#7A7574]">
-              {!isReady
-                ? t("organizerContestDetail.publish.subtitleNotReady")
-                : isPublished
+              {isPublished
                 ? t("organizerContestDetail.publish.subtitlePublished")
+                : !isReady
+                ? t("organizerContestDetail.publish.subtitleNotReady")
                 : t("organizerContestDetail.publish.subtitleReady")}
             </p>
           </div>

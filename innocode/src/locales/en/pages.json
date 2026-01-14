@@ -596,6 +596,15 @@
       "endSuccess": "Registration ended successfully",
       "endError": "Failed to end registration"
     },
+    "cancelControl": {
+      "title": "Cancel contest",
+      "subtitle": "Cancel the contest immediately. This action cannot be undone.",
+      "button": "Cancel contest",
+      "buttonLoading": "Cancelling...",
+      "success": "Contest cancelled successfully",
+      "error": "Failed to cancel contest",
+      "confirmMessage": "Are you sure you want to cancel \"{{name}}\"?"
+    },
     "publish": {
       "title": "Publish contest",
       "subtitleNotReady": "Contest is not ready to publish.",

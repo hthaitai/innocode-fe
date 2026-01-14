@@ -40,13 +40,10 @@ const ConfirmModal = ({
             {t("buttons.cancel")}
           </button>
           <button
-            className="button-orange min-w-[100px] flex items-center justify-center gap-2"
+            className={` ${isLoading ? "button-gray" : "button-orange"}`}
             onClick={handleConfirm}
             disabled={isLoading}
           >
-            {isLoading && (
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            )}
             {t("buttons.confirm")}
           </button>
         </>

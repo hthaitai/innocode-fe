@@ -56,6 +56,12 @@
     "roundAlreadyEnded": "Round already ended. Cannot start now.",
     "previousRoundNotFinalized": "Cannot start round '{{currentRound}}' because previous round '{{previousRound}}' is not finalized.",
     "retakeRoundPlacement": "Retake round must be the immediate next round after its main round (no rounds in between).",
+    "startBeforeContest": "Cannot start round before contest start.",
+    "endBeforeStart": "Cannot end round before it starts.",
+    "fastForwardAppealSubmitBeforeRoundStart": "Cannot fast-forward appeal submit before round starts.",
+    "fastForwardAppealReviewBeforeRoundStart": "Cannot fast-forward appeal review before round starts.",
+    "finalizeBeforeDeadlines": "Finalize is only allowed after all deadlines are completed.",
+    "judgeDeadlineBeforeRoundEnd": "Judge deadline cannot be before round end.",
     "unknownError": "An unknown error occurred"
   },
   "detail": {
@@ -185,10 +191,15 @@
   "notFound": "Round not found",
   "status": {
     "upcoming": "Upcoming",
+    "incoming": "Upcoming",
     "ongoing": "Ongoing",
     "running": "Running",
     "completed": "Completed",
-    "closed": "Closed"
+    "closed": "Closed",
+    "finalized": "Finalized",
+    "published": "Published",
+    "draft": "Draft",
+    "cancelled": "Cancelled"
   },
   "validation": {
     "retakeSelect": "Please select a round to retake",
