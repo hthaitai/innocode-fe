@@ -139,13 +139,13 @@ function StudentCertificate() {
                     </p>
 
                     <div className="flex flex-wrap gap-6 text-sm text-gray-600">
-                      {certificate.teamName && (
+                      {(certificate.teamName || certificate.team?.name) && (
                         <div>
                           <p className="text-xs text-gray-500">
                             {t("certificate.team")}
                           </p>
                           <p className="text-gray-900 font-medium">
-                            {certificate.teamName}
+                            {certificate.teamName || certificate.team?.name}
                           </p>
                         </div>
                       )}

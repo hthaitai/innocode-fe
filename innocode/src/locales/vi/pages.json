@@ -701,6 +701,7 @@
     "certificate": "Chứng chỉ",
     "by": "bởi",
     "team": "Đội",
+    "noTeam": "Không có",
     "issued": "Cấp ngày",
     "youHaveEarned": "Bạn đã nhận được {{count}} chứng chỉ"
   },

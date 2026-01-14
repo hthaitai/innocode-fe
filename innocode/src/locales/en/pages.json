@@ -703,6 +703,7 @@
     "certificate": "Certificate",
     "by": "by",
     "team": "Team",
+    "noTeam": "N/A",
     "issued": "Issued",
     "youHaveEarned": "You have earned {{count}} certificate{{plural}}"
   },

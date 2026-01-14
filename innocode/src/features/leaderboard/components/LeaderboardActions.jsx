@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useState } from "react"
 import { WifiOff, Trophy } from "lucide-react"
 import { toast } from "react-hot-toast"
 import ToggleSwitchFluent from "@/shared/components/ToggleSwitchFluent"
@@ -53,22 +53,9 @@ const LeaderboardActions = ({ contestId, refetchLeaderboard }) => {
     }
   }
 
-  const handleLiveUpdate = useCallback(
-    (data) => {
-      if (import.meta.env.VITE_ENV === "development") {
-        console.log("🔄 Live leaderboard update received (organizer):", data)
-      }
-
-      // Refresh the current page data when live update comes in
-      // This ensures pagination stays consistent
-      refetchLeaderboard()
-    },
-    [refetchLeaderboard]
-  )
-
   const { isConnected } = useLiveLeaderboard(
     contestId,
-    handleLiveUpdate,
+    refetchLeaderboard, // Pass refetch function directly
     !!contestId && !isFrozen
   )
 
