@@ -150,6 +150,16 @@ export const contestApi = api.injectEndpoints({
         { type: "Contests", id: "LIST" },
       ],
     }),
+    cancelContest: builder.mutation({
+      query: (id) => ({
+        url: `contests/${id}/cancel`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Contests", id },
+        { type: "Contests", id: "LIST" },
+      ],
+    }),
     getContestReport: builder.query({
       query: (id) => `contests/${id}/report`,
       transformResponse: (response) => response.data,
@@ -176,6 +186,7 @@ export const {
   useEndContestNowMutation,
   useStartRegistrationNowMutation,
   useEndRegistrationNowMutation,
+  useCancelContestMutation,
   useLazyGetContestReportQuery,
   useGetMyContestsQuery,
   useGetContestTimelineQuery,

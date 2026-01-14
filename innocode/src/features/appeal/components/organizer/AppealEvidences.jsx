@@ -3,6 +3,7 @@ import { FileText } from "lucide-react"
 import { formatDateTime } from "@/shared/utils/dateTime"
 
 export default function AppealEvidences({ evidences }) {
+  console.log(evidences)
   const { t } = useTranslation(["appeal"])
 
   return (
@@ -16,7 +17,9 @@ export default function AppealEvidences({ evidences }) {
             <div className="flex items-center gap-5">
               <FileText size={20} />
               <div className="flex flex-col justify-center">
-                <p className="text-[14px] leading-[20px]">{evidence.note}</p>
+                <p className="text-[14px] leading-[20px]">
+                  {evidence.note || t("noNote")}
+                </p>
                 <p className="text-[12px] leading-[16px] text-[#7A7574]">
                   {formatDateTime(evidence.createdAt)}
                 </p>

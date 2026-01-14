@@ -12,7 +12,7 @@ const StartEndRegistrationSection = ({ contestId }) => {
     useStartRegistrationNowMutation()
   const [endRegistrationNow, { isLoading: isEnding }] =
     useEndRegistrationNowMutation()
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["pages", "contest"])
 
   const handleStartNow = async () => {
     try {
@@ -21,10 +21,18 @@ const StartEndRegistrationSection = ({ contestId }) => {
         t("organizerContestDetail.registrationControl.startSuccess")
       )
     } catch (error) {
-      const errorMessage =
-        error?.data?.message ||
-        error?.data?.errorMessage ||
-        t("organizerContestDetail.registrationControl.startError")
+      let errorMessage = error?.data?.message || error?.data?.errorMessage
+
+      if (
+        errorMessage ===
+        "Registration end time is earlier than or equal to requested start."
+      ) {
+        errorMessage = t("contest:validation.registrationEndEarlierThanStart")
+      } else if (!errorMessage) {
+        errorMessage = t(
+          "organizerContestDetail.registrationControl.startError"
+        )
+      }
       toast.error(errorMessage)
     }
   }
@@ -34,10 +42,17 @@ const StartEndRegistrationSection = ({ contestId }) => {
       await endRegistrationNow(contestId).unwrap()
       toast.success(t("organizerContestDetail.registrationControl.endSuccess"))
     } catch (error) {
-      const errorMessage =
-        error?.data?.message ||
-        error?.data?.errorMessage ||
-        t("organizerContestDetail.registrationControl.endError")
+      let errorMessage = error?.data?.message || error?.data?.errorMessage
+
+      if (errorMessage === "Registration end cannot be after contest start.") {
+        errorMessage = t("contest:validation.registrationEndAfterContestStart")
+      } else if (
+        errorMessage === "Registration end cannot be before registration start."
+      ) {
+        errorMessage = t("contest:validation.registrationEndBeforeStart")
+      } else if (!errorMessage) {
+        errorMessage = t("organizerContestDetail.registrationControl.endError")
+      }
       toast.error(errorMessage)
     }
   }

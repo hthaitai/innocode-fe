@@ -313,6 +313,7 @@ export const BREADCRUMBS = {
 
   ORGANIZER_PROVINCES: ["Provinces"],
   ORGANIZER_SCHOOLS: ["Schools"],
+  ORGANIZER_DASHBOARD: ["Dashboard"],
 
   //Judge
   JUDGE_SUBMISSIONS: ["Submissions"],
@@ -656,6 +657,7 @@ export const BREADCRUMB_PATHS = {
 
   ORGANIZER_PROVINCES: ["/organizer", "/organizer/provinces"],
   ORGANIZER_SCHOOLS: ["/organizer", "/organizer/schools"],
+  ORGANIZER_DASHBOARD: ["/organizer/dashboard"],
   //Staff
   STAFF_PROVINCES: ["/province-staff"],
   STAFF_SCHOOLS: ["/school-staff"],

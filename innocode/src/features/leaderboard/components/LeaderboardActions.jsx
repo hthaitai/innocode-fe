@@ -5,16 +5,27 @@ import ToggleSwitchFluent from "@/shared/components/ToggleSwitchFluent"
 import { useToggleFreezeLeaderboardMutation } from "@/services/leaderboardApi"
 import { useLiveLeaderboard } from "../hooks/useLiveLeaderboard"
 import { useTranslation } from "react-i18next"
+import ConfirmModal from "@/shared/components/ConfirmModal"
 
 const LeaderboardActions = ({ contestId, refetchLeaderboard }) => {
   const { t } = useTranslation(["leaderboard", "errors"])
   const [isFrozen, setIsFrozen] = useState(false)
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    newState: null,
+  })
 
-  const [toggleFreeze] = useToggleFreezeLeaderboardMutation()
+  const [toggleFreeze, { isLoading: isToggling }] =
+    useToggleFreezeLeaderboardMutation()
 
-  const handleFreezeToggle = async (newState) => {
+  const handleFreezeToggle = (newState) => {
+    setConfirmModal({ isOpen: true, newState })
+  }
+
+  const handleConfirmAction = async () => {
+    const newState = confirmModal.newState
     try {
-      const response = await toggleFreeze(contestId).unwrap()
+      await toggleFreeze(contestId).unwrap()
       setIsFrozen(newState)
 
       toast.success(
@@ -24,17 +35,21 @@ const LeaderboardActions = ({ contestId, refetchLeaderboard }) => {
       )
     } catch (error) {
       console.error(error)
-      setIsFrozen(!newState)
+      // Revert switch state logic if we were tracking it differently, but here we just don't update local isFrozen
+      // Actually isFrozen is local state, if we don't update it, it stays same.
 
       // Check for specific error message regarding contest status
       if (error?.data?.errorMessage?.includes("Cannot toggle freeze status")) {
         toast.error(t("leaderboard:actions.toggleFreezeInvalidStatus"))
-        return
+      } else {
+        toast.error(
+          error?.data?.errorMessage ||
+            t("leaderboard:actions.toggleFreezeError")
+        )
       }
-
-      toast.error(
-        error?.data?.errorMessage || t("leaderboard:actions.toggleFreezeError")
-      )
+    } finally {
+      // Close modal
+      setConfirmModal({ isOpen: false, newState: null })
     }
   }
 
@@ -89,6 +104,23 @@ const LeaderboardActions = ({ contestId, refetchLeaderboard }) => {
         labelLeft={t("leaderboard:actions.freeze")}
         labelRight={t("leaderboard:actions.unfreeze")}
         labelPosition="left"
+      />
+
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+        onConfirm={handleConfirmAction}
+        title={
+          confirmModal.newState
+            ? t("leaderboard:actions.confirmFreezeTitle")
+            : t("leaderboard:actions.confirmUnfreezeTitle")
+        }
+        description={
+          confirmModal.newState
+            ? t("leaderboard:actions.confirmFreezeMessage")
+            : t("leaderboard:actions.confirmUnfreezeMessage")
+        }
+        isLoading={isToggling}
       />
     </div>
   )

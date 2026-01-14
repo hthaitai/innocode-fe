@@ -56,6 +56,12 @@
     "roundAlreadyEnded": "Vòng thi đã kết thúc. Không thể bắt đầu ngay.",
     "previousRoundNotFinalized": "Không thể bắt đầu vòng '{{currentRound}}' vì vòng trước '{{previousRound}}' chưa được hoàn tất.",
     "retakeRoundPlacement": "Vòng thi lại phải là vòng tiếp theo ngay sau vòng chính (không có vòng nào ở giữa).",
+    "startBeforeContest": "Không thể bắt đầu vòng thi trước khi cuộc thi bắt đầu.",
+    "endBeforeStart": "Không thể kết thúc vòng thi trước khi nó bắt đầu.",
+    "fastForwardAppealSubmitBeforeRoundStart": "Không thể kết thúc sớm nộp phúc khảo trước khi vòng thi bắt đầu.",
+    "fastForwardAppealReviewBeforeRoundStart": "Không thể kết thúc sớm duyệt phúc khảo trước khi vòng thi bắt đầu.",
+    "finalizeBeforeDeadlines": "Chỉ được phép hoàn tất sau khi tất cả các hạn chót đã kết thúc.",
+    "judgeDeadlineBeforeRoundEnd": "Hạn chấm thi không thể trước khi vòng thi kết thúc.",
     "unknownError": "Đã xảy ra lỗi không xác định"
   },
   "detail": {
@@ -185,10 +191,15 @@
   "notFound": "Không tìm thấy vòng thi",
   "status": {
     "upcoming": "Sắp diễn ra",
+    "incoming": "Sắp diễn ra",
     "ongoing": "Đang diễn ra",
     "running": "Đang diễn ra",
     "completed": "Đã kết thúc",
-    "closed": "Đã đóng"
+    "closed": "Đã đóng",
+    "finalized": "Đã hoàn tất",
+    "published": "Đã xuất bản",
+    "draft": "Nháp",
+    "cancelled": "Đã hủy"
   },
   "validation": {
     "retakeSelect": "Vui lòng chọn vòng thi để thi lại",

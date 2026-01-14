@@ -7,6 +7,7 @@ import InnoCodeLogo from "@/assets/InnoCode_Logo.jpg"
 import { useCreateRoleRegistrationMutation } from "@/services/roleRegistrationApi"
 import { Icon } from "@iconify/react"
 import DropdownFluent from "@/shared/components/DropdownFluent"
+import TypingBackground from "./TypingBackground"
 
 const RoleRegistration = () => {
   const { t } = useTranslation("pages")
@@ -667,17 +668,10 @@ const RoleRegistration = () => {
           </div>
         </div>
       </div>
-      <div className="login-background">
-        <div className="typing-container">
-          <h1 className="typing-text">
-            {typedText}
-            <span className="typing-cursor">|</span>
-          </h1>
-          <p className="typing-subtitle">
-            {t("roleRegistrations.joinProfessionalCommunity")}
-          </p>
-        </div>
-      </div>
+      <TypingBackground
+        typedText={typedText}
+        subtitle={t("roleRegistrations.joinProfessionalCommunity")}
+      />
     </div>
   )
 }

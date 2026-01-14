@@ -27,6 +27,7 @@ export const getResultColumns = (t) => [
     header: t("common.judgedBy"),
     accessorKey: "judgedBy",
     size: 160,
+    cell: ({ getValue }) => getValue() || "—",
     meta: { className: "truncate max-w-[160px]" },
   },
   {

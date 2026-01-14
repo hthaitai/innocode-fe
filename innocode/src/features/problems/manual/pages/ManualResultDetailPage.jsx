@@ -90,7 +90,7 @@ const ManualResultDetailPage = () => {
               {t("common.submissionCriteria")}
             </div>
             <ManualResultRubricScores
-              criteriaScores={submission.criteriaScores}
+              criteriaScores={submission.criterionResults}
             />
           </div>
         </div>

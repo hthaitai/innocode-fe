@@ -3,7 +3,7 @@ import {
   useFetchManualSubmissionsQuery,
   useLazyDownloadSubmissionQuery,
 } from "../../../../services/submissionApi"
-import { useGetRoundByIdQuery } from "../../../../services/roundApi"
+import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import PageContainer from "../../../../shared/components/PageContainer"
 import TableFluent from "../../../../shared/components/TableFluent"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
@@ -26,10 +26,12 @@ const JudgeManualSubmissionsPage = () => {
   const navigate = useNavigate()
 
   const {
-    data: roundData,
-    isLoading: isRoundLoading,
-    isError: isRoundError,
-  } = useGetRoundByIdQuery(roundId)
+    data: contestData,
+    isLoading: isContestLoading,
+    isError: isContestError,
+  } = useGetContestByIdQuery(contestId)
+
+  const roundData = contestData?.rounds?.find((r) => r.roundId === roundId)
 
   const {
     data: submissionsData,
@@ -65,7 +67,7 @@ const JudgeManualSubmissionsPage = () => {
     roundId
   )
 
-  if (isRoundLoading || isSubmissionsLoading) {
+  if (isContestLoading || isSubmissionsLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -76,7 +78,7 @@ const JudgeManualSubmissionsPage = () => {
     )
   }
 
-  if (isRoundError) {
+  if (isContestError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -87,7 +89,7 @@ const JudgeManualSubmissionsPage = () => {
     )
   }
 
-  if (!roundData && roundId) {
+  if (contestData && !roundData && roundId) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}

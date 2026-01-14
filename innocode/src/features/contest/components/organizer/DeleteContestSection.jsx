@@ -13,19 +13,18 @@ const DeleteContestSection = ({ contest }) => {
   const { t } = useTranslation("pages")
 
   const handleDelete = useCallback(() => {
-    openModal("confirmDelete", {
-      message: t("organizerContestDetail.delete.confirmMessage", {
+    openModal("confirm", {
+      title: t("organizerContestDetail.delete.title"),
+      description: t("organizerContestDetail.delete.confirmMessage", {
         name: contest.name,
       }),
-      onConfirm: async (onClose) => {
+      onConfirm: async () => {
         try {
           await deleteContest({ id: contest.contestId }).unwrap()
           toast.success(t("organizerContestDetail.delete.success"))
           navigate("/organizer/contests")
         } catch (err) {
           toast.error(t("organizerContestDetail.delete.error"))
-        } finally {
-          onClose()
         }
       },
     })
@@ -33,7 +32,7 @@ const DeleteContestSection = ({ contest }) => {
 
   return (
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-5">
         <Trash size={20} />
         <span className="text-sm leading-5">
           {t("organizerContestDetail.delete.title")}

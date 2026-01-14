@@ -5,6 +5,7 @@ import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import { useReviewAppealMutation } from "../../../../services/appealApi"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 import Label from "../../../../shared/components/form/Label"
+import { toast } from "react-hot-toast"
 
 export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
   const { t } = useTranslation(["appeal"])
@@ -37,14 +38,22 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
         decisionReason,
       }).unwrap()
 
+      toast.success(t("reviewSuccess"))
       onClose()
     } catch (err) {
+      console.error(err)
       const errorMessage =
+        err?.data?.errorMessage ||
         err?.data?.message ||
         err?.data?.Message ||
         err?.error ||
         t("errorReviewFailed")
-      setError(errorMessage)
+
+      if (errorMessage === "Appeal has already been reviewed.") {
+        toast.error(t("appealAlreadyReviewed"))
+      } else {
+        setError(errorMessage)
+      }
     }
   }
 
@@ -55,11 +64,13 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
       </button>
       <button
         type="button"
-        className="button-orange"
+        className={`flex items-center justify-center gap-2 ${
+          isLoading ? "button-gray" : "button-orange"
+        }`}
         onClick={handleSubmit}
         disabled={isLoading}
       >
-        {isLoading ? t("submitting") : t("submitReview")}
+        {t("submitReview")}
       </button>
     </div>
   )

@@ -38,7 +38,11 @@
     "offline": "Ngoại tuyến",
     "frozen": "Đã đông cứng",
     "title": "Bảng xếp hạng trực tiếp",
-    "subtitle": "Quản lý hiển thị và trạng thái bảng xếp hạng"
+    "subtitle": "Quản lý hiển thị và trạng thái bảng xếp hạng",
+    "confirmFreezeTitle": "Tạm dừng Bảng xếp hạng",
+    "confirmFreezeMessage": "Bạn có chắc chắn muốn tạm dừng bảng xếp hạng? Cập nhật sẽ dừng lại đối với người tham gia.",
+    "confirmUnfreezeTitle": "Tiếp tục Bảng xếp hạng",
+    "confirmUnfreezeMessage": "Bạn có chắc chắn muốn tiếp tục bảng xếp hạng? Cập nhật trực tiếp sẽ tiếp tục."
   },
   "toolbar": {
     "download": "Tải xuống",

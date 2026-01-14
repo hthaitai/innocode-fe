@@ -39,10 +39,14 @@ export default function RubricItem({
             <TextFieldFluent
               id={`score-${item.rubricId}`}
               type="number"
-              value={scoreObj?.score || 0}
+              value={scoreObj?.score ?? ""}
               onChange={(e) =>
                 !readOnly &&
-                onChange(item.rubricId, "score", Number(e.target.value))
+                onChange(
+                  item.rubricId,
+                  "score",
+                  e.target.value === "" ? "" : Number(e.target.value)
+                )
               }
               style={{ width: "80px" }}
               disabled={readOnly}

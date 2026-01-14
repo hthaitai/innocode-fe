@@ -45,7 +45,14 @@
     "fieldMax": "{{label}} cannot exceed 365 days",
     "teamLimit": "Team limit is required",
     "teamLimitRange": "Team limit must be between 1 and 10000",
-    "contestNameExists": "Contest name already exists for this year."
+    "contestNameExists": "Contest name already exists for this year.",
+    "registrationEndEarlierThanStart": "Registration end time is earlier than or equal to requested start.",
+    "registrationEndAfterContestStart": "Registration end cannot be after contest start.",
+    "contestEnded": "Contest already ended. Cannot start now.",
+    "contestNotStartedFuture": "Contest has not started yet (start time is in the future).",
+    "registrationEndBeforeStart": "Registration end cannot be before registration start.",
+    "registrationNotEnded": "Registration has not ended yet. Cannot start contest now.",
+    "roundsEndAfterNow": "The contest cannot be ended because one or more rounds have not finished yet."
   },
   "suggestion": {
     "useSuggestedName": "Use suggested name:"

@@ -12,7 +12,7 @@ const AppealActions = ({ appeal }) => {
   }
 
   return (
-    <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors">
+    <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 gap-5 flex justify-between items-center min-h-[70px] hover:bg-[#F6F6F6] transition-colors">
       <div className="flex items-center gap-5">
         <Scale size={20} />
         <div className="flex flex-col justify-center">

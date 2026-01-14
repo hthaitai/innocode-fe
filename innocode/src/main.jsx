@@ -37,7 +37,7 @@ import ManualResultDetailPage from "./features/problems/manual/pages/ManualResul
 import AutoEvaluationPage from "./features/problems/auto-evaluation/pages/AutoEvaluationPage"
 import AutoTestResultsPage from "./features/problems/auto-evaluation/pages/AutoTestResultsPage"
 import AutoResultDetail from "./features/problems/auto-evaluation/pages/AutoResultDetail"
-import Login from "./features/auth/components/Login"
+import Login from "./features/auth/pages/Login"
 import Register from "./features/auth/components/Register"
 import RoleRegistration from "./features/auth/components/RoleRegistration"
 import { ModalProvider } from "./context/ModalContext"
@@ -90,6 +90,7 @@ import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal"
 // Organizer pages
 import AddTestCase from "./features/problems/auto-evaluation/pages/AddTestCase"
 import EditTestCase from "./features/problems/auto-evaluation/pages/EditTestCase"
+import OrganizerDashboard from "./features/dashboard/pages/organizer/OrganizerDashboard"
 
 // Judge pages
 import JudgeManualSubmissionsPage from "./features/submission/pages/judge/JudgeManualSubmissionsPage" // new page for pending submissions list
@@ -473,6 +474,14 @@ const router = createBrowserRouter([
       },
 
       //organizer routes
+      {
+        path: "organizer/dashboard",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+            <OrganizerDashboard />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "organizer/contests",
         children: [

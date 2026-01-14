@@ -24,6 +24,13 @@ const StartEndRoundSection = ({ roundId }) => {
         return
       }
 
+      if (
+        error?.data?.errorMessage === "Cannot start round before contest start."
+      ) {
+        toast.error(t("errors.startBeforeContest"))
+        return
+      }
+
       const errorMessage =
         error?.data?.message ||
         error?.data?.errorMessage ||
@@ -52,10 +59,14 @@ const StartEndRoundSection = ({ roundId }) => {
       await endRoundNow(roundId).unwrap()
       toast.success(t("actions.endSuccess"))
     } catch (error) {
-      const errorMessage =
-        error?.data?.message ||
-        error?.data?.errorMessage ||
-        t("actions.endError")
+      let errorMessage = error?.data?.message || error?.data?.errorMessage
+
+      if (errorMessage === "Cannot end round before it starts.") {
+        errorMessage = t("errors.endBeforeStart")
+      } else if (!errorMessage) {
+        errorMessage = t("actions.endError")
+      }
+
       toast.error(errorMessage)
     }
   }

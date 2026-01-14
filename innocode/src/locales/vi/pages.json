@@ -594,6 +594,15 @@
       "endSuccess": "Kết thúc đăng ký thành công",
       "endError": "Không thể kết thúc đăng ký"
     },
+    "cancelControl": {
+      "title": "Hủy cuộc thi",
+      "subtitle": "Hủy cuộc thi ngay lập tức. Hành động này không thể hoàn tác.",
+      "button": "Hủy cuộc thi",
+      "buttonLoading": "Đang hủy...",
+      "success": "Hủy cuộc thi thành công",
+      "error": "Không thể hủy cuộc thi",
+      "confirmMessage": "Bạn có chắc chắn muốn hủy \"{{name}}\" không?"
+    },
     "publish": {
       "title": "Công khai cuộc thi",
       "subtitleNotReady": "Cuộc thi chưa sẵn sàng để công khai.",
