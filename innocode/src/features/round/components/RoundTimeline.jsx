@@ -178,15 +178,18 @@ const RoundTimeline = ({ timeline, loading }) => {
                   <div
                     className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
                       isCompleted
-                        ? "bg-[#ff6b35] text-white"
+                        ? "bg-[#ff6b35] ring-4 ring-orange-50"
                         : isActive
-                        ? "bg-[#ff6b35] text-white ring-3 ring-orange-200"
-                        : "bg-white border-3 border-gray-300"
+                          ? "bg-white border-2 border-[#ff6b35] ring-4 ring-orange-100"
+                          : "bg-white border-2 border-gray-200"
                     }`}
                   >
-                    {isCompleted || isActive ? (
-                      <Check size={14} strokeWidth={3} />
-                    ) : null}
+                    {isCompleted && (
+                      <Check size={12} className="text-white" strokeWidth={4} />
+                    )}
+                    {isActive && (
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#ff6b35] animate-pulse"></div>
+                    )}
                   </div>
 
                   {/* Label */}
@@ -225,8 +228,8 @@ const RoundTimeline = ({ timeline, loading }) => {
                         index < currentPhaseIndex
                           ? "bg-[#ff6b35]"
                           : index === currentPhaseIndex
-                          ? "bg-gradient-to-r from-[#ff6b35] to-gray-300"
-                          : "bg-gray-300"
+                            ? "bg-gradient-to-r from-[#ff6b35] to-gray-300"
+                            : "bg-gray-300"
                       }`}
                       style={
                         index === currentPhaseIndex

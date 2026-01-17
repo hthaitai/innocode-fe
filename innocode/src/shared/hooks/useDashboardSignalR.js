@@ -33,17 +33,17 @@ export const useDashboardSignalR = (onUpdate) => {
     // Only Admin and Mentor roles use this hook
     if (userRole !== "admin" && userRole !== "mentor") {
       console.warn(
-        `⚠️ [SignalR] Role '${userRole}' not supported for dashboard SignalR`
+        `⚠️ [SignalR] Role '${userRole}' not supported for dashboard SignalR`,
       )
       return
     }
 
     console.log(
-      `✅ [SignalR] Role '${userRole}' is supported, proceeding with connection...`
+      `✅ [SignalR] Role '${userRole}' is supported, proceeding with connection...`,
     )
 
     console.log(
-      `✅ [SignalR] Role '${userRole}' is supported, proceeding with connection...`
+      `✅ [SignalR] Role '${userRole}' is supported, proceeding with connection...`,
     )
 
     // 1. Create SignalR connection
@@ -169,7 +169,7 @@ export const useDashboardSignalR = (onUpdate) => {
       } catch (err) {
         console.error(
           "❌ [SignalR] Failed to re-join group after reconnect:",
-          err
+          err,
         )
       }
     })
@@ -203,7 +203,7 @@ export const useDashboardSignalR = (onUpdate) => {
           console.log("✅ [SignalR] Joined AdminDashboard group")
         } else if (userRole === "mentor") {
           console.log(
-            `📞 [SignalR] Invoking JoinMentorDashboard with ID: ${user.id}`
+            `📞 [SignalR] Invoking JoinMentorDashboard with ID: ${user.id}`,
           )
           await connection.invoke("JoinMentorDashboard", user.id)
           console.log(`✅ [SignalR] Joined MentorDashboard_${user.id} group`)
@@ -212,12 +212,12 @@ export const useDashboardSignalR = (onUpdate) => {
         setIsConnected(true)
         console.log("✅ [SignalR] Connection state updated to: connected")
         console.log(
-          "🎉 [SignalR] Setup complete! Ready to receive notifications"
+          "🎉 [SignalR] Setup complete! Ready to receive notifications",
         )
       } catch (err) {
         if (!isMounted) {
           console.warn(
-            "⚠️ [SignalR] Error occurred but component already unmounted"
+            "⚠️ [SignalR] Error occurred but component already unmounted",
           )
           return
         }
@@ -225,7 +225,7 @@ export const useDashboardSignalR = (onUpdate) => {
         // Gracefully handle the "stopped during negotiation" error
         if (err.message && err.message.includes("stopped during negotiation")) {
           console.warn(
-            "⚠️ [SignalR] Connection stopped during negotiation (normal in dev mode)"
+            "⚠️ [SignalR] Connection stopped during negotiation (normal in dev mode)",
           )
           return
         }
@@ -252,7 +252,7 @@ export const useDashboardSignalR = (onUpdate) => {
         try {
           console.log(
             "🔍 [SignalR] Current connection state:",
-            connection.state
+            connection.state,
           )
 
           if (connection.state === signalR.HubConnectionState.Connected) {
@@ -265,7 +265,7 @@ export const useDashboardSignalR = (onUpdate) => {
               console.log("✅ [SignalR] Left AdminDashboard group")
             } else if (userRole === "mentor") {
               console.log(
-                `📞 [SignalR] Invoking LeaveMentorDashboard with ID: ${user.id}`
+                `📞 [SignalR] Invoking LeaveMentorDashboard with ID: ${user.id}`,
               )
               await connection.invoke("LeaveMentorDashboard", user.id)
               console.log(`✅ [SignalR] Left MentorDashboard_${user.id} group`)
@@ -276,7 +276,7 @@ export const useDashboardSignalR = (onUpdate) => {
             console.log("✅ [SignalR] Connection stopped successfully")
           } else {
             console.log(
-              "ℹ️ [SignalR] Connection not in Connected state, skipping cleanup"
+              "ℹ️ [SignalR] Connection not in Connected state, skipping cleanup",
             )
           }
         } catch (err) {
@@ -284,7 +284,7 @@ export const useDashboardSignalR = (onUpdate) => {
             console.warn("⚠️ [SignalR] Error during cleanup:", err)
           } else {
             console.log(
-              "ℹ️ [SignalR] Cleanup stopped during negotiation (normal)"
+              "ℹ️ [SignalR] Cleanup stopped during negotiation (normal)",
             )
           }
         }

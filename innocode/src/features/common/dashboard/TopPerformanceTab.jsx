@@ -11,7 +11,8 @@ import {
 } from "lucide-react"
 import { useGetTopPerformersQuery } from "@/services/dashboardApi"
 import { useDashboardSignalR } from "@/shared/hooks/useDashboardSignalR"
-import TimeRangeFilter, { TimeRangePredefined } from "./TimeRangeFilter"
+import { TimeRangePredefined } from "./TimeRangeFilter"
+import DashboardTimeRangeFilter from "@/features/dashboard/components/organizer/DashboardTimeRangeFilter"
 import toast from "react-hot-toast"
 import "@/styles/typography.css"
 
@@ -45,28 +46,12 @@ const TopPerformanceTab = () => {
     if (eventName === "CertificateIssued") {
       toast.success(
         data?.Message || t("dashboard.notifications.certificateIssued"),
-        { icon: "🏅" }
+        { icon: "🏅" },
       )
     }
   }
 
   const { isConnected } = useDashboardSignalR(handleSignalRUpdate)
-
-  const handleTimeRangeChange = (newRange) => {
-    setTimeRange(newRange)
-    if (newRange !== TimeRangePredefined.Custom) {
-      setStartDate("")
-      setEndDate("")
-    }
-  }
-
-  const handleDateChange = (field, value) => {
-    if (field === "startDate") {
-      setStartDate(value)
-    } else {
-      setEndDate(value)
-    }
-  }
 
   const getRankIcon = (rank) => {
     switch (rank) {
@@ -109,12 +94,13 @@ const TopPerformanceTab = () => {
     <div className="space-y-6">
       {/* Filters & Status */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <TimeRangeFilter
-          selectedRange={timeRange}
-          onRangeChange={handleTimeRangeChange}
+        <DashboardTimeRangeFilter
+          timeRange={timeRange}
+          setTimeRange={setTimeRange}
           startDate={startDate}
+          setStartDate={setStartDate}
           endDate={endDate}
-          onDateChange={handleDateChange}
+          setEndDate={setEndDate}
         />
 
         <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E5E5E5] rounded-[5px]">

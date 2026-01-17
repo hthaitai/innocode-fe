@@ -35,8 +35,16 @@ import ContestTimeline from "../components/ContestTimeline"
 import { useGetContestTimelineQuery } from "@/services/contestApi"
 
 // Wrapper component to fetch and display timeline for each round
-const RoundTimelineWrapper = ({ roundId }) => {
-  const { timeline, loading } = useRoundTimeline(roundId)
+const RoundTimelineWrapper = ({ roundId, refetchKey }) => {
+  const { timeline, loading, refetch } = useRoundTimeline(roundId)
+
+  // Refetch timeline when refetchKey changes
+  useEffect(() => {
+    if (refetchKey > 0 && refetch) {
+      refetch()
+    }
+  }, [refetchKey, refetch])
+
   return <RoundTimeline timeline={timeline} loading={loading} />
 }
 
@@ -48,6 +56,9 @@ const ContestDetail = () => {
   const { user } = useAuth()
   const role = user?.role || "student"
   const { openModal } = useModal()
+
+  // State to trigger timeline refetch when rounds are refreshed
+  const [timelineRefetchKey, setTimelineRefetchKey] = useState(0)
 
   // Fetch contest data from API
   const { contest: apiContest, loading, error } = useContestDetail(contestId)
@@ -120,16 +131,16 @@ const ContestDetail = () => {
       console.log("🔍 [ContestDetail] contestId:", contestId)
       console.log(
         "🔍 [ContestDetail] shouldFetchLeaderboard:",
-        shouldFetchLeaderboard
+        shouldFetchLeaderboard,
       )
       console.log("🔍 [ContestDetail] leaderboardData:", leaderboardData)
       console.log(
         "🔍 [ContestDetail] leaderboardData type:",
-        typeof leaderboardData
+        typeof leaderboardData,
       )
       console.log(
         "🔍 [ContestDetail] leaderboardData isArray:",
-        Array.isArray(leaderboardData)
+        Array.isArray(leaderboardData),
       )
       console.log("🔍 [ContestDetail] leaderboardLoading:", leaderboardLoading)
       console.log("🔍 [ContestDetail] leaderboardError:", leaderboardError)
@@ -157,7 +168,7 @@ const ContestDetail = () => {
       console.log("🔍 [ContestDetail] leaderboardEntries:", leaderboardEntries)
       console.log(
         "🔍 [ContestDetail] leaderboardEntries length:",
-        leaderboardEntries.length
+        leaderboardEntries.length,
       )
       if (leaderboardEntries.length > 0) {
         console.log("🔍 [ContestDetail] first entry:", leaderboardEntries[0])
@@ -181,7 +192,7 @@ const ContestDetail = () => {
 
     const myTeamId = myTeam.teamId || myTeam.team_id
     return leaderboardEntries.find(
-      (entry) => entry.teamId === myTeamId || entry.teamId === String(myTeamId)
+      (entry) => entry.teamId === myTeamId || entry.teamId === String(myTeamId),
     )
   }, [isOngoing, myTeam, leaderboardEntries])
 
@@ -216,7 +227,7 @@ const ContestDetail = () => {
   const manualRounds = useMemo(() => {
     if (role !== "student" || !rounds || rounds.length === 0) return []
     return rounds.filter(
-      (round) => round.problemType === "Manual" && round.roundId
+      (round) => round.problemType === "Manual" && round.roundId,
     )
   }, [rounds, role])
 
@@ -271,7 +282,7 @@ const ContestDetail = () => {
       try {
         // Filter rounds from ref to get latest value
         const manualRoundsFiltered = (roundsRef.current || []).filter(
-          (round) => round.problemType === "Manual" && round.roundId
+          (round) => round.problemType === "Manual" && round.roundId,
         )
 
         const checkPromises = manualRoundsFiltered.map(async (round) => {
@@ -282,7 +293,7 @@ const ContestDetail = () => {
                 pageNumber: 1,
                 pageSize: 1,
                 studentIdSearch: currentUserId,
-              }
+              },
             )
             const results = res.data?.data || res.data || []
             return results.length > 0 ? round : null
@@ -292,7 +303,7 @@ const ContestDetail = () => {
             }
             console.warn(
               `Error checking manual result for round ${round.roundId}:`,
-              err
+              err,
             )
             return null
           }
@@ -550,7 +561,7 @@ const ContestDetail = () => {
             <div className="flex items-center gap-3 flex-wrap mb-4">
               <span
                 className={`px-3 py-1 rounded-[5px] text-sm font-medium ${getStatusColor(
-                  contest.statusLabel || contest.status
+                  contest.statusLabel || contest.status,
                 )}`}
               >
                 {(() => {
@@ -757,7 +768,11 @@ const ContestDetail = () => {
                             ? "animate-spin text-orange-500"
                             : "hover:rotate-180"
                         }`}
-                        onClick={() => refetchRounds()}
+                        onClick={() => {
+                          refetchRounds()
+                          // Increment refetch key to trigger timeline refetch
+                          setTimelineRefetchKey((prev) => prev + 1)
+                        }}
                         style={{
                           transition: "transform 0.3s ease, color 0.2s ease",
                         }}
@@ -798,15 +813,15 @@ const ContestDetail = () => {
                         switch (round.problemType) {
                           case "McqTest":
                             return completedRounds.some(
-                              (r) => r.roundId === round.roundId
+                              (r) => r.roundId === round.roundId,
                             )
                           case "AutoEvaluation":
                             return completedAutoTests.some(
-                              (r) => r.roundId === round.roundId
+                              (r) => r.roundId === round.roundId,
                             )
                           case "Manual":
                             return completedManualProblems.some(
-                              (r) => r.roundId === round.roundId
+                              (r) => r.roundId === round.roundId,
                             )
                           default:
                             return false
@@ -899,12 +914,12 @@ const ContestDetail = () => {
                                   round.status === "Closed"
                                     ? "bg-[#fde8e8] text-[#d93025]"
                                     : round.status === "Opened"
-                                    ? "bg-[#e6f4ea] text-[#34a853]"
-                                    : round.status === "Finalized"
-                                    ? "bg-[#e6f4ea] text-[#34a853]"
-                                    : round.status === "Incoming"
-                                    ? "bg-[#C6E2FF] text-[#6C7B8B]"
-                                    : "bg-[#fef7e0] text-[#fbbc05]"
+                                      ? "bg-[#e6f4ea] text-[#34a853]"
+                                      : round.status === "Finalized"
+                                        ? "bg-[#e6f4ea] text-[#34a853]"
+                                        : round.status === "Incoming"
+                                          ? "bg-[#C6E2FF] text-[#6C7B8B]"
+                                          : "bg-[#fef7e0] text-[#fbbc05]"
                                 }`}
                               >
                                 {(() => {
@@ -936,7 +951,7 @@ const ContestDetail = () => {
                                       // Check if openCode already exists in sessionStorage
                                       const existingOpenCode =
                                         sessionStorage.getItem(
-                                          `openCode_${round.roundId}`
+                                          `openCode_${round.roundId}`,
                                         )
 
                                       if (existingOpenCode) {
@@ -956,7 +971,7 @@ const ContestDetail = () => {
                                             // Store openCode in sessionStorage for this round
                                             sessionStorage.setItem(
                                               `openCode_${round.roundId}`,
-                                              openCode
+                                              openCode,
                                             )
                                             // Navigate to round
                                             navigate(roundRoute)
@@ -998,10 +1013,10 @@ const ContestDetail = () => {
                                 {round.problemType === "McqTest"
                                   ? t("contest.multipleChoiceQuestions")
                                   : round.problemType === "Manual"
-                                  ? t("contest.manualProblem")
-                                  : round.problemType === "AutoEvaluation"
-                                  ? t("contest.autoEvaluation")
-                                  : round.problemType}
+                                    ? t("contest.manualProblem")
+                                    : round.problemType === "AutoEvaluation"
+                                      ? t("contest.autoEvaluation")
+                                      : round.problemType}
                               </span>
                             </div>
 
@@ -1037,7 +1052,10 @@ const ContestDetail = () => {
 
                             {/* Round Timeline */}
                             {round.roundId && (
-                              <RoundTimelineWrapper roundId={round.roundId} />
+                              <RoundTimelineWrapper
+                                roundId={round.roundId}
+                                refetchKey={timelineRefetchKey}
+                              />
                             )}
                           </div>
                         </div>
@@ -1174,7 +1192,7 @@ const ContestDetail = () => {
                     // Single result - direct button
                     const result = allResults[0]
                     const roundInfo = rounds.find(
-                      (r) => r.roundId === result.roundId
+                      (r) => r.roundId === result.roundId,
                     )
                     const roundName =
                       roundInfo?.roundName ||
@@ -1211,7 +1229,7 @@ const ContestDetail = () => {
                         <div className="space-y-2">
                           {allResults.map((result, index) => {
                             const roundInfo = rounds.find(
-                              (r) => r.roundId === result.roundId
+                              (r) => r.roundId === result.roundId,
                             )
                             const roundName =
                               roundInfo?.roundName ||
@@ -1318,7 +1336,7 @@ const ContestDetail = () => {
                                 </span>
                                 <span className="text-2xl font-bold">
                                   {(myTeamLeaderboardEntry.score ?? 0).toFixed(
-                                    2
+                                    2,
                                   )}
                                 </span>
                               </div>

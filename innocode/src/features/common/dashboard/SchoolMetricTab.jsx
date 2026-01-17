@@ -10,7 +10,8 @@ import {
 } from "lucide-react"
 import { useGetSchoolMetricsQuery } from "@/services/dashboardApi"
 import { useDashboardSignalR } from "@/shared/hooks/useDashboardSignalR"
-import TimeRangeFilter, { TimeRangePredefined } from "./TimeRangeFilter"
+import { TimeRangePredefined } from "./TimeRangeFilter"
+import DashboardTimeRangeFilter from "@/features/dashboard/components/organizer/DashboardTimeRangeFilter"
 import {
   ResponsiveContainer,
   BarChart,
@@ -57,22 +58,6 @@ const SchoolMetricTab = () => {
 
   const { isConnected } = useDashboardSignalR(handleSignalRUpdate)
 
-  const handleTimeRangeChange = (newRange) => {
-    setTimeRange(newRange)
-    if (newRange !== TimeRangePredefined.Custom) {
-      setStartDate("")
-      setEndDate("")
-    }
-  }
-
-  const handleDateChange = (field, value) => {
-    if (field === "startDate") {
-      setStartDate(value)
-    } else {
-      setEndDate(value)
-    }
-  }
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -107,12 +92,13 @@ const SchoolMetricTab = () => {
     <div className="space-y-6">
       {/* Filters & Status */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <TimeRangeFilter
-          selectedRange={timeRange}
-          onRangeChange={handleTimeRangeChange}
+        <DashboardTimeRangeFilter
+          timeRange={timeRange}
+          setTimeRange={setTimeRange}
           startDate={startDate}
+          setStartDate={setStartDate}
           endDate={endDate}
-          onDateChange={handleDateChange}
+          setEndDate={setEndDate}
         />
 
         <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E5E5E5] rounded-[5px]">
@@ -283,10 +269,10 @@ const SchoolMetricTab = () => {
                               index === 0
                                 ? "#2563EB"
                                 : index === 1
-                                ? "#3B82F6"
-                                : index === 2
-                                ? "#60A5FA"
-                                : "#93C5FD"
+                                  ? "#3B82F6"
+                                  : index === 2
+                                    ? "#60A5FA"
+                                    : "#93C5FD"
                             }
                           />
                         ))}
