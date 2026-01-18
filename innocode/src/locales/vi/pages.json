@@ -100,7 +100,7 @@
     "contestEnded": "Cuộc thi đã kết thúc",
     "registerNow": "Đăng ký ngay",
     "registrationClosesOn": "Đăng ký đóng vào",
-    "registrationClosedDetail": "Đã đóng đăng ký",
+    "registrationClosedDetail": "Cổng đăng ký đã đóng",
     "refreshingRounds": "Đang làm mới vòng thi...",
     "refreshing": "Đang làm mới...",
     "loadingRounds": "Đang tải vòng thi...",
@@ -125,7 +125,7 @@
     "failedToLoadLeaderboard": "Không thể tải bảng xếp hạng",
     "otherRankings": "Các xếp hạng khác",
     "pts": "điểm",
-    "registrationWindowClosed": "Thời gian đăng ký đã đóng. Bạn không thể tạo đội mới cho cuộc thi này nữa.",
+    "registrationWindowClosed": "Cổng đăng ký đã đóng. Bạn không thể tạo đội mới cho cuộc thi này nữa.",
     "viewLeaderboard": "Xem bảng xếp hạng",
     "checkCurrentRankings": "Kiểm tra xếp hạng và vị trí đội hiện tại",
     "seeYourResult": "Xem kết quả của bạn",
@@ -1003,7 +1003,11 @@
     "submissionInfo": "Thông tin nộp bài",
     "team": "Đội:",
     "submittedBy": "Người nộp:",
-    "submittedAt": "Nộp lúc:"
+    "submittedAt": "Nộp lúc:",
+    "submitFinalSolution": "Nộp bài cuối cùng",
+    "confirmSubmitMessage": "Bạn có chắc chắn muốn nộp bài giải của mình không? Điểm của bạn sẽ được thêm vào bảng xếp hạng.",
+    "testCasesPassed": "Số Test Case đạt:",
+    "submitWarning": "Sau khi nộp bài, bạn không thể thay đổi bài giải của mình. Điểm của bạn sẽ được thêm vào bảng xếp hạng."
   },
   "manualProblemPage": {
     "loadingProblem": "Đang tải bài tập...",

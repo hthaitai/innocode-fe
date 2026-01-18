@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
 import { useModal } from "@/shared/hooks/useModal"
 import { Icon } from "@iconify/react"
+import { useTranslation } from "react-i18next"
 import {
   useGetRoundTestCasesQuery,
   useGetAutoTestResultQuery,
@@ -20,6 +21,7 @@ import {
 const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
   const navigate = useNavigate()
   const { openModal } = useModal()
+  const { t } = useTranslation("pages")
   const STORAGE_KEY = `code_${roundId}`
   const TEST_RESULTS_STORAGE_KEY = `testResults_${roundId}` // Thêm key mới cho test results
 
@@ -58,6 +60,19 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
     }
     return null
   })
+  const [submitResponse, setSubmitResponse] = useState(() => {
+    // Khôi phục toàn bộ submit response (summary + cases) từ storage
+    const saved = localStorage.getItem(TEST_RESULTS_STORAGE_KEY)
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        return parsed.response || null
+      } catch (e) {
+        return null
+      }
+    }
+    return null
+  })
   const [hasRunCode, setHasRunCode] = useState(() => {
     // Khôi phục hasRunCode từ storage - nếu có submissionId thì đã run code rồi
     const saved = localStorage.getItem(TEST_RESULTS_STORAGE_KEY)
@@ -79,7 +94,7 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
     error: testCaseError,
   } = useGetRoundTestCasesQuery(
     { roundId, pageNumber: 1, pageSize: 1 },
-    { skip: !roundId }
+    { skip: !roundId },
   )
 
   const {
@@ -109,22 +124,29 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
     }
   }, [code, STORAGE_KEY])
 
-  // Lưu submitResponseCases và submissionId vào localStorage
+  // Lưu submitResponseCases, submitResponse và submissionId vào localStorage
   useEffect(() => {
-    if (submitResponseCases || submissionId) {
+    if (submitResponseCases || submissionId || submitResponse) {
       const dataToSave = {
         cases: submitResponseCases,
         submissionId: submissionId,
+        response: submitResponse, // Lưu toàn bộ response
       }
       localStorage.setItem(TEST_RESULTS_STORAGE_KEY, JSON.stringify(dataToSave))
     }
-  }, [submitResponseCases, submissionId, TEST_RESULTS_STORAGE_KEY])
+  }, [
+    submitResponseCases,
+    submissionId,
+    submitResponse,
+    TEST_RESULTS_STORAGE_KEY,
+  ])
 
   // Clear submitResponseCases when testResult already has actual/expected
   useEffect(() => {
     if (testResult?.details && submitResponseCases) {
       const hasActualExpected = testResult.details.every(
-        (detail) => detail.actual !== undefined || detail.expected !== undefined
+        (detail) =>
+          detail.actual !== undefined || detail.expected !== undefined,
       )
       if (hasActualExpected) {
         // testResult already has the values, clear submitResponseCases và storage
@@ -143,6 +165,7 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
       onConfirm: () => {
         setCode("")
         setSubmitResponseCases(null)
+        setSubmitResponse(null)
         setSubmissionId(null)
         setHasRunCode(false)
         localStorage.removeItem(STORAGE_KEY)
@@ -173,6 +196,13 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
 
       console.log("🆔 New Submission ID:", newSubmissionId)
 
+      // Lưu toàn bộ response data (bao gồm summary và cases)
+      const responseData = result?.data || result
+      if (responseData) {
+        console.log("💾 Saving full response:", responseData)
+        setSubmitResponse(responseData)
+      }
+
       // Extract cases array from response (contains actual and expected)
       const cases = result?.data?.cases || result?.cases
       if (cases && Array.isArray(cases)) {
@@ -195,11 +225,11 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
       const summary = result?.data?.summary || result?.summary
       if (summary) {
         toast.success(
-          `Code tested! Passed: ${summary.passed}/${summary.total} test cases. Click Submit to add to leaderboard.`
+          `Code tested! Passed: ${summary.passed}/${summary.total} test cases. Click Submit to add to leaderboard.`,
         )
       } else {
         toast.success(
-          "Code tested successfully! Click Submit to add to leaderboard."
+          "Code tested successfully! Click Submit to add to leaderboard.",
         )
       }
     } catch (error) {
@@ -226,29 +256,34 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
     const score = testResult?.score || 0
 
     openModal("confirm", {
-      title: "Submit Final Solution",
+      title: t("autoEvaluation.submitFinalSolution"),
       description: (
         <div className="space-y-3">
           <p className="text-[#2d3748]">
-            Are you sure you want to submit your solution? This will add your
-            score to the leaderboard.
+            {t("autoEvaluation.confirmSubmitMessage")}
           </p>
           {testResult && (
             <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-3">
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-[#7A7574]">Test Cases Passed:</span>
+                  <span className="text-[#7A7574]">
+                    {t("autoEvaluation.testCasesPassed")}
+                  </span>
                   <span className="font-semibold text-green-600">
                     {passedCount}/{totalCount}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[#7A7574]">Score:</span>
+                  <span className="text-[#7A7574]">
+                    {t("autoEvaluation.score")}
+                  </span>
                   <span className="font-semibold text-[#ff6b35]">{score}</span>
                 </div>
                 {testResult.submissionAttemptNumber > 1 && (
                   <div className="flex items-center justify-between">
-                    <span className="text-[#7A7574]">Attempt:</span>
+                    <span className="text-[#7A7574]">
+                      {t("autoEvaluation.attempt")}
+                    </span>
                     <span className="font-semibold text-[#2d3748]">
                       {testResult.submissionAttemptNumber}
                     </span>
@@ -265,8 +300,7 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
                 className="text-yellow-600 flex-shrink-0 mt-0.5"
               />
               <p className="text-sm text-yellow-800">
-                Once submitted, you cannot change your solution. Your score will
-                be added to the leaderboard.
+                {t("autoEvaluation.submitWarning")}
               </p>
             </div>
           </div>
@@ -283,12 +317,13 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
           // Reset state
           setCode("")
           setSubmitResponseCases(null)
+          setSubmitResponse(null)
           setSubmissionId(null)
           setHasRunCode(false)
 
           toast.dismiss()
           toast.success(
-            "Submission accepted! Your score has been added to the leaderboard."
+            "Submission accepted! Your score has been added to the leaderboard.",
           )
 
           setTimeout(() => {
@@ -299,7 +334,7 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
           toast.dismiss()
           toast.error(
             error?.data?.errorMessage ||
-              "Failed to submit final test. Please try again."
+              "Failed to submit final test. Please try again.",
           )
         }
       },
@@ -315,7 +350,7 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
       const mergedDetails = testResult.details.map((detail) => {
         // Try to find matching case by id
         const matchingCase = submitResponseCases.find(
-          (c) => c.id === detail.id || c.id === detail.detailsId
+          (c) => c.id === detail.id || c.id === detail.detailsId,
         )
 
         if (matchingCase) {
@@ -368,6 +403,7 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
     submissionId,
     testCases,
     testResult: mergedTestResult,
+    submitResponse, // Thêm submitResponse để component có thể sử dụng
     hasRunCode,
 
     // Loading states

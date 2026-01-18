@@ -74,6 +74,7 @@ import OrganizerMcqCreate from "./features/mcq/pages/OrganizerMcqCreate"
 import OrganizerMcqAttempts from "./features/mcq/pages/OrganizerMcqAttempts"
 import OrganizerMcqAttemptDetail from "./features/mcq/pages/OrganizerMcqAttemptDetail"
 import StudentAutoEvaluation from "./features/problem/pages/student/StudentAutoEvaluation"
+import StudentMockTest from "./features/problem/pages/student/StudentMockTest"
 import StudentManualProblem from "./features/problem/pages/student/StudentManualProblem"
 import AutoTestResult from "./features/problem/pages/student/AutoTestResult"
 import CreateContest from "./features/contest/pages/organizer/CreateContest"
@@ -217,6 +218,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
         <StudentAutoEvaluation />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "mock-test/:contestId/:roundId",
+    element: (
+      <ProtectedRoute allowedRoles={[ROLES.STUDENT]}>
+        <StudentMockTest />
       </ProtectedRoute>
     ),
   },
@@ -963,5 +972,5 @@ createRoot(document.getElementById("root")).render(
         </ModalProvider>
       </AuthProvider>
     </Provider>
-  </StrictMode>
+  </StrictMode>,
 )

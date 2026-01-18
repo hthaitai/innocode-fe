@@ -850,7 +850,13 @@ const ContestDetail = () => {
                           case "Manual":
                             return `/manual-problem/${contestId}/${round.roundId}`
                           case "AutoEvaluation":
-                            return `/auto-evaluation/${contestId}/${round.roundId}`
+                            // Check testType to determine which route to use
+                            if (round.problem?.testType === "MockTest") {
+                              return `/mock-test/${contestId}/${round.roundId}`
+                            } else {
+                              // Default to InputOutput
+                              return `/auto-evaluation/${contestId}/${round.roundId}`
+                            }
                           default:
                             return null
                         }
@@ -1079,41 +1085,45 @@ const ContestDetail = () => {
 
         {/* RIGHT SIDEBAR */}
         <div className="w-[320px] flex flex-col gap-4 flex-shrink-0">
-          {/* Registration / Action Button - Only show if mentor doesn't have a team */}
-          {role === "mentor" && !registrationClosed && !myTeam && (
-            <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
-              <button
-                onClick={() => navigate(`/mentor-team/${contestId}`)}
-                className="button-orange w-full flex items-center justify-center gap-2 py-3"
-              >
-                <Icon icon="mdi:account-plus" width="18" />
-                {t("contest.registerNow")}
-              </button>
-              <p className="text-xs text-[#7A7574] text-center mt-2">
-                {t("contest.registrationClosesOn")}{" "}
-                {contest.registrationEnd
-                  ? formatDate(contest.registrationEnd).split(",")[0]
-                  : "TBA"}
-              </p>
-            </div>
-          )}
-          {role === "mentor" && registrationClosed && !myTeam && (
-            <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Icon
-                  icon="mdi:lock"
-                  width="20"
-                  className="text-[#7A7574] flex-shrink-0"
-                />
-                <p className="text-sm font-semibold text-[#2d3748]">
-                  {t("contest.registrationClosedDetail")}
+          {/* Registration / Action Button - Only show if mentor doesn't have a team and registration is open */}
+          {role === "mentor" &&
+            !myTeam &&
+            contest?.status?.toLowerCase() === "registrationopen" && (
+              <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
+                <button
+                  onClick={() => navigate(`/mentor-team/${contestId}`)}
+                  className="button-orange w-full flex items-center justify-center gap-2 py-3"
+                >
+                  <Icon icon="mdi:account-plus" width="18" />
+                  {t("contest.registerNow")}
+                </button>
+                <p className="text-xs text-[#7A7574] text-center mt-2">
+                  {t("contest.registrationClosesOn")}{" "}
+                  {contest.registrationEnd
+                    ? formatDate(contest.registrationEnd).split(",")[0]
+                    : "TBA"}
                 </p>
               </div>
-              <p className="text-xs text-[#7A7574] text-center">
-                {t("contest.registrationWindowClosed")}
-              </p>
-            </div>
-          )}{" "}
+            )}
+          {role === "mentor" &&
+            !myTeam &&
+            contest?.status?.toLowerCase() !== "registrationopen" && (
+              <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Icon
+                    icon="mdi:lock"
+                    width="20"
+                    className="text-[#7A7574] flex-shrink-0"
+                  />
+                  <p className="text-sm font-semibold text-[#2d3748]">
+                    {t("contest.registrationClosedDetail")}
+                  </p>
+                </div>
+                <p className="text-xs text-[#7A7574] text-center">
+                  {t("contest.registrationWindowClosed")}
+                </p>
+              </div>
+            )}{" "}
           {/* Countdown Timer */}
           <CountdownTimer
             targetDate={getCountdownTarget()}
@@ -1268,9 +1278,11 @@ const ContestDetail = () => {
               </div>
             )}
           {/* Your Team Status - For both student and mentor */}
-          {/* Hide if registration closed and no team */}
+          {/* Hide if registration is not open and no team */}
           {(role === "student" || role === "mentor") &&
-            !(registrationClosed && !myTeam) && (
+            !(
+              contest?.status?.toLowerCase() !== "registrationopen" && !myTeam
+            ) && (
               <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold text-[#2d3748] flex items-center gap-2">

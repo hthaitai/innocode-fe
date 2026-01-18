@@ -8,7 +8,6 @@ import { useTranslation } from "react-i18next"
 const TestResultsSection = ({ testResult, isLoading }) => {
   const { t } = useTranslation("pages")
   const [expandedCases, setExpandedCases] = useState(new Set())
-
   const toggleCase = (caseId) => {
     setExpandedCases((prev) => {
       const newSet = new Set(prev)
@@ -56,31 +55,18 @@ const TestResultsSection = ({ testResult, isLoading }) => {
     )
   }
 
-  // Hỗ trợ cả format cũ (details) và format mới (summary + cases)
+  // Lấy summary và cases từ response mới
   const summary = testResult.summary || {}
-  const testCases = testResult.cases || testResult.details || []
+  const testCases = testResult.cases || []
 
-  // Đếm số test case passed
-  const passedCount =
-    summary.passed !== undefined
-      ? summary.passed
-      : testCases.filter((d) => {
-          // New format: check judge0StatusId or status
-          if (d.judge0StatusId === 3 || d.status === "success") {
-            return true
-          }
-          // Old format: check note field for "success"
-          if (d.note && d.note.toLowerCase().includes("success")) {
-            return true
-          }
-          return false
-        }).length
-
-  const totalCases =
-    summary.total !== undefined ? summary.total : testCases.length
-  const rawScore =
-    summary.rawScore !== undefined ? summary.rawScore : testResult.score || 0
+  // Lấy thông tin từ summary
+  const totalCases = summary.total || 0
+  const passedCount = summary.passed || 0
+  const failedCount = summary.failed || 0
+  const rawScore = summary.rawScore || 0
   const penaltyScore = summary.penaltyScore
+  const submissionAttemptNumber =
+    summary.submissionAttemptNumber || testResult.submissionAttemptNumber || 1
 
   return (
     <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6 mt-4">
@@ -91,7 +77,7 @@ const TestResultsSection = ({ testResult, isLoading }) => {
       <div className="space-y-4">
         {/* Summary */}
         <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
               <p className="text-xs text-[#7A7574] mb-1">
                 {t("autoEvaluation.totalTestCases")}
@@ -104,16 +90,12 @@ const TestResultsSection = ({ testResult, isLoading }) => {
               </p>
               <p className="text-xl font-bold text-green-600">{passedCount}</p>
             </div>
-            {summary.failed !== undefined && (
-              <div className="text-center">
-                <p className="text-xs text-[#7A7574] mb-1">
-                  {t("autoEvaluation.failed")}
-                </p>
-                <p className="text-xl font-bold text-red-600">
-                  {summary.failed}
-                </p>
-              </div>
-            )}
+            <div className="text-center">
+              <p className="text-xs text-[#7A7574] mb-1">
+                {t("autoEvaluation.failed")}
+              </p>
+              <p className="text-xl font-bold text-red-600">{failedCount}</p>
+            </div>
             <div className="text-center">
               <p className="text-xs text-[#7A7574] mb-1">
                 {t("autoEvaluation.rawScore")}
@@ -179,36 +161,16 @@ const TestResultsSection = ({ testResult, isLoading }) => {
             <h3 className="font-semibold text-[#2d3748] text-sm">
               {t("autoEvaluation.testCasesDetail")}
             </h3>
-            {testCases.map((detail, index) => {
-              const caseId = detail.detailsId || detail.id || index
+            {testCases.map((testCase, index) => {
+              const caseId = testCase.id || index
               const isExpanded = expandedCases.has(caseId)
 
-              // Parse test case name and status from note field (old format)
-              // Format: "test 3: success" or just use judge0Status (new format)
-              let testCaseName =
-                detail.id || `${t("autoEvaluation.testCase")} ${index + 1}`
-              let testStatus = detail.judge0Status || detail.status || "Unknown"
-
-              if (detail.note && !detail.id) {
-                // Parse from note field: "test 3: success"
-                const noteParts = detail.note.split(":")
-                if (noteParts.length >= 2) {
-                  testCaseName = noteParts[0].trim() // "test 3"
-                  testStatus = noteParts[1].trim() // "success"
-                }
-              }
-
-              // Check if passed
-              const isPassed =
-                detail.judge0StatusId === 3 ||
-                detail.status === "success" ||
-                testStatus.toLowerCase() === "success"
+              // Lấy thông tin từ testCase
+              const testCaseName = `Test Case ${index + 1}`
+              const testStatus = testCase.status
 
               const hasOutput =
-                detail.stdout !== undefined ||
-                detail.stderr !== undefined ||
-                detail.compileOutput !== undefined ||
-                detail.expected !== undefined
+                testCase.expected !== undefined || testCase.actual !== undefined
 
               return (
                 <div
@@ -238,7 +200,7 @@ const TestResultsSection = ({ testResult, isLoading }) => {
                       </span>
                       <span
                         className={`px-2 py-0.5 rounded text-xs font-medium ${
-                          isPassed
+                          testStatus === "success"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
                         }`}
@@ -248,25 +210,20 @@ const TestResultsSection = ({ testResult, isLoading }) => {
                     </div>
                     <div className="flex items-center gap-3">
                       {/* Additional Info - always visible */}
-                      {(detail.time || detail.memoryKb) && (
+                      {(testCase.time || testCase.memoryKb) && (
                         <div className="flex items-center gap-3 text-xs text-[#7A7574]">
-                          {detail.time && (
+                          {testCase.time && (
                             <div className="flex items-center gap-1">
                               <Icon icon="mdi:clock-outline" width="14" />
-                              <span>{detail.time}s</span>
+                              <span>{testCase.time}s</span>
                             </div>
                           )}
-                          {detail.memoryKb && (
+                          {testCase.memoryKb && (
                             <div className="flex items-center gap-1">
                               <Icon icon="mdi:memory" width="14" />
-                              <span>{detail.memoryKb} KB</span>
+                              <span>{testCase.memoryKb} KB</span>
                             </div>
                           )}
-                        </div>
-                      )}
-                      {detail.weight !== undefined && (
-                        <div className="font-bold text-sm">
-                          {detail.weight || 0} {t("autoEvaluation.points")}
                         </div>
                       )}
                     </div>
@@ -276,11 +233,43 @@ const TestResultsSection = ({ testResult, isLoading }) => {
                   {isExpanded && hasOutput && (
                     <div className="mt-3 space-y-3">
                       {/* Expected vs Actual Output */}
-                      {(detail.expected !== undefined ||
-                        detail.actual !== undefined) && (
+                      {(testCase.expected !== undefined ||
+                        testCase.actual !== undefined) && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {/* Actual Output */}
+                          {testCase.actual !== undefined && (
+                            <div className="bg-white border border-gray-200 rounded-[5px] p-3">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Icon
+                                  icon={
+                                    testStatus === "success"
+                                      ? "mdi:check"
+                                      : "mdi:close"
+                                  }
+                                  width="16"
+                                  className={
+                                    testStatus === "success"
+                                      ? "text-green-600"
+                                      : "text-red-600"
+                                  }
+                                />
+                                <span className="text-xs font-semibold text-[#7A7574] uppercase">
+                                  {t("autoEvaluation.yourActualOutput")}
+                                </span>
+                              </div>
+                              <div
+                                className={`rounded p-2 font-mono text-sm break-words whitespace-pre-wrap ${
+                                  testStatus === "success"
+                                    ? "bg-[#f9fafb] text-[#2d3748]"
+                                    : "bg-red-50 text-red-800"
+                                }`}
+                              >
+                                {testCase.actual || "N/A"}
+                              </div>
+                            </div>
+                          )}{" "}
                           {/* Expected Output */}
-                          {detail.expected !== undefined && (
+                          {testCase.expected !== undefined && (
                             <div className="bg-white border border-gray-200 rounded-[5px] p-3">
                               <div className="flex items-center gap-2 mb-2">
                                 <Icon
@@ -293,93 +282,10 @@ const TestResultsSection = ({ testResult, isLoading }) => {
                                 </span>
                               </div>
                               <div className="bg-[#f9fafb] rounded p-2 font-mono text-sm text-[#2d3748] break-words whitespace-pre-wrap">
-                                {detail.expected || "N/A"}
+                                {testCase.expected || "N/A"}
                               </div>
                             </div>
                           )}
-                          {/* Actual Output */}
-                          {detail.actual !== undefined && (
-                            <div className="bg-white border border-gray-200 rounded-[5px] p-3">
-                              <div className="flex items-center gap-2 mb-2">
-                                <Icon
-                                  icon={isPassed ? "mdi:check" : "mdi:close"}
-                                  width="16"
-                                  className={
-                                    isPassed ? "text-green-600" : "text-red-600"
-                                  }
-                                />
-                                <span className="text-xs font-semibold text-[#7A7574] uppercase">
-                                  {t("autoEvaluation.yourActualOutput")}
-                                </span>
-                              </div>
-                              <div
-                                className={`rounded p-2 font-mono text-sm break-words whitespace-pre-wrap ${
-                                  isPassed
-                                    ? "bg-[#f9fafb] text-[#2d3748]"
-                                    : "bg-red-50 text-red-800"
-                                }`}
-                              >
-                                {detail.actual || "N/A"}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Stdout */}
-                      {detail.stdout && (
-                        <div className="bg-white border border-gray-200 rounded-[5px] p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Icon
-                              icon="mdi:console"
-                              width="16"
-                              className="text-blue-600"
-                            />
-                            <span className="text-xs font-semibold text-[#7A7574] uppercase">
-                              Standard Output
-                            </span>
-                          </div>
-                          <div className="bg-[#f9fafb] rounded p-2 font-mono text-sm text-[#2d3748] break-words whitespace-pre-wrap">
-                            {detail.stdout}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Stderr */}
-                      {detail.stderr && (
-                        <div className="bg-white border border-red-200 rounded-[5px] p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Icon
-                              icon="mdi:alert-circle"
-                              width="16"
-                              className="text-red-600"
-                            />
-                            <span className="text-xs font-semibold text-red-600 uppercase">
-                              Standard Error
-                            </span>
-                          </div>
-                          <div className="bg-red-50 rounded p-2 font-mono text-sm text-red-800 break-words whitespace-pre-wrap">
-                            {detail.stderr}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Compile Output */}
-                      {detail.compileOutput && (
-                        <div className="bg-white border border-orange-200 rounded-[5px] p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Icon
-                              icon="mdi:code-braces"
-                              width="16"
-                              className="text-orange-600"
-                            />
-                            <span className="text-xs font-semibold text-orange-600 uppercase">
-                              Compile Output
-                            </span>
-                          </div>
-                          <div className="bg-orange-50 rounded p-2 font-mono text-sm text-orange-800 break-words whitespace-pre-wrap">
-                            {detail.compileOutput}
-                          </div>
                         </div>
                       )}
                     </div>
