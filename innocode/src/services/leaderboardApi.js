@@ -10,20 +10,20 @@ export const leaderboardApi = api.injectEndpoints({
         if (Array.isArray(response.data)) {
           return {
             teams: response.data,
-          };
+          }
         }
         // If response.data is already an object with teams/entries/teamIdList, return it as is
         if (response.data && typeof response.data === "object") {
-          return response.data;
+          return response.data
         }
         // If response itself is an array (fallback)
         if (Array.isArray(response)) {
           return {
             teams: response,
-          };
+          }
         }
         // Default: return response.data or empty object
-        return response.data || { teams: [] };
+        return response.data || { teams: [] }
       },
       providesTags: (result, error, id) => [{ type: "Leaderboard", id }],
     }),
@@ -45,6 +45,7 @@ export const leaderboardApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, contestId) => [
         { type: "Leaderboard", id: contestId },
+        { type: "Contests", id: contestId },
       ],
     }),
   }),

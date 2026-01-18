@@ -1,20 +1,16 @@
-import React, { useState } from "react"
+import React from "react"
 import { useTranslation } from "react-i18next"
-import { useGetOrganizerContestDetailsQuery } from "@/services/dashboardApi"
 import { Trophy, Users, Target, CheckCircle } from "lucide-react"
 import "@/styles/typography.css"
 
-const OrganizerContestDetailsTab = () => {
+const OrganizerContestDetailsTab = ({
+  contestDetails,
+  selectedContestId,
+  setSelectedContestId,
+  isLoading,
+  error,
+}) => {
   const { t } = useTranslation(["pages", "common", "contest"])
-  const [selectedContestId, setSelectedContestId] = useState("")
-
-  const {
-    data: contestDetails,
-    isLoading,
-    error,
-  } = useGetOrganizerContestDetailsQuery(selectedContestId, {
-    skip: !selectedContestId,
-  })
 
   return (
     <div className="space-y-4">
@@ -27,7 +23,7 @@ const OrganizerContestDetailsTab = () => {
           type="text"
           placeholder={t(
             "dashboard.contestDetails.enterContestId",
-            "Enter Contest ID"
+            "Enter Contest ID",
           )}
           value={selectedContestId}
           onChange={(e) => setSelectedContestId(e.target.value)}
@@ -36,7 +32,7 @@ const OrganizerContestDetailsTab = () => {
         <p className="text-caption-1 text-gray-500 mt-2">
           {t(
             "dashboard.contestDetails.hint",
-            "Enter a contest ID to view detailed metrics"
+            "Enter a contest ID to view detailed metrics",
           )}
         </p>
       </div>
@@ -68,7 +64,7 @@ const OrganizerContestDetailsTab = () => {
               {contestDetails.contestName ||
                 t(
                   "dashboard.contestDetails.contestInfo",
-                  "Contest Information"
+                  "Contest Information",
                 )}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -117,7 +113,7 @@ const OrganizerContestDetailsTab = () => {
                 <span className="text-caption-1 text-gray-600">
                   {t(
                     "dashboard.contestDetails.totalParticipants",
-                    "Total Participants"
+                    "Total Participants",
                   )}
                 </span>
               </div>
@@ -150,7 +146,7 @@ const OrganizerContestDetailsTab = () => {
                 <span className="text-caption-1 text-gray-600">
                   {t(
                     "dashboard.contestDetails.completedRounds",
-                    "Completed Rounds"
+                    "Completed Rounds",
                   )}
                 </span>
               </div>
@@ -166,7 +162,7 @@ const OrganizerContestDetailsTab = () => {
               <h3 className="text-subtitle-2 text-gray-800 mb-4">
                 {t(
                   "dashboard.contestDetails.additionalMetrics",
-                  "Additional Metrics"
+                  "Additional Metrics",
                 )}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -178,7 +174,7 @@ const OrganizerContestDetailsTab = () => {
                       </span>
                       <span className="text-body-1 text-gray-800">{value}</span>
                     </div>
-                  )
+                  ),
                 )}
               </div>
             </div>
@@ -193,7 +189,7 @@ const OrganizerContestDetailsTab = () => {
           <p className="text-body-1 text-gray-600">
             {t(
               "dashboard.contestDetails.emptyState",
-              "Enter a contest ID above to view detailed metrics"
+              "Enter a contest ID above to view detailed metrics",
             )}
           </p>
         </div>

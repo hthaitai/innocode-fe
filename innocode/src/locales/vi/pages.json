@@ -603,26 +603,6 @@
       "error": "Không thể hủy cuộc thi",
       "confirmMessage": "Bạn có chắc chắn muốn hủy \"{{name}}\" không?"
     },
-    "publish": {
-      "title": "Công khai cuộc thi",
-      "subtitleNotReady": "Cuộc thi chưa sẵn sàng để công khai.",
-      "subtitlePublished": "Cuộc thi này đã được công khai.",
-      "subtitleReady": "Hiển thị cuộc thi và kích hoạt cho người tham gia.",
-      "button": "Công khai",
-      "buttonLoading": "Đang xử lý...",
-      "buttonPublished": "Đã công khai",
-      "buttonNotReady": "Chưa sẵn sàng",
-      "confirmTitle": "Công khai cuộc thi",
-      "confirmMessage": "Bạn có chắc chắn muốn công khai \"{{name}}\" không?",
-      "success": "Công khai cuộc thi thành công!",
-      "error": "Không thể công khai cuộc thi",
-      "required": "Bắt buộc",
-      "cannotPublishTitle": "Không thể công khai",
-      "errors": {
-        "contestEndTooEarly": "Thời gian kết thúc cuộc thi quá sớm để bao gồm các hạn chót. Gợi ý kết thúc >= {{date}}.",
-        "autoEvalMissingConfig": "Vòng chấm tự động '{{roundId}}' phải có file mock test hoặc trường hợp kiểm thử."
-      }
-    },
     "rounds": {
       "title": "Quản lý vòng thi",
       "subtitle": "Tạo và quản lý các vòng thi cho cuộc thi này",

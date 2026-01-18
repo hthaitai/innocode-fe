@@ -142,6 +142,7 @@
     "goHome": "Go to Home",
     "year": "Year",
     "inviteMessage": "You have been invited to judge this contest. Would you like to accept or decline this invitation?",
+    "viewContest": "View contest",
     "acceptButton": "Accept",
     "declineButton": "Decline",
     "messages": {

@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api } from "./api"
 export const notificationApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getNotifications: builder.query({
@@ -10,16 +10,25 @@ export const notificationApi = api.injectEndpoints({
         },
       }),
       transformResponse: (response) => {
-        const data = response.data || response;
+        const data = response.data || response
         return {
           items: data.items || [],
           totalCount: data.totalCount || data.total || 0,
           pageNumber: data.pageNumber || data.currentPage || 1,
           pageSize: data.pageSize || 10,
-          totalPages: data.totalPages || Math.ceil((data.totalCount || data.total || 0) / (data.pageSize || 10)),
+          totalPages:
+            data.totalPages ||
+            Math.ceil(
+              (data.totalCount || data.total || 0) / (data.pageSize || 10),
+            ),
           hasPreviousPage: (data.pageNumber || data.currentPage || 1) > 1,
-          hasNextPage: (data.pageNumber || data.currentPage || 1) < (data.totalPages || Math.ceil((data.totalCount || data.total || 0) / (data.pageSize || 10))),
-        };
+          hasNextPage:
+            (data.pageNumber || data.currentPage || 1) <
+            (data.totalPages ||
+              Math.ceil(
+                (data.totalCount || data.total || 0) / (data.pageSize || 10),
+              )),
+        }
       },
       providesTags: (result) =>
         result?.items
@@ -39,7 +48,7 @@ export const notificationApi = api.injectEndpoints({
       transformResponse: (response) => {
         // API returns: { data: { ...notification }, ... }
         // Return the notification object directly
-        return response.data || response;
+        return response.data || response
       },
       providesTags: (result, error, notificationId) => [
         { type: "Notifications", id: notificationId },
@@ -54,6 +63,7 @@ export const notificationApi = api.injectEndpoints({
       invalidatesTags: (result, error, notificationId) => [
         { type: "Notifications", id: notificationId },
         { type: "Notifications", id: "LIST" },
+        { type: "Notifications", id: "UNREAD_COUNT" },
       ],
     }),
     readAllNotifications: builder.mutation({
@@ -63,13 +73,26 @@ export const notificationApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error) => [
         { type: "Notifications", id: "LIST" },
+        { type: "Notifications", id: "UNREAD_COUNT" },
       ],
     }),
+    getUnreadCount: builder.query({
+      query: () => ({
+        url: "notifications/unread-count",
+      }),
+      transformResponse: (response) => {
+        // API returns: { data: { count: 14 }, ... }
+        const count = response.data?.count ?? response.count ?? 0
+        return typeof count === "number" ? count : 0
+      },
+      providesTags: [{ type: "Notifications", id: "UNREAD_COUNT" }],
+    }),
   }),
-});
+})
 export const {
   useGetNotificationsQuery,
   useReadNotificationMutation,
   useReadAllNotificationsMutation,
   useGetNotificationByIdQuery,
-} = notificationApi;
+  useGetUnreadCountQuery,
+} = notificationApi

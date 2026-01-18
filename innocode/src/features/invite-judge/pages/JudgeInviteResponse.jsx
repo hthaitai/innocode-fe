@@ -70,8 +70,8 @@ const JudgeInviteResponse = () => {
             (error?.status === 400
               ? t("inviteResponse.messages.invalid")
               : error?.status === 404
-              ? t("inviteResponse.messages.notFound")
-              : t("inviteResponse.messages.acceptFailed"))
+                ? t("inviteResponse.messages.notFound")
+                : t("inviteResponse.messages.acceptFailed"))
 
       setMessage(errorMessage)
     } finally {
@@ -110,12 +110,18 @@ const JudgeInviteResponse = () => {
             (error?.status === 400
               ? t("inviteResponse.messages.invalid")
               : error?.status === 404
-              ? t("inviteResponse.messages.notFound")
-              : t("inviteResponse.messages.declineFailed"))
+                ? t("inviteResponse.messages.notFound")
+                : t("inviteResponse.messages.declineFailed"))
 
       setMessage(errorMessage)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleViewContest = () => {
+    if (contestId) {
+      navigate(`/contest-detail/${contestId}`)
     }
   }
 
@@ -274,10 +280,21 @@ const JudgeInviteResponse = () => {
                   )}
                 </div>
               )}
-              <p className="text-gray-600 mb-6">
+              <p>
                 {t("inviteResponse.inviteMessage")}
+
+                {/* View Contest Link */}
+                {contestId && (
+                  <span
+                    onClick={handleViewContest}
+                    className="pl-1 text-[#ff6b35] underline cursor-pointer hover:text-[#e05a2a]"
+                  >
+                    {t("inviteResponse.viewContest")}
+                  </span>
+                )}
               </p>
-              <div className="flex gap-3 justify-center">
+
+              <div className="flex gap-3 justify-center mt-8">
                 <button
                   onClick={handleDeclineInvite}
                   disabled={loading}

@@ -20,10 +20,10 @@ const ManageLeaderboard = ({
   const handleRowClick = useCallback(
     (team) => {
       navigate(
-        `/organizer/contests/${contestId}/leaderboard/teams/${team.teamId}`
+        `/organizer/contests/${contestId}/leaderboard/teams/${team.teamId}`,
       )
     },
-    [navigate, contestId]
+    [navigate, contestId],
   )
 
   const columns = getContestLeaderboardColumns(t)
@@ -36,6 +36,7 @@ const ManageLeaderboard = ({
         data={entries}
         columns={columns}
         onRowClick={handleRowClick}
+        enableSorting={false}
       />
 
       {entries?.length > 0 && (

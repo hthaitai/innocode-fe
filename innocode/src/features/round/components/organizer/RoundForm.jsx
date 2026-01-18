@@ -23,7 +23,7 @@ export default function RoundForm({
   const rounds = roundsData?.data ?? []
   const nonRetakeRounds = React.useMemo(
     () => rounds.filter((r) => r.isRetakeRound === false),
-    [rounds]
+    [rounds],
   )
 
   const fileInputRef = React.useRef(null)
@@ -74,7 +74,7 @@ export default function RoundForm({
     }
 
     const mainRound = rounds.find(
-      (r) => String(r.roundId) === String(mainRoundId)
+      (r) => String(r.roundId) === String(mainRoundId),
     )
 
     if (!mainRound) return
@@ -121,63 +121,61 @@ export default function RoundForm({
   const isEditingRetakeRound = isEditMode && isRetakeRound
 
   return (
-    <div>
-      <div className="space-y-1">
-        {!isEditMode && (
-          <RoundTypeSection
+    <div className="space-y-1">
+      {!isEditMode && (
+        <RoundTypeSection
+          formData={formData}
+          setFormData={setFormData}
+          rounds={nonRetakeRounds}
+          errors={errors}
+          handleMainRoundSelect={handleMainRoundSelect}
+        />
+      )}
+
+      {(!isRetakeRound || (isRetakeRound && formData?.mainRoundId)) && (
+        <>
+          <BasicInfoSection
+            formData={formData}
+            errors={errors}
+            onChange={handleChange}
+            isEditingRetakeRound={isEditingRetakeRound}
+            isRetakeRound={isRetakeRound}
+          />
+
+          <ProblemConfigurationSection
             formData={formData}
             setFormData={setFormData}
-            rounds={nonRetakeRounds}
             errors={errors}
-            handleMainRoundSelect={handleMainRoundSelect}
+            setErrors={setErrors}
+            handleNestedChange={handleNestedChange}
+            handleFileChange={handleFileChange}
+            fileInputRef={fileInputRef}
+            isRetakeRound={isRetakeRound}
           />
-        )}
+        </>
+      )}
 
-        {(!isRetakeRound || (isRetakeRound && formData?.mainRoundId)) && (
-          <>
-            <BasicInfoSection
-              formData={formData}
-              errors={errors}
-              onChange={handleChange}
-              isEditingRetakeRound={isEditingRetakeRound}
-              isRetakeRound={isRetakeRound}
-            />
+      <div className="flex justify-start mt-3">
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={disabled}
+          className={`flex items-center justify-center gap-2 ${
+            disabled ? "button-gray" : "button-orange"
+          }`}
+        >
+          {isSubmitting && (
+            <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
+          )}
 
-            <ProblemConfigurationSection
-              formData={formData}
-              setFormData={setFormData}
-              errors={errors}
-              setErrors={setErrors}
-              handleNestedChange={handleNestedChange}
-              handleFileChange={handleFileChange}
-              fileInputRef={fileInputRef}
-              isRetakeRound={isRetakeRound}
-            />
-          </>
-        )}
-
-        <div className="flex justify-start mt-3">
-          <button
-            type="button"
-            onClick={onSubmit}
-            disabled={disabled}
-            className={`flex items-center justify-center gap-2 ${
-              disabled ? "button-gray" : "button-orange"
-            }`}
-          >
-            {isSubmitting && (
-              <span className="w-4 h-4 border-2 border-t-white border-gray-300 rounded-full animate-spin"></span>
-            )}
-
-            {isSubmitting
-              ? mode === "edit"
-                ? t("edit.submitting")
-                : t("create.submitting")
-              : mode === "edit"
+          {isSubmitting
+            ? mode === "edit"
+              ? t("edit.submitting")
+              : t("create.submitting")
+            : mode === "edit"
               ? t("edit.submit")
               : t("create.submit")}
-          </button>
-        </div>
+        </button>
       </div>
     </div>
   )

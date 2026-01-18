@@ -24,7 +24,7 @@ const PublicRoute = ({ children }) => {
   // If user is authenticated, redirect based on role
   if (isAuthenticated) {
     if (user?.role === "organizer") {
-      return <Navigate to="/organizer/contests" replace />
+      return <Navigate to="/organizer/dashboard" replace />
     }
     if (user?.role === "judge") {
       return <Navigate to="/judge/contests" replace />

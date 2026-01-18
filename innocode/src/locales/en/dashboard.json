@@ -1,0 +1,65 @@
+{
+  "status": {
+    "live": "Live",
+    "offline": "Offline"
+  },
+  "overview": {
+    "contestName": "Contest name",
+    "status": "Status",
+    "total": "Total",
+    "active": "Active",
+    "completed": "Completed",
+    "draft": "Draft",
+    "totalContestsCreated": "Total contests",
+    "activeContests": "Active contests",
+    "completedContests": "Completed contests",
+    "draftContests": "Draft contests",
+    "contestStatusDistribution": "Contest status distribution",
+    "contestHighlights": "Contest highlights",
+    "mostActiveContest": "Most active contest",
+    "contestWithMostAppeals": "Contest with most appeals",
+    "progress": "Progress",
+    "totalStudents": "Total students",
+    "totalTeams": "Total teams",
+    "activeTeams": "Active teams",
+    "eliminatedTeams": "Eliminated teams",
+    "disqualifiedTeams": "Disqualified teams",
+    "totalAppeals": "Total appeals",
+    "certificatesIssued": "Certificates issued",
+    "registrationPeriod": "Registration",
+    "registrationStart": "Registration start",
+    "registrationEnd": "Registration end",
+    "contestPeriod": "Contest",
+    "contestStart": "Contest start",
+    "contestEnd": "Contest end",
+    "teamStatus": "Team Status",
+    "eliminated": "Eliminated",
+    "disqualified": "Disqualified",
+    "appeals": "Appeals",
+    "certificates": "Certificates",
+    "issued": "Issued"
+  },
+  "suffixes": {
+    "student": " student",
+    "students": " students",
+    "team": " team",
+    "teams": " teams",
+    "appeal": " appeal",
+    "appeals": " appeals",
+    "certificate": " certificate",
+    "certificates": " certificates"
+  },
+  "chart": {
+    "contest": "contest",
+    "contests": "contests"
+  },
+  "notifications": {
+    "reconnected": "Dashboard reconnected - data refreshed",
+    "organizerDashboardUpdated": "Dashboard updated"
+  },
+  "tabs": {
+    "overview": "Overview",
+    "myContests": "My contests",
+    "contestDetails": "Contest details"
+  }
+}

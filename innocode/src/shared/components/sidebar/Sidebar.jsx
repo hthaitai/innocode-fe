@@ -127,9 +127,9 @@ const menuByRole = {
     "notifications",
   ],
   organizer: [
-    "profile",
     "organizerDashboard",
     "organizerContests",
+    "profile",
     "notifications",
   ],
   mentor: [
@@ -149,7 +149,7 @@ const menuByRole = {
     "contests",
     "notifications",
   ],
-  judge: ["profile", "judgeContests", "notifications", "help"],
+  judge: ["judgeContests", "profile", "notifications", "help"],
   admin: [
     "profile",
     "dashboard",

@@ -3,6 +3,11 @@ import * as signalR from "@microsoft/signalr"
 import { useAuth } from "@/context/AuthContext"
 import { HUB_URL } from "@/shared/config/signalRConfig"
 
+const isDev = import.meta.env.VITE_ENV === "development"
+const log = (message, ...args) => isDev && console.log(message, ...args)
+const warn = (message, ...args) => console.warn(message, ...args)
+const error = (message, ...args) => console.error(message, ...args)
+
 export const useOrganizerDashboardSignalR = (onUpdate) => {
   const { user } = useAuth()
   const [isConnected, setIsConnected] = useState(false)
@@ -16,9 +21,15 @@ export const useOrganizerDashboardSignalR = (onUpdate) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token")
-    if (!token || !user?.id) return
 
-    // 1. Create SignalR connection
+    if (!token || !user?.id) {
+      warn("⚠️ [OrganizerSignalR] Missing token or user ID")
+      return
+    }
+
+    log("🔌 [OrganizerSignalR] Connecting to hub...", { userId: user.id })
+
+    // Create SignalR connection
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(HUB_URL, {
         accessTokenFactory: () => token,
@@ -34,51 +45,40 @@ export const useOrganizerDashboardSignalR = (onUpdate) => {
       .configureLogging(signalR.LogLevel.Warning)
       .build()
 
-    // 2. Setup listeners BEFORE starting
+    // Setup event listener
     connection.on("OrganizerDashboardUpdated", (data) => {
-      if (import.meta.env.VITE_ENV === "development") {
-        console.log("📊 Organizer Dashboard Updated:", data)
-      }
-      if (onUpdateRef.current) {
-        onUpdateRef.current(data)
-      }
+      log("📊 [OrganizerSignalR] Dashboard updated", data)
+      onUpdateRef.current?.(data)
     })
 
-    // Connection Lifecycle Handlers
-    connection.onclose((error) => {
-      console.warn("🔴 SignalR CLOSED", error)
+    // Connection lifecycle handlers
+    connection.onclose((err) => {
+      if (err) error("🔴 [OrganizerSignalR] Connection closed", err)
       setIsConnected(false)
     })
 
-    connection.onreconnecting((error) => {
-      console.warn("🟠 SignalR RECONNECTING", error)
+    connection.onreconnecting((err) => {
+      if (err) warn("🔄 [OrganizerSignalR] Reconnecting...", err)
       setIsConnected(false)
     })
 
     connection.onreconnected(async (connectionId) => {
-      console.log("🟢 SignalR RECONNECTED", connectionId)
+      log("🟢 [OrganizerSignalR] Reconnected", connectionId)
 
-      // Re-join the organizer's group after reconnection
       try {
         await connection.invoke("JoinOrganizerDashboard", user.id)
-        console.log(`🔁 Re-joined group: OrganizerDashboard_${user.id}`)
         setIsConnected(true)
-
-        // Refetch on reconnect to ensure data is fresh
-        if (onUpdateRef.current) {
-          onUpdateRef.current({ reconnected: true })
-        }
+        onUpdateRef.current?.({ reconnected: true })
       } catch (err) {
-        console.error("❌ Failed to re-join group after reconnect", err)
+        error("❌ [OrganizerSignalR] Failed to re-join group", err)
       }
     })
 
-    // 3. Start connection and join group
+    // Start connection
     let isMounted = true
 
     const startConnection = async () => {
       try {
-        // Start connection
         await connection.start()
 
         if (!isMounted) {
@@ -86,26 +86,18 @@ export const useOrganizerDashboardSignalR = (onUpdate) => {
           return
         }
 
-        if (import.meta.env.VITE_ENV === "development") {
-          console.log("✅ Connected to Dashboard Hub")
-        }
-
-        // 4. ⚠️ REQUIRED: Explicitly join the organizer's group
         await connection.invoke("JoinOrganizerDashboard", user.id)
-        if (import.meta.env.VITE_ENV === "development") {
-          console.log(`✅ Joined group: OrganizerDashboard_${user.id}`)
-        }
-
         setIsConnected(true)
+        log("✅ [OrganizerSignalR] Connected and joined group")
       } catch (err) {
         if (!isMounted) return
 
-        // Gracefully handle the "stopped during negotiation" error
-        if (err.message && err.message.includes("stopped during negotiation")) {
+        // Gracefully handle negotiation errors (common in dev mode)
+        if (err.message?.includes("stopped during negotiation")) {
           return
         }
 
-        console.error("❌ SignalR Connection Error:", err)
+        error("❌ [OrganizerSignalR] Connection failed", err)
         setIsConnected(false)
       }
     }
@@ -117,19 +109,21 @@ export const useOrganizerDashboardSignalR = (onUpdate) => {
     return () => {
       isMounted = false
 
-      const leaveAndStop = async () => {
+      const cleanup = async () => {
         try {
           if (connection.state === signalR.HubConnectionState.Connected) {
             await connection.invoke("LeaveOrganizerDashboard", user.id)
             await connection.stop()
+            log("🧹 [OrganizerSignalR] Disconnected and cleaned up")
           }
         } catch (err) {
           if (!err.message?.includes("stopped during negotiation")) {
-            console.warn("Error stopping SignalR:", err)
+            warn("⚠️ [OrganizerSignalR] Cleanup error", err)
           }
         }
       }
-      leaveAndStop()
+
+      cleanup()
     }
   }, [user?.id])
 

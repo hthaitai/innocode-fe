@@ -76,8 +76,9 @@ const ProfileMenu = ({ onOpen }) => {
           onOpen?.() // Notify parent/siblings to close other dropdowns
           setShowDropdown(!showDropdown)
         }}
+        className="w-[32px] h-[32px] rounded-full"
       >
-        <Icon icon="mdi:account-circle" width="32" className="cursor-pointer" />
+        <div className="w-full h-full bg-[linear-gradient(135deg,#ff6b35_0%,#f7931e_100%)] rounded-full cursor-pointer"></div>
       </button>
 
       <AnimatePresence>

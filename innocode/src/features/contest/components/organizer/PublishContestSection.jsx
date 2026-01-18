@@ -29,7 +29,7 @@ const PublishContestSection = ({ contest }) => {
   const handlePublish = () => {
     if (!isReady) {
       return openModal("alert", {
-        title: t("organizerContestDetail.publish.cannotPublishTitle"),
+        title: t("contest:publish.cannotPublishTitle"),
         description: (
           <ul className="list-disc ml-4 text-[#7A7574]">
             {missingItems.map((item, idx) => (
@@ -41,8 +41,8 @@ const PublishContestSection = ({ contest }) => {
     }
 
     openModal("confirm", {
-      title: t("organizerContestDetail.publish.confirmTitle"),
-      description: t("organizerContestDetail.publish.confirmMessage", {
+      title: t("contest:publish.confirmTitle"),
+      description: t("contest:publish.confirmMessage", {
         name: contest.name,
       }),
       onConfirm: async () => {
@@ -64,7 +64,7 @@ const PublishContestSection = ({ contest }) => {
             !responseData?.Message
           ) {
             if (!hasShownToast) {
-              toast.success(t("organizerContestDetail.publish.success"))
+              toast.success(t("contest:publish.success"))
               hasShownToast = true
             }
             closeModal()
@@ -77,7 +77,7 @@ const PublishContestSection = ({ contest }) => {
             const errorMessage =
               responseData?.Message ||
               responseData?.message ||
-              t("organizerContestDetail.publish.error")
+              t("contest:publish.error")
             const formattedErrorMessage = formatPublishError(errorMessage)
 
             if (!hasShownToast) {
@@ -87,7 +87,7 @@ const PublishContestSection = ({ contest }) => {
                     {missingFromError.map((item, idx) => (
                       <li key={idx}>{formatPublishError(item)}</li>
                     ))}
-                  </ul>
+                  </ul>,
                 )
               } else {
                 toast.error(formattedErrorMessage)
@@ -109,7 +109,7 @@ const PublishContestSection = ({ contest }) => {
               errorData?.Message ||
               errorData?.message ||
               errorData?.errorMessage ||
-              t("organizerContestDetail.publish.error")
+              t("contest:publish.error")
             const formattedErrorMessage = formatPublishError(errorMessage)
 
             // Double check: sometimes error response might actually indicate success
@@ -117,7 +117,7 @@ const PublishContestSection = ({ contest }) => {
               errorData?.code === "SUCCESS" ||
               errorData?.status === "Published"
             ) {
-              toast.success(t("organizerContestDetail.publish.success"))
+              toast.success(t("contest:publish.success"))
               closeModal()
               return
             }
@@ -129,7 +129,7 @@ const PublishContestSection = ({ contest }) => {
                   {missingFromError.map((item, idx) => (
                     <li key={idx}>{formatPublishError(item)}</li>
                   ))}
-                </ul>
+                </ul>,
               )
             } else {
               toast.error(formattedErrorMessage)
@@ -143,12 +143,12 @@ const PublishContestSection = ({ contest }) => {
 
   const disabled = actionLoading || isPublished || !isReady
   const buttonText = isPublished
-    ? t("organizerContestDetail.publish.buttonPublished")
+    ? t("contest:publish.buttonPublished")
     : actionLoading
-    ? t("organizerContestDetail.publish.buttonLoading")
-    : isReady
-    ? t("organizerContestDetail.publish.button")
-    : t("organizerContestDetail.publish.buttonNotReady")
+      ? t("contest:publish.buttonLoading")
+      : isReady
+        ? t("contest:publish.button")
+        : t("contest:publish.buttonNotReady")
 
   return (
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white overflow-hidden">
@@ -158,14 +158,14 @@ const PublishContestSection = ({ contest }) => {
           <Upload size={20} />
           <div>
             <p className="text-[14px] leading-[20px]">
-              {t("organizerContestDetail.publish.title")}
+              {t("contest:publish.title")}
             </p>
             <p className="text-[12px] leading-[16px] text-[#7A7574]">
               {isPublished
-                ? t("organizerContestDetail.publish.subtitlePublished")
+                ? t("contest:publish.subtitlePublished")
                 : !isReady
-                ? t("organizerContestDetail.publish.subtitleNotReady")
-                : t("organizerContestDetail.publish.subtitleReady")}
+                  ? t("contest:publish.subtitleNotReady")
+                  : t("contest:publish.subtitleReady")}
             </p>
           </div>
         </div>

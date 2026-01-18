@@ -51,6 +51,19 @@ const RoundTimeTravelSection = ({ roundId, isRetakeRound, problemType }) => {
   }
 
   const actions = [
+    problemType === "Manual" && {
+      title: t("timeTravel.judgeDeadlineEnd"),
+      subtitle: t("timeTravel.judgeDeadlineEndDesc"),
+      buttonText: t("timeTravel.endDeadline"),
+      icon: Gavel,
+      isLoading: isJudgeDeadlineEnding,
+      onClick: () =>
+        handleAction(
+          judgeDeadlineEnd,
+          t("timeTravel.judgeDeadlineSuccess"),
+          t("timeTravel.judgeDeadlineError"),
+        ),
+    },
     !isRetakeRound && {
       title: t("timeTravel.appealSubmitEnd"),
       subtitle: t("timeTravel.appealSubmitEndDesc"),
@@ -61,7 +74,7 @@ const RoundTimeTravelSection = ({ roundId, isRetakeRound, problemType }) => {
         handleAction(
           appealSubmitEnd,
           t("timeTravel.appealSubmitSuccess"),
-          t("timeTravel.appealSubmitError")
+          t("timeTravel.appealSubmitError"),
         ),
     },
     !isRetakeRound && {
@@ -74,20 +87,7 @@ const RoundTimeTravelSection = ({ roundId, isRetakeRound, problemType }) => {
         handleAction(
           appealReviewEnd,
           t("timeTravel.appealReviewSuccess"),
-          t("timeTravel.appealReviewError")
-        ),
-    },
-    problemType === "Manual" && {
-      title: t("timeTravel.judgeDeadlineEnd"),
-      subtitle: t("timeTravel.judgeDeadlineEndDesc"),
-      buttonText: t("timeTravel.endDeadline"),
-      icon: Gavel,
-      isLoading: isJudgeDeadlineEnding,
-      onClick: () =>
-        handleAction(
-          judgeDeadlineEnd,
-          t("timeTravel.judgeDeadlineSuccess"),
-          t("timeTravel.judgeDeadlineError")
+          t("timeTravel.appealReviewError"),
         ),
     },
     {
@@ -100,7 +100,7 @@ const RoundTimeTravelSection = ({ roundId, isRetakeRound, problemType }) => {
         handleAction(
           finalizeRound,
           t("timeTravel.finalizeSuccess"),
-          t("timeTravel.finalizeError")
+          t("timeTravel.finalizeError"),
         ),
     },
   ].filter(Boolean)

@@ -605,38 +605,18 @@
       "error": "Failed to cancel contest",
       "confirmMessage": "Are you sure you want to cancel \"{{name}}\"?"
     },
-    "publish": {
-      "title": "Publish contest",
-      "subtitleNotReady": "Contest is not ready to publish.",
-      "subtitlePublished": "This contest has already been published.",
-      "subtitleReady": "Make this contest visible and active for participants.",
-      "button": "Publish",
-      "buttonLoading": "Publishing...",
-      "buttonPublished": "Already Published",
-      "buttonNotReady": "Not Ready",
-      "confirmTitle": "Publish Contest",
-      "confirmMessage": "Are you sure you want to publish \"{{name}}\"?",
-      "success": "Contest published successfully!",
-      "error": "Failed to publish contest",
-      "required": "Required",
-      "cannotPublishTitle": "Cannot Publish Contest",
-      "errors": {
-        "contestEndTooEarly": "Contest end is too early to cover deadlines. Suggested end >= {{date}}.",
-        "autoEvalMissingConfig": "Auto-evaluation round '{{roundId}}' must have either a mock test file or test cases."
-      }
-    },
     "rounds": {
-      "title": "Round Management",
+      "title": "Round management",
       "subtitle": "Create and manage rounds for this contest",
       "add": "Add round",
       "error": "Error loading rounds",
       "empty": "No rounds created yet.",
-      "untitled": "Untitled Round",
+      "untitled": "Untitled round",
       "retake": "Retake"
     }
   },
   "organizerContestForm": {
-    "breadcrumb": "Edit Contest",
+    "breadcrumb": "Edit contest",
     "labels": {
       "course": "Course",
       "name": "Contest name",

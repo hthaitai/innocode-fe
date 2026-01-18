@@ -90,7 +90,8 @@
       "auto": "Chấm tự động (Coding)",
       "manual": "Chấm thủ công (Review)",
       "mockTest": "Thi thử (Mock Test)",
-      "inputOutput": "Input/Output"
+      "inputOutput": "Input/Output",
+      "allTeams": "Tất cả các đội"
     },
     "suffixes": {
       "second": " giây",
@@ -167,7 +168,7 @@
     "appealReviewError": "Thất bại khi kết thúc duyệt phúc khảo",
 
     "judgeDeadlineEnd": "Kết thúc hạn chấm thi",
-    "judgeDeadlineEndDesc": "Kết thúc hạn chấm thi của giám khảo ngay lập tức",
+    "judgeDeadlineEndDesc": "Kết thúc hạn chấm thi hoặc chấm phúc khảo ngay lập tức",
     "endDeadline": "Dừng chấm",
     "judgeDeadlineSuccess": "Đã kết thúc hạn chấm thi",
     "judgeDeadlineError": "Thất bại khi kết thúc hạn chấm thi",

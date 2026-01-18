@@ -25,7 +25,6 @@ const Navbar = () => {
 
     switch (user.role) {
       case "organizer":
-        return "/organizer/contests"
       case "student":
       case "judge":
       case "admin":

@@ -28,12 +28,9 @@ export const formatPublishError = (errorMessage) => {
   if (endTooEarlyMatch) {
     const rawDate = endTooEarlyMatch[1]
     const formattedDate = formatDateTime(rawDate)
-    return i18n.t(
-      "pages:organizerContestDetail.publish.errors.contestEndTooEarly",
-      {
-        date: formattedDate,
-      }
-    )
+    return i18n.t("contest:publish.errors.contestEndTooEarly", {
+      date: formattedDate,
+    })
   }
 
   // Case 2: Auto-evaluation round missing config

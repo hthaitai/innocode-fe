@@ -8,6 +8,7 @@ import {
   useGetNotificationsQuery,
   useReadAllNotificationsMutation,
   useReadNotificationMutation,
+  useGetUnreadCountQuery,
 } from "@/services/notificationApi"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { toast } from "react-hot-toast"
@@ -36,10 +37,16 @@ const Notifications = () => {
     { pageNumber: page, pageSize },
     {
       pollingInterval: 30000,
-    }
+    },
   )
 
-  console.log(notificationsData)
+  // Get total unread count from dedicated API
+  const { data: totalUnreadCount = 0 } = useGetUnreadCountQuery(undefined, {
+    pollingInterval: 30000,
+  })
+
+  // Display count with 99+ handling
+  const displayUnreadCount = totalUnreadCount > 99 ? "99+" : totalUnreadCount
 
   const [readNotification] = useReadNotificationMutation()
   const [readAllNotifications] = useReadAllNotificationsMutation()
@@ -59,7 +66,7 @@ const Notifications = () => {
         const interpolationValues = buildInterpolationValues(
           parsedPayload,
           translationKey,
-          rawMessage
+          rawMessage,
         )
 
         message = t(translationKey, {
@@ -94,7 +101,7 @@ const Notifications = () => {
 
   const unreadCount = useMemo(
     () => notifications.filter((notif) => !notif.isRead).length,
-    [notifications]
+    [notifications],
   )
 
   const handleNotificationClick = useNotificationNavigation()
@@ -108,7 +115,7 @@ const Notifications = () => {
     }
   }
 
-  const canMarkAllAsRead = unreadCount > 0
+  const canMarkAllAsRead = totalUnreadCount > 0
 
   const handleMarkAllClick = () => {
     if (!canMarkAllAsRead) return
@@ -145,8 +152,8 @@ const Notifications = () => {
               <div>
                 <p className="text-[14px] leading-[20px]">{t("ui.title")}</p>
                 <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                  {unreadCount > 0
-                    ? t("ui.unreadCount", { count: unreadCount })
+                  {totalUnreadCount > 0
+                    ? t("ui.unreadCount", { count: displayUnreadCount })
                     : t("ui.allRead")}
                 </p>
               </div>
@@ -154,7 +161,7 @@ const Notifications = () => {
 
             <button
               className={`px-3 ${
-                unreadCount > 0 ? "button-orange" : "button-gray"
+                totalUnreadCount > 0 ? "button-orange" : "button-gray"
               }`}
               onClick={handleMarkAllClick}
             >

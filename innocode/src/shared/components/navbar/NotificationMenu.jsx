@@ -1,7 +1,10 @@
-import React, { useState, useRef, useEffect, useMemo } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { Icon } from "@iconify/react"
 import { useAuth } from "@/context/AuthContext"
-import { useGetNotificationsQuery } from "@/services/notificationApi"
+import {
+  useGetNotificationsQuery,
+  useGetUnreadCountQuery,
+} from "@/services/notificationApi"
 import NotificationDropdown from "@/features/notification/components/user/NotificationDropdown"
 import { AnimatePresence, motion } from "framer-motion"
 import { EASING } from "@/shared/components/ui/easing"
@@ -12,22 +15,23 @@ const NotificationMenu = ({ onOpen, isOpen, onClose }) => {
   const notifRef = useRef(null)
 
   // Fetch notifications count for badge (get first page to count unread)
-  const { data: notificationsData } = useGetNotificationsQuery(
-    { pageNumber: 1, pageSize: 50 },
+  const {
+    data: notificationsData,
+    isLoading,
+    error,
+  } = useGetNotificationsQuery(
+    { pageNumber: 1, pageSize: 99 },
     {
       skip: !isAuthenticated,
       pollingInterval: 30000,
-    }
+    },
   )
 
-  // Calculate unread count from transformed response
-  const unreadCount = useMemo(() => {
-    if (!notificationsData?.items) return 0
-
-    return notificationsData.items.filter(
-      (notification) => !(notification.read ?? notification.isRead ?? false)
-    ).length
-  }, [notificationsData])
+  // Get total unread count from dedicated API
+  const { data: unreadCount = 0 } = useGetUnreadCountQuery(undefined, {
+    skip: !isAuthenticated,
+    pollingInterval: 30000,
+  })
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -56,7 +60,9 @@ const NotificationMenu = ({ onOpen, isOpen, onClose }) => {
       >
         <Icon icon="mdi:bell-outline" width="20" />
         {unreadCount > 0 && (
-          <span className="notification-badge">{unreadCount}</span>
+          <span className="notification-badge">
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </span>
         )}
       </button>
 
@@ -77,7 +83,13 @@ const NotificationMenu = ({ onOpen, isOpen, onClose }) => {
             }}
             className="notification-dropdown-wrapper"
           >
-            <NotificationDropdown onClose={() => setShowNotifications(false)} />
+            <NotificationDropdown
+              onClose={() => setShowNotifications(false)}
+              notificationsData={notificationsData}
+              isLoading={isLoading}
+              error={error}
+              unreadCount={unreadCount}
+            />
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,6 +1,21 @@
 {
   "publish": {
+    "title": "Publish contest",
+    "subtitleNotReady": "Contest is not ready to publish.",
+    "subtitlePublished": "This contest has already been published.",
+    "subtitleReady": "Make this contest visible and active for participants.",
+    "button": "Publish",
+    "buttonLoading": "Publishing...",
+    "buttonPublished": "Already published",
+    "buttonNotReady": "Not ready",
+    "confirmTitle": "Publish contest",
+    "confirmMessage": "Are you sure you want to publish \"{{name}}\"?",
+    "success": "Contest published successfully!",
+    "error": "Failed to publish contest",
+    "required": "Required",
+    "cannotPublishTitle": "Cannot publish contest",
     "errors": {
+      "contestEndTooEarly": "Contest end is too early to cover deadlines. Suggested end >= {{date}}.",
       "retakeNoWeight": "Retake round '{{name}}' has no weight (missing questions/test cases/criteria).",
       "mcqNoQuestions": "MCQ test(s) '{{name}}' have no questions.",
       "autoEvalMissingConfig": "Auto-evaluation round '{{name}}' must have either a mock test file or test cases.",
@@ -9,11 +24,53 @@
       "noRounds": "No rounds found"
     }
   },
+  "info": {
+    "title": "Contest information",
+    "labels": {
+      "name": "Name",
+      "status": "Status",
+      "year": "Year",
+      "startDate": "Contest start date",
+      "endDate": "Contest end date",
+      "registrationStart": "Registration start date",
+      "registrationEnd": "Registration end date",
+      "notSet": "Not set",
+      "minTeamMembers": "Min team members",
+      "maxTeamMembers": "Max team members",
+      "maxTeams": "Max teams",
+      "appealSubmitDeadline": "Appeal submission deadline",
+      "appealReviewDeadline": "Appeal review deadline",
+      "judgeRescoreDeadline": "Judge rescore deadline",
+      "rewards": "Rewards",
+      "description": "Description",
+      "imageUrl": "Image URL",
+      "createdAt": "Created at",
+      "day": " day",
+      "days": " days",
+      "member": " member",
+      "members": " members",
+      "team": " team",
+      "teams": " teams"
+    }
+  },
+  "statusLabels": {
+    "published": "Published",
+    "registrationopen": "Registration open",
+    "registrationclosed": "Registration closed",
+    "ongoing": "Ongoing",
+    "paused": "Paused",
+    "completed": "Completed",
+    "delayed": "Delayed",
+    "upcoming": "Upcoming",
+    "draft": "Draft",
+    "cancelled": "Cancelled",
+    "totalvalidcontests": "Total valid contests"
+  },
   "certificate": {
     "noTemplates": "No templates created yet."
   },
   "nextProgress": "Next progress",
-  "notFound": "Contest Not Found",
+  "notFound": "Contest not found",
   "validation": {
     "imgFile": "Contest image is required",
     "year": "Year is required",
@@ -55,6 +112,7 @@
     "roundsEndAfterNow": "The contest cannot be ended because one or more rounds have not finished yet."
   },
   "suggestion": {
-    "useSuggestedName": "Use suggested name:"
+    "useSuggestedName": "Use suggested name:",
+    "serverColdStart": "Unable to connect to server. The server might be waking up (cold start), please try again in 30 seconds."
   }
 }

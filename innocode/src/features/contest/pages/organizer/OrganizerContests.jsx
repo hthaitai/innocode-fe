@@ -70,7 +70,7 @@ const OrganizerContests = () => {
       breadcrumb={breadcrumbItems}
       breadcrumbPaths={breadcrumbPaths}
     >
-      <AnimatedSection>
+      <AnimatedSection direction="bottom">
         <ManageContests
           contests={contests}
           pagination={pagination}

@@ -3,60 +3,67 @@ import { useTranslation } from "react-i18next"
 import { Trophy } from "lucide-react"
 import StatusBadge from "@/shared/components/StatusBadge"
 import DetailTable from "@/shared/components/DetailTable"
-import { formatDateTime } from "@/shared/utils/dateTime"
 import ExpandableCard from "@/shared/components/ExpandableCard"
 
-const ContestHighlightCard = ({ title, contestData }) => {
+const formatDateTime = (dateString, locale = "en-US") => {
+  if (!dateString) return "—"
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleDateString(locale, {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  } catch {
+    return dateString
+  }
+}
+
+const OrganizerContestCard = ({ contest }) => {
   const { t } = useTranslation(["pages", "common", "dashboard"])
 
   // Helper function for safe display with suffix support
   const safe = (val, suffix = "") => {
     if (val === null || val === undefined || val === "") return "—"
     const text = typeof suffix === "function" ? suffix(val) : suffix
-    return `${val}${text}`
+    return `${val} ${text}`
   }
 
-  // Suffix functions for singular/plural with translation support
+  // Suffix functions
   const studentsSuffix = (val) =>
     Number(val) === 1
-      ? t("dashboard:suffixes.student")
-      : t("dashboard:suffixes.students")
+      ? t("dashboard:suffixes.student", "student")
+      : t("dashboard:suffixes.students", "students")
   const teamsSuffix = (val) =>
     Number(val) === 1
-      ? t("dashboard:suffixes.team")
-      : t("dashboard:suffixes.teams")
+      ? t("dashboard:suffixes.team", "team")
+      : t("dashboard:suffixes.teams", "teams")
   const appealsSuffix = (val) =>
     Number(val) === 1
-      ? t("dashboard:suffixes.appeal")
-      : t("dashboard:suffixes.appeals")
+      ? t("dashboard:suffixes.appeal", "appeal")
+      : t("dashboard:suffixes.appeals", "appeals")
   const certificatesSuffix = (val) =>
     Number(val) === 1
-      ? t("dashboard:suffixes.certificate")
-      : t("dashboard:suffixes.certificates")
-
-  if (!contestData) {
-    return (
-      <div className="text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-        {t("common.noData", "No data available")}
-      </div>
-    )
-  }
+      ? t("dashboard:suffixes.certificate", "certificate")
+      : t("dashboard:suffixes.certificates", "certificates")
 
   const headerContent = (
     <div className="w-full">
       {/* Title and Percentage - justified between */}
       <div className="flex justify-between items-end mb-1">
-        <div className="text-body-1">{title}</div>
-        <div className="text-caption-1">
-          {contestData.progressPercentage || 0}%
+        <div className="text-body-1">
+          {contest.name || contest.contestName || "-"}
         </div>
+        <div className="text-caption-1">{contest.progressPercentage || 0}%</div>
       </div>
 
       {/* Progress Bar */}
       <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
         <div
           className="bg-[#ff6b35] h-full rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${contestData.progressPercentage || 0}%` }}
+          style={{ width: `${contest.progressPercentage || 0}%` }}
         />
       </div>
     </div>
@@ -68,42 +75,31 @@ const ContestHighlightCard = ({ title, contestData }) => {
         data={[
           // Contest Info
           {
-            label: t("dashboard:overview.contestName", "Contest name"),
-            value: contestData.contestName,
-          },
-          {
             label: t("dashboard:overview.status", "Status"),
-            value: <StatusBadge status={contestData.status} translate={true} />,
-          },
-          {
-            label: t("dashboard:overview.progress", "Progress"),
-            value: `${contestData.progressPercentage || 0}%`,
+            value: <StatusBadge status={contest.status} translate={true} />,
           },
           { spacer: true },
 
           // Participation Stats
           {
             label: t("dashboard:overview.totalStudents", "Total students"),
-            value: safe(contestData.totalStudents, studentsSuffix),
+            value: safe(contest.totalStudents, studentsSuffix),
           },
           {
             label: t("dashboard:overview.totalTeams", "Total teams"),
-            value: safe(contestData.totalTeams, teamsSuffix),
+            value: safe(contest.totalTeams, teamsSuffix),
           },
           { spacer: true },
 
           // Team Status Breakdown
           {
             label: t("dashboard:overview.activeTeams", "Active teams"),
-            value: safe(
-              contestData.teamStatusBreakdown?.activeTeams,
-              teamsSuffix,
-            ),
+            value: safe(contest.teamStatusBreakdown?.activeTeams, teamsSuffix),
           },
           {
             label: t("dashboard:overview.eliminatedTeams", "Eliminated teams"),
             value: safe(
-              contestData.teamStatusBreakdown?.eliminatedTeams,
+              contest.teamStatusBreakdown?.eliminatedTeams,
               teamsSuffix,
             ),
           },
@@ -113,7 +109,7 @@ const ContestHighlightCard = ({ title, contestData }) => {
               "Disqualified teams",
             ),
             value: safe(
-              contestData.teamStatusBreakdown?.disqualifiedTeams,
+              contest.teamStatusBreakdown?.disqualifiedTeams,
               teamsSuffix,
             ),
           },
@@ -122,14 +118,14 @@ const ContestHighlightCard = ({ title, contestData }) => {
           // Appeals & Certificates
           {
             label: t("dashboard:overview.totalAppeals", "Total appeals"),
-            value: safe(contestData.totalAppeals, appealsSuffix),
+            value: safe(contest.totalAppeals, appealsSuffix),
           },
           {
             label: t(
               "dashboard:overview.certificatesIssued",
               "Certificates issued",
             ),
-            value: safe(contestData.certificatesIssued, certificatesSuffix),
+            value: safe(contest.certificatesIssued, certificatesSuffix),
           },
           { spacer: true },
 
@@ -139,22 +135,21 @@ const ContestHighlightCard = ({ title, contestData }) => {
               "dashboard:overview.registrationStart",
               "Registration start",
             ),
-            value: formatDateTime(contestData.registrationStart),
+            value: formatDateTime(contest.registrationStart),
           },
           {
             label: t("dashboard:overview.registrationEnd", "Registration end"),
-            value: formatDateTime(contestData.registrationEnd),
+            value: formatDateTime(contest.registrationEnd),
           },
-          { spacer: true },
 
           // Contest Period
           {
             label: t("dashboard:overview.contestStart", "Contest start"),
-            value: formatDateTime(contestData.contestStart),
+            value: formatDateTime(contest.contestStart),
           },
           {
             label: t("dashboard:overview.contestEnd", "Contest end"),
-            value: formatDateTime(contestData.contestEnd),
+            value: formatDateTime(contest.contestEnd),
           },
         ]}
         labelWidth="180px"
@@ -163,4 +158,4 @@ const ContestHighlightCard = ({ title, contestData }) => {
   )
 }
 
-export default ContestHighlightCard
+export default OrganizerContestCard

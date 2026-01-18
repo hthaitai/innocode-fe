@@ -66,11 +66,10 @@ export const dashboardApi = api.injectEndpoints({
       query: (params = {}) => ({
         url: "organizer-dashboards/contests",
         params: {
-          page: params.page,
-          size: params.size,
+          pageNumber: params.page,
+          pageSize: params.size,
         },
       }),
-      transformResponse: (response) => response.data,
     }),
     getOrganizerContestDetails: builder.query({
       query: (contestId) => ({

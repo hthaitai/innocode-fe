@@ -189,7 +189,7 @@
     "team": "Team",
     "testCases": "Test cases",
     "addTestCase": "Add test case",
-    "deleteTestCaseConfirmTitle": "Delete Test Case",
+    "deleteTestCaseConfirmTitle": "Delete test case",
     "deleteTestCaseConfirmMessage": "Are you sure you want to delete \"{{name}}\"?",
     "input": "Input",
     "expectedOutput": "Expected output",

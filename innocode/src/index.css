@@ -113,8 +113,8 @@ body {
   line-height: 1.1;
   margin-bottom: 1.5rem;
   color: #2d3748;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
 }
 
 .hero-description {
@@ -122,8 +122,8 @@ body {
   line-height: 1.6;
   margin-bottom: 2.5rem;
   color: #4a5568;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
 }
 
 .hero-actions {
@@ -143,8 +143,8 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
   transition: all 0.3s ease;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
 }
 
 .cta-button:hover {
@@ -157,8 +157,8 @@ body {
   font-size: 1rem;
   font-weight: 600;
   color: #4a5568;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
 }
 
 /* Hero Illustration */
@@ -328,15 +328,15 @@ body {
   font-weight: bold;
   color: #000;
   margin-bottom: 1rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
 }
 
 .home-container p {
   font-size: 1.1rem;
   color: #6b7280;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
 }
 
 /* Responsive Design */
@@ -420,40 +420,34 @@ body {
 }
 
 .button-white {
-  @apply bg-white border border-[#ECECEC] border-b-[#D3D3D3] rounded-[5px] min-w-[130px] min-h-[32px] text-[14px] leading-[20px] cursor-pointer
+  @apply bg-white border border-[#ECECEC] border-b-[#D3D3D3] rounded-[5px] min-w-[130px] min-h-[32px] text-[14px] leading-[20px] px-3 cursor-pointer
   hover:bg-[#FAFAFA] 
   active:opacity-50;
 }
 
 .button-orange {
-  @apply bg-[#E05307] border border-[#E2601A] border-b-[#863204] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] cursor-pointer
+  @apply bg-[#E05307] border border-[#E2601A] border-b-[#863204] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] px-3 cursor-pointer
   hover:bg-[#E2631F] 
   active:bg-[#E47336];
 }
 
-.button-green {
-  @apply bg-[#22C55E] border border-[#16A34A] border-b-[#15803D] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] cursor-pointer
-  hover:bg-[#16A34A]
-  active:bg-[#15803D];
-}
-
 .button-red {
-  @apply bg-[#DC2626] border border-[#B91C1C] border-b-[#991B1B] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] cursor-pointer
+  @apply bg-[#DC2626] border border-[#B91C1C] border-b-[#991B1B] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] px-3 cursor-pointer
   hover:bg-[#B91C1C]
   active:bg-[#991B1B];
 }
 .button-green {
-  @apply bg-[#12972f] border border-[#008000] border-b-[#008000] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] cursor-pointer
+  @apply bg-[#12972f] border border-[#008000] border-b-[#008000] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] px-3 cursor-pointer
   hover:bg-[#008000] 
   active:bg-[#479640];
 }
 .button-blue {
-  @apply bg-[#ff6b35] border border-[#f7931e] border-b-[#e55a2b] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] cursor-pointer
+  @apply bg-[#ff6b35] border border-[#f7931e] border-b-[#e55a2b] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] px-3 cursor-pointer
   hover:bg-[#f7931e] 
   active:bg-[#e55a2b];
 }
 .button-gray {
-  @apply bg-[#BFBFBF] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px];
+  @apply bg-[#BFBFBF] rounded-[5px] text-white min-w-[130px] min-h-[32px] text-[14px] leading-[20px] px-3;
 }
 
 /* Auto-attach visual grouping for consecutive InfoSections */

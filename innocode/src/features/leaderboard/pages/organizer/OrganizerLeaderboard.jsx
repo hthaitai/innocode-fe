@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import PageContainer from "@/shared/components/PageContainer"
@@ -10,6 +10,9 @@ import LeaderboardActions from "../../components/LeaderboardActions"
 import ManageLeaderboard from "../../components/ManageLeaderboard"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
+
+import { useLiveLeaderboard } from "../../hooks/useLiveLeaderboard"
+import LeaderboardStatusInfo from "../../components/LeaderboardStatusInfo"
 
 const OrganizerLeaderboard = () => {
   const { t } = useTranslation(["leaderboard", "pages", "common", "contest"])
@@ -34,8 +37,22 @@ const OrganizerLeaderboard = () => {
   const entries = leaderboardData?.data?.teamIdList ?? []
   const pagination = leaderboardData?.additionalData ?? {}
 
+  const [isFrozen, setIsFrozen] = useState(false)
+
+  useEffect(() => {
+    if (leaderboardData?.data?.isFrozen !== undefined) {
+      setIsFrozen(leaderboardData.data.isFrozen)
+    }
+  }, [leaderboardData])
+
+  const { isConnected } = useLiveLeaderboard(
+    contestId,
+    refetchLeaderboard,
+    !!contestId && !isFrozen,
+  )
+
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD(
-    contest?.name ?? t("common:common.contest")
+    contest?.name ?? t("common:common.contest"),
   )
 
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_LEADERBOARD(contestId)
@@ -80,10 +97,18 @@ const OrganizerLeaderboard = () => {
     >
       <AnimatedSection>
         <div className="space-y-5">
-          <LeaderboardActions
-            contestId={contestId}
-            refetchLeaderboard={refetchLeaderboard}
-          />
+          <div className="space-y-10">
+            <LeaderboardStatusInfo
+              isFrozen={isFrozen}
+              isConnected={isConnected}
+            />
+            <LeaderboardActions
+              contestId={contestId}
+              refetchLeaderboard={refetchLeaderboard}
+              isFrozen={isFrozen}
+              setIsFrozen={setIsFrozen}
+            />
+          </div>
 
           <div>
             <div className="text-sm leading-5 font-semibold pt-3 pb-2">

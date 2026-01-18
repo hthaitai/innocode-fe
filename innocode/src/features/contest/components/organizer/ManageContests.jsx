@@ -7,16 +7,17 @@ import {
   useGetOrganizerContestsQuery,
   useDeleteContestMutation,
 } from "../../../../services/contestApi"
-import { useConfirmDelete } from "../../../../shared/hooks/useConfirmDelete"
+import { useModal } from "../../../../shared/hooks/useModal"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import ContestsToolbar from "./ContestsToolbar"
 import TablePagination from "../../../../shared/components/TablePagination"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { useTranslation } from "react-i18next"
+import { toast } from "react-hot-toast"
 
 const ManageContests = ({ contests, pagination, setPage, setSearchName }) => {
   const navigate = useNavigate()
-  const { confirmDeleteEntity } = useConfirmDelete()
+  const { openModal } = useModal()
   const [deleteContest] = useDeleteContestMutation()
   const { t } = useTranslation("pages")
 
@@ -34,20 +35,36 @@ const ManageContests = ({ contests, pagination, setPage, setSearchName }) => {
     navigate(`/organizer/contests/${contest.contestId}/edit`)
   }
 
-  const handleDeleteContest = (contest) => {
-    confirmDeleteEntity({
-      entityName: "Contest",
-      item: { id: contest.contestId, name: contest.name },
-      deleteAction: deleteContest,
-      idKey: "id",
-      onNavigate: () => {
-        const count = contests.length
-        if (count === 1 && page > 1) {
-          setPage(page - 1)
-        }
-      },
-    })
-  }
+  const handleDeleteContest = useCallback(
+    (contest) => {
+      openModal("confirm", {
+        title: t("contest.delete.title", "Delete Contest"),
+        description: t(
+          "contest.delete.confirmMessage",
+          `Are you sure you want to delete "${contest.name}"? This action cannot be undone.`,
+          { name: contest.name },
+        ),
+        onConfirm: async () => {
+          try {
+            await deleteContest({ id: contest.contestId }).unwrap()
+            toast.success(
+              t("contest.delete.success", "Contest deleted successfully!"),
+            )
+
+            // Handle pagination after delete
+            const count = contests.length
+            if (count === 1 && pagination.currentPage > 1) {
+              setPage(pagination.currentPage - 1)
+            }
+          } catch (err) {
+            console.error("❌ Failed to delete contest:", err)
+            toast.error(t("contest.delete.error", "Failed to delete contest."))
+          }
+        },
+      })
+    },
+    [contests, pagination, deleteContest, openModal, setPage, t],
+  )
 
   /** Table columns */
   const columns = getContestColumns(handleEditContest, handleDeleteContest, t)

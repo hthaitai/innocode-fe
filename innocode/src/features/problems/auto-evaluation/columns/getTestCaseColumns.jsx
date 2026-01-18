@@ -5,27 +5,39 @@ const getTestCaseColumns = (t, handleEditTestCase, handleDeleteTestCase) => [
   {
     accessorKey: "description",
     header: t("common.description"),
-    size: 250,
-    meta: { className: "truncate max-w-[300px]" },
+    size: 280,
+    meta: { className: "truncate max-w-[280px]" },
     cell: ({ row }) => row.original.description || "—",
   },
   {
     accessorKey: "input",
     header: t("common.input"),
-    size: 160,
-    meta: { className: "truncate max-w-[200px]" },
+    size: 180,
+    meta: { className: "truncate max-w-[180px]" },
     cell: ({ row }) => row.original.input || "—",
   },
   {
     accessorKey: "expectedOutput",
     header: t("common.expectedOutput"),
-    size: 160,
-    meta: { className: "truncate max-w-[200px]" },
+    size: 180,
+    meta: { className: "truncate max-w-[180px]" },
     cell: ({ row }) => row.original.expectedOutput || "—",
   },
-  { accessorKey: "weight", header: t("common.weight"), size: 110 },
-  { accessorKey: "timeLimitMs", header: t("common.timeMs"), size: 140 },
-  { accessorKey: "memoryKb", header: t("common.memoryKb"), size: 130 },
+  { accessorKey: "weight", header: t("common.weight"), size: 100 },
+  {
+    accessorKey: "timeLimitMs",
+    header: t("common.time"),
+    size: 110,
+    cell: ({ row }) =>
+      row.original.timeLimitMs ? `${row.original.timeLimitMs} ms` : "—",
+  },
+  {
+    accessorKey: "memoryKb",
+    header: t("common.memory"),
+    size: 110,
+    cell: ({ row }) =>
+      row.original.memoryKb ? `${row.original.memoryKb} KB` : "—",
+  },
   {
     id: "actions",
     header: "",

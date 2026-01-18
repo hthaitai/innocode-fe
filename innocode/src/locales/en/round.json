@@ -90,7 +90,8 @@
       "auto": "Auto Evaluation (Auto-graded Coding)",
       "manual": "Manual Evaluation (Judge Review)",
       "mockTest": "Mock test",
-      "inputOutput": "Input/Output"
+      "inputOutput": "Input/Output",
+      "allTeams": "All teams"
     },
     "suffixes": {
       "second": " second",
@@ -167,7 +168,7 @@
     "appealReviewError": "Failed to end appeal review",
 
     "judgeDeadlineEnd": "End judge deadline",
-    "judgeDeadlineEndDesc": "End the judge grading deadline immediately",
+    "judgeDeadlineEndDesc": "End the judge grading or appeal rescoring deadline immediately",
     "endDeadline": "End deadline",
     "judgeDeadlineSuccess": "Judge deadline ended successfully",
     "judgeDeadlineError": "Failed to end judge deadline",

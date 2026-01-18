@@ -1,0 +1,65 @@
+{
+  "status": {
+    "live": "Trực tiếp",
+    "offline": "Ngoại tuyến"
+  },
+  "overview": {
+    "contestName": "Tên cuộc thi",
+    "status": "Trạng thái",
+    "total": "Tổng",
+    "active": "Đang diễn ra",
+    "completed": "Đã hoàn thành",
+    "draft": "Nháp",
+    "totalContestsCreated": "Tổng số cuộc thi",
+    "activeContests": "Cuộc thi đang diễn ra",
+    "completedContests": "Cuộc thi đã hoàn thành",
+    "draftContests": "Cuộc thi nháp",
+    "contestStatusDistribution": "Phân bố trạng thái cuộc thi",
+    "contestHighlights": "Cuộc thi nổi bật",
+    "mostActiveContest": "Cuộc thi sôi nổi nhất",
+    "contestWithMostAppeals": "Cuộc thi có nhiều khiếu nại nhất",
+    "progress": "Tiến độ",
+    "totalStudents": "Tổng sinh viên",
+    "totalTeams": "Tổng số đội",
+    "activeTeams": "Đội đang thi",
+    "eliminatedTeams": "Đội bị loại",
+    "disqualifiedTeams": "Đội bị truất quyền",
+    "totalAppeals": "Tổng khiếu nại",
+    "certificatesIssued": "Chứng chỉ đã cấp",
+    "registrationPeriod": "Đăng ký",
+    "registrationStart": "Bắt đầu đăng ký",
+    "registrationEnd": "Kết thúc đăng ký",
+    "contestPeriod": "Cuộc thi",
+    "contestStart": "Bắt đầu cuộc thi",
+    "contestEnd": "Kết thúc cuộc thi",
+    "teamStatus": "Trạng thái đội",
+    "eliminated": "Bị loại",
+    "disqualified": "Bị truất quyền",
+    "appeals": "Khiếu nại",
+    "certificates": "Chứng chỉ",
+    "issued": "Đã cấp"
+  },
+  "suffixes": {
+    "student": " sinh viên",
+    "students": " sinh viên",
+    "team": " đội",
+    "teams": " đội",
+    "appeal": " khiếu nại",
+    "appeals": " khiếu nại",
+    "certificate": " chứng chỉ",
+    "certificates": " chứng chỉ"
+  },
+  "chart": {
+    "contest": "cuộc thi",
+    "contests": "cuộc thi"
+  },
+  "notifications": {
+    "reconnected": "Bảng điều khiển đã kết nối lại - dữ liệu đã làm mới",
+    "organizerDashboardUpdated": "Bảng điều khiển đã cập nhật"
+  },
+  "tabs": {
+    "overview": "Tổng quan",
+    "myContests": "Cuộc thi của tôi",
+    "contestDetails": "Chi tiết cuộc thi"
+  }
+}

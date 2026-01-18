@@ -44,6 +44,8 @@ import enLoader from "../locales/en/loader.json"
 import viLoader from "../locales/vi/loader.json"
 import enResults from "../locales/en/results.json"
 import viResults from "../locales/vi/results.json"
+import enDashboard from "../locales/en/dashboard.json"
+import viDashboard from "../locales/vi/dashboard.json"
 
 i18n
   .use(LanguageDetector) // Tự động detect ngôn ngữ từ browser
@@ -70,6 +72,7 @@ i18n
         footer: enFooter,
         loader: enLoader,
         results: enResults,
+        dashboard: enDashboard,
       },
       vi: {
         common: viCommon,
@@ -91,6 +94,7 @@ i18n
         footer: viFooter,
         loader: viLoader,
         results: viResults,
+        dashboard: viDashboard,
       },
     },
     fallbackLng: "en",

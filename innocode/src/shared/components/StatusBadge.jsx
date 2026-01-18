@@ -42,13 +42,17 @@ export const statusColorMap = {
   pendinginvite: "bg-amber-400",
 
   notinvited: "bg-gray-400",
+
+  frozen: "bg-blue-500",
+  live: "bg-green-500",
+  offline: "bg-gray-400",
 }
 
 import { useTranslation } from "react-i18next"
 
 // StatusBadge component
 const StatusBadge = ({ status, translate = false, label }) => {
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["pages", "contest"])
 
   if (!status) status = "draft"
 
@@ -83,16 +87,16 @@ const StatusBadge = ({ status, translate = false, label }) => {
     // Use translation for contest status
     // Map status to translation key
     const statusMap = {
-      ongoing: "contest.statusLabels.ongoing",
-      upcoming: "contest.statusLabels.upcoming",
-      completed: "contest.statusLabels.completed",
-      published: "contest.statusLabels.published",
-      registrationopen: "contest.statusLabels.registrationopen",
-      registrationclosed: "contest.statusLabels.registrationclosed",
-      draft: "contest.statusLabels.draft",
-      cancelled: "contest.statusLabels.cancelled",
-      paused: "contest.statusLabels.paused",
-      delayed: "contest.statusLabels.delayed",
+      ongoing: "contest:statusLabels.ongoing",
+      upcoming: "contest:statusLabels.upcoming",
+      completed: "contest:statusLabels.completed",
+      published: "contest:statusLabels.published",
+      registrationopen: "contest:statusLabels.registrationopen",
+      registrationclosed: "contest:statusLabels.registrationclosed",
+      draft: "contest:statusLabels.draft",
+      cancelled: "contest:statusLabels.cancelled",
+      paused: "contest:statusLabels.paused",
+      delayed: "contest:statusLabels.delayed",
     }
 
     const translationKey = statusMap[safeStatus]

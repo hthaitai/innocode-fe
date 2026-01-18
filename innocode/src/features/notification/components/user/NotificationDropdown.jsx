@@ -2,7 +2,6 @@ import React, { useMemo } from "react"
 import { Icon } from "@iconify/react"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { useGetNotificationsQuery } from "@/services/notificationApi"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { useReadAllNotificationsMutation } from "../../../../services/notificationApi"
 import useNotificationNavigation from "../../hooks/useNotificationNavigation"
@@ -12,20 +11,16 @@ import {
   getTranslationKey,
 } from "../../utils/notificationUtils"
 
-const NotificationDropdown = ({ onClose }) => {
+const NotificationDropdown = ({
+  onClose,
+  notificationsData,
+  isLoading,
+  error,
+  unreadCount = 0,
+}) => {
   const navigate = useNavigate()
   const { t: tCommon } = useTranslation("common")
   const { t: tNotifications } = useTranslation("notifications")
-  const {
-    data: notificationsData,
-    isLoading,
-    error,
-  } = useGetNotificationsQuery(
-    { pageNumber: 1, pageSize: 10 },
-    {
-      pollingInterval: 30000,
-    }
-  )
 
   const [readAllNotifications] = useReadAllNotificationsMutation()
   const handleNotificationClick = useNotificationNavigation(onClose)
@@ -43,7 +38,7 @@ const NotificationDropdown = ({ onClose }) => {
         const interpolationValues = buildInterpolationValues(
           parsedPayload,
           translationKey,
-          rawMessage
+          rawMessage,
         )
 
         message = tNotifications(translationKey, {
@@ -98,10 +93,7 @@ const NotificationDropdown = ({ onClose }) => {
         </h3>
         {notifications.length > 0 && (
           <span className="text-caption-1-strong text-[#E05307]">
-            {
-              notifications.filter((notification) => !notification.isRead)
-                .length
-            }{" "}
+            {unreadCount > 99 ? "99+" : unreadCount}{" "}
             {tCommon("notification.new")}
           </span>
         )}

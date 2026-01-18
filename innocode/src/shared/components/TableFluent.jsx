@@ -11,6 +11,12 @@ import TablePagination from "./TablePagination"
 import { Icon } from "@iconify/react"
 import { useTranslation } from "react-i18next"
 
+/**
+ * TableFluent - A reusable table component with sorting, pagination, and expansion features
+ *
+ * @param {boolean} enableSorting - Enable/disable sorting for all columns (default: true)
+ *                                   Individual columns can also disable sorting via column definition: { enableSorting: false }
+ */
 const TableFluent = ({
   data = [],
   columns,
@@ -25,6 +31,7 @@ const TableFluent = ({
   renderActions = null,
   getRowId,
   enableSorting = true,
+  getRowClassName,
 }) => {
   const { t } = useTranslation("common")
   const [expanded, setExpanded] = React.useState({})
@@ -87,10 +94,15 @@ const TableFluent = ({
                               : undefined
                           }
                         >
-                          <div className="flex items-center gap-2">
+                          <div
+                            className={`flex items-center gap-2 ${
+                              header.column.columnDef.meta?.headerClassName ||
+                              ""
+                            }`}
+                          >
                             {flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                             {canSort && (
                               <span className="flex flex-col">
@@ -159,6 +171,8 @@ const TableFluent = ({
                           className={`group align-middle transition-colors ${
                             isSelected ? "bg-orange-50" : "hover:bg-[#F6F6F6]"
                           } ${
+                            getRowClassName ? getRowClassName(row.original) : ""
+                          } ${
                             isClickable ? "cursor-pointer" : "cursor-default"
                           }`}
                           onClick={() =>
@@ -176,7 +190,7 @@ const TableFluent = ({
                               >
                                 {flexRender(
                                   cell.column.columnDef.cell,
-                                  cell.getContext()
+                                  cell.getContext(),
                                 )}
                               </td>
                             )

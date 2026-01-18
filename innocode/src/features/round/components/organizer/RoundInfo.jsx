@@ -12,7 +12,7 @@ const RoundInfo = ({ round }) => {
   const handleEdit = useCallback(() => {
     if (!round) return
     navigate(
-      `/organizer/contests/${round.contestId}/rounds/${round.roundId}/edit`
+      `/organizer/contests/${round.contestId}/rounds/${round.roundId}/edit`,
     )
   }, [round, navigate])
 
@@ -42,12 +42,12 @@ const RoundInfo = ({ round }) => {
         round.problemType === "McqTest"
           ? t("info.values.mcq")
           : round.problemType === "AutoEvaluation"
-          ? t("info.values.auto")
-          : round.problemType === "Manual"
-          ? t("info.values.manual")
-          : safe(round.problemType),
+            ? t("info.values.auto")
+            : round.problemType === "Manual"
+              ? t("info.values.manual")
+              : safe(round.problemType),
     },
-    { spacer: true }
+    { spacer: true },
   )
 
   // Timing
@@ -60,8 +60,11 @@ const RoundInfo = ({ round }) => {
     },
     {
       label: t("info.teamsAdvancing"),
-      value: safe(round.rankCutoff, teamsSuffix),
-    }
+      value:
+        round.rankCutoff === 0
+          ? t("info.values.allTeams")
+          : safe(round.rankCutoff, teamsSuffix),
+    },
   )
 
   if (round.problem) {
@@ -75,7 +78,7 @@ const RoundInfo = ({ round }) => {
       {
         label: t("info.problemDescription"),
         value: safe(round.problem.description),
-      }
+      },
     )
 
     if (round.problemType === "AutoEvaluation") {
@@ -85,8 +88,8 @@ const RoundInfo = ({ round }) => {
           round.problem.testType === "MockTest"
             ? t("info.values.mockTest")
             : round.problem.testType === "InputOutput"
-            ? t("info.values.inputOutput")
-            : t("info.values.inputOutput"), // default
+              ? t("info.values.inputOutput")
+              : t("info.values.inputOutput"), // default
       })
     }
   } else if (!round.mcqTest) {
@@ -94,7 +97,7 @@ const RoundInfo = ({ round }) => {
   }
 
   const filteredDetails = details.filter(
-    (d) => d.value !== undefined || d.spacer
+    (d) => d.value !== undefined || d.spacer,
   )
 
   return (

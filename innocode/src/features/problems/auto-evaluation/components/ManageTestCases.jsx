@@ -29,14 +29,12 @@ const ManageTestCases = ({
 
   // Open modal for delete confirmation
   const handleDeleteTestCase = (testCase) => {
-    openModal("confirmDelete", {
-      type: "test case",
-      item: testCase,
-      message: t("common.deleteTestCaseConfirmMessage", {
+    openModal("confirm", {
+      title: t("common.deleteTestCaseConfirmTitle"),
+      description: t("common.deleteTestCaseConfirmMessage", {
         name: testCase.description,
       }),
-      title: t("common.deleteTestCaseConfirmTitle"),
-      onConfirm: async (close) => {
+      onConfirm: async () => {
         try {
           await deleteTestCase({
             roundId,
@@ -47,8 +45,6 @@ const ManageTestCases = ({
         } catch (err) {
           console.error(err)
           toast.error(t("common.failedToDeleteTestCase"))
-        } finally {
-          close()
         }
       },
     })
@@ -61,21 +57,21 @@ const ManageTestCases = ({
   // Navigate to create page
   const handleCreateTestCase = () => {
     navigate(
-      `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/new`
+      `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/new`,
     )
   }
 
   // Navigate to edit page
   const handleEditTestCase = (testCase) => {
     navigate(
-      `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/${testCase.testCaseId}/edit`
+      `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation/${testCase.testCaseId}/edit`,
     )
   }
 
   const columns = getTestCaseColumns(
     t,
     handleEditTestCase,
-    handleDeleteTestCase
+    handleDeleteTestCase,
   )
 
   return (

@@ -46,7 +46,7 @@ export default function CreateContest() {
       toast.error(
         t("organizerContestForm.messages.validationError", {
           count: Object.keys(validationErrors).length,
-        })
+        }),
       )
       return
     }
@@ -61,11 +61,11 @@ export default function CreateContest() {
       formPayload.append("End", fromDatetimeLocal(formData.end))
       formPayload.append(
         "RegistrationStart",
-        fromDatetimeLocal(formData.registrationStart)
+        fromDatetimeLocal(formData.registrationStart),
       )
       formPayload.append(
         "RegistrationEnd",
-        fromDatetimeLocal(formData.registrationEnd)
+        fromDatetimeLocal(formData.registrationEnd),
       )
       formPayload.append("TeamMembersMin", formData.teamMembersMin)
       formPayload.append("TeamMembersMax", formData.teamMembersMax)
@@ -83,6 +83,16 @@ export default function CreateContest() {
     } catch (err) {
       console.error(err)
 
+      // Network / Cold Start specific handling
+      if (
+        err.status === "FETCH_ERROR" ||
+        err.message?.includes("Failed to fetch") ||
+        !err.status
+      ) {
+        toast.error(t("contest:suggestion.serverColdStart"))
+        return
+      }
+
       if (err?.data?.errorCode === "DUPLICATE") {
         const errorMessage = t("contest:validation.contestNameExists")
         toast.error(errorMessage)
@@ -98,7 +108,7 @@ export default function CreateContest() {
 
       toast.error(
         err?.data?.errorMessage ||
-          t("organizerContestForm.messages.createError")
+          t("organizerContestForm.messages.createError"),
       )
     }
   }
