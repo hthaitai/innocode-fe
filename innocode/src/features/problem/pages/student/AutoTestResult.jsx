@@ -282,11 +282,6 @@ const AutoTestResult = () => {
                         {detail.note}
                       </span>
                     </div>
-                    <div className="text-xs text-[#7A7574]">
-                      {t("autoTest.time")}: {detail.runtimeMs}ms |{" "}
-                      {t("autoTest.memory")}: {detail.memoryKb} KB |{" "}
-                      {t("autoTest.weight")}: {detail.weight}
-                    </div>
                   </div>
                 </div>
               ))}

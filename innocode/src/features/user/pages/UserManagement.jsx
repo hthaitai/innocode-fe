@@ -3,13 +3,13 @@ import { useTranslation } from "react-i18next"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
-import { Users, Pencil, Trash2, Lock, Unlock } from "lucide-react"
+import { Users, Pencil, UserCheck, UserX } from "lucide-react"
 import {
   useGetAllUsersQuery,
   useUpdateUserMutation,
-  useDeleteUserMutation,
-  useUpdateUserStatusMutation,
+  useToggleUserStatusMutation,
 } from "@/services/userApi"
+import { useAuth } from "@/context/AuthContext"
 import Actions from "@/shared/components/Actions"
 import { useModal } from "@/shared/hooks/useModal"
 import toast from "react-hot-toast"
@@ -40,6 +40,7 @@ const UserManagement = () => {
   const { t } = useTranslation(["pages", "common"])
   const { translateError } = useApiError()
   const { openModal } = useModal()
+  const { user: currentUser } = useAuth() // Lấy thông tin user hiện tại
   const [pageNumber, setPageNumber] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState("")
@@ -68,8 +69,7 @@ const UserManagement = () => {
 
   // Mutations
   const [updateUser] = useUpdateUserMutation()
-  const [deleteUser] = useDeleteUserMutation()
-  const [updateUserStatus] = useUpdateUserStatusMutation()
+  const [toggleUserStatus] = useToggleUserStatusMutation()
 
   const users = usersResponse?.items || []
 
@@ -102,48 +102,43 @@ const UserManagement = () => {
     })
   }
 
-  // Handle delete user
-  const handleDeleteUser = (user) => {
-    openModal("confirmDelete", {
-      type: "user",
-      item: user,
-      onConfirm: async (onClose) => {
+  // Handle toggle user status (Active/Inactive)
+  const handleToggleStatus = async (user) => {
+    // Kiểm tra nếu user đang cố toggle status của chính mình
+    const userId = user.userId || user.id
+    const currentUserId = currentUser?.userId || currentUser?.id
+
+    if (userId === currentUserId) {
+      toast.error(t("userManagement.cannotToggleOwnStatus"))
+      return
+    }
+
+    const currentStatus = user.status
+    const newStatus = currentStatus === "Active" ? "Inactive" : "Active"
+
+    openModal("confirm", {
+      title: t("userManagement.toggleStatusTitle"),
+      description: t("userManagement.toggleStatusConfirm", {
+        name: user.fullname || user.fullName,
+        currentStatus,
+        newStatus,
+      }),
+      onConfirm: async () => {
         try {
-          await deleteUser({
-            id: user.userId || user.id,
-          }).unwrap()
-          toast.success(t("userManagement.userDeletedSuccess"))
+          await toggleUserStatus(userId).unwrap()
+          toast.success(
+            newStatus === "Inactive"
+              ? t("userManagement.userDeactivatedSuccess")
+              : t("userManagement.userActivatedSuccess"),
+          )
           refetch()
-          onClose()
         } catch (error) {
-          console.error("Error deleting user:", error)
+          console.error("Error toggling user status:", error)
           const errorMessage = translateError(error)
           toast.error(errorMessage)
-          onClose()
         }
       },
     })
-  }
-
-  // Handle lock/unlock user
-  const handleToggleLock = async (user) => {
-    const newStatus = user.status === "Locked" ? "Active" : "Locked"
-    try {
-      await updateUserStatus({
-        id: user.userId || user.id,
-        status: newStatus,
-      }).unwrap()
-      toast.success(
-        newStatus === "Locked"
-          ? t("userManagement.userLockedSuccess")
-          : t("userManagement.userUnlockedSuccess")
-      )
-      refetch()
-    } catch (error) {
-      console.error("Error toggling user lock:", error)
-      const errorMessage = translateError(error)
-      toast.error(errorMessage)
-    }
   }
 
   // Get status badge color
@@ -212,7 +207,7 @@ const UserManagement = () => {
         return (
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeColor(
-              role
+              role,
             )}`}
           >
             {role}
@@ -229,7 +224,7 @@ const UserManagement = () => {
         return (
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeColor(
-              status
+              status,
             )}`}
           >
             {status}
@@ -244,7 +239,11 @@ const UserManagement = () => {
       enableSorting: false,
       enableHiding: false,
       cell: ({ row }) => {
-        const isLocked = row.original.status === "Locked"
+        const userId = row.original.userId || row.original.id
+        const currentUserId = currentUser?.userId || currentUser?.id
+        const isCurrentUser = userId === currentUserId
+        const isActive = row.original.status === "Active"
+
         return (
           <Actions
             row={row.original}
@@ -255,18 +254,16 @@ const UserManagement = () => {
                 onClick: () => handleEditUser(row.original),
               },
               {
-                label: isLocked
-                  ? t("userManagement.unlock")
-                  : t("userManagement.lock"),
-                icon: isLocked ? Unlock : Lock,
-                className: isLocked ? "text-green-500" : "text-orange-500",
-                onClick: () => handleToggleLock(row.original),
-              },
-              {
-                label: t("common:buttons.delete"),
-                icon: Trash2,
-                className: "text-red-500",
-                onClick: () => handleDeleteUser(row.original),
+                label: isActive
+                  ? t("userManagement.deactivate")
+                  : t("userManagement.activate"),
+                icon: isActive ? UserX : UserCheck,
+                className: isActive ? "text-red-500" : "text-green-500",
+                onClick: () => handleToggleStatus(row.original),
+                disabled: isCurrentUser,
+                tooltip: isCurrentUser
+                  ? t("userManagement.cannotToggleOwnStatus")
+                  : undefined,
               },
             ]}
           />

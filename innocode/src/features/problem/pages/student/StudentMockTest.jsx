@@ -15,7 +15,7 @@ import { toast } from "react-hot-toast"
 import { useRoundTimer } from "../../hooks/useRoundTimer"
 import ProblemDescription from "../../components/student/ProblemDescription"
 import CodeEditorSection from "../../components/student/CodeEditorSection"
-import TestResultsSection from "../../components/student/TestResultsSection"
+import MockTestResultsSection from "../../components/student/MockTestResultsSection"
 
 const StudentMockTest = () => {
   const { contestId, roundId } = useParams()
@@ -46,6 +46,7 @@ const StudentMockTest = () => {
     submissionId,
     testCases,
     testResult,
+    submitResponse, // Lấy submitResponse từ hook
     testCaseLoading,
     resultLoading,
     submitting,
@@ -89,10 +90,8 @@ const StudentMockTest = () => {
           await submitNullSubmission(roundId).unwrap()
           toast.dismiss()
           toast.success(t("autoEvaluation.nullSubmissionSuccess"))
-          console.log("✅ Null submission submitted for mock test round")
           return
         } catch (error) {
-          console.error("❌ Failed to submit null submission:", error)
           toast.dismiss()
           toast.error(
             `${t("autoEvaluation.errorOccurred")}. ${
@@ -147,6 +146,12 @@ const StudentMockTest = () => {
 
       toast.dismiss()
       toast.success(t("autoEvaluation.submissionSuccess"))
+
+      // Navigate to contest detail sau khi submit thành công
+      // Dùng replace: true để không cho quay lại trang này
+      setTimeout(() => {
+        navigate(`/contest-detail/${contestId}`, { replace: true })
+      }, 2000) // Đợi 2 giây để user thấy toast message
     } catch (error) {
       console.error("❌ Failed to auto-submit:", error)
       toast.dismiss()
@@ -316,8 +321,16 @@ const StudentMockTest = () => {
         />
       </div>
 
-      {/* Test Results Section */}
-      <TestResultsSection testResult={testResult} isLoading={resultLoading} />
+      {/* Mock Test Results Section */}
+      {/* Merge submitResponse (test results) với testResult (metadata) */}
+      <MockTestResultsSection
+        testResult={
+          submitResponse
+            ? { ...testResult, ...submitResponse } // Merge: testResult có metadata, submitResponse có test results
+            : testResult
+        }
+        isLoading={resultLoading}
+      />
     </div>
   )
 }

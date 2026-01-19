@@ -248,12 +248,38 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
     }
 
     // Get test result summary for confirmation
-    const testCases = testResult?.details || testResult?.cases || []
-    const passedCount =
-      testCases.filter((d) => d.note === "success" || d.status === "success")
-        .length || 0
-    const totalCount = testCases.length || 0
-    const score = testResult?.score || 0
+    // Ưu tiên lấy từ submitResponse nếu có (có summary object)
+    let passedCount = 0
+    let totalCount = 0
+    let score = 0
+
+    if (submitResponse?.summary) {
+      // Format từ Run Code - có summary
+      passedCount = submitResponse.summary.passed || 0
+      totalCount = submitResponse.summary.total || 0
+      score =
+        submitResponse.summary.penaltyScore ||
+        submitResponse.summary.rawScore ||
+        0
+    } else if (testResult?.summary) {
+      // Nếu testResult cũng có summary
+      passedCount = testResult.summary.passed || 0
+      totalCount = testResult.summary.total || 0
+      score =
+        testResult.summary.penaltyScore || testResult.summary.rawScore || 0
+    } else if (testResult?.details) {
+      // Format từ Final Submit - có details, cần parse note
+      const details = testResult.details || []
+      totalCount = details.length
+      passedCount = details.filter((d) => d.note?.includes("success")).length
+      score = testResult.score || 0
+    } else if (testResult?.cases) {
+      // Fallback: nếu có cases array
+      const cases = testResult.cases || []
+      totalCount = cases.length
+      passedCount = cases.filter((c) => c.status === "success").length
+      score = testResult.score || 0
+    }
 
     openModal("confirm", {
       title: t("autoEvaluation.submitFinalSolution"),
@@ -326,8 +352,9 @@ const useStudentAutoEvaluation = (contestId, roundId, problem = null) => {
             "Submission accepted! Your score has been added to the leaderboard.",
           )
 
+          // Navigate to contest detail, không cho quay lại
           setTimeout(() => {
-            navigate(`/leaderboard/${contestId}`)
+            navigate(`/contest-detail/${contestId}`, { replace: true })
           }, 1500)
         } catch (error) {
           console.error("❌ Failed to submit final test:", error)

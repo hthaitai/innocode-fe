@@ -13,13 +13,6 @@ const USER_ROLES = [
   { value: "Admin", label: "Admin" },
 ]
 
-const USER_STATUSES = [
-  { value: "Active", label: "Active" },
-  { value: "Inactive", label: "Inactive" },
-  { value: "Locked", label: "Locked" },
-  { value: "Unverified", label: "Unverified" },
-]
-
 export default function UserForm({
   formData,
   setFormData,
@@ -38,7 +31,7 @@ export default function UserForm({
       <TextFieldFluent
         label={t("userManagement.fullName")}
         value={formData.fullname || ""}
-        onChange={(value) => handleChange("fullname", value)}
+        onChange={(e) => handleChange("fullname", e.target.value)}
         error={errors.fullname}
         placeholder={t("userManagement.enterFullName")}
         required
@@ -48,11 +41,10 @@ export default function UserForm({
       <TextFieldFluent
         label={t("userManagement.email")}
         value={formData.email || ""}
-        onChange={(value) => handleChange("email", value)}
+        onChange={(e) => handleChange("email", e.target.value)}
         error={errors.email}
         placeholder={t("userManagement.enterEmail")}
         required
-        disabled={mode === "edit"} // Email cannot be changed
       />
 
       {/* Role */}
@@ -64,17 +56,7 @@ export default function UserForm({
         error={errors.role}
         placeholder={t("userManagement.selectRole")}
         required
-      />
-
-      {/* Status */}
-      <DropdownFluent
-        label={t("userManagement.status")}
-        value={formData.status || ""}
-        onChange={(value) => handleChange("status", value)}
-        options={USER_STATUSES}
-        error={errors.status}
-        placeholder={t("userManagement.selectStatus")}
-        required
+        disabled={mode === "edit"}
       />
     </div>
   )

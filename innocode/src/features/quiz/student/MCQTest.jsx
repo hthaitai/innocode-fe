@@ -6,6 +6,7 @@ import useQuiz from "../hooks/useQuiz"
 import useQuizSubmit from "../hooks/useQuizSubmit"
 import useMCQTestFlow from "../hooks/useMCQTestFlow"
 import { useModal } from "@/shared/hooks/useModal"
+import quizApi from "@/api/quizApi"
 
 const MCQTest = () => {
   const { roundId, contestId } = useParams()
@@ -34,6 +35,7 @@ const MCQTest = () => {
   const [isInitialized, setIsInitialized] = useState(false)
   const hasRestoredAnswers = useRef(false)
   const isRestoring = useRef(false)
+  const isAutoSubmitting = useRef(false) // Ngăn chặn submit nhiều lần
 
   // Initialize test when quiz is loaded
   useEffect(() => {
@@ -107,7 +109,8 @@ const MCQTest = () => {
       const remaining = getTimeRemaining()
       setTimeRemaining(remaining)
 
-      if (remaining <= 0) {
+      if (remaining <= 0 && !isAutoSubmitting.current) {
+        // Chỉ gọi handleAutoSubmit MỘT LẦN duy nhất
         handleAutoSubmit()
       }
     }
@@ -246,8 +249,13 @@ const MCQTest = () => {
   }
 
   const handleAutoSubmit = async () => {
-    // Always submit the quiz when time is up
-    // The backend will retrieve saved answers from the database
+    // Ngăn chặn gọi nhiều lần
+    if (isAutoSubmitting.current) {
+      console.log("⏸️ Auto-submit already in progress, skipping...")
+      return
+    }
+
+    isAutoSubmitting.current = true
     console.log("⏰ Time is up! Auto-submitting quiz...")
 
     const answersArray = Object.entries(answers).map(
@@ -257,11 +265,68 @@ const MCQTest = () => {
       }),
     )
 
-    console.log("📝 Submitting with answers array:", answersArray)
-    console.log(
-      "ℹ️ Note: Backend will use saved answers from database if local state is empty",
-    )
-    await handleSubmitQuiz()
+    console.log("📝 Local answers array:", answersArray)
+
+    // Nếu không có câu trả lời trong local state, kiểm tra backend
+    if (answersArray.length === 0) {
+      console.log("⚠️ No local answers, checking backend for saved answers...")
+
+      try {
+        // Kiểm tra xem backend có câu trả lời đã lưu không
+        const currentData = await getCurrentAnswers(testKey)
+        console.log("📥 Backend saved answers:", currentData)
+
+        if (currentData?.answers && currentData.answers.length > 0) {
+          // Backend có câu trả lời → submit với câu trả lời từ backend
+          console.log(
+            `✅ Found ${currentData.answers.length} saved answer(s) on backend, submitting with backend answers...`,
+          )
+          // Submit với câu trả lời từ backend (không dùng local state)
+          await handleSubmitQuiz(currentData.answers)
+        } else {
+          // Backend KHÔNG có câu trả lời → gọi null-submission API
+          console.log(
+            "⚠️ No saved answers on backend, calling null-submission API...",
+          )
+
+          try {
+            const response = await quizApi.submitNullSubmission(roundId)
+            console.log("✅ Null submission successful:", response)
+
+            // Clear sessionStorage after successful null submission
+            sessionStorage.removeItem(`mcq_test_key_${roundId}`)
+            sessionStorage.removeItem(`mcq_test_startTime_${roundId}`)
+            sessionStorage.removeItem(`mcq_test_timeLimit_${roundId}`)
+
+            // Navigate to finish page
+            navigate(`/quiz/${roundId}/finish`, {
+              state: {
+                contestId,
+                resultData: response.data?.data || null,
+              },
+            })
+          } catch (error) {
+            console.error("❌ Failed to submit null submission:", error)
+            alert(
+              `Failed to submit: ${error.response?.data?.message || error.message}`,
+            )
+          }
+        }
+      } catch (error) {
+        console.error("❌ Failed to check backend answers:", error)
+        // Nếu không kiểm tra được backend, vẫn submit bình thường để an toàn
+        console.log(
+          "⚠️ Error checking backend, submitting normally as fallback...",
+        )
+        await handleSubmitQuiz()
+      }
+    } else {
+      // Có câu trả lời trong local state → submit bình thường
+      console.log(
+        `✅ Found ${answersArray.length} local answer(s), submitting normally...`,
+      )
+      await handleSubmitQuiz()
+    }
   }
 
   const handleSubmit = () => {
@@ -317,14 +382,16 @@ const MCQTest = () => {
     })
   }
 
-  const handleSubmitQuiz = async () => {
-    const answersArray = Object.entries(answers).map(
-      ([questionId, selectedOptionId]) => ({
+  const handleSubmitQuiz = async (backendAnswers = null) => {
+    // Nếu có backendAnswers (từ auto-submit), dùng nó; nếu không, dùng local state
+    const answersArray =
+      backendAnswers ||
+      Object.entries(answers).map(([questionId, selectedOptionId]) => ({
         questionId,
         selectedOptionId,
-      }),
-    )
+      }))
     console.log("📝 Body answers gửi lên:", answersArray)
+    console.log("📝 Source:", backendAnswers ? "Backend" : "Local State")
 
     const result = await submitQuiz(roundId, answersArray)
 
