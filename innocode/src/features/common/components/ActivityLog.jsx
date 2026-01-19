@@ -30,7 +30,7 @@ const ActivityLog = () => {
     },
     {
       pollingInterval: 30000, // Auto-refresh every 30 seconds
-    }
+    },
   )
 
   const logs = logsData?.items || []
@@ -74,10 +74,10 @@ const ActivityLog = () => {
         return (
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getActionBadgeColor(
-              action
+              action,
             )}`}
           >
-            {formatAction(action)}
+            {action}
           </span>
         )
       },
