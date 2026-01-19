@@ -121,6 +121,15 @@ export const userApi = api.injectEndpoints({
         { type: "Users", id: "LIST" },
       ],
     }),
+
+    registerStaff: builder.mutation({
+      query: (data) => ({
+        url: "auth/register-staff",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: [{ type: "Users", id: "LIST" }],
+    }),
   }),
 })
 
@@ -133,4 +142,5 @@ export const {
   useDeleteUserMutation,
   useUpdateUserStatusMutation,
   useToggleUserStatusMutation,
+  useRegisterStaffMutation,
 } = userApi

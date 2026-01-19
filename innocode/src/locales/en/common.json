@@ -17,6 +17,7 @@
     "edit": "Edit",
     "create": "Create",
     "submit": "Submit",
+    "loading": "Processing...",
     "close": "Close",
     "back": "Back",
     "next": "Next",
@@ -37,6 +38,12 @@
     "mentor": "Mentor",
     "staff": "Staff",
     "schoolmanager": "School Manager"
+  },
+  "userStatuses": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "locked": "Locked",
+    "unverified": "Unverified"
   },
   "common": {
     "locale": "en",

@@ -100,13 +100,21 @@ export default function UserDetailModal({ isOpen, user, onClose }) {
             />
             <DetailRow
               label={t("userManagement.role")}
-              value={displayUser.role}
+              value={
+                displayUser.role
+                  ? t(`common:roles.${displayUser.role.toLowerCase()}`)
+                  : "—"
+              }
               badge
               badgeColor={getRoleBadgeColor(displayUser.role)}
             />
             <DetailRow
               label={t("userManagement.status")}
-              value={displayUser.status}
+              value={
+                displayUser.status
+                  ? t(`common:userStatuses.${displayUser.status.toLowerCase()}`)
+                  : "—"
+              }
               badge
               badgeColor={getStatusBadgeColor(displayUser.status)}
             />

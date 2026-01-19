@@ -3,16 +3,6 @@ import { useTranslation } from "react-i18next"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 
-const USER_ROLES = [
-  { value: "Student", label: "Student" },
-  { value: "Mentor", label: "Mentor" },
-  { value: "Organizer", label: "Organizer" },
-  { value: "Judge", label: "Judge" },
-  { value: "SchoolManager", label: "School Manager" },
-  { value: "Staff", label: "Staff" },
-  { value: "Admin", label: "Admin" },
-]
-
 export default function UserForm({
   formData,
   setFormData,
@@ -20,6 +10,16 @@ export default function UserForm({
   mode = "edit",
 }) {
   const { t } = useTranslation(["pages", "common"])
+
+  const TRANSLATED_ROLES = [
+    { value: "Student", label: t("common:roles.student") },
+    { value: "Mentor", label: t("common:roles.mentor") },
+    { value: "Organizer", label: t("common:roles.organizer") },
+    { value: "Judge", label: t("common:roles.judge") },
+    { value: "SchoolManager", label: t("common:roles.schoolmanager") },
+    { value: "Staff", label: t("common:roles.staff") },
+    { value: "Admin", label: t("common:roles.admin") },
+  ]
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -52,7 +52,7 @@ export default function UserForm({
         label={t("userManagement.role")}
         value={formData.role || ""}
         onChange={(value) => handleChange("role", value)}
-        options={USER_ROLES}
+        options={TRANSLATED_ROLES}
         error={errors.role}
         placeholder={t("userManagement.selectRole")}
         required

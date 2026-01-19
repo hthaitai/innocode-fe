@@ -930,7 +930,17 @@
     "userUnlockedSuccess": "Mở khóa người dùng thành công",
     "userActivatedSuccess": "Kích hoạt người dùng thành công",
     "userDeactivatedSuccess": "Vô hiệu hóa người dùng thành công",
-    "cannotToggleOwnStatus": "Bạn không thể thay đổi trạng thái của chính mình"
+    "cannotToggleOwnStatus": "Bạn không thể thay đổi trạng thái của chính mình",
+    "registerStaff": "Đăng ký Nhân viên",
+    "createStaff": "Tạo nhân viên",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "passwordRequired": "Mật khẩu là bắt buộc",
+    "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu",
+    "passwordsNotMatch": "Mật khẩu không khớp",
+    "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+    "passwordRequirements": "Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường, một chữ số và một ký tự đặc biệt",
+    "staffCreatedSuccess": "Tạo nhân viên thành công"
   },
   "autoEvaluation": {
     "loadingProblem": "Đang tải bài thi...",
