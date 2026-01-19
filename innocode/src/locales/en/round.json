@@ -203,6 +203,15 @@
     "draft": "Draft",
     "cancelled": "Cancelled"
   },
+  "transfer": {
+    "title": "Transfer submissions",
+    "description": "Choose a judge to transfer their pending submissions from this round to other judges.",
+    "selectJudge": "Select a judge to transfer submissions from",
+    "transferButton": "Transfer submissions",
+    "transferring": "Transferring...",
+    "success": "Submissions transferred successfully",
+    "error": "Failed to transfer submissions"
+  },
   "validation": {
     "retakeSelect": "Please select a round to retake",
     "name": "Round name is required",

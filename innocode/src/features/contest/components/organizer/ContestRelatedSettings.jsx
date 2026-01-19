@@ -35,24 +35,18 @@ const ContestRelatedSettings = ({ contestId }) => {
         path: "judges",
       },
       // {
-      //   title: "Judge invites",
-      //   subtitle: "View invitations sent to judges",
-      //   icon: <Mail size={20} />,
-      //   path: "judges/invites",
+      //   title: t("organizerContestDetail.relatedSettings.activeJudges.title"),
+      //   subtitle: t(
+      //     "organizerContestDetail.relatedSettings.activeJudges.subtitle",
+      //   ),
+      //   icon: <UserCheck size={20} />,
+      //   path: "judges/active",
       // },
-      {
-        title: t("organizerContestDetail.relatedSettings.activeJudges.title"),
-        subtitle: t(
-          "organizerContestDetail.relatedSettings.activeJudges.subtitle"
-        ),
-        icon: <UserCheck size={20} />,
-        path: "judges/active",
-      },
 
       {
         title: t("organizerContestDetail.relatedSettings.leaderboard.title"),
         subtitle: t(
-          "organizerContestDetail.relatedSettings.leaderboard.subtitle"
+          "organizerContestDetail.relatedSettings.leaderboard.subtitle",
         ),
         icon: <Trophy size={20} />,
         path: "leaderboard",
@@ -72,7 +66,7 @@ const ContestRelatedSettings = ({ contestId }) => {
       {
         title: t("organizerContestDetail.relatedSettings.plagiarism.title"),
         subtitle: t(
-          "organizerContestDetail.relatedSettings.plagiarism.subtitle"
+          "organizerContestDetail.relatedSettings.plagiarism.subtitle",
         ),
         icon: <FileBadge2 size={20} />,
         path: "plagiarism",
@@ -90,7 +84,7 @@ const ContestRelatedSettings = ({ contestId }) => {
       //   path: "notifications",
       // },
     ],
-    [t]
+    [t],
   )
 
   return (

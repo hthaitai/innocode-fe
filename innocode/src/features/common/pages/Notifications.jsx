@@ -40,6 +40,8 @@ const Notifications = () => {
     },
   )
 
+  console.log(notificationsData)
+
   // Get total unread count from dedicated API
   const { data: totalUnreadCount = 0 } = useGetUnreadCountQuery(undefined, {
     pollingInterval: 30000,

@@ -67,6 +67,31 @@ const useNotificationNavigation = (onClose) => {
       }
       return
     }
+
+    // Manual grading assignment for judges
+    if (
+      (targetType === "submission" &&
+        notification.type === "manual_grading.assigned") ||
+      notification.type === "manual_grading.assigned"
+    ) {
+      if (userRole === "judge") {
+        if (onClose) onClose()
+        const { contestId, roundId } = notification.parsedPayload || {}
+
+        if (contestId && roundId) {
+          // Navigate to judge grading page with contest and round
+          navigate(`/judge/contests/${contestId}/rounds/${roundId}/submissions`)
+        } else if (contestId) {
+          // Fallback to contest grading page if roundId is missing
+          navigate(`/judge/contests/${contestId}`)
+        } else {
+          console.warn(
+            "Manual grading assignment notification missing contestId or roundId",
+          )
+        }
+        return
+      }
+    }
     // Appeal created/updated for organizer
     if (targetType === "appeal" && userRole === "organizer") {
       if (onClose) onClose()
@@ -133,9 +158,27 @@ const useNotificationNavigation = (onClose) => {
       return
     }
 
-    // Submission plagiarism confirmed - navigate to plagiarism detail
+    // Submission result available - navigate to contest detail
     if (
       targetType === "submission" ||
+      notification.type === "submission.result" ||
+      notification.type === "SubmissionResultAvailable"
+    ) {
+      if (onClose) onClose()
+      const { contestId, submissionId, problemId } =
+        notification.parsedPayload || {}
+
+      if (contestId) {
+        // Navigate to contest detail page for students/mentors
+        navigate(`/contest-detail/${contestId}`)
+      } else {
+        console.warn("Submission result notification missing contestId")
+      }
+      return
+    }
+
+    // Submission plagiarism confirmed - navigate to plagiarism detail
+    if (
       notification.type === "submission.plagiarism_confirmed" ||
       notification.type === "SubmissionPlagiarismConfirmed"
     ) {
@@ -146,7 +189,7 @@ const useNotificationNavigation = (onClose) => {
         // Navigate to plagiarism detail page for organizers, or contest detail for students
         if (userRole === "organizer") {
           navigate(
-            `/organizer/contests/${contestId}/plagiarism/${submissionId}`
+            `/organizer/contests/${contestId}/plagiarism/${submissionId}`,
           )
         } else {
           // For students/mentors, navigate to contest detail

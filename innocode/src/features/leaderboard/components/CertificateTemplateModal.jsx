@@ -20,7 +20,7 @@ const CertificateTemplateModal = ({
   const { t } = useTranslation(["leaderboard"])
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [page, setPage] = useState(1)
-  const [awarding, setAwarding] = useState(false)
+  const [loadingAction, setLoadingAction] = useState(null)
   const pageSize = 8
 
   const [awardCertificates] = useAwardCertificatesMutation()
@@ -45,20 +45,27 @@ const CertificateTemplateModal = ({
   }, [isOpen])
 
   const handleSelectTemplate = (template) => {
-    setSelectedTemplate(template)
+    if (selectedTemplate?.templateId === template.templateId) {
+      setSelectedTemplate(null)
+    } else {
+      setSelectedTemplate(template)
+    }
   }
 
-  const handleAward = async () => {
-    if (!selectedTemplate) return
+  const handleAward = async (isReissue = false) => {
+    if (!selectedTemplate) {
+      toast.error(t("leaderboard:modal.selectTemplate"))
+      return
+    }
 
     const payload = {
       templateId: selectedTemplate.templateId,
       recipients,
       output: "pdf",
-      reissue: true,
+      reissue: isReissue,
     }
 
-    setAwarding(true)
+    setLoadingAction(isReissue ? "reissue" : "award")
     try {
       await awardCertificates(payload).unwrap()
       toast.success(t("leaderboard:modal.success"))
@@ -66,13 +73,18 @@ const CertificateTemplateModal = ({
       setSelectedTemplate(null)
     } catch (err) {
       console.error(err)
-      toast.error(
-        err?.data?.message ||
-          err?.data?.errorMessage ||
-          t("leaderboard:modal.error")
-      )
+
+      if (err?.data?.errorCode === "DUPLICATE_CERTIFICATE") {
+        toast.error(t("leaderboard:modal.certificateAlreadyExists"))
+      } else {
+        toast.error(
+          err?.data?.message ||
+            err?.data?.errorMessage ||
+            t("leaderboard:modal.error"),
+        )
+      }
     } finally {
-      setAwarding(false)
+      setLoadingAction(null)
     }
   }
 
@@ -93,17 +105,45 @@ const CertificateTemplateModal = ({
             type="button"
             className="button-white"
             onClick={handleClose}
-            disabled={awarding}
+            disabled={!!loadingAction}
           >
             {t("leaderboard:modal.cancel")}
           </button>
+
           <button
             type="button"
-            className={`${awarding ? "button-gray" : "button-orange"} px-3`}
-            onClick={handleAward}
-            disabled={!selectedTemplate || awarding}
+            className={`${
+              loadingAction === "reissue" ? "button-gray" : "button-white"
+            } px-3 flex items-center justify-center gap-2`}
+            onClick={() => handleAward(true)}
+            disabled={!!loadingAction}
           >
-            {awarding
+            {loadingAction === "reissue" && (
+              <div
+                className={`w-4 h-4 border-2 ${
+                  loadingAction === "reissue"
+                    ? "border-white"
+                    : "border-[#E05307]"
+                } border-t-transparent rounded-full animate-spin`}
+              />
+            )}
+            {loadingAction === "reissue"
+              ? t("leaderboard:modal.reissuing")
+              : t("leaderboard:modal.reissue")}
+          </button>
+
+          <button
+            type="button"
+            className={`${
+              loadingAction === "award" ? "button-gray" : "button-orange"
+            } px-3 flex items-center justify-center gap-2`}
+            onClick={() => handleAward(false)}
+            disabled={!!loadingAction}
+          >
+            {loadingAction === "award" && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            )}
+            {loadingAction === "award"
               ? t("leaderboard:modal.awarding")
               : t("leaderboard:modal.award")}
           </button>

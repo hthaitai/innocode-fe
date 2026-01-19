@@ -48,6 +48,14 @@ export const submissionApi = api.injectEndpoints({
         { type: "ManualSubmissions", id: submissionId },
       ],
     }),
+
+    transferSubmissions: builder.mutation({
+      query: ({ roundId, judgeId }) => ({
+        url: `/rounds/${roundId}/transfer-submissions/${judgeId}`,
+        method: "POST",
+      }),
+      invalidatesTags: [{ type: "ManualSubmissions", id: "LIST" }],
+    }),
   }),
 })
 
@@ -57,4 +65,5 @@ export const {
   useDownloadSubmissionQuery,
   useLazyDownloadSubmissionQuery,
   useEvaluateSubmissionMutation,
+  useTransferSubmissionsMutation,
 } = submissionApi

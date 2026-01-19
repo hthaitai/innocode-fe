@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useParams } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetContestByIdQuery } from "../../../services/contestApi"
@@ -11,6 +12,7 @@ import { MissingState } from "@/shared/components/ui/MissingState"
 import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
 
 const JudgeInvitations = () => {
+  const { t } = useTranslation("judge")
   const { contestId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
@@ -30,10 +32,13 @@ const JudgeInvitations = () => {
   const judges = judgesData?.data ?? []
   const pagination = judgesData?.additionalData ?? {}
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_JUDGES(
-    contest?.name ?? "Contest Judges"
+  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_INVITE_JUDGE(
+    contest?.name ?? "Contest Judges",
+    t("judges"),
+    t("inviteJudge"),
   )
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_JUDGES(contestId)
+  const breadcrumbPaths =
+    BREADCRUMB_PATHS.ORGANIZER_CONTEST_INVITE_JUDGE(contestId)
 
   if (isContestLoading || isJudgesLoading) {
     return (

@@ -1,19 +1,20 @@
 import { formatDateTime } from "@/shared/utils/dateTime"
+import StatusBadge from "@/shared/components/StatusBadge"
 
 export const getTeamColumns = (t) => [
   {
     accessorKey: "name",
     header: t ? t("teams.table.team") : "Team",
-    size: 220,
+    size: 250,
     cell: ({ row }) => row.original.name || "—",
-    meta: { className: "truncate max-w-[220px]" },
+    meta: { className: "truncate max-w-[250px]" },
   },
   {
     accessorKey: "schoolName",
     header: t ? t("teams.table.school") : "School",
-    size: 220,
+    size: 280,
     cell: ({ row }) => row.original.schoolName || "—",
-    meta: { className: "truncate max-w-[220px]" },
+    meta: { className: "truncate max-w-[280px]" },
   },
   {
     accessorKey: "mentorName",
@@ -23,18 +24,19 @@ export const getTeamColumns = (t) => [
     meta: { className: "truncate max-w-[200px]" },
   },
   {
-    accessorKey: "createdAt",
-    header: t ? t("teams.table.created") : "Created",
-    size: 180,
-    cell: ({ row }) =>
-      row.original.createdAt ? formatDateTime(row.original.createdAt) : "—",
-    meta: { className: "truncate max-w-[180px]" },
+    accessorKey: "status",
+    header: t ? t("teams.table.status") : "Status",
+    size: 140,
+    cell: ({ row }) => (
+      <StatusBadge status={row.original.status || "Active"} translate="team" />
+    ),
+    meta: { className: "truncate max-w-[140px]" },
   },
   {
     accessorKey: "members",
     header: t ? t("teams.table.members") : "Members",
     size: 120,
     cell: ({ row }) => row.original.members?.length || 0,
-    meta: { className: "truncate max-w-[100px]" },
+    meta: { className: "truncate max-w-[120px]" },
   },
 ]

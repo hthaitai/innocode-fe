@@ -424,7 +424,13 @@
       "school": "Trường",
       "mentor": "Giáo viên",
       "created": "Ngày tạo",
+      "status": "Trạng thái",
       "members": "Thành viên"
+    },
+    "status": {
+      "active": "Hoạt động",
+      "eliminated": "Bị loại",
+      "disqualified": "Bị truất quyền"
     },
     "roles": {
       "Leader": "Trưởng nhóm",

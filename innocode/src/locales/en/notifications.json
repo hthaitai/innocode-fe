@@ -55,6 +55,7 @@
   "judge.invitation_declined": "{{invite.Judge.Fullname}} declined your judge invitation.",
   "role.registration": "New role registration: {{reg.Fullname}} ({{reg.RequestedRole}})",
   "submission.result_available": "Submission result is available.",
+  "submission.result": "Submission result is available.",
   "submission.status_updated": "Submission status updated.",
   "certificate.issued": "Certificate issued.",
   "appeal.created": "New appeal submitted.",
@@ -62,6 +63,8 @@
   "registration.opened": "Registration opened for '{{contest.Name}}'.",
   "contest.registration_open": "Registration opened for '{{contest.Name}}'.",
   "judge.invitation_denied": "{{judgeName}} declined your judge invitation.",
+  "manual_grading.assigned": "You have been assigned {{submissionCount}} new submission(s) to grade in contest '{{contestName}}', round '{{roundName}}'.",
+  "manual_grading.reassigned": "Submission was reassigned to you for rescore in contest '{{contestName}}', round '{{roundName}}'.",
   "ui": {
     "title": "Notifications",
     "empty": "No notifications.",

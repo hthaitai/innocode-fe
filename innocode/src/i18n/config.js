@@ -46,6 +46,8 @@ import enResults from "../locales/en/results.json"
 import viResults from "../locales/vi/results.json"
 import enDashboard from "../locales/en/dashboard.json"
 import viDashboard from "../locales/vi/dashboard.json"
+import enTeams from "../locales/en/teams.json"
+import viTeams from "../locales/vi/teams.json"
 
 i18n
   .use(LanguageDetector) // Tự động detect ngôn ngữ từ browser
@@ -73,6 +75,7 @@ i18n
         loader: enLoader,
         results: enResults,
         dashboard: enDashboard,
+        teams: enTeams,
       },
       vi: {
         common: viCommon,
@@ -95,6 +98,7 @@ i18n
         loader: viLoader,
         results: viResults,
         dashboard: viDashboard,
+        teams: viTeams,
       },
     },
     fallbackLng: "en",

@@ -25,6 +25,7 @@ import ApproveRoleRegistrationModal from "../features/role-registration/componen
 import DenyRoleRegistrationModal from "../features/role-registration/components/DenyRoleRegistrationModal"
 import AddMentorModal from "../features/school/components/AddMentorModal"
 import UserModal from "../features/user/components/UserModal"
+import TransferSubmissionsModal from "../features/round/components/organizer/TransferSubmissionsModal"
 
 const ModalContext = createContext({
   openModal: () => {}, // no-op default
@@ -77,6 +78,7 @@ export function ModalProvider({ children }) {
     denyRoleRegistration: DenyRoleRegistrationModal,
     addMentor: AddMentorModal,
     user: UserModal,
+    transferSubmissions: TransferSubmissionsModal,
   }
 
   const ActiveModal = modal.type ? modalComponents[modal.type] : null

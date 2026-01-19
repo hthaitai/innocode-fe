@@ -17,6 +17,7 @@ import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 import RoundTimeTravelSection from "../../components/organizer/RoundTimeTravelSection"
+import TransferSubmissionsSection from "../../components/organizer/TransferSubmissionsSection"
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
@@ -34,14 +35,16 @@ const OrganizerRoundDetail = () => {
     isError: isRoundError,
   } = useGetRoundByIdQuery(roundId)
 
+  console.log(round)
+
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
     contest?.name ?? t("common:common.contest"),
-    round?.roundName ?? t("common:common.round")
+    round?.roundName ?? t("common:common.round"),
   )
 
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_DETAIL(
     contestId,
-    roundId
+    roundId,
   )
 
   if (isContestLoading || isRoundLoading) {
@@ -104,6 +107,13 @@ const OrganizerRoundDetail = () => {
                 )}
 
               <RoundRelatedSettings contestId={contestId} round={round} />
+
+              {round.problemType === "Manual" && (
+                <TransferSubmissionsSection
+                  contestId={contestId}
+                  roundId={roundId}
+                />
+              )}
             </div>
           </div>
 

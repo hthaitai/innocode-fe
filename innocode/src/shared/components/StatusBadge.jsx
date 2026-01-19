@@ -46,13 +46,25 @@ export const statusColorMap = {
   frozen: "bg-blue-500",
   live: "bg-green-500",
   offline: "bg-gray-400",
+  finished: "bg-green-700",
+  incoming: "bg-amber-300",
+  opened: "bg-cyan-500",
+  eliminated: "bg-orange-500",
+  disqualified: "bg-red-700",
 }
 
 import { useTranslation } from "react-i18next"
 
 // StatusBadge component
 const StatusBadge = ({ status, translate = false, label }) => {
-  const { t } = useTranslation(["pages", "contest"])
+  const { t } = useTranslation([
+    "pages",
+    "contest",
+    "judge",
+    "round",
+    "common",
+    "teams",
+  ])
 
   if (!status) status = "draft"
 
@@ -80,6 +92,15 @@ const StatusBadge = ({ status, translate = false, label }) => {
   const roleRegistrationKey = roleRegistrationStatusMap[safeStatus]
   if (label) {
     displayStatus = label
+  } else if (translate === "judge") {
+    // Explicit judge context
+    displayStatus = t(`judge:status.${safeStatus}`)
+  } else if (translate === "round") {
+    // Explicit round context
+    displayStatus = t(`round:status.${safeStatus}`)
+  } else if (translate === "team") {
+    // Explicit team context
+    displayStatus = t(`teams:status.${safeStatus}`)
   } else if (roleRegistrationKey) {
     // Use translation for role registration status
     displayStatus = t(roleRegistrationKey)

@@ -21,7 +21,11 @@
     "noTemplates": "No templates available for this contest.",
     "untitled": "Untitled template",
     "success": "Certificate issued successfully.",
-    "error": "Unable to issue certificate"
+    "error": "Unable to issue certificate",
+    "reissue": "Re-issue",
+    "reissuing": "Re-issuing...",
+    "certificateAlreadyExists": "Certificate already exists for this recipient and template.",
+    "selectTemplate": "Please select a template first."
   },
   "columns": {
     "rank": "Rank",

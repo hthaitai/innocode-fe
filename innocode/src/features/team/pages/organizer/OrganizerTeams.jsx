@@ -40,10 +40,11 @@ const OrganizerTeams = () => {
   const isError = contestError || teamsError
 
   const teams = teamsResponse?.data ?? []
+  console.log(teams)
   const pagination = teamsResponse?.additionalData ?? {}
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEAMS(
-    contest?.name ?? t("common.contest")
+    contest?.name ?? t("common.contest"),
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEAMS(contestId)
 

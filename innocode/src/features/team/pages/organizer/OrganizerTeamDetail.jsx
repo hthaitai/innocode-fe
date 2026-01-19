@@ -22,6 +22,8 @@ const OrganizerTeamDetail = () => {
     isError: teamError,
   } = useGetTeamByIdQuery(teamId)
 
+  console.log(team)
+
   const {
     data: contest,
     isLoading: contestLoading,
@@ -30,11 +32,11 @@ const OrganizerTeamDetail = () => {
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEAM_DETAIL(
     contest?.name ?? t("common.contest"),
-    team?.name ?? t("common.team")
+    team?.name ?? t("common.team"),
   )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEAM_DETAIL(
     contestId,
-    teamId
+    teamId,
   )
 
   if (teamLoading || contestLoading) {

@@ -423,7 +423,13 @@
       "school": "School",
       "mentor": "Mentor",
       "created": "Created",
+      "status": "Status",
       "members": "Members"
+    },
+    "status": {
+      "active": "Active",
+      "eliminated": "Eliminated",
+      "disqualified": "Disqualified"
     },
     "roles": {
       "Leader": "Leader",

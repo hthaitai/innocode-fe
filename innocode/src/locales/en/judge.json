@@ -1,4 +1,10 @@
 {
+  "inviteJudge": "Invite judge",
+  "judges": "Judges",
+  "inviteJudgeSubtitle": "Invite judges and monitor status",
+  "activeJudgesTitle": "Active judges",
+  "activeJudgesSubtitle": "Judges currently assigned to this contest",
+  "loadingContests": "Loading contests...",
   "invitationList": "Invitation List",
   "table": {
     "name": "Judge name",
@@ -23,6 +29,7 @@
     "noEmail": "Email not provided"
   },
   "status": {
+    "draft": "Not Invited",
     "pending": "Pending",
     "accepted": "Accepted",
     "active": "Active",

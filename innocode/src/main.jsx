@@ -120,6 +120,7 @@ import SchoolCreationRequestDetail from "./features/school/pages/school-manager/
 import MyManageSchool from "./features/school/pages/school-manager/MyManageSchool"
 import SchoolDetail from "./features/school/pages/school-manager/SchoolDetail"
 import UserManagement from "./features/user/pages/UserManagement"
+import OrganizerJudges from "./features/invite-judge/pages/OrganizerJudges"
 
 // Initialize EmailJS when app starts
 initEmailJs()
@@ -676,6 +677,14 @@ const router = createBrowserRouter([
           // Contest judges
           {
             path: ":contestId/judges",
+            element: (
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
+                <OrganizerJudges />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ":contestId/judges/invite-new",
             element: (
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZER]}>
                 <JudgeInvitations />

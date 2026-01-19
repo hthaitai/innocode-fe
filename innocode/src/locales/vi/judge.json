@@ -1,4 +1,10 @@
 {
+  "inviteJudge": "Mời giám khảo",
+  "judges": "Giám khảo",
+  "inviteJudgeSubtitle": "Mời giám khảo và theo dõi trạng thái",
+  "activeJudgesTitle": "Giám khảo đang hoạt động",
+  "activeJudgesSubtitle": "Các giám khảo hiện được phân công cho cuộc thi này",
+  "loadingContests": "Đang tải cuộc thi...",
   "invitationList": "Danh sách lời mời",
   "table": {
     "name": "Tên giám khảo",
@@ -23,6 +29,7 @@
     "noEmail": "Không có email"
   },
   "status": {
+    "draft": "Chưa mời",
     "pending": "Đang chờ",
     "accepted": "Đã chấp nhận",
     "active": "Hoạt động",

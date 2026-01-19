@@ -25,21 +25,12 @@ const JudgeRoundList = ({ rounds, onRoundClick }) => {
                 <span className="flex-shrink-0">
                   {formatDateTime(round.start)}
                 </span>
-                {/* <span>|</span>
-                <span className="truncate">
-                  {t(`round.types.${round.problemType}`, {
-                    defaultValue: round.problemType,
-                  })}
-                </span> */}
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <StatusBadge
-              status={round.status}
-              label={t(`round:status.${round.status?.toLowerCase()}`)}
-            />
+            <StatusBadge status={round.status} translate="round" />
             <ChevronRight size={20} className="text-[#7A7574]" />
           </div>
         </div>

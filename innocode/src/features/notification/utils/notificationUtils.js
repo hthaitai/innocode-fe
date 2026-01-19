@@ -54,7 +54,7 @@ export const extractNameFromMessage = (rawMsg) => {
 export const buildInterpolationValues = (
   parsedPayload,
   translationKey,
-  rawMessage
+  rawMessage,
 ) => {
   const flattenedPayload = flattenObject(parsedPayload)
   const targetType = parsedPayload.targetType || translationKey?.split(".")[0]

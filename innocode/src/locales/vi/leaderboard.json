@@ -21,7 +21,11 @@
     "noTemplates": "Không có mẫu nào cho cuộc thi này.",
     "untitled": "Mẫu không tên",
     "success": "Cấp chứng chỉ thành công.",
-    "error": "Không thể cấp chứng chỉ"
+    "error": "Không thể cấp chứng chỉ",
+    "reissue": "Cấp lại",
+    "reissuing": "Đang cấp lại...",
+    "certificateAlreadyExists": "Chứng chỉ đã tồn tại cho người nhận và mẫu này.",
+    "selectTemplate": "Vui lòng chọn một mẫu trước."
   },
   "columns": {
     "rank": "Hạng",

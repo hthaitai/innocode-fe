@@ -203,6 +203,15 @@
     "draft": "Nháp",
     "cancelled": "Đã hủy"
   },
+  "transfer": {
+    "title": "Chuyển bài nộp",
+    "description": "Chọn giám khảo để chuyển các bài nộp đang chờ của họ từ vòng thi này sang các giám khảo khác.",
+    "selectJudge": "Chọn giám khảo để chuyển bài nộp từ",
+    "transferButton": "Chuyển bài nộp",
+    "transferring": "Đang chuyển...",
+    "success": "Chuyển bài nộp thành công",
+    "error": "Không thể chuyển bài nộp"
+  },
   "validation": {
     "retakeSelect": "Vui lòng chọn vòng thi để thi lại",
     "name": "Tên vòng thi là bắt buộc",

@@ -55,6 +55,7 @@
   "judge.invitation_declined": "{{invite.Judge.Fullname}} đã từ chối lời mời làm giám khảo của bạn.",
   "role.registration": "Đăng ký vai trò mới: {{reg.Fullname}} ({{reg.RequestedRole}})",
   "submission.result_available": "Kết quả bài nộp đã có sẵn.",
+  "submission.result": "Kết quả bài nộp đã có sẵn.",
   "submission.status_updated": "Trạng thái bài nộp đã được cập nhật.",
   "certificate.issued": "Chứng chỉ đã được cấp.",
   "appeal.created": "Đơn khiếu nại mới đã được gửi.",
@@ -62,6 +63,8 @@
   "registration.opened": "Đăng ký đã mở cho cuộc thi '{{contest.Name}}'.",
   "contest.registration_open": "Đăng ký đã mở cho cuộc thi '{{contest.Name}}'.",
   "judge.invitation_denied": "{{judgeName}} đã từ chối lời mời làm giám khảo của bạn.",
+  "manual_grading.assigned": "Bạn đã được phân công chấm {{submissionCount}} bài nộp mới trong cuộc thi '{{contestName}}', vòng thi '{{roundName}}'.",
+  "manual_grading.reassigned": "Bài nộp đã được phân công lại cho bạn để chấm lại trong cuộc thi '{{contestName}}', vòng thi '{{roundName}}'.",
   "ui": {
     "title": "Thông báo",
     "empty": "Không có thông báo nào.",

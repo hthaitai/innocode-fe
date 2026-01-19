@@ -1,0 +1,29 @@
+{
+  "noAvailable": "This team has been deleted or is no longer available.",
+  "memberRole": "Role",
+  "memberEmail": "Email",
+  "joinedAt": "Joined",
+  "noMembers": "No members in this team.",
+  "memberList": "Members",
+  "coach": "Coach",
+  "memberCount": "Member count",
+  "teamInfo": "Team information",
+  "teamName": "Team name",
+  "table": {
+    "team": "Team",
+    "school": "School",
+    "mentor": "Mentor",
+    "created": "Created",
+    "status": "Status",
+    "members": "Members"
+  },
+  "status": {
+    "active": "Active",
+    "eliminated": "Eliminated",
+    "disqualified": "Disqualified"
+  },
+  "roles": {
+    "Leader": "Leader",
+    "Member": "Member"
+  }
+}

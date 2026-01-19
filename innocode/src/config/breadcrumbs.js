@@ -78,21 +78,26 @@ export const BREADCRUMBS = {
   ],
 
   // Organizer contest judges
-  ORGANIZER_CONTEST_JUDGES: (contestName) => [
+  ORGANIZER_CONTEST_JUDGES: (contestName, judgesTitle) => [
     "Contests",
     contestName,
-    "Judges",
+    judgesTitle,
   ],
-  ORGANIZER_CONTEST_JUDGE_LIST: (contestName) => [
-    "Contests",
+  ORGANIZER_CONTEST_JUDGE_LIST: (
     contestName,
-    "Active Judges",
-  ],
-  ORGANIZER_CONTEST_JUDGE_INVITES: (contestName) => [
-    "Contests",
+    judgesTitle,
+    activeJudgesTitle,
+  ) => ["Contests", contestName, judgesTitle, activeJudgesTitle],
+  ORGANIZER_CONTEST_INVITE_JUDGE: (
     contestName,
-    "Judge Invites",
-  ],
+    judgesTitle,
+    inviteJudgeTitle,
+  ) => ["Contests", contestName, judgesTitle, inviteJudgeTitle],
+  ORGANIZER_CONTEST_JUDGE_INVITES: (
+    contestName,
+    judgesTitle,
+    judgeInvitesTitle,
+  ) => ["Contests", contestName, judgesTitle, judgeInvitesTitle],
 
   // Organizer rounds
   ORGANIZER_ROUND_DETAIL: (contestName, roundName) => [
@@ -181,14 +186,14 @@ export const BREADCRUMBS = {
     contestName,
     roundName,
     testCasesLabel,
-    createLabel
+    createLabel,
   ) => ["Contests", contestName, roundName, testCasesLabel, createLabel],
   ORGANIZER_TEST_CASE_EDIT: (
     contestName,
     roundName,
     testCaseName,
     testCasesLabel,
-    editLabel
+    editLabel,
   ) => ["Contests", contestName, roundName, testCasesLabel, editLabel],
 
   ORGANIZER_AUTO_RESULTS: (contestName, roundName) => [
@@ -211,7 +216,7 @@ export const BREADCRUMBS = {
     contestId,
     contestName,
     roundName,
-    problemLabel
+    problemLabel,
   ) => ["Contests", contestName, roundName, problemLabel],
 
   ORGANIZER_TEAMS: (contestName) => ["Contests", contestName, "Teams"],
@@ -424,11 +429,19 @@ export const BREADCRUMB_PATHS = {
   ORGANIZER_CONTEST_JUDGE_LIST: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/judges`,
     `/organizer/contests/${contestId}/judges/active`,
+  ],
+  ORGANIZER_CONTEST_INVITE_JUDGE: (contestId) => [
+    "/organizer/contests",
+    `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/judges`,
+    `/organizer/contests/${contestId}/judges/invite-new`,
   ],
   ORGANIZER_CONTEST_JUDGE_INVITES: (contestId) => [
     "/organizer/contests",
     `/organizer/contests/${contestId}`,
+    `/organizer/contests/${contestId}/judges`,
     `/organizer/contests/${contestId}/judges/invites`,
   ],
 

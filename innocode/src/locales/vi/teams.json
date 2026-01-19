@@ -1,0 +1,29 @@
+{
+  "noAvailable": "Đội này đã bị xóa hoặc không còn khả dụng.",
+  "memberRole": "Vai trò",
+  "memberEmail": "Email",
+  "joinedAt": "Ngày tham gia",
+  "noMembers": "Chưa có thành viên trong đội này.",
+  "memberList": "Danh sách thành viên",
+  "coach": "Huấn luyện viên",
+  "memberCount": "Số lượng thành viên",
+  "teamInfo": "Thông tin đội",
+  "teamName": "Tên đội",
+  "table": {
+    "team": "Đội",
+    "school": "Trường",
+    "mentor": "Giáo viên",
+    "created": "Ngày tạo",
+    "status": "Trạng thái",
+    "members": "Thành viên"
+  },
+  "status": {
+    "active": "Hoạt động",
+    "eliminated": "Bị loại",
+    "disqualified": "Bị truất quyền"
+  },
+  "roles": {
+    "Leader": "Trưởng nhóm",
+    "Member": "Thành viên"
+  }
+}

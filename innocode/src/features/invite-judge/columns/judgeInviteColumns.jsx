@@ -34,14 +34,7 @@ export const getJudgeInviteColumns = ({
     header: t ? t("table.status") : "Invite status",
     size: 140,
     cell: ({ row }) => (
-      <StatusBadge
-        status={row.original.inviteStatus}
-        label={
-          t && row.original.inviteStatus
-            ? t(`status.${row.original.inviteStatus.toLowerCase()}`)
-            : row.original.inviteStatus
-        }
-      />
+      <StatusBadge status={row.original.inviteStatus} translate="judge" />
     ),
     meta: { className: "truncate max-w-[110px]" },
   },

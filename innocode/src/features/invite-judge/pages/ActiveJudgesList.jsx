@@ -32,7 +32,9 @@ const ActiveJudgesList = () => {
   const judges = judgesData?.data ?? []
 
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_JUDGE_LIST(
-    contest?.name ?? "Contest"
+    contest?.name ?? "Contest",
+    t("judges"),
+    t("activeJudgesTitle"),
   )
   const breadcrumbPaths =
     BREADCRUMB_PATHS.ORGANIZER_CONTEST_JUDGE_LIST(contestId)
@@ -101,11 +103,7 @@ const ActiveJudgesList = () => {
                 <div className="flex items-center gap-3">
                   <StatusBadge
                     status={judge.status || "Pending"}
-                    label={
-                      judge.status
-                        ? t(`status.${judge.status.toLowerCase()}`)
-                        : t("status.pending")
-                    }
+                    translate="judge"
                   />
                 </div>
               </div>
