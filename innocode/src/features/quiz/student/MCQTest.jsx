@@ -6,7 +6,6 @@ import useQuiz from "../hooks/useQuiz"
 import useQuizSubmit from "../hooks/useQuizSubmit"
 import useMCQTestFlow from "../hooks/useMCQTestFlow"
 import { useModal } from "@/shared/hooks/useModal"
-import quizApi from "@/api/quizApi"
 
 const MCQTest = () => {
   const { roundId, contestId } = useParams()
@@ -80,7 +79,7 @@ const MCQTest = () => {
           setAnswers(restoredAnswers)
           console.log(
             `✅ Restored ${currentData.answers.length} answer(s) from server`,
-            restoredAnswers
+            restoredAnswers,
           )
         } else {
           console.log("ℹ️ No answers to restore")
@@ -156,7 +155,7 @@ const MCQTest = () => {
       ([questionId, selectedOptionId]) => ({
         questionId,
         selectedOptionId,
-      })
+      }),
     )
 
     if (answersArray.length > 0) {
@@ -194,7 +193,7 @@ const MCQTest = () => {
           ([questionId, selectedOptionId]) => ({
             questionId,
             selectedOptionId,
-          })
+          }),
         )
         console.log("💾 Saving answers before Previous:", answersArray)
         const result = await saveAnswerImmediate(answersArray)
@@ -225,7 +224,7 @@ const MCQTest = () => {
           ([questionId, selectedOptionId]) => ({
             questionId,
             selectedOptionId,
-          })
+          }),
         )
         console.log("💾 Saving answers before Next:", {
           answersArray,
@@ -247,47 +246,22 @@ const MCQTest = () => {
   }
 
   const handleAutoSubmit = async () => {
-    // Kiểm tra nếu không có answers, gọi null-submission API
+    // Always submit the quiz when time is up
+    // The backend will retrieve saved answers from the database
+    console.log("⏰ Time is up! Auto-submitting quiz...")
+
     const answersArray = Object.entries(answers).map(
       ([questionId, selectedOptionId]) => ({
         questionId,
         selectedOptionId,
-      })
+      }),
     )
 
-    if (answersArray.length === 0) {
-      // Không có answers, gọi null-submission API
-      try {
-        console.log(
-          "📝 No answers found, submitting null submission for MCQ round"
-        )
-        await quizApi.submitNullSubmission(roundId)
-
-        // Clear sessionStorage after successful submit
-        sessionStorage.removeItem(`mcq_test_key_${roundId}`)
-        sessionStorage.removeItem(`mcq_test_startTime_${roundId}`)
-        sessionStorage.removeItem(`mcq_test_timeLimit_${roundId}`)
-
-        // Navigate to finish page
-        navigate(`/quiz/${roundId}/finish`, {
-          state: {
-            contestId,
-            resultData: null, // Null submission không có result data
-          },
-        })
-      } catch (error) {
-        console.error("❌ Failed to submit null submission:", error)
-        alert(
-          `Failed to submit: ${
-            error?.response?.data?.message || error?.message || "Unknown error"
-          }`
-        )
-      }
-    } else {
-      // Có answers, submit như bình thường
-      alert("Time is up! Submitting your answers...")
-      await handleSubmitQuiz()
-    }
+    console.log("📝 Submitting with answers array:", answersArray)
+    console.log(
+      "ℹ️ Note: Backend will use saved answers from database if local state is empty",
+    )
+    await handleSubmitQuiz()
   }
 
   const handleSubmit = () => {
@@ -348,7 +322,7 @@ const MCQTest = () => {
       ([questionId, selectedOptionId]) => ({
         questionId,
         selectedOptionId,
-      })
+      }),
     )
     console.log("📝 Body answers gửi lên:", answersArray)
 
@@ -533,7 +507,7 @@ const MCQTest = () => {
                               })
                               handleAnswerSelect(
                                 question.questionId,
-                                option.optionId
+                                option.optionId,
                               )
                             }}
                             className="w-5 h-5 text-orange-600 cursor-pointer"
@@ -609,8 +583,8 @@ const MCQTest = () => {
                             index === currentQuestion
                               ? "bg-orange-500 text-white"
                               : answers[q.questionId]
-                              ? "bg-green-100 text-green-700 border border-green-300"
-                              : "bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200"
+                                ? "bg-green-100 text-green-700 border border-green-300"
+                                : "bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200"
                           }`}
                         >
                           {index + 1}

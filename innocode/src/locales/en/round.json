@@ -195,6 +195,7 @@
     "incoming": "Upcoming",
     "ongoing": "Ongoing",
     "running": "Running",
+    "opened": "Opened",
     "completed": "Completed",
     "closed": "Closed",
     "finalized": "Finalized",

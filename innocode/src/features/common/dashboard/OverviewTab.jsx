@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next"
 import { Trophy, Users, UsersRound, TrendingUp, Calendar } from "lucide-react"
 import { useGetDashboardMetricsQuery } from "@/services/dashboardApi"
 import { useDashboardSignalR } from "@/shared/hooks/useDashboardSignalR"
-import TimeRangeFilter, { TimeRangePredefined } from "./TimeRangeFilter"
+import { TimeRangePredefined } from "./TimeRangeFilter"
+import DashboardTimeRangeFilter from "@/features/dashboard/components/organizer/DashboardTimeRangeFilter"
 import toast from "react-hot-toast"
 import "@/styles/typography.css"
 
@@ -30,6 +31,19 @@ const OverviewTab = () => {
     startDate: timeRange === TimeRangePredefined.Custom ? startDate : undefined,
     endDate: timeRange === TimeRangePredefined.Custom ? endDate : undefined,
   })
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log("📊 Dashboard API Request:", {
+      timeRangePredefined: timeRange,
+      startDate:
+        timeRange === TimeRangePredefined.Custom ? startDate : undefined,
+      endDate: timeRange === TimeRangePredefined.Custom ? endDate : undefined,
+    })
+    if (error) {
+      console.error("❌ Dashboard API Error:", error)
+    }
+  }, [timeRange, startDate, endDate, error])
 
   // SignalR Handler
   const handleSignalRUpdate = (eventName, data) => {
@@ -67,7 +81,7 @@ const OverviewTab = () => {
           message || t("dashboard.notifications.certificateIssued"),
           {
             icon: "🏆",
-          }
+          },
         )
         break
       default:
@@ -109,19 +123,19 @@ const OverviewTab = () => {
         ([status, count]) => ({
           status,
           count,
-        })
+        }),
       )
     }
   }
 
   // Filter out totalValidContests as it's a summary metric, not a specific status
   statusBreakdown = statusBreakdown.filter(
-    (item) => item.status.toLowerCase() !== "totalvalidcontests"
+    (item) => item.status.toLowerCase() !== "totalvalidcontests",
   )
 
   const totalStatuses = statusBreakdown.reduce(
     (sum, item) => sum + item.count,
-    0
+    0,
   )
 
   // Calculate growth rate percentage
@@ -144,34 +158,17 @@ const OverviewTab = () => {
     setHoveredStatus(status)
   }
 
-  // Handle time range change
-  const handleTimeRangeChange = (newRange) => {
-    setTimeRange(newRange)
-    if (newRange !== TimeRangePredefined.Custom) {
-      setStartDate("")
-      setEndDate("")
-    }
-  }
-
-  // Handle custom date change
-  const handleDateChange = (field, value) => {
-    if (field === "startDate") {
-      setStartDate(value)
-    } else {
-      setEndDate(value)
-    }
-  }
-
   return (
     <div className="space-y-6">
       {/* Time Range Filter & Hub Status */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <TimeRangeFilter
-          selectedRange={timeRange}
-          onRangeChange={handleTimeRangeChange}
+        <DashboardTimeRangeFilter
+          timeRange={timeRange}
+          setTimeRange={setTimeRange}
           startDate={startDate}
+          setStartDate={setStartDate}
           endDate={endDate}
-          onDateChange={handleDateChange}
+          setEndDate={setEndDate}
         />
 
         {/* Hub Status Indicator */}
@@ -278,7 +275,7 @@ const OverviewTab = () => {
               <div className="text-caption-1 text-gray-600">
                 {t(
                   "dashboard.overview.newContestsLastMonth",
-                  "New Contests Last Month"
+                  "New Contests Last Month",
                 )}
               </div>
             </div>
@@ -297,7 +294,7 @@ const OverviewTab = () => {
         <h3 className="text-subtitle-2 text-gray-800 mb-4">
           {t(
             "dashboard.overview.contestStatusBreakdown",
-            "Contest Status Breakdown"
+            "Contest Status Breakdown",
           )}
         </h3>
 
@@ -328,7 +325,7 @@ const OverviewTab = () => {
                 <div
                   key={index}
                   className={`h-full ${getStatusColor(
-                    status.status
+                    status.status,
                   )} transition-all hover:opacity-80 cursor-pointer`}
                   style={{ width: `${percentage}%` }}
                   onMouseMove={(e) => handleMouseMove(e, status)}
@@ -380,7 +377,7 @@ const OverviewTab = () => {
                 <div key={index} className="flex items-center gap-2">
                   <div
                     className={`w-3 h-3 rounded-sm ${getStatusColor(
-                      status.status
+                      status.status,
                     )}`}
                   />
                   <div className="flex gap-2">

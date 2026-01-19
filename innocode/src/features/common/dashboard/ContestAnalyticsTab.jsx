@@ -8,7 +8,8 @@ import {
 } from "lucide-react"
 import { useGetDashboardChartsQuery } from "@/services/dashboardApi"
 import { useDashboardSignalR } from "@/shared/hooks/useDashboardSignalR"
-import TimeRangeFilter, { TimeRangePredefined } from "./TimeRangeFilter"
+import { TimeRangePredefined } from "./TimeRangeFilter"
+import DashboardTimeRangeFilter from "@/features/dashboard/components/organizer/DashboardTimeRangeFilter"
 import toast from "react-hot-toast"
 import {
   ResponsiveContainer,
@@ -87,7 +88,7 @@ const ContestAnalyticsTab = () => {
           message || t("dashboard.notifications.certificateIssued"),
           {
             icon: "🏆",
-          }
+          },
         )
         break
       default:
@@ -96,22 +97,6 @@ const ContestAnalyticsTab = () => {
   }
 
   const { isConnected } = useDashboardSignalR(handleSignalRUpdate)
-
-  const handleTimeRangeChange = (newRange) => {
-    setTimeRange(newRange)
-    if (newRange !== TimeRangePredefined.Custom) {
-      setStartDate("")
-      setEndDate("")
-    }
-  }
-
-  const handleDateChange = (field, value) => {
-    if (field === "startDate") {
-      setStartDate(value)
-    } else {
-      setEndDate(value)
-    }
-  }
 
   if (isLoading) {
     return (
@@ -184,12 +169,13 @@ const ContestAnalyticsTab = () => {
     <div className="space-y-6">
       {/* Filters & Status */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <TimeRangeFilter
-          selectedRange={timeRange}
-          onRangeChange={handleTimeRangeChange}
+        <DashboardTimeRangeFilter
+          timeRange={timeRange}
+          setTimeRange={setTimeRange}
           startDate={startDate}
+          setStartDate={setStartDate}
           endDate={endDate}
-          onDateChange={handleDateChange}
+          setEndDate={setEndDate}
         />
 
         <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E5E5E5] rounded-[5px]">
@@ -272,7 +258,7 @@ const ContestAnalyticsTab = () => {
           <p className="text-caption-1 text-gray-500 mt-4 text-center">
             {t(
               "dashboard.contestAnalytics.showsContestCreation",
-              "Shows how many contests were created each month"
+              "Shows how many contests were created each month",
             )}
           </p>
         </div>
@@ -336,7 +322,7 @@ const ContestAnalyticsTab = () => {
           <p className="text-caption-1 text-gray-500 mt-4 text-center">
             {t(
               "dashboard.contestAnalytics.showsTeamRegistration",
-              "Shows how many teams registered each month"
+              "Shows how many teams registered each month",
             )}
           </p>
         </div>
@@ -397,7 +383,7 @@ const ContestAnalyticsTab = () => {
                 {statusData.map((entry, index) => {
                   const total = statusData.reduce(
                     (sum, item) => sum + item.value,
-                    0
+                    0,
                   )
                   const percentage =
                     total > 0 ? ((entry.value / total) * 100).toFixed(1) : 0
@@ -430,7 +416,7 @@ const ContestAnalyticsTab = () => {
               <p className="text-[10px] text-gray-400 mt-6 italic">
                 {t(
                   "dashboard.contestAnalytics.note",
-                  "Note: Draft and Cancelled contests excluded for clarity"
+                  "Note: Draft and Cancelled contests excluded for clarity",
                 )}
               </p>
             </div>

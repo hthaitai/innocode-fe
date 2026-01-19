@@ -2,14 +2,14 @@ import React from "react"
 import { useTranslation } from "react-i18next"
 import { Calendar } from "lucide-react"
 
-// Time Range Predefined Enum
+// Time Range Predefined Enum - Using string values to match backend API
 export const TimeRangePredefined = {
-  AllTime: 0,
-  CurrentMonth: 1,
-  Last3Months: 2,
-  Last6Months: 3,
-  CurrentYear: 4,
-  Custom: 5,
+  AllTime: "AllTime",
+  CurrentMonth: "CurrentMonth",
+  Last3Months: "Last3Months",
+  Last6Months: "Last6Months",
+  CurrentYear: "CurrentYear",
+  Custom: "Custom",
 }
 
 const TimeRangeFilter = ({

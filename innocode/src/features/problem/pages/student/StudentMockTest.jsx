@@ -17,7 +17,7 @@ import ProblemDescription from "../../components/student/ProblemDescription"
 import CodeEditorSection from "../../components/student/CodeEditorSection"
 import TestResultsSection from "../../components/student/TestResultsSection"
 
-const StudentAutoEvaluation = () => {
+const StudentMockTest = () => {
   const { contestId, roundId } = useParams()
   const navigate = useNavigate()
   const { t } = useTranslation("pages")
@@ -46,7 +46,6 @@ const StudentAutoEvaluation = () => {
     submissionId,
     testCases,
     testResult,
-    submitResponse,
     testCaseLoading,
     resultLoading,
     submitting,
@@ -90,7 +89,7 @@ const StudentAutoEvaluation = () => {
           await submitNullSubmission(roundId).unwrap()
           toast.dismiss()
           toast.success(t("autoEvaluation.nullSubmissionSuccess"))
-          console.log("✅ Null submission submitted for auto evaluation round")
+          console.log("✅ Null submission submitted for mock test round")
           return
         } catch (error) {
           console.error("❌ Failed to submit null submission:", error)
@@ -318,12 +317,9 @@ const StudentAutoEvaluation = () => {
       </div>
 
       {/* Test Results Section */}
-      <TestResultsSection
-        testResult={submitResponse || testResult}
-        isLoading={resultLoading}
-      />
+      <TestResultsSection testResult={testResult} isLoading={resultLoading} />
     </div>
   )
 }
 
-export default StudentAutoEvaluation
+export default StudentMockTest

@@ -41,6 +41,15 @@ const DashboardTimeRangeFilter = ({
     },
   ]
 
+  const handleTimeRangeChange = (newRange) => {
+    setTimeRange(newRange)
+    // Reset dates when switching away from Custom
+    if (newRange !== TimeRangePredefined.Custom) {
+      setStartDate("")
+      setEndDate("")
+    }
+  }
+
   return (
     <div className="flex gap-4 justify-end">
       {/* Custom Date Range Inputs */}
@@ -68,10 +77,10 @@ const DashboardTimeRangeFilter = ({
         <DropdownFluent
           options={timeRangeOptions}
           value={timeRange}
-          onChange={setTimeRange}
+          onChange={handleTimeRangeChange}
           placeholder={t(
             "dashboard.timeRange.selectRange",
-            "Select time range"
+            "Select time range",
           )}
         />
       </div>

@@ -8,7 +8,6 @@ import { useTranslation } from "react-i18next"
 const TestResultsSection = ({ testResult, isLoading }) => {
   const { t } = useTranslation("pages")
   const [expandedCases, setExpandedCases] = useState(new Set())
-
   const toggleCase = (caseId) => {
     setExpandedCases((prev) => {
       const newSet = new Set(prev)
@@ -56,10 +55,18 @@ const TestResultsSection = ({ testResult, isLoading }) => {
     )
   }
 
-  const passedCount =
-    testResult.details?.filter(
-      (d) => d.note === "success" || d.status === "success"
-    ).length || 0
+  // Lấy summary và cases từ response mới
+  const summary = testResult.summary || {}
+  const testCases = testResult.cases || []
+
+  // Lấy thông tin từ summary
+  const totalCases = summary.total || 0
+  const passedCount = summary.passed || 0
+  const failedCount = summary.failed || 0
+  const rawScore = summary.rawScore || 0
+  const penaltyScore = summary.penaltyScore
+  const submissionAttemptNumber =
+    summary.submissionAttemptNumber || testResult.submissionAttemptNumber || 1
 
   return (
     <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6 mt-4">
@@ -75,9 +82,7 @@ const TestResultsSection = ({ testResult, isLoading }) => {
               <p className="text-xs text-[#7A7574] mb-1">
                 {t("autoEvaluation.totalTestCases")}
               </p>
-              <p className="text-xl font-bold text-[#2d3748]">
-                {testResult.details?.length || 0}
-              </p>
+              <p className="text-xl font-bold text-[#2d3748]">{totalCases}</p>
             </div>
             <div className="text-center">
               <p className="text-xs text-[#7A7574] mb-1">
@@ -87,20 +92,36 @@ const TestResultsSection = ({ testResult, isLoading }) => {
             </div>
             <div className="text-center">
               <p className="text-xs text-[#7A7574] mb-1">
-                {t("autoEvaluation.score")}
+                {t("autoEvaluation.failed")}
               </p>
-              <p className="text-xl font-bold text-[#ff6b35]">
-                {testResult.score || 0}
-              </p>
+              <p className="text-xl font-bold text-red-600">{failedCount}</p>
             </div>
             <div className="text-center">
               <p className="text-xs text-[#7A7574] mb-1">
-                {t("autoEvaluation.attempt")}
+                {t("autoEvaluation.rawScore")}
               </p>
-              <p className="text-xl font-bold text-[#2d3748]">
-                {testResult.submissionAttemptNumber}
-              </p>
+              <p className="text-xl font-bold text-[#ff6b35]">{rawScore}</p>
             </div>
+            {penaltyScore !== undefined && (
+              <div className="text-center">
+                <p className="text-xs text-[#7A7574] mb-1">
+                  {t("autoEvaluation.penaltyScore")}
+                </p>
+                <p className="text-xl font-bold text-purple-600">
+                  {penaltyScore}
+                </p>
+              </div>
+            )}
+            {testResult.submissionAttemptNumber !== undefined && (
+              <div className="text-center">
+                <p className="text-xs text-[#7A7574] mb-1">
+                  {t("autoEvaluation.attempt")}
+                </p>
+                <p className="text-xl font-bold text-[#2d3748]">
+                  {testResult.submissionAttemptNumber}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -135,25 +156,26 @@ const TestResultsSection = ({ testResult, isLoading }) => {
         )}
 
         {/* Test Cases Detail */}
-        {testResult.details && testResult.details.length > 0 && (
+        {testCases && testCases.length > 0 && (
           <div className="space-y-3">
             <h3 className="font-semibold text-[#2d3748] text-sm">
               {t("autoEvaluation.testCasesDetail")}
             </h3>
-            {testResult.details.map((detail, index) => {
-              const caseId = detail.detailsId || detail.id || index
+            {testCases.map((testCase, index) => {
+              const caseId = testCase.id || index
               const isExpanded = expandedCases.has(caseId)
+
+              // Lấy thông tin từ testCase
+              const testCaseName = `Test Case ${index + 1}`
+              const testStatus = testCase.status
+
               const hasOutput =
-                detail.actual !== undefined || detail.expected !== undefined
+                testCase.expected !== undefined || testCase.actual !== undefined
 
               return (
                 <div
                   key={caseId}
-                  className={`border rounded-[5px] p-4 ${
-                    detail.note === "success" || detail.status === "success"
-                      ? "bg-green-50 border-green-200"
-                      : "bg-red-50 border-red-200"
-                  }`}
+                  className="border border-gray-200 rounded-[5px] p-4 bg-white"
                 >
                   <div
                     className={`flex items-center justify-between ${
@@ -174,96 +196,98 @@ const TestResultsSection = ({ testResult, isLoading }) => {
                         />
                       )}
                       <span className="font-medium text-sm">
-                        {t("autoEvaluation.testCase")} {index + 1}
+                        {testCaseName}
                       </span>
                       <span
                         className={`px-2 py-0.5 rounded text-xs font-medium ${
-                          detail.note === "success" ||
-                          detail.status === "success"
+                          testStatus === "success"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {detail.note || detail.status || detail.judge0Status}
+                        {testStatus}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
                       {/* Additional Info - always visible */}
-                      {(detail.time || detail.memoryKb) && (
+                      {(testCase.time || testCase.memoryKb) && (
                         <div className="flex items-center gap-3 text-xs text-[#7A7574]">
-                          {detail.time && (
+                          {testCase.time && (
                             <div className="flex items-center gap-1">
                               <Icon icon="mdi:clock-outline" width="14" />
-                              <span>{detail.time}s</span>
+                              <span>{testCase.time}s</span>
                             </div>
                           )}
-                          {detail.memoryKb && (
+                          {testCase.memoryKb && (
                             <div className="flex items-center gap-1">
                               <Icon icon="mdi:memory" width="14" />
-                              <span>{detail.memoryKb} KB</span>
+                              <span>{testCase.memoryKb} KB</span>
                             </div>
                           )}
                         </div>
                       )}
-                      <div className="font-bold text-sm">
-                        {detail.weight || 0} {t("autoEvaluation.points")}
-                      </div>
                     </div>
                   </div>
 
-                  {/* Actual and Expected Output - only show when expanded */}
+                  {/* Output Display */}
                   {isExpanded && hasOutput && (
-                    <div className="mt-3 space-y-2">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {/* Actual Output */}
-                        {detail.actual !== undefined && (
-                          <div className="bg-white border border-gray-200 rounded-[5px] p-3">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Icon
-                                icon="mdi:code-json"
-                                width="16"
-                                className={
-                                  detail.status === "success" ||
-                                  detail.note === "success"
-                                    ? "text-green-600"
-                                    : "text-red-600"
-                                }
-                              />
-                              <span className="text-xs font-semibold text-[#7A7574] uppercase">
-                                {t("autoEvaluation.yourActualOutput")}
-                              </span>
+                    <div className="mt-3 space-y-3">
+                      {/* Expected vs Actual Output */}
+                      {(testCase.expected !== undefined ||
+                        testCase.actual !== undefined) && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {/* Actual Output */}
+                          {testCase.actual !== undefined && (
+                            <div className="bg-white border border-gray-200 rounded-[5px] p-3">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Icon
+                                  icon={
+                                    testStatus === "success"
+                                      ? "mdi:check"
+                                      : "mdi:close"
+                                  }
+                                  width="16"
+                                  className={
+                                    testStatus === "success"
+                                      ? "text-green-600"
+                                      : "text-red-600"
+                                  }
+                                />
+                                <span className="text-xs font-semibold text-[#7A7574] uppercase">
+                                  {t("autoEvaluation.yourActualOutput")}
+                                </span>
+                              </div>
+                              <div
+                                className={`rounded p-2 font-mono text-sm break-words whitespace-pre-wrap ${
+                                  testStatus === "success"
+                                    ? "bg-[#f9fafb] text-[#2d3748]"
+                                    : "bg-red-50 text-red-800"
+                                }`}
+                              >
+                                {testCase.actual || "N/A"}
+                              </div>
                             </div>
-                            <div
-                              className={`rounded p-2 font-mono text-sm break-words ${
-                                detail.status === "success" ||
-                                detail.note === "success"
-                                  ? "bg-green-50 text-green-800"
-                                  : "bg-red-50 text-red-800"
-                              }`}
-                            >
-                              {detail.actual || "N/A"}
+                          )}{" "}
+                          {/* Expected Output */}
+                          {testCase.expected !== undefined && (
+                            <div className="bg-white border border-gray-200 rounded-[5px] p-3">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Icon
+                                  icon="mdi:check"
+                                  width="16"
+                                  className="text-green-600"
+                                />
+                                <span className="text-xs font-semibold text-[#7A7574] uppercase">
+                                  {t("autoEvaluation.expectedOutput")}
+                                </span>
+                              </div>
+                              <div className="bg-[#f9fafb] rounded p-2 font-mono text-sm text-[#2d3748] break-words whitespace-pre-wrap">
+                                {testCase.expected || "N/A"}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                        {/* Expected Output */}
-                        {detail.expected !== undefined && (
-                          <div className="bg-white border border-gray-200 rounded-[5px] p-3">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Icon
-                                icon="mdi:check"
-                                width="16"
-                                className="text-green-600"
-                              />
-                              <span className="text-xs font-semibold text-[#7A7574] uppercase">
-                                {t("autoEvaluation.expectedOutput")}
-                              </span>
-                            </div>
-                            <div className="bg-[#f9fafb] rounded p-2 font-mono text-sm text-[#2d3748] break-words">
-                              {detail.expected || "N/A"}
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

@@ -30,7 +30,7 @@ const TeamInviteNotification = () => {
       { pageNumber: 1, pageSize: 50 },
       {
         skip: !!notificationByIdData,
-      }
+      },
     )
 
   const [readNotification] = useReadNotificationMutation()
@@ -44,7 +44,7 @@ const TeamInviteNotification = () => {
 
     if (notificationsListData?.items) {
       return notificationsListData.items.find(
-        (notif) => notif.notificationId === notificationId
+        (notif) => notif.notificationId === notificationId,
       )
     }
 
@@ -111,7 +111,7 @@ const TeamInviteNotification = () => {
 
       setTimeout(
         () => navigate(`/contest-detail/${parsedPayload.contestId}`),
-        2000
+        2000,
       )
     } catch (error) {
       console.error(`❌ ${actionType} invite error:`, error)
@@ -266,9 +266,6 @@ const TeamInviteNotification = () => {
                 Success!
               </h2>
               <p className="text-gray-600 mb-4">{message}</p>
-              <p className="text-sm text-gray-500">
-                Redirecting to notifications...
-              </p>
             </div>
           )}
 
