@@ -46,7 +46,7 @@ const MyTeamView = () => {
             } catch (error) {
               console.error(
                 `Error fetching team for contest ${contest.contestId}:`,
-                error
+                error,
               )
               return null
             }
@@ -59,7 +59,7 @@ const MyTeamView = () => {
           // Auto-select first contest if available
           if (validTeams.length > 0 && !selectedContestId) {
             setSelectedContestId(
-              validTeams[0].contestId || validTeams[0].contest_id
+              validTeams[0].contestId || validTeams[0].contest_id,
             )
           }
         }
@@ -80,7 +80,7 @@ const MyTeamView = () => {
       (team.contestId === selectedContestId ||
         team.contest_id === selectedContestId) &&
       (String(team.contestId) === String(selectedContestId) ||
-        String(team.contest_id) === String(selectedContestId))
+        String(team.contest_id) === String(selectedContestId)),
   )
 
   if (loading || contestsLoading) {
@@ -113,11 +113,11 @@ const MyTeamView = () => {
                         count: myTeams.length,
                         plural: myTeams.length > 1 ? "s" : "",
                         contestCount: new Set(
-                          myTeams.map((t) => t.contestId || t.contest_id)
+                          myTeams.map((t) => t.contestId || t.contest_id),
                         ).size,
                         contestPlural:
                           new Set(
-                            myTeams.map((t) => t.contestId || t.contest_id)
+                            myTeams.map((t) => t.contestId || t.contest_id),
                           ).size > 1
                             ? "s"
                             : "",
@@ -150,23 +150,22 @@ const MyTeamView = () => {
                         (team) =>
                           team.contestId ===
                             (contest.contestId || contest.id) ||
-                          team.contest_id === (contest.contestId || contest.id)
-                      )
+                          team.contest_id === (contest.contestId || contest.id),
+                      ),
                     )
                     .map((contest) => {
                       const teamCount = myTeams.filter(
                         (team) =>
                           team.contestId ===
                             (contest.contestId || contest.id) ||
-                          team.contest_id === (contest.contestId || contest.id)
+                          team.contest_id === (contest.contestId || contest.id),
                       ).length
                       return (
                         <option
                           key={contest.contestId || contest.id}
                           value={contest.contestId || contest.id}
                         >
-                          {contest.name || contest.title} ({teamCount}{" "}
-                          {teamCount > 1 ? t("team.teams") : t("team.team")})
+                          {contest.name || contest.title}
                         </option>
                       )
                     })}
@@ -183,7 +182,8 @@ const MyTeamView = () => {
                         (team.contestId === selectedContestId ||
                           team.contest_id === selectedContestId) &&
                         (String(team.contestId) === String(selectedContestId) ||
-                          String(team.contest_id) === String(selectedContestId))
+                          String(team.contest_id) ===
+                            String(selectedContestId)),
                     )
                   : myTeams
                 ).map((team) => {
@@ -371,7 +371,7 @@ const MyTeamView = () => {
                           key={contest.contestId || contest.id}
                           onClick={() =>
                             navigate(
-                              `/mentor-team/${contest.contestId || contest.id}`
+                              `/mentor-team/${contest.contestId || contest.id}`,
                             )
                           }
                           className="px-4 py-2 bg-[#ff6b35] text-white rounded-[5px] hover:bg-[#ff5722] transition-colors text-sm font-medium"

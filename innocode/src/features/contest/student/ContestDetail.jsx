@@ -125,34 +125,6 @@ const ContestDetail = () => {
     skip: !shouldFetchLeaderboard,
   })
 
-  // Debug: Log leaderboard data in ContestDetail
-  useEffect(() => {
-    if (import.meta.env.VITE_ENV === "development" && shouldFetchLeaderboard) {
-      console.log("🔍 [ContestDetail] contestId:", contestId)
-      console.log(
-        "🔍 [ContestDetail] shouldFetchLeaderboard:",
-        shouldFetchLeaderboard,
-      )
-      console.log("🔍 [ContestDetail] leaderboardData:", leaderboardData)
-      console.log(
-        "🔍 [ContestDetail] leaderboardData type:",
-        typeof leaderboardData,
-      )
-      console.log(
-        "🔍 [ContestDetail] leaderboardData isArray:",
-        Array.isArray(leaderboardData),
-      )
-      console.log("🔍 [ContestDetail] leaderboardLoading:", leaderboardLoading)
-      console.log("🔍 [ContestDetail] leaderboardError:", leaderboardError)
-    }
-  }, [
-    leaderboardData,
-    contestId,
-    shouldFetchLeaderboard,
-    leaderboardLoading,
-    leaderboardError,
-  ])
-
   // Handle data structure - API returns teams array directly or wrapped
   // transformResponse now always returns object with teams array
   const leaderboardEntries = Array.isArray(leaderboardData)
@@ -161,20 +133,6 @@ const ContestDetail = () => {
       leaderboardData?.teamIdList ||
       leaderboardData?.entries ||
       []
-
-  // Debug: Log entries
-  useEffect(() => {
-    if (import.meta.env.VITE_ENV === "development" && shouldFetchLeaderboard) {
-      console.log("🔍 [ContestDetail] leaderboardEntries:", leaderboardEntries)
-      console.log(
-        "🔍 [ContestDetail] leaderboardEntries length:",
-        leaderboardEntries.length,
-      )
-      if (leaderboardEntries.length > 0) {
-        console.log("🔍 [ContestDetail] first entry:", leaderboardEntries[0])
-      }
-    }
-  }, [leaderboardEntries, shouldFetchLeaderboard])
 
   // Get contest info from contest data
   const leaderboardContestInfo = {

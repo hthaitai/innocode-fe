@@ -1054,7 +1054,11 @@
     "saveInstruction": "Lưu: Lưu tệp của bạn trước (bắt buộc trước khi nộp)",
     "submitInstruction": "Nộp: Nộp và hoàn thành vòng thi (đánh dấu vòng thi là đã hoàn thành) - Chỉ khả dụng sau khi lưu",
     "fileSavedCanSubmit": "Tệp đã được lưu thành công. Bạn có thể nộp bây giờ.",
-    "failedToGetSubmissionId": "Không thể lấy ID bài nộp. Vui lòng thử lại."
+    "failedToGetSubmissionId": "Không thể lấy ID bài nộp. Vui lòng thử lại.",
+    "downloadTemplate": "Tải xuống Template",
+    "templateAvailable": "Template bài tập có sẵn để tải xuống",
+    "roundAlreadyFinished": "Vòng thi đã hoàn thành",
+    "viewResult": "Xem kết quả"
   },
   "manualResultPage": {
     "loadingResult": "Đang tải kết quả...",

@@ -1069,7 +1069,11 @@
     "saveInstruction": "Save: Save your file first (required before submitting)",
     "submitInstruction": "Submit: Submit and finish the round (marks round as finished) - Only available after saving",
     "fileSavedCanSubmit": "File saved successfully. You can submit it now.",
-    "failedToGetSubmissionId": "Failed to get submission ID. Please try again."
+    "failedToGetSubmissionId": "Failed to get submission ID. Please try again.",
+    "downloadTemplate": "Download Template",
+    "templateAvailable": "Template available for download",
+    "roundAlreadyFinished": "Round Already Finished",
+    "viewResult": "View Result"
   },
   "manualResultPage": {
     "loadingResult": "Loading result...",
