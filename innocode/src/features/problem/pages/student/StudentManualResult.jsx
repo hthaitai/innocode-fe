@@ -23,8 +23,20 @@ const StudentManualResult = () => {
     pageSize: 1,
   })
 
-  // Extract result from response
-  const result = resultData?.results?.[0]
+  console.log("StudentManualResult Data:", {
+    roundId,
+    resultData,
+    isLoading,
+    isError,
+    error,
+  })
+
+  // Extract result from response - handle both object and array formats
+  const result = Array.isArray(resultData?.results)
+    ? resultData.results[0]
+    : resultData?.results
+
+  console.log("Extracted Manual Result:", result)
 
   if (isLoading) {
     return (
@@ -173,7 +185,7 @@ const StudentManualResult = () => {
                     <p className="text-lg font-semibold text-gray-700">
                       <span className="text-orange-600">
                         {Math.round(
-                          (result.totalScore / result.maxPossibleScore) * 100
+                          (result.totalScore / result.maxPossibleScore) * 100,
                         )}
                         %
                       </span>
@@ -230,29 +242,29 @@ const StudentManualResult = () => {
             </div>
 
             {/* Rubric Scores */}
-            {result.criteriaScores && result.criteriaScores.length > 0 && (
+            {result.criterionResults && result.criterionResults.length > 0 && (
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
                   {t("manualResultPage.evaluationCriteria")}
                 </h3>
                 <div className="space-y-3">
-                  {result.criteriaScores.map((criteria, index) => (
+                  {result.criterionResults.map((criteria, index) => (
                     <div
                       key={index}
                       className="bg-gray-50 rounded-lg p-4 border border-gray-200"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-gray-800">
-                          {criteria.criteriaName ||
+                          {criteria.description ||
                             `${t("manualResultPage.criteria")} ${index + 1}`}
                         </h4>
                         <span className="text-lg font-bold text-orange-500">
                           {criteria.score ?? 0} / {criteria.maxScore ?? 0}
                         </span>
                       </div>
-                      {criteria.description && (
+                      {criteria.note && (
                         <p className="text-sm text-gray-600 mb-2">
-                          {criteria.description}
+                          {criteria.note}
                         </p>
                       )}
                       {/* Progress bar */}

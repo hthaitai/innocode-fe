@@ -253,8 +253,9 @@ const ContestDetail = () => {
                 studentIdSearch: currentUserId,
               },
             )
-            const results = res.data?.data || res.data || []
-            return results.length > 0 ? round : null
+            // The API returns the result object in res.data if it exists
+            const resultData = res.data
+            return resultData ? round : null
           } catch (err) {
             if (err?.response?.status === 404) {
               return null
@@ -1145,7 +1146,7 @@ const ContestDetail = () => {
                     ...completedManualProblems.map((r) => ({
                       ...r,
                       type: "manual",
-                      route: `/manual-problem/${contestId}/${r.roundId}`,
+                      route: `/manual-result/${contestId}/${r.roundId}`,
                       icon: "mdi:file-document-check",
                       label: t("contest.manual"),
                     })),
