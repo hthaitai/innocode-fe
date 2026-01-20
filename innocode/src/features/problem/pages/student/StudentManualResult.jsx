@@ -23,20 +23,10 @@ const StudentManualResult = () => {
     pageSize: 1,
   })
 
-  console.log("StudentManualResult Data:", {
-    roundId,
-    resultData,
-    isLoading,
-    isError,
-    error,
-  })
-
   // Extract result from response - handle both object and array formats
   const result = Array.isArray(resultData?.results)
     ? resultData.results[0]
     : resultData?.results
-
-  console.log("Extracted Manual Result:", result)
 
   if (isLoading) {
     return (
@@ -180,17 +170,6 @@ const StudentManualResult = () => {
                     {t("manualResultPage.points")}
                   </p>
                 )}
-                {result.totalScore !== undefined &&
-                  result.maxPossibleScore > 0 && (
-                    <p className="text-lg font-semibold text-gray-700">
-                      <span className="text-orange-600">
-                        {Math.round(
-                          (result.totalScore / result.maxPossibleScore) * 100,
-                        )}
-                        %
-                      </span>
-                    </p>
-                  )}
               </div>
             </div>
 
