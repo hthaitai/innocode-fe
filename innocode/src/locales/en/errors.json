@@ -11,7 +11,10 @@
     "badRequest": "Invalid request. Please check your input",
     "duplicate": "This item already exists",
     "conflict": "Conflict occurred. Please try again",
-    "gone": "The requested resource is no longer available"
+    "gone": "The requested resource is no longer available",
+    "nameExists": "Name already exists",
+    "invalidState": "Invalid state",
+    "dateConflict": "Date conflict"
   },
   "activityLog": {
     "logNotFound": "No log with ID={id}",
@@ -671,5 +674,19 @@
     "badRequestValidation": "Judge0 validation failed. Details: {errorContent}. Params: languageId={languageId}, timeLimitSec={timeLimitSec}, memoryLimitKb={memoryLimitKb}",
     "internalServerErrorDeserialize": "Failed to deserialize Judge0 submission response",
     "internalServerErrorSubmission": "Judge0 submission failed: {ex.Message}"
+  },
+  "patterns": {
+    "roundNotStarted": "Round has not started yet",
+    "roundAlreadyEnded": "Round has already ended",
+    "alreadyFinishedRound": "You have already finished this round",
+    "invalidOpenCode": "Invalid open code",
+    "openCodeRequired": "Open code is required",
+    "notInTeam": "You are not in a team",
+    "notInTopCutoff": "Your team is not in the top",
+    "onlyOrganizerCan": "Only organizers can perform this action",
+    "onlyMentorCan": "Only mentors can perform this action",
+    "onlyAdminCan": "Only administrators can perform this action",
+    "onlyJudgeCan": "Only judges can perform this action",
+    "invalidPagination": "Invalid page number"
   }
 }

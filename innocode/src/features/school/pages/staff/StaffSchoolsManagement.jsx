@@ -82,7 +82,8 @@ const StaffSchoolsManagement = () => {
           refetch()
         } catch (error) {
           console.error("Error saving school:", error)
-          toast.error(t("schools.schoolUpdatedError"))
+          const errorMessage = translateError(error)
+          toast.error(errorMessage)
           throw error
         }
       },
@@ -133,7 +134,7 @@ const StaffSchoolsManagement = () => {
   // Get province name by ID
   const getProvinceName = (provinceId) => {
     const province = provinces.find(
-      (p) => (p.provinceId || p.province_id) === provinceId
+      (p) => (p.provinceId || p.province_id) === provinceId,
     )
     return province ? province.provinceName || province.name : "—"
   }
@@ -147,7 +148,8 @@ const StaffSchoolsManagement = () => {
         const name = row.original.name || row.original.Name || "—"
         return <span className="font-medium text-gray-800">{name}</span>
       },
-      size: 250,
+      size: 220,
+      minSize: 180,
     },
     {
       accessorKey: "provinceId",
@@ -158,25 +160,36 @@ const StaffSchoolsManagement = () => {
           <span className="text-gray-700">{getProvinceName(provinceId)}</span>
         )
       },
-      size: 180,
+      size: 150,
+      minSize: 120,
     },
     {
       accessorKey: "address",
       header: t("schools.address"),
       cell: ({ row }) => {
         const address = row.original.address || row.original.Address || "—"
-        return <span className="text-gray-700 text-sm">{address}</span>
+        return (
+          <span className="text-gray-700 text-sm block break-words">
+            {address}
+          </span>
+        )
       },
       size: 200,
+      minSize: 150,
     },
     {
       accessorKey: "contact",
       header: t("schools.contact"),
       cell: ({ row }) => {
         const contact = row.original.contact || row.original.Contact || "—"
-        return <span className="text-gray-700 text-sm">{contact}</span>
+        return (
+          <span className="text-gray-700 text-sm block break-words">
+            {contact}
+          </span>
+        )
       },
-      size: 180,
+      size: 240,
+      minSize: 180,
     },
     {
       accessorKey: "createdAt",
@@ -189,7 +202,8 @@ const StaffSchoolsManagement = () => {
           "—"
         return <span className="text-gray-600 text-sm">{formatDate(date)}</span>
       },
-      size: 130,
+      size: 120,
+      minSize: 100,
     },
     {
       id: "actions",

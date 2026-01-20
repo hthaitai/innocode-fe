@@ -18,9 +18,10 @@ export default function SchoolModal({
     () => ({
       name: "",
       province_id: "",
+      address: "",
       contact: "",
     }),
-    []
+    [],
   )
 
   const [formData, setFormData] = useState(emptyData)
@@ -69,7 +70,7 @@ export default function SchoolModal({
       mode === "edit"
         ? `${t("schools.edit")}: ${initialData.name || ""}`
         : t("schools.createSchool"),
-    [mode, initialData.name, t]
+    [mode, initialData.name, t],
   )
 
   const footer = useMemo(
@@ -85,7 +86,7 @@ export default function SchoolModal({
         </button>
       </div>
     ),
-    [mode, onClose, handleSubmit, t]
+    [mode, onClose, handleSubmit, t],
   )
 
   return (

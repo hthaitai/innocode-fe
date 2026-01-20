@@ -30,7 +30,7 @@ export default function SchoolForm({
         setErrors((prev) => ({ ...prev, [name]: "" }))
       }
     },
-    [errors, setFormData, setErrors]
+    [errors, setFormData, setErrors],
   )
 
   const handleProvinceSelect = useCallback(
@@ -46,7 +46,7 @@ export default function SchoolForm({
         setErrors((prev) => ({ ...prev, province_id: "" }))
       }
     },
-    [errors, setFormData, setErrors]
+    [errors, setFormData, setErrors],
   )
 
   const currentProvinceValue = formData.province_id || formData.provinceId
@@ -73,6 +73,17 @@ export default function SchoolForm({
         onChange={handleProvinceSelect}
         error={!!errors?.province_id}
         helperText={errors?.province_id}
+      />
+
+      {/* Address */}
+      <TextFieldFluent
+        label={t("schools.address")}
+        name="address"
+        value={formData.address || ""}
+        onChange={handleChange}
+        error={!!errors?.address}
+        helperText={errors?.address}
+        placeholder={t("schools.enterAddress")}
       />
 
       {/* Contact Email */}

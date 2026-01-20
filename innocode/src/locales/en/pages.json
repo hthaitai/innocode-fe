@@ -400,6 +400,7 @@
     "schoolInUseError": "Cannot delete a school that has students, mentors, or teams",
     "enterSchoolName": "Enter school name",
     "selectProvince": "Select a province",
+    "enterAddress": "Enter school address",
     "enterContact": "Enter contact email"
   },
   "roleRegistrations": {

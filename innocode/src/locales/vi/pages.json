@@ -400,6 +400,7 @@
     "schoolInUseError": "Không thể xóa trường học đang có học sinh, giáo viên hoặc đội tham gia",
     "enterSchoolName": "Nhập tên trường",
     "selectProvince": "Chọn tỉnh/thành phố",
+    "enterAddress": "Nhập địa chỉ trường",
     "enterContact": "Nhập email liên hệ"
   },
   "roleRegistrations": {
