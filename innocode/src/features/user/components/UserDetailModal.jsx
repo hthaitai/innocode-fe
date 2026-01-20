@@ -2,11 +2,19 @@ import React from "react"
 import { useTranslation } from "react-i18next"
 import BaseModal from "@/shared/components/BaseModal"
 import { formatDateTime } from "@/shared/utils/dateTime"
+import { useGetUserByIdQuery } from "@/services/userApi"
 
 export default function UserDetailModal({ isOpen, user, onClose }) {
   const { t } = useTranslation(["pages", "common"])
 
-  if (!user) return null
+  const userId = user?.userId || user?.id
+  const { data: fullUserData, isLoading } = useGetUserByIdQuery(userId, {
+    skip: !isOpen || !userId,
+  })
+
+  const displayUser = fullUserData || user
+
+  if (!displayUser && !isLoading) return null
 
   // Get status badge color
   const getStatusBadgeColor = (status) => {
@@ -69,6 +77,7 @@ export default function UserDetailModal({ isOpen, user, onClose }) {
       onClose={onClose}
       title={t("userManagement.userDetails")}
       size="lg"
+      loading={isLoading}
     >
       <div className="space-y-1">
         {/* Basic Information */}
@@ -79,51 +88,64 @@ export default function UserDetailModal({ isOpen, user, onClose }) {
           <div className="space-y-0">
             <DetailRow
               label={t("userManagement.userId")}
-              value={user.userId || user.id}
+              value={displayUser.userId || displayUser.id}
             />
             <DetailRow
               label={t("userManagement.fullName")}
-              value={user.fullname || user.fullName}
+              value={displayUser.fullname || displayUser.fullName}
             />
-            <DetailRow label={t("userManagement.email")} value={user.email} />
+            <DetailRow
+              label={t("userManagement.email")}
+              value={displayUser.email}
+            />
             <DetailRow
               label={t("userManagement.role")}
-              value={user.role}
+              value={
+                displayUser.role
+                  ? t(`common:roles.${displayUser.role.toLowerCase()}`)
+                  : "—"
+              }
               badge
-              badgeColor={getRoleBadgeColor(user.role)}
+              badgeColor={getRoleBadgeColor(displayUser.role)}
             />
             <DetailRow
               label={t("userManagement.status")}
-              value={user.status}
+              value={
+                displayUser.status
+                  ? t(`common:userStatuses.${displayUser.status.toLowerCase()}`)
+                  : "—"
+              }
               badge
-              badgeColor={getStatusBadgeColor(user.status)}
+              badgeColor={getStatusBadgeColor(displayUser.status)}
             />
           </div>
         </div>
 
         {/* Additional Information */}
-        {(user.createdAt || user.updatedAt || user.lastLogin) && (
+        {(displayUser.createdAt ||
+          displayUser.updatedAt ||
+          displayUser.lastLogin) && (
           <div className="bg-white rounded-lg mt-6">
             <h3 className="text-base font-semibold text-gray-800 mb-4">
               {t("userManagement.additionalInformation")}
             </h3>
             <div className="space-y-0">
-              {user.createdAt && (
+              {displayUser.createdAt && (
                 <DetailRow
                   label={t("userManagement.createdAt")}
-                  value={formatDateTime(user.createdAt)}
+                  value={formatDateTime(displayUser.createdAt)}
                 />
               )}
-              {user.updatedAt && (
+              {displayUser.updatedAt && (
                 <DetailRow
                   label={t("userManagement.updatedAt")}
-                  value={formatDateTime(user.updatedAt)}
+                  value={formatDateTime(displayUser.updatedAt)}
                 />
               )}
-              {user.lastLogin && (
+              {displayUser.lastLogin && (
                 <DetailRow
                   label={t("userManagement.lastLogin")}
-                  value={formatDateTime(user.lastLogin)}
+                  value={formatDateTime(displayUser.lastLogin)}
                 />
               )}
             </div>
@@ -131,28 +153,30 @@ export default function UserDetailModal({ isOpen, user, onClose }) {
         )}
 
         {/* Profile-specific Information */}
-        {(user.schoolId || user.grade || user.phoneNumber) && (
+        {(displayUser.schoolId ||
+          displayUser.grade ||
+          displayUser.phoneNumber) && (
           <div className="bg-white rounded-lg mt-6">
             <h3 className="text-base font-semibold text-gray-800 mb-4">
               {t("userManagement.profileInformation")}
             </h3>
             <div className="space-y-0">
-              {user.schoolId && (
+              {displayUser.schoolId && (
                 <DetailRow
                   label={t("userManagement.schoolId")}
-                  value={user.schoolId}
+                  value={displayUser.schoolId}
                 />
               )}
-              {user.grade && (
+              {displayUser.grade && (
                 <DetailRow
                   label={t("userManagement.grade")}
-                  value={user.grade}
+                  value={displayUser.grade}
                 />
               )}
-              {user.phoneNumber && (
+              {displayUser.phoneNumber && (
                 <DetailRow
                   label={t("userManagement.phoneNumber")}
-                  value={user.phoneNumber}
+                  value={displayUser.phoneNumber}
                 />
               )}
             </div>

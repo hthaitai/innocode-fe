@@ -17,9 +17,8 @@ export default function UserModal({
       fullname: "",
       email: "",
       role: "",
-      status: "",
     }),
-    []
+    [],
   )
 
   const [formData, setFormData] = useState(emptyData)
@@ -35,22 +34,22 @@ export default function UserModal({
   const validateForm = () => {
     const newErrors = {}
 
-    if (!formData.fullname?.trim()) {
+    // Ensure we are working with strings for trim()
+    const fullname = String(formData.fullname || "")
+    const email = String(formData.email || "")
+
+    if (!fullname.trim()) {
       newErrors.fullname = t("userManagement.fullNameRequired")
     }
 
-    if (!formData.email?.trim()) {
+    if (!email.trim()) {
       newErrors.email = t("userManagement.emailRequired")
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = t("userManagement.emailInvalid")
     }
 
     if (!formData.role) {
       newErrors.role = t("userManagement.roleRequired")
-    }
-
-    if (!formData.status) {
-      newErrors.status = t("userManagement.statusRequired")
     }
 
     setErrors(newErrors)
@@ -73,7 +72,7 @@ export default function UserModal({
       mode === "edit"
         ? `${t("userManagement.editUser")}: ${initialData.fullname || ""}`
         : t("userManagement.createUser"),
-    [mode, initialData.fullname, t]
+    [mode, initialData.fullname, t],
   )
 
   const footer = useMemo(
@@ -89,7 +88,7 @@ export default function UserModal({
         </button>
       </div>
     ),
-    [mode, onClose, handleSubmit, t]
+    [mode, onClose, handleSubmit, t],
   )
 
   return (

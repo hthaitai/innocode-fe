@@ -3,11 +3,12 @@ import { Icon } from "@iconify/react"
 import { useTranslation } from "react-i18next"
 
 /**
- * Component hiển thị test results
+ * Component hiển thị kết quả mock test
  */
-const TestResultsSection = ({ testResult, isLoading }) => {
+const MockTestResultsSection = ({ testResult, isLoading }) => {
   const { t } = useTranslation("pages")
   const [expandedCases, setExpandedCases] = useState(new Set())
+
   const toggleCase = (caseId) => {
     setExpandedCases((prev) => {
       const newSet = new Set(prev)
@@ -19,6 +20,7 @@ const TestResultsSection = ({ testResult, isLoading }) => {
       return newSet
     })
   }
+
   if (isLoading) {
     return (
       <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6">
@@ -102,6 +104,7 @@ const TestResultsSection = ({ testResult, isLoading }) => {
     }))
   } else if (hasFinalSubmitFormat) {
     // Format từ Final Submit (testResult)
+
     const details = testResult.details || []
 
     // Tính toán summary từ details
@@ -151,33 +154,42 @@ const TestResultsSection = ({ testResult, isLoading }) => {
       </h2>
 
       <div className="space-y-4">
-        {/* Summary */}
+        {/* Summary Section - Responsive Grid */}
         <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {/* Total Test Cases */}
             <div className="text-center">
               <p className="text-xs text-[#7A7574] mb-1">
                 {t("autoEvaluation.totalTestCases")}
               </p>
               <p className="text-xl font-bold text-[#2d3748]">{totalCases}</p>
             </div>
+
+            {/* Passed */}
             <div className="text-center">
               <p className="text-xs text-[#7A7574] mb-1">
                 {t("autoEvaluation.passed")}
               </p>
               <p className="text-xl font-bold text-green-600">{passedCount}</p>
             </div>
+
+            {/* Failed */}
             <div className="text-center">
               <p className="text-xs text-[#7A7574] mb-1">
                 {t("autoEvaluation.failed")}
               </p>
               <p className="text-xl font-bold text-red-600">{failedCount}</p>
             </div>
+
+            {/* Raw Score */}
             <div className="text-center">
               <p className="text-xs text-[#7A7574] mb-1">
                 {t("autoEvaluation.rawScore")}
               </p>
               <p className="text-xl font-bold text-[#ff6b35]">{rawScore}</p>
             </div>
+
+            {/* Penalty Score (actual score after penalty) */}
             {score !== undefined && (
               <div className="text-center">
                 <p className="text-xs text-[#7A7574] mb-1">
@@ -228,6 +240,7 @@ const TestResultsSection = ({ testResult, isLoading }) => {
             </div>
           </div>
         )}
+
         {/* Test Cases Detail */}
         {testCases && testCases.length > 0 && (
           <div className="space-y-3">
@@ -239,8 +252,9 @@ const TestResultsSection = ({ testResult, isLoading }) => {
               const isExpanded = expandedCases.has(caseId)
 
               // Lấy thông tin từ testCase
-              const testCaseName = `Test Case ${index + 1}`
+              const testCaseName = testCase.id || `Test Case ${index + 1}`
               const testStatus = testCase.status
+              const judge0Status = testCase.status
 
               const hasOutput =
                 testCase.expected !== undefined || testCase.actual !== undefined
@@ -278,7 +292,7 @@ const TestResultsSection = ({ testResult, isLoading }) => {
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {testStatus}
+                        {judge0Status}
                       </span>
                     </div>
                   </div>
@@ -349,36 +363,35 @@ const TestResultsSection = ({ testResult, isLoading }) => {
             })}
           </div>
         )}
-
-        {/* Team Info */}
-        {testResult.teamName && (
-          <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
-            <h3 className="font-semibold text-[#2d3748] text-sm mb-2">
-              {t("autoEvaluation.submissionInfo")}
-            </h3>
-            <div className="space-y-1 text-sm">
-              <p className="text-[#4a5568]">
-                <span className="font-medium">{t("autoEvaluation.team")}</span>{" "}
-                {testResult.teamName}
-              </p>
-              <p className="text-[#4a5568]">
-                <span className="font-medium">
-                  {t("autoEvaluation.submittedBy")}
-                </span>{" "}
-                {testResult.submittedByStudentName}
-              </p>
-              <p className="text-[#4a5568]">
-                <span className="font-medium">
-                  {t("autoEvaluation.submittedAt")}
-                </span>{" "}
-                {new Date(testResult.createdAt).toLocaleString()}
-              </p>
-            </div>
-          </div>
-        )}
       </div>
+      {/* Team Info */}
+      {testResult.teamName && (
+        <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-4">
+          <h3 className="font-semibold text-[#2d3748] text-sm mb-2">
+            {t("autoEvaluation.submissionInfo")}
+          </h3>
+          <div className="space-y-1 text-sm">
+            <p className="text-[#4a5568]">
+              <span className="font-medium">{t("autoEvaluation.team")}</span>{" "}
+              {testResult.teamName}
+            </p>
+            <p className="text-[#4a5568]">
+              <span className="font-medium">
+                {t("autoEvaluation.submittedBy")}
+              </span>{" "}
+              {testResult.submittedByStudentName}
+            </p>
+            <p className="text-[#4a5568]">
+              <span className="font-medium">
+                {t("autoEvaluation.submittedAt")}
+              </span>{" "}
+              {new Date(testResult.createdAt).toLocaleString()}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
-export default TestResultsSection
+export default MockTestResultsSection

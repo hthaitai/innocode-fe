@@ -148,6 +148,12 @@ const StudentAutoEvaluation = () => {
 
       toast.dismiss()
       toast.success(t("autoEvaluation.submissionSuccess"))
+
+      // Navigate to contest detail sau khi submit thành công
+      // Dùng replace: true để không cho quay lại trang này
+      setTimeout(() => {
+        navigate(`/contest-detail/${contestId}`, { replace: true })
+      }, 2000) // Đợi 2 giây để user thấy toast message
     } catch (error) {
       console.error("❌ Failed to auto-submit:", error)
       toast.dismiss()
@@ -318,8 +324,13 @@ const StudentAutoEvaluation = () => {
       </div>
 
       {/* Test Results Section */}
+      {/* Merge submitResponse (test results) với testResult (metadata) */}
       <TestResultsSection
-        testResult={submitResponse || testResult}
+        testResult={
+          submitResponse
+            ? { ...testResult, ...submitResponse } // Merge: testResult có metadata, submitResponse có test results
+            : testResult
+        }
         isLoading={resultLoading}
       />
     </div>

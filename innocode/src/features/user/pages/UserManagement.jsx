@@ -3,49 +3,53 @@ import { useTranslation } from "react-i18next"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
-import { Users, Pencil, Trash2, Lock, Unlock } from "lucide-react"
+import { Users, Eye, UserCheck, UserX, EyeIcon } from "lucide-react"
 import {
   useGetAllUsersQuery,
   useUpdateUserMutation,
-  useDeleteUserMutation,
-  useUpdateUserStatusMutation,
+  useToggleUserStatusMutation,
+  useRegisterStaffMutation,
 } from "@/services/userApi"
+import { useAuth } from "@/context/AuthContext"
 import Actions from "@/shared/components/Actions"
 import { useModal } from "@/shared/hooks/useModal"
 import toast from "react-hot-toast"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 import { useApiError } from "@/shared/hooks/useApiError"
 import UserDetailModal from "../components/UserDetailModal"
+import StaffRegistrationModal from "../components/StaffRegistrationModal"
+import { Plus } from "lucide-react"
 
 const USER_ROLES = [
-  { value: "", label: "All Roles" },
-  { value: "Student", label: "Student" },
-  { value: "Mentor", label: "Mentor" },
-  { value: "Organizer", label: "Organizer" },
-  { value: "Judge", label: "Judge" },
-  { value: "SchoolManager", label: "School Manager" },
-  { value: "Staff", label: "Staff" },
-  { value: "Admin", label: "Admin" },
+  { value: "", labelKey: "userManagement.allRoles" },
+  { value: "Student", labelKey: "common:roles.student" },
+  { value: "Mentor", labelKey: "common:roles.mentor" },
+  { value: "Organizer", labelKey: "common:roles.organizer" },
+  { value: "Judge", labelKey: "common:roles.judge" },
+  { value: "SchoolManager", labelKey: "common:roles.schoolmanager" },
+  { value: "Staff", labelKey: "common:roles.staff" },
+  { value: "Admin", labelKey: "common:roles.admin" },
 ]
 
 const USER_STATUSES = [
-  { value: "", label: "All Statuses" },
-  { value: "Active", label: "Active" },
-  { value: "Inactive", label: "Inactive" },
-  { value: "Locked", label: "Locked" },
-  { value: "Unverified", label: "Unverified" },
+  { value: "", labelKey: "userManagement.allStatuses" },
+  { value: "Active", labelKey: "common:userStatuses.active" },
+  { value: "Inactive", labelKey: "common:userStatuses.inactive" },
+  { value: "Unverified", labelKey: "common:userStatuses.unverified" },
 ]
 
 const UserManagement = () => {
   const { t } = useTranslation(["pages", "common"])
   const { translateError } = useApiError()
   const { openModal } = useModal()
+  const { user: currentUser } = useAuth() // Lấy thông tin user hiện tại
   const [pageNumber, setPageNumber] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [selectedUser, setSelectedUser] = useState(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false)
   const pageSize = 10
   // Fetch users data
   const {
@@ -68,8 +72,9 @@ const UserManagement = () => {
 
   // Mutations
   const [updateUser] = useUpdateUserMutation()
-  const [deleteUser] = useDeleteUserMutation()
-  const [updateUserStatus] = useUpdateUserStatusMutation()
+  const [toggleUserStatus] = useToggleUserStatusMutation()
+  const [registerStaff, { isLoading: isRegisteringStaff }] =
+    useRegisterStaffMutation()
 
   const users = usersResponse?.items || []
 
@@ -102,48 +107,58 @@ const UserManagement = () => {
     })
   }
 
-  // Handle delete user
-  const handleDeleteUser = (user) => {
-    openModal("confirmDelete", {
-      type: "user",
-      item: user,
-      onConfirm: async (onClose) => {
+  // Handle create staff
+  const handleCreateStaff = async (data) => {
+    try {
+      await registerStaff(data).unwrap()
+      toast.success(t("userManagement.staffCreatedSuccess"))
+      setIsStaffModalOpen(false)
+      refetch()
+    } catch (error) {
+      console.error("Error creating staff:", error)
+      const errorMessage = translateError(error)
+      toast.error(errorMessage)
+      throw error
+    }
+  }
+
+  // Handle toggle user status (Active/Inactive)
+  const handleToggleStatus = async (user) => {
+    // Kiểm tra nếu user đang cố toggle status của chính mình
+    const userId = user.userId || user.id
+    const currentUserId = currentUser?.userId || currentUser?.id
+
+    if (userId === currentUserId) {
+      toast.error(t("userManagement.cannotToggleOwnStatus"))
+      return
+    }
+
+    const currentStatus = user.status
+    const newStatus = currentStatus === "Active" ? "Inactive" : "Active"
+
+    openModal("confirm", {
+      title: t("userManagement.toggleStatusTitle"),
+      description: t("userManagement.toggleStatusConfirm", {
+        name: user.fullname || user.fullName,
+        currentStatus,
+        newStatus,
+      }),
+      onConfirm: async () => {
         try {
-          await deleteUser({
-            id: user.userId || user.id,
-          }).unwrap()
-          toast.success(t("userManagement.userDeletedSuccess"))
+          await toggleUserStatus(userId).unwrap()
+          toast.success(
+            newStatus === "Inactive"
+              ? t("userManagement.userDeactivatedSuccess")
+              : t("userManagement.userActivatedSuccess"),
+          )
           refetch()
-          onClose()
         } catch (error) {
-          console.error("Error deleting user:", error)
+          console.error("Error toggling user status:", error)
           const errorMessage = translateError(error)
           toast.error(errorMessage)
-          onClose()
         }
       },
     })
-  }
-
-  // Handle lock/unlock user
-  const handleToggleLock = async (user) => {
-    const newStatus = user.status === "Locked" ? "Active" : "Locked"
-    try {
-      await updateUserStatus({
-        id: user.userId || user.id,
-        status: newStatus,
-      }).unwrap()
-      toast.success(
-        newStatus === "Locked"
-          ? t("userManagement.userLockedSuccess")
-          : t("userManagement.userUnlockedSuccess")
-      )
-      refetch()
-    } catch (error) {
-      console.error("Error toggling user lock:", error)
-      const errorMessage = translateError(error)
-      toast.error(errorMessage)
-    }
   }
 
   // Get status badge color
@@ -212,10 +227,10 @@ const UserManagement = () => {
         return (
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeColor(
-              role
+              role,
             )}`}
           >
-            {role}
+            {role ? t(`common:roles.${role.toLowerCase()}`) : "—"}
           </span>
         )
       },
@@ -229,10 +244,10 @@ const UserManagement = () => {
         return (
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeColor(
-              status
+              status,
             )}`}
           >
-            {status}
+            {status ? t(`common:userStatuses.${status.toLowerCase()}`) : "—"}
           </span>
         )
       },
@@ -244,29 +259,26 @@ const UserManagement = () => {
       enableSorting: false,
       enableHiding: false,
       cell: ({ row }) => {
-        const isLocked = row.original.status === "Locked"
+        const userId = row.original.userId || row.original.id
+        const currentUserId = currentUser?.userId || currentUser?.id
+        const isCurrentUser = userId === currentUserId
+        const isActive = row.original.status === "Active"
+
         return (
           <Actions
             row={row.original}
             items={[
               {
-                label: t("common:buttons.edit"),
-                icon: Pencil,
-                onClick: () => handleEditUser(row.original),
-              },
-              {
-                label: isLocked
-                  ? t("userManagement.unlock")
-                  : t("userManagement.lock"),
-                icon: isLocked ? Unlock : Lock,
-                className: isLocked ? "text-green-500" : "text-orange-500",
-                onClick: () => handleToggleLock(row.original),
-              },
-              {
-                label: t("common:buttons.delete"),
-                icon: Trash2,
-                className: "text-red-500",
-                onClick: () => handleDeleteUser(row.original),
+                label: isActive
+                  ? t("userManagement.deactivate")
+                  : t("userManagement.activate"),
+                icon: isActive ? UserX : UserCheck,
+                className: isActive ? "text-red-500" : "text-green-500",
+                onClick: () => handleToggleStatus(row.original),
+                disabled: isCurrentUser,
+                tooltip: isCurrentUser
+                  ? t("userManagement.cannotToggleOwnStatus")
+                  : undefined,
               },
             ]}
           />
@@ -308,6 +320,17 @@ const UserManagement = () => {
           </div>
 
           <div className="flex flex-wrap gap-3 items-center">
+            {/* Create Staff Button - Only for Admin */}
+            {currentUser?.role?.toLowerCase() === "admin" && (
+              <button
+                onClick={() => setIsStaffModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-[5px] text-sm font-medium hover:bg-orange-600 transition-colors"
+              >
+                <Plus size={16} />
+                {t("userManagement.createStaff")}
+              </button>
+            )}
+
             {/* Search Input */}
             <div className="flex gap-2 items-center">
               <input
@@ -323,9 +346,16 @@ const UserManagement = () => {
             <div className="min-w-[150px]">
               <DropdownFluent
                 value={roleFilter}
-                onChange={setRoleFilter}
-                options={USER_ROLES}
+                onChange={(val) => {
+                  setRoleFilter(val)
+                  setPageNumber(1)
+                }}
+                options={USER_ROLES.map((r) => ({
+                  value: r.value,
+                  label: t(r.labelKey),
+                }))}
                 placeholder={t("userManagement.allRoles")}
+                className="min-w-[150px]"
               />
             </div>
 
@@ -333,9 +363,16 @@ const UserManagement = () => {
             <div className="min-w-[150px]">
               <DropdownFluent
                 value={statusFilter}
-                onChange={setStatusFilter}
-                options={USER_STATUSES}
+                onChange={(val) => {
+                  setStatusFilter(val)
+                  setPageNumber(1)
+                }}
+                options={USER_STATUSES.map((s) => ({
+                  value: s.value,
+                  label: t(s.labelKey),
+                }))}
                 placeholder={t("userManagement.allStatuses")}
+                className="min-w-[150px]"
               />
             </div>
           </div>
@@ -360,6 +397,13 @@ const UserManagement = () => {
           setIsDetailModalOpen(false)
           setSelectedUser(null)
         }}
+      />
+      {/* Staff Registration Modal */}
+      <StaffRegistrationModal
+        isOpen={isStaffModalOpen}
+        onClose={() => setIsStaffModalOpen(false)}
+        onSubmit={handleCreateStaff}
+        loading={isRegisteringStaff}
       />
     </PageContainer>
   )

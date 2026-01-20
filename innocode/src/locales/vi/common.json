@@ -17,6 +17,7 @@
     "edit": "Sửa",
     "create": "Tạo mới",
     "submit": "Gửi",
+    "loading": "Đang xử lý...",
     "close": "Đóng",
     "back": "Quay lại",
     "next": "Tiếp theo",
@@ -37,6 +38,12 @@
     "mentor": "Người hướng dẫn",
     "staff": "Nhân viên",
     "schoolmanager": "Quản lý trường học"
+  },
+  "userStatuses": {
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "locked": "Đã khóa",
+    "unverified": "Chưa xác thực"
   },
   "common": {
     "locale": "vi",

@@ -196,7 +196,7 @@ const RoleRegistration = () => {
         switch (status) {
           case 400:
             setError(
-              displayError || t("roleRegistrations.invalidRegistrationData")
+              displayError || t("roleRegistrations.invalidRegistrationData"),
             )
             break
           case 409:
@@ -232,7 +232,7 @@ const RoleRegistration = () => {
             message ||
             error ||
             err?.message ||
-            t("roleRegistrations.unexpectedError")
+            t("roleRegistrations.unexpectedError"),
         )
       }
     }
@@ -572,7 +572,7 @@ const RoleRegistration = () => {
                   />
                   {evidenceFiles.length > 0
                     ? `${evidenceFiles.length} ${t(
-                        "roleRegistrations.filesSelected"
+                        "roleRegistrations.filesSelected",
                       )}`
                     : t("roleRegistrations.chooseFiles")}
                 </label>
