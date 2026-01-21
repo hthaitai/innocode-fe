@@ -8,7 +8,7 @@ export const TimeRangePredefined = {
   CurrentMonth: "CurrentMonth",
   Last3Months: "Last3Months",
   Last6Months: "Last6Months",
-  CurrentYear: "CurrentYear",
+  LastYear: "LastYear",
   Custom: "Custom",
 }
 
@@ -39,8 +39,8 @@ const TimeRangeFilter = ({
       label: t("dashboard.timeRange.last6Months", "Last 6 Months"),
     },
     {
-      value: TimeRangePredefined.CurrentYear,
-      label: t("dashboard.timeRange.currentYear", "Current Year"),
+      value: TimeRangePredefined.LastYear,
+      label: t("dashboard.timeRange.lastYear", "Last Year"),
     },
     {
       value: TimeRangePredefined.Custom,

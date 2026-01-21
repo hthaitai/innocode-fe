@@ -159,6 +159,34 @@ export const dashboardApi = api.injectEndpoints({
       }),
       transformResponse: (response) => response.data,
     }),
+
+    // ========== Mentor Dashboard Endpoints ==========
+    getMentorDashboard: builder.query({
+      query: (params = {}) => {
+        const queryParams = {}
+
+        if (
+          params.timeRangePredefined === "Custom" &&
+          params.startDate &&
+          params.endDate
+        ) {
+          queryParams.startDate = params.startDate
+          queryParams.endDate = params.endDate
+        } else if (
+          params.timeRangePredefined &&
+          params.timeRangePredefined !== "Custom" &&
+          params.timeRangePredefined !== "AllTime"
+        ) {
+          queryParams.predefined = params.timeRangePredefined
+        }
+
+        return {
+          url: "mentor-dashboards",
+          params: queryParams,
+        }
+      },
+      transformResponse: (response) => response.data,
+    }),
   }),
 })
 
@@ -172,4 +200,6 @@ export const {
   useGetOrganizerDashboardMetricsQuery,
   useGetOrganizerDashboardContestsQuery,
   useGetOrganizerContestDetailsQuery,
+  // Mentor Dashboard Hooks
+  useGetMentorDashboardQuery,
 } = dashboardApi

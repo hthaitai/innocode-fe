@@ -110,8 +110,9 @@ const TestResultsSection = ({ testResult, isLoading }) => {
     passedCount = passedDetails.length
     failedCount = totalCases - passedCount
 
-    // Tính raw score từ weight của các test case passed
-    rawScore = passedDetails.reduce((sum, d) => sum + (d.weight || 0), 0)
+    // Lấy raw score từ testResult.score (đã được backend tính chính xác)
+    // Thay vì tính từ weight để tránh lỗi làm tròn (33.33 × 3 = 99.99)
+    rawScore = testResult.score || 0
 
     // Lấy thông tin từ testResult
     score = testResult.score // Điểm sau penalty
@@ -120,11 +121,24 @@ const TestResultsSection = ({ testResult, isLoading }) => {
 
     // Convert details thành format dễ hiển thị
     testCases = details.map((detail, index) => {
-      // Parse note để lấy test case name và status
-      // Format: "test 1: success" hoặc "test 1: failed"
-      const noteMatch = detail.note?.match(/^(test \d+):\s*(\w+)$/i)
-      const testCaseName = noteMatch ? noteMatch[1] : `Test Case ${index + 1}`
-      const statusText = noteMatch ? noteMatch[2] : "unknown"
+      // Parse note để lấy status
+      // Backend trả về note có thể là:
+      // - "success" hoặc "failed" (format đơn giản)
+      // - "test 1: success" (format có test case name)
+      let statusText = "unknown"
+      let testCaseName = `Test Case ${index + 1}`
+
+      if (detail.note) {
+        // Thử match format "test 1: success"
+        const noteMatch = detail.note.match(/^(test \d+):\s*(\w+)$/i)
+        if (noteMatch) {
+          testCaseName = noteMatch[1]
+          statusText = noteMatch[2]
+        } else {
+          // Format đơn giản: chỉ có "success" hoặc "failed"
+          statusText = detail.note.trim()
+        }
+      }
 
       return {
         id: testCaseName,

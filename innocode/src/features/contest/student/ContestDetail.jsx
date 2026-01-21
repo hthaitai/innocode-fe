@@ -294,6 +294,12 @@ const ContestDetail = () => {
         return "text-blue-500 bg-blue-500/10"
       case "completed":
         return "text-green-500 bg-green-500/10"
+      case "paused":
+        return "text-yellow-500 bg-yellow-500/10"
+      case "delayed":
+        return "text-orange-600 bg-orange-600/10"
+      case "cancelled":
+        return "text-red-500 bg-red-500/10"
       default:
         return "text-gray-500 bg-gray-500/10"
     }
@@ -541,6 +547,9 @@ const ContestDetail = () => {
                     registrationopen: "contest.statusLabels.registrationopen",
                     registrationclosed:
                       "contest.statusLabels.registrationclosed",
+                    paused: "contest.statusLabels.paused",
+                    delayed: "contest.statusLabels.delayed",
+                    cancelled: "contest.statusLabels.cancelled",
                     draft: "contest.statusLabels.draft",
                   }
 

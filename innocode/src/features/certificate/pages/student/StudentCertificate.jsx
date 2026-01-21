@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next"
 import PageContainer from "../../../../shared/components/PageContainer"
 import { BREADCRUMBS } from "../../../../config/breadcrumbs"
 import { useGetMyCertificatesQuery } from "../../../../services/certificateApi"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
+import { useLocation } from "react-router-dom"
 import { Download } from "lucide-react"
 
 // Format date based on current language
@@ -38,15 +39,37 @@ const handleDownload = async (url, filename) => {
 
 function StudentCertificate() {
   const { t, i18n } = useTranslation("pages")
+  const location = useLocation()
   const { data: certificates, isLoading, error } = useGetMyCertificatesQuery()
+
+  const queryParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search],
+  )
 
   const breadcrumb = [
     i18n.language === "vi" ? "Chứng chỉ học sinh" : "Student Certificate",
   ]
 
   useEffect(() => {
-    console.log(certificates)
-  }, [certificates])
+    const certId = queryParams.get("id")
+    if (certificates && certId) {
+      setTimeout(() => {
+        const element = document.getElementById(`cert-${certId}`)
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" })
+          element.classList.add("ring-2", "ring-primary-500", "ring-offset-2")
+          setTimeout(() => {
+            element.classList.remove(
+              "ring-2",
+              "ring-primary-500",
+              "ring-offset-2",
+            )
+          }, 3000)
+        }
+      }, 500)
+    }
+  }, [certificates, queryParams])
 
   if (isLoading) {
     return (
@@ -112,6 +135,7 @@ function StudentCertificate() {
             {certificateList.map((certificate) => (
               <div
                 key={certificate.certificateId}
+                id={`cert-${certificate.certificateId}`}
                 className="w-full bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-row"
               >
                 {/* Image (left on md+, top on mobile) */}
@@ -157,7 +181,7 @@ function StudentCertificate() {
                         <p className="text-gray-900 font-medium">
                           {formatDateByLanguage(
                             certificate.issuedAt,
-                            i18n.language
+                            i18n.language,
                           )}
                         </p>
                       </div>
@@ -177,7 +201,7 @@ function StudentCertificate() {
                       onClick={() =>
                         handleDownload(
                           certificate.fileUrl,
-                          certificate.templateName + ".png"
+                          certificate.templateName + ".png",
                         )
                       }
                       className="flex-1 cursor-pointer flex items-center justify-center gap-2 border-2 border-gray-300 hover:border-orange-500 text-gray-700 hover:text-orange-500 font-medium py-2 px-4 rounded-lg transition-colors duration-200"

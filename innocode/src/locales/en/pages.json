@@ -198,8 +198,12 @@
       "totalvalidcontests": "Total Valid Contests",
       "opened": "Opened",
       "closed": "Closed",
+      "finished": "Finished",
       "finalized": "Finalized",
-      "incoming": "Incoming"
+      "incoming": "Incoming",
+      "pending": "Pending",
+      "plagiarismsuspected": "Plagiarism Suspected",
+      "plagiarismconfirmed": "Plagiarism Confirmed"
     },
     "openCodeModal": {
       "title": "Enter Open Code",
@@ -1096,6 +1100,44 @@
     "evaluationCriteria": "Evaluation Criteria",
     "criteria": "Criteria"
   },
+  "mentorDashboard": {
+    "title": "Mentor Dashboard",
+    "stats": {
+      "totalTeams": "Teams Managed",
+      "totalStudents": "Students Mentored",
+      "contestsParticipated": "Contests Participated",
+      "totalCertificates": "Total Certificates"
+    },
+    "bestTeam": {
+      "title": "Best Performing Team",
+      "certs": "Certificates",
+      "teamCerts": "Team Certificates",
+      "studentCerts": "Student Certificates"
+    },
+    "noBestTeam": "No performance data available yet.",
+    "statusBreakdown": {
+      "title": "Team Status Breakdown",
+      "eliminated": "Eliminated",
+      "disqualified": "Disqualified"
+    },
+    "activity": {
+      "title": "Contest Activity",
+      "ongoing": "Ongoing",
+      "upcoming": "Upcoming",
+      "completed": "Completed"
+    },
+    "recentCerts": {
+      "title": "Recent Certificates",
+      "team": "Team",
+      "contest": "Contest",
+      "type": "Type",
+      "date": "Issued At",
+      "empty": "No certificates issued yet."
+    },
+    "notifications": {
+      "dashboardUpdated": "Your dashboard has been updated with latest data!"
+    }
+  },
   "dashboard": {
     "title": "Dashboard",
     "description": "View system overview and statistics",
@@ -1133,7 +1175,7 @@
       "currentMonth": "Current Month",
       "last3Months": "Last 3 Months",
       "last6Months": "Last 6 Months",
-      "currentYear": "Current Year",
+      "lastYear": "Last Year",
       "custom": "Custom",
       "startDate": "Start Date",
       "endDate": "End Date"

@@ -92,6 +92,7 @@ import MentorAppeal from "./features/appeal/pages/mentor/mentorAppeal"
 import AddTestCase from "./features/problems/auto-evaluation/pages/AddTestCase"
 import EditTestCase from "./features/problems/auto-evaluation/pages/EditTestCase"
 import OrganizerDashboard from "./features/dashboard/pages/organizer/OrganizerDashboard"
+import MentorDashboard from "./features/dashboard/pages/mentor/MentorDashboard"
 
 // Judge pages
 import JudgeManualSubmissionsPage from "./features/submission/pages/judge/JudgeManualSubmissionsPage" // new page for pending submissions list
@@ -429,6 +430,14 @@ const router = createBrowserRouter([
         element: <ContestDetail />,
       },
       //Teams
+      {
+        path: "mentor/dashboard",
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.MENTOR]}>
+            <MentorDashboard />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "mentor-team/:contestId",
         element: (

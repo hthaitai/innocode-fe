@@ -66,6 +66,7 @@ export const BREADCRUMBS = {
   ADMIN_USERS: ["Admin", "Users"],
   ADMIN_TEAMS: ["Admin", "Teams"],
   ADMIN_ANNOUNCEMENTS: ["Admin", "Announcements"],
+  MENTOR_DASHBOARD: ["Mentor", "Dashboard"],
 
   // Organizer pages
   ORGANIZER_CONTESTS: ["Contests"],
@@ -405,6 +406,7 @@ export const BREADCRUMB_PATHS = {
   ADMIN_USERS: ["/admin", "/admin/users"],
   ADMIN_TEAMS: ["/admin", "/admin/teams"],
   ADMIN_ANNOUNCEMENTS: ["/admin", "/admin/announcements"],
+  MENTOR_DASHBOARD: ["/mentor/dashboard"],
 
   // Organizer paths
   // Organizer contests
