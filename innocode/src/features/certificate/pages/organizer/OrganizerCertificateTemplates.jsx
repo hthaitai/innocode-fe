@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetContestByIdQuery } from "@/services/contestApi"
@@ -13,16 +14,19 @@ import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
 import { useTranslation } from "react-i18next"
 
 const OrganizerCertificateTemplates = () => {
-  const { t } = useTranslation(["certificate", "pages"])
+  const { t } = useTranslation(["certificate", "pages", "common", "errors"])
   const { contestId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 6
+
+  const isValidContestId = uuidValidate(contestId)
 
   const {
     data: contest,
     isLoading: contestLoading,
     isError: contestError,
-  } = useGetContestByIdQuery(contestId)
+    error: contestErrorObj,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
   const {
     data: templatesData,
@@ -33,9 +37,14 @@ const OrganizerCertificateTemplates = () => {
   const templates = templatesData?.data ?? []
   const pagination = templatesData?.additionalData ?? {}
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CERTIFICATE_TEMPLATES(
-    contest?.name ?? t("pages:contest.contest")
-  )
+  const hasContestError = !isValidContestId || contestError
+
+  // Breadcrumbs - Update to show "Not found" for error states
+  const breadcrumbItems = hasContestError
+    ? ["Contests", t("errors:common.notFound")]
+    : BREADCRUMBS.ORGANIZER_CERTIFICATE_TEMPLATES(
+        contest?.name ?? t("pages:contest.contest"),
+      )
   const breadcrumbPaths =
     BREADCRUMB_PATHS.ORGANIZER_CERTIFICATE_TEMPLATES(contestId)
 
@@ -50,24 +59,37 @@ const OrganizerCertificateTemplates = () => {
     )
   }
 
-  if (contestError || templatesError) {
+  if (contestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestErrorObj?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestErrorObj?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
+      </PageContainer>
+    )
+  }
+
+  if (templatesError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
         <ErrorState itemName="certificate templates" />
-      </PageContainer>
-    )
-  }
-
-  if (!contest) {
-    return (
-      <PageContainer
-        breadcrumb={breadcrumbItems}
-        breadcrumbPaths={breadcrumbPaths}
-      >
-        <MissingState itemName="contest" />
       </PageContainer>
     )
   }

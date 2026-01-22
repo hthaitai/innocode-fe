@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import { validate as uuidValidate } from "uuid"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
@@ -33,7 +34,7 @@ import { NotificationState } from "../../../../shared/components/ui/Notification
 
 const CreateRound = () => {
   const { contestId } = useParams()
-  const { t } = useTranslation(["round", "common", "contest"])
+  const { t } = useTranslation(["round", "common", "contest", "errors"])
   const navigate = useNavigate()
   const [createRound, { isLoading }] = useCreateRoundMutation()
 
@@ -52,11 +53,19 @@ const CreateRound = () => {
 
   const rounds = roundsData?.data ?? []
 
-  // Breadcrumbs
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_CREATE(
-    contest?.name ?? t("common:common.contest")
-  )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_CREATE(contestId)
+
+  // Validate UUID format first
+  const isValidUuid = uuidValidate(contestId)
+  const hasError = !isValidUuid || isContestError
+
+  // Update breadcrumb to show "Not found" for error states
+  // For errors: ["Contests", "Not found"] instead of ["Contests", "Not found", "New round"]
+  const breadcrumbItems = hasError
+    ? ["Contests", t("errors:common.notFound")]
+    : BREADCRUMBS.ORGANIZER_ROUND_CREATE(
+        contest?.name ?? t("common:common.contest"),
+      )
 
   const handleSubmit = async () => {
     let validationErrors = validateRound(form, contest, [], { t })
@@ -79,7 +88,7 @@ const CreateRound = () => {
       toast.error(
         t("create.errorValidation", {
           count: Object.keys(validationErrors).length,
-        })
+        }),
       )
       return
     }
@@ -95,7 +104,7 @@ const CreateRound = () => {
           formPayload.append("MainRoundId", form.mainRoundId)
 
           const mainRound = rounds.find(
-            (r) => String(r.roundId) === String(form.mainRoundId)
+            (r) => String(r.roundId) === String(form.mainRoundId),
           )
           const mainRoundName = mainRound?.roundName || ""
           formPayload.append("MainRoundName", mainRoundName)
@@ -122,25 +131,25 @@ const CreateRound = () => {
         formPayload.append("ProblemConfig.Type", form.problemConfig.type)
         formPayload.append(
           "ProblemConfig.Description",
-          form.problemConfig.description
+          form.problemConfig.description,
         )
         formPayload.append(
           "ProblemConfig.Language",
-          form.problemConfig.language
+          form.problemConfig.language,
         )
         formPayload.append(
           "ProblemConfig.PenaltyRate",
-          form.problemConfig.penaltyRate
+          form.problemConfig.penaltyRate,
         )
         if (form.problemType === "AutoEvaluation") {
           formPayload.append(
             "ProblemConfig.TestType",
-            form.problemConfig.testType || "InputOutput"
+            form.problemConfig.testType || "InputOutput",
           )
           if (form.problemConfig.testType === "MockTest") {
             formPayload.append(
               "ProblemConfig.MockTestWeight",
-              form.problemConfig.mockTestWeight
+              form.problemConfig.mockTestWeight,
             )
           }
         }
@@ -176,6 +185,20 @@ const CreateRound = () => {
     }
   }
 
+  if (!isValidUuid) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={t("errors:common.invalidId")}
+        />
+      </PageContainer>
+    )
+  }
+
   if (contestLoading || roundsLoading) {
     return (
       <PageContainer
@@ -188,12 +211,24 @@ const CreateRound = () => {
   }
 
   if (isContestError) {
+    let errorMessage = null
+
+    // Handle specific error status codes
+    if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("common:common.contest")} />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }

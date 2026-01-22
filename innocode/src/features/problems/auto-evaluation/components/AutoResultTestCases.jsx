@@ -31,29 +31,31 @@ const AutoResultTestCases = ({ details }) => {
                       {t("common.weight")}: {testCase.weight}
                     </span>
                     <p>|</p>
-                    {testCase.runtimeMs && (
-                      <span>
-                        {t("common.runtime")}: {testCase.runtimeMs}ms
-                      </span>
-                    )}
+                    {testCase.runtimeMs !== null &&
+                      testCase.runtimeMs !== undefined && (
+                        <span>
+                          {t("common.runtime")}: {testCase.runtimeMs}ms
+                        </span>
+                      )}
                     <p>|</p>
-                    {testCase.memoryKb && (
-                      <span>
-                        {t("common.memory")}: {testCase.memoryKb}KB
-                      </span>
-                    )}
+                    {testCase.memoryKb !== null &&
+                      testCase.memoryKb !== undefined && (
+                        <span>
+                          {t("common.memory")}: {testCase.memoryKb}KB
+                        </span>
+                      )}
                   </div>
                 </div>
               </div>
 
               <span
                 className={`font-semibold ${
-                  testCase.note === "success"
+                  testCase.note?.toLowerCase().includes("success")
                     ? "text-green-700"
                     : "text-red-700"
                 }`}
               >
-                {testCase.note === "success"
+                {testCase.note?.toLowerCase().includes("success")
                   ? t("common.passed").toUpperCase()
                   : t("common.failed").toUpperCase()}
               </span>

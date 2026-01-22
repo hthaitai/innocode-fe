@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import { validate as uuidValidate } from "uuid"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { useNavigate, useParams } from "react-router-dom"
@@ -30,22 +31,27 @@ import {
 
 const EditRound = () => {
   const { contestId, roundId } = useParams()
-  const { t } = useTranslation(["round", "common", "contest"])
+  const { t } = useTranslation(["round", "common", "contest", "errors"])
   const navigate = useNavigate()
+
+  const isValidContestId = uuidValidate(contestId)
+  const isValidRoundId = uuidValidate(roundId)
 
   // Fetch contest and round data
   const {
     data: contest,
     isLoading: contestLoading,
     isError: isContestError,
-  } = useGetContestByIdQuery(contestId)
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
   const {
     data: round,
     isLoading: roundLoading,
     isError: isRoundError,
-  } = useGetRoundByIdQuery(roundId)
+    error: roundError,
+  } = useGetRoundByIdQuery(roundId, { skip: !isValidRoundId })
   const { data: roundsData, isLoading: roundsLoading } =
-    useGetRoundsByContestIdQuery(contestId)
+    useGetRoundsByContestIdQuery(contestId, { skip: !isValidContestId })
 
   const rounds = roundsData?.data ?? []
 
@@ -55,14 +61,26 @@ const EditRound = () => {
 
   const [updateRound, { isLoading: isUpdating }] = useUpdateRoundMutation()
 
-  // Breadcrumbs
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_EDIT(
-    contest?.name ?? t("common:common.contest"),
-    round?.roundName ?? t("common:common.round")
-  )
+  const hasContestError = !isValidContestId || isContestError
+  const hasRoundError = !isValidRoundId || isRoundError
+  const hasError = hasContestError || hasRoundError
+
+  // Breadcrumbs - Update to show "Not found" for error states
+  const breadcrumbItems = hasError
+    ? [
+        "Contests",
+        hasContestError ? t("errors:common.notFound") : contest?.name,
+        ...(hasRoundError && !hasContestError
+          ? [t("errors:common.notFound")]
+          : []),
+      ]
+    : BREADCRUMBS.ORGANIZER_ROUND_EDIT(
+        contest?.name ?? t("common:common.contest"),
+        round?.roundName ?? t("common:common.round"),
+      )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_EDIT(
     contestId,
-    roundId
+    roundId,
   )
 
   // Initialize form data once round is loaded
@@ -100,7 +118,7 @@ const EditRound = () => {
   const hasChanges = useMemo(() => {
     if (!formData || !originalData) return false
     return Object.keys(formData).some(
-      (key) => formData[key] !== originalData[key]
+      (key) => formData[key] !== originalData[key],
     )
   }, [formData, originalData])
 
@@ -118,7 +136,7 @@ const EditRound = () => {
       toast.error(
         t("create.errorValidation", {
           count: Object.keys(validationErrors).length,
-        })
+        }),
       ) // reusing create's error message since logic is same
       return
     }
@@ -137,37 +155,37 @@ const EditRound = () => {
       if (formData.problemType === "McqTest") {
         formPayload.append(
           "McqTestConfig.Config",
-          formData.mcqTestConfig.config
+          formData.mcqTestConfig.config,
         )
       }
 
       if (formData.problemConfig) {
         formPayload.append(
           "ProblemConfig.Type",
-          formData.problemConfig.type || formData.problemType
+          formData.problemConfig.type || formData.problemType,
         )
         formPayload.append(
           "ProblemConfig.Description",
-          formData.problemConfig.description
+          formData.problemConfig.description,
         )
         formPayload.append(
           "ProblemConfig.Language",
-          formData.problemConfig.language
+          formData.problemConfig.language,
         )
         formPayload.append(
           "ProblemConfig.PenaltyRate",
-          formData.problemConfig.penaltyRate
+          formData.problemConfig.penaltyRate,
         )
 
         if (formData.problemType === "AutoEvaluation") {
           formPayload.append(
             "ProblemConfig.TestType",
-            formData.problemConfig.testType || "InputOutput"
+            formData.problemConfig.testType || "InputOutput",
           )
           if (formData.problemConfig.testType === "MockTest") {
             formPayload.append(
               "ProblemConfig.MockTestWeight",
-              formData.problemConfig.mockTestWeight
+              formData.problemConfig.mockTestWeight,
             )
           }
         }
@@ -176,7 +194,7 @@ const EditRound = () => {
         if (formData.TemplateFile) {
           formPayload.append(
             "ProblemConfig.TemplateFile",
-            formData.TemplateFile
+            formData.TemplateFile,
           )
         }
       }
@@ -188,6 +206,15 @@ const EditRound = () => {
     } catch (err) {
       console.error(err)
       const errorMessage = err?.data?.errorMessage || t("edit.errorGeneric")
+
+      // Handle specific error: Cannot update opened round
+      if (
+        errorMessage === "Cannot update round while it is in 'Opened' status."
+      ) {
+        toast.error(t("errors.cannotUpdateOpened"))
+        return
+      }
+
       const formattedError = formatRoundError(errorMessage)
 
       // If it's a buffer error, highlight the start time
@@ -219,24 +246,56 @@ const EditRound = () => {
     )
   }
 
-  if (isContestError) {
+  if (isContestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for contest
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    } else if (contestError?.status === 400) {
+      errorMessage = t("errors:common.badRequest")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("common:common.contest")} />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
 
-  if (isRoundError) {
+  if (isRoundError || !round || !isValidRoundId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for round
+    if (!isValidRoundId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (roundError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (roundError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    } else if (roundError?.status === 400) {
+      errorMessage = t("errors:common.badRequest")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("common:common.round")} />
+        <ErrorState
+          itemName={t("common:common.round")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
@@ -270,6 +329,7 @@ const EditRound = () => {
                 rounds={rounds}
                 selectedStart={formData.start}
                 selectedEnd={formData.end}
+                disableNavigation={true}
               />
             )}
           </div>

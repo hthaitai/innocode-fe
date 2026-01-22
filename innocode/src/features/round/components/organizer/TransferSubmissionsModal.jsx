@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { Users } from "lucide-react"
 import toast from "react-hot-toast"
 import BaseModal from "@/shared/components/BaseModal"
 import { useGetContestJudgesQuery } from "@/services/contestJudgeApi"
@@ -79,9 +80,17 @@ const TransferSubmissionsModal = ({ isOpen, onClose, contestId, roundId }) => {
         )}
 
         {!isLoading && !isError && judges.length === 0 && (
-          <p className="text-center text-[#7A7574]">
-            {t("judge:noJudgesAvailable")}
-          </p>
+          <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
+            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">
+              {t("judge:noJudgesAvailable.title")}
+            </h3>
+            <p className="text-xs text-[#7A7574] max-w-sm">
+              {t("judge:noJudgesAvailable.description")}
+            </p>
+          </div>
         )}
 
         <div className="flex flex-col gap-1">

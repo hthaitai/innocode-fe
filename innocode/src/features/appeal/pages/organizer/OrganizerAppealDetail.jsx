@@ -1,5 +1,6 @@
 import React from "react"
 import { useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import { FileText, Scale } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import InfoSection from "@/shared/components/InfoSection"
@@ -22,33 +23,51 @@ import AppealActions from "../../components/organizer/AppealActions"
 import { useTranslation } from "react-i18next"
 
 const OrganizerAppealDetail = () => {
-  const { t } = useTranslation(["appeal"])
+  const { t } = useTranslation(["appeal", "common", "errors"])
   const { contestId, appealId } = useParams()
   const { openModal } = useModal()
+
+  const isValidContestId = uuidValidate(contestId)
+  const isValidAppealId = uuidValidate(appealId)
 
   // Fetch contest info
   const {
     data: contest,
     isLoading: contestLoading,
-    isError: contestError,
-  } = useGetContestByIdQuery(contestId)
+    isError: isContestError,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
   // Fetch appeals
   const {
     data: appeal,
     isLoading: appealLoading,
-    isError: appealError,
-  } = useGetAppealByIdQuery(appealId)
+    isError: isAppealError,
+    error: appealError,
+  } = useGetAppealByIdQuery(appealId, { skip: !isValidAppealId })
 
   const evidences = appeal?.evidences ?? []
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_APPEAL_DETAIL(
-    contest?.name ?? "Contest",
-    appeal?.ownerName
-  )
+  const hasContestError = !isValidContestId || isContestError
+  const hasAppealError = !isValidAppealId || isAppealError
+  const hasError = hasContestError || hasAppealError
+
+  // Update breadcrumb to show "Not found" for error states
+  const breadcrumbItems = hasError
+    ? [
+        "Contests",
+        hasContestError ? t("errors:common.notFound") : contest?.name,
+        ...(hasAppealError && !hasContestError
+          ? ["Appeals", t("errors:common.notFound")]
+          : []),
+      ]
+    : BREADCRUMBS.ORGANIZER_APPEAL_DETAIL(
+        contest?.name ?? "Contest",
+        appeal?.ownerName ?? "Appeal",
+      )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_APPEAL_DETAIL(
     contestId,
-    appealId
+    appealId,
   )
 
   if (appealLoading || contestLoading) {
@@ -62,24 +81,49 @@ const OrganizerAppealDetail = () => {
     )
   }
 
-  if (appealError || contestError) {
+  if (isContestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for contest
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("appeal:appealInfo")} />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
 
-  if (!appeal || !contest) {
+  if (isAppealError || !appeal || !isValidAppealId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for appeal
+    if (!isValidAppealId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (appealError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (appealError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName={t("appeal:missingAppeal")} />
+        <ErrorState itemName={t("appeal:appealInfo")} message={errorMessage} />
       </PageContainer>
     )
   }

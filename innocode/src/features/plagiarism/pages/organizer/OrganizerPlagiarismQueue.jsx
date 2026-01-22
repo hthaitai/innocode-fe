@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
@@ -16,7 +17,7 @@ import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { useTranslation } from "react-i18next"
 
 export default function OrganizerPlagiarismQueue() {
-  const { t } = useTranslation(["plagiarism"])
+  const { t } = useTranslation(["plagiarism", "common", "errors"])
   const { contestId } = useParams()
 
   const [page, setPage] = useState(1)
@@ -29,6 +30,7 @@ export default function OrganizerPlagiarismQueue() {
     data: contest,
     isLoading: contestLoading,
     isError: contestError,
+    error: contestErrorData,
   } = useGetContestByIdQuery(contestId)
 
   const {
@@ -43,13 +45,36 @@ export default function OrganizerPlagiarismQueue() {
     studentName: studentNameSearch,
   })
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_PLAGIARISM(
-    contest?.name ?? t("contest")
-  )
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_PLAGIARISM(contestId)
-
   const plagiarismItems = plagiarismData?.data ?? []
   const pagination = plagiarismData?.additionalData ?? {}
+
+  // Validate UUID format first
+  const isValidUuid = uuidValidate(contestId)
+  const hasError = !isValidUuid || contestError
+
+  // Update breadcrumb to show "Not found" for error states
+  // For errors: ["Contests", "Not found"] instead of ["Contests", "Not found", "Plagiarism"]
+  const breadcrumbItems = hasError
+    ? ["Contests", t("errors:common.notFound")]
+    : BREADCRUMBS.ORGANIZER_PLAGIARISM(
+        contest?.name ?? t("common:common.contest"),
+      )
+
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_PLAGIARISM(contestId)
+
+  if (!isValidUuid) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={t("errors:common.invalidId")}
+        />
+      </PageContainer>
+    )
+  }
 
   if (plagiarismLoading || contestLoading) {
     return (
@@ -63,12 +88,30 @@ export default function OrganizerPlagiarismQueue() {
   }
 
   if (plagiarismError || contestError) {
+    let errorMessage = null
+
+    // Handle specific error status codes for contest errors
+    if (contestError && contestErrorData) {
+      if (contestErrorData?.status === 404) {
+        errorMessage = t("errors:common.notFound")
+      } else if (contestErrorData?.status === 403) {
+        errorMessage = t("errors:common.forbidden")
+      }
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("submissions")} />
+        <ErrorState
+          itemName={
+            contestError
+              ? t("common:common.contest")
+              : t("plagiarism:submissions")
+          }
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
@@ -79,7 +122,10 @@ export default function OrganizerPlagiarismQueue() {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName={t("contest")} />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={t("errors:common.notFound")}
+        />
       </PageContainer>
     )
   }

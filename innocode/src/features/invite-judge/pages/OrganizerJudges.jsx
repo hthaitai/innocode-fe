@@ -14,7 +14,7 @@ import { MissingState } from "@/shared/components/ui/MissingState"
 const OrganizerJudges = () => {
   const { contestId } = useParams()
   const navigate = useNavigate()
-  const { t } = useTranslation(["pages", "common", "judge"])
+  const { t } = useTranslation(["pages", "common", "judge", "errors"])
 
   const isValidGuid = uuidValidate(contestId)
 
@@ -25,19 +25,18 @@ const OrganizerJudges = () => {
     error,
   } = useGetContestByIdQuery(contestId, { skip: !isValidGuid })
 
-  const isNotFound = !isValidGuid || error?.status === 404
+  const hasError = !isValidGuid || isError
 
-  // Using BREADCRUMBS.ORGANIZER_CONTEST_JUDGES which maps to "Judges"
-  const breadcrumbItems = isNotFound
-    ? BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(t("contest:notFound"))
+  // Update breadcrumb to show "Not found" for error states
+  // For errors: ["Contests", "Not found"] instead of ["Contests", "Not found", "Judges"]
+  const breadcrumbItems = hasError
+    ? ["Contests", t("errors:common.notFound")]
     : BREADCRUMBS.ORGANIZER_CONTEST_JUDGES(
         contest?.name || "...",
         t("judge:judges"),
       )
 
-  const breadcrumbPaths = isNotFound
-    ? BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(contestId)
-    : BREADCRUMB_PATHS.ORGANIZER_CONTEST_JUDGES(contestId)
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_JUDGES(contestId)
 
   const menuItems = [
     {
@@ -66,18 +65,26 @@ const OrganizerJudges = () => {
   }
 
   if (isError || !contest || !isValidGuid) {
-    const isNotFound = error?.status === 404 || !contest || !isValidGuid
+    let errorMessage = null
+
+    // Handle specific error status codes
+    if (!isValidGuid) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (error?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (error?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
 
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isNotFound ? (
-          <MissingState itemName={t("common:common.contest")} />
-        ) : (
-          <ErrorState itemName={t("common:common.contest")} />
-        )}
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }

@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
@@ -15,34 +16,44 @@ import TablePagination from "@/shared/components/TablePagination"
 import { useTranslation } from "react-i18next"
 
 const OrganizerIssuedStudentCertificates = () => {
-  const { t } = useTranslation(["certificate"])
+  const { t } = useTranslation(["certificate", "common", "errors"])
   const { contestId } = useParams()
   const [page, setPage] = useState(1)
   const pageSize = 10
+
+  const isValidContestId = uuidValidate(contestId)
 
   const {
     data: contest,
     isLoading: contestLoading,
     error: contestError,
-  } = useGetContestByIdQuery(contestId)
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
   const {
     data: issuedData,
     isLoading: issuedLoading,
     error: issuedError,
-  } = useGetIssuedCertificatesQuery({
-    contestId,
-    page,
-    pageSize,
-    types: "Student",
-  })
+  } = useGetIssuedCertificatesQuery(
+    {
+      contestId,
+      page,
+      pageSize,
+      types: "Student",
+    },
+    { skip: !isValidContestId },
+  )
 
   const certificates = issuedData?.data ?? []
   const pagination = issuedData?.additionalData ?? {}
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CERTIFICATE_ISSUED_STUDENT(
-    contest?.name ?? "Contest"
-  )
+  const hasContestError = !isValidContestId || contestError
+
+  // Breadcrumbs - Update to show "Not found" for error states
+  const breadcrumbItems = hasContestError
+    ? ["Contests", t("errors:common.notFound")]
+    : BREADCRUMBS.ORGANIZER_CERTIFICATE_ISSUED_STUDENT(
+        contest?.name ?? "Contest",
+      )
   const breadcrumbPaths =
     BREADCRUMB_PATHS.ORGANIZER_CERTIFICATE_ISSUED_STUDENT(contestId)
 
@@ -59,24 +70,37 @@ const OrganizerIssuedStudentCertificates = () => {
     )
   }
 
-  if (contestError || issuedError) {
+  if (contestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
+      </PageContainer>
+    )
+  }
+
+  if (issuedError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
         <ErrorState itemName="certificates" />
-      </PageContainer>
-    )
-  }
-
-  if (!contest) {
-    return (
-      <PageContainer
-        breadcrumb={breadcrumbItems}
-        breadcrumbPaths={breadcrumbPaths}
-      >
-        <MissingState itemName="contest" />
       </PageContainer>
     )
   }

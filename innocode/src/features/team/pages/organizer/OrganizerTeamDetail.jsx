@@ -1,5 +1,6 @@
 import React from "react"
 import { useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetContestByIdQuery } from "@/services/contestApi"
@@ -14,13 +15,17 @@ import { MissingState } from "@/shared/components/ui/MissingState"
 
 const OrganizerTeamDetail = () => {
   const { teamId, contestId } = useParams()
-  const { t } = useTranslation("common")
+  const { t } = useTranslation(["common", "errors"])
+
+  const isValidTeamId = uuidValidate(teamId)
+  const isValidContestId = uuidValidate(contestId)
 
   const {
     data: team,
     isLoading: teamLoading,
     isError: teamError,
-  } = useGetTeamByIdQuery(teamId)
+    error: teamErrorObj,
+  } = useGetTeamByIdQuery(teamId, { skip: !isValidTeamId })
 
   console.log(team)
 
@@ -28,12 +33,26 @@ const OrganizerTeamDetail = () => {
     data: contest,
     isLoading: contestLoading,
     isError: contestError,
-  } = useGetContestByIdQuery(contestId)
+    error: contestErrorObj,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEAM_DETAIL(
-    contest?.name ?? t("common.contest"),
-    team?.name ?? t("common.team"),
-  )
+  const hasContestError = !isValidContestId || contestError
+  const hasTeamError = !isValidTeamId || teamError
+  const hasError = hasContestError || hasTeamError
+
+  // Breadcrumbs - Update to show "Not found" for error states
+  const breadcrumbItems = hasError
+    ? [
+        "Contests",
+        hasContestError ? t("errors:common.notFound") : contest?.name,
+        ...(hasTeamError && !hasContestError
+          ? ["Teams", t("errors:common.notFound")]
+          : []),
+      ]
+    : BREADCRUMBS.ORGANIZER_TEAM_DETAIL(
+        contest?.name ?? t("common.contest"),
+        team?.name ?? t("common.team"),
+      )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEAM_DETAIL(
     contestId,
     teamId,
@@ -50,24 +69,44 @@ const OrganizerTeamDetail = () => {
     )
   }
 
-  if (teamError || contestError) {
+  if (contestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestErrorObj?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestErrorObj?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="team" />
+        <ErrorState itemName={t("common.contest")} message={errorMessage} />
       </PageContainer>
     )
   }
 
-  if (!team) {
+  if (teamError || !team || !isValidTeamId) {
+    let errorMessage = null
+
+    if (!isValidTeamId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (teamErrorObj?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (teamErrorObj?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="team" />
+        <ErrorState itemName={t("common.team")} message={errorMessage} />
       </PageContainer>
     )
   }

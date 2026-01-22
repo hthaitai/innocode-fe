@@ -2,7 +2,7 @@ export const validateRound = (
   data,
   contest = null,
   existingRounds = [],
-  { isEdit = false, t = (key) => key } = {}
+  { isEdit = false, t = (key) => key } = {},
 ) => {
   const errors = {}
   const now = new Date()
@@ -103,8 +103,8 @@ export const validateRound = (
       }
     }
 
-    // Template file validation
-    if (!data.TemplateFile) {
+    // Template file validation - only required when creating, not when editing
+    if (!isEdit && !data.TemplateFile) {
       errors.templateFile = t("round:validation.templateFile")
     }
   }

@@ -4,6 +4,7 @@ import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import StatusBadge from "@/shared/components/StatusBadge"
 
 const RoundInfo = ({ round }) => {
   const navigate = useNavigate()
@@ -36,6 +37,10 @@ const RoundInfo = ({ round }) => {
   details.push(
     { label: t("info.roundName"), value: safe(round.roundName) },
     { label: t("info.contestName"), value: safe(round.contestName) },
+    {
+      label: t("info.status"),
+      value: <StatusBadge status={round.status} translate="round" />,
+    },
     {
       label: t("info.problemType"),
       value:

@@ -50,7 +50,6 @@ export const statusColorMap = {
   incoming: "bg-amber-300",
   opened: "bg-cyan-500",
   eliminated: "bg-orange-500",
-  disqualified: "bg-red-700",
 }
 
 import { useTranslation } from "react-i18next"

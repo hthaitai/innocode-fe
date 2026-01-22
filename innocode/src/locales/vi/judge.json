@@ -186,5 +186,9 @@
     "success": "Đã gửi lời mời và email!",
     "errorGeneric": "Gửi lời mời thất bại",
     "errorMissingInfo": "Thiếu thông tin cuộc thi hoặc giám khảo"
+  },
+  "noJudgesAvailable": {
+    "title": "Không có giám khảo",
+    "description": "Chưa có giám khảo nào được phân công cho cuộc thi này. Vui lòng mời giám khảo trước khi chuyển bài nộp."
   }
 }

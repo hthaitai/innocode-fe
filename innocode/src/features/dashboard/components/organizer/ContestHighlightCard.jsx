@@ -47,8 +47,11 @@ const ContestHighlightCard = ({ title, contestData }) => {
       {/* Title and Percentage - justified between */}
       <div className="flex justify-between items-end mb-1">
         <div className="text-body-1">{title}</div>
-        <div className="text-caption-1">
-          {contestData.progressPercentage || 0}%
+        <div className="flex items-center gap-2 text-caption-1">
+          <span className="text-[#7A7574]">
+            {t("dashboard:overview.contestProgress", "Contest Progress")}:
+          </span>
+          <span>{contestData.progressPercentage || 0}%</span>
         </div>
       </div>
 
@@ -145,8 +148,6 @@ const ContestHighlightCard = ({ title, contestData }) => {
             label: t("dashboard:overview.registrationEnd", "Registration end"),
             value: formatDateTime(contestData.registrationEnd),
           },
-          { spacer: true },
-
           // Contest Period
           {
             label: t("dashboard:overview.contestStart", "Contest start"),

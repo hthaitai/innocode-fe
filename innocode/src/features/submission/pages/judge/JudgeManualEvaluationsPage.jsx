@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import PageContainer from "../../../../shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import {
@@ -22,46 +23,72 @@ import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSectio
 import { useTranslation } from "react-i18next"
 
 const JudgeManualEvaluationsPage = () => {
-  const { t } = useTranslation("judge")
+  const { t } = useTranslation(["judge", "common", "errors"])
   const { contestId, roundId, submissionId } = useParams()
   const navigate = useNavigate()
+
+  const isValidContestId = uuidValidate(contestId)
+  const isValidRoundId = uuidValidate(roundId)
+  const isValidSubmissionId = uuidValidate(submissionId)
 
   // Refactored to avoid restricted round API
   const {
     data: contestData,
     isLoading: isContestLoading,
     isError: isContestError,
-  } = useGetContestByIdQuery(contestId)
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
   const round = contestData?.rounds?.find((r) => r.roundId === roundId)
 
   const {
     data: submission,
     isLoading: submissionLoading,
-    isError: submissionError,
-  } = useFetchSubmissionByIdQuery(submissionId)
+    isError: isSubmissionError,
+    error: submissionError,
+  } = useFetchSubmissionByIdQuery(submissionId, { skip: !isValidSubmissionId })
 
   const {
     data: rubricData,
     isLoading: rubricLoading,
-    isError: rubricError,
-  } = useFetchRubricQuery(roundId)
+    isError: isRubricError,
+  } = useFetchRubricQuery(roundId, { skip: !isValidRoundId })
 
   const {
     data: downloadData,
     isLoading: downloadLoading,
-    isError: downloadError,
+    isError: isDownloadError,
     refetch: fetchDownload,
-  } = useDownloadSubmissionQuery(submissionId)
+  } = useDownloadSubmissionQuery(submissionId, { skip: !isValidSubmissionId })
 
-  const breadcrumbItems = BREADCRUMBS.JUDGE_ROUND_SUBMISSION_EVALUATION(
-    round?.contestName ?? t("manualSubmissions.fallbacks.contest"),
-    round?.name ?? t("manualSubmissions.fallbacks.round")
-  )
+  const hasContestError = !isValidContestId || isContestError
+  const hasRoundError = !isValidRoundId || (contestData && !round)
+  const hasSubmissionError = !isValidSubmissionId || isSubmissionError
+  const hasError = hasContestError || hasRoundError || hasSubmissionError
+
+  // Breadcrumbs - Update to show "Not found" for error states
+  // Contest error: "Contests > Not found"
+  // Round error: "Contests > [Contest Name] > Not found"
+  // Submission error: "Contests > [Contest Name] > [Round Name] > Not found"
+  const breadcrumbItems = hasError
+    ? [
+        "Contests",
+        hasContestError ? t("errors:common.notFound") : contestData?.name,
+        ...(hasRoundError && !hasContestError
+          ? [t("errors:common.notFound")]
+          : []),
+        ...(hasSubmissionError && !hasContestError && !hasRoundError
+          ? [round?.name, t("errors:common.notFound")]
+          : []),
+      ]
+    : BREADCRUMBS.JUDGE_ROUND_SUBMISSION_EVALUATION(
+        round?.contestName ?? t("manualSubmissions.fallbacks.contest"),
+        round?.name ?? t("manualSubmissions.fallbacks.round"),
+      )
   const breadcrumbPaths = BREADCRUMB_PATHS.JUDGE_ROUND_SUBMISSION_EVALUATION(
     contestId,
     roundId,
-    submissionId
+    submissionId,
   )
 
   const criteria = rubricData?.data?.criteria ?? []
@@ -76,7 +103,7 @@ const JudgeManualEvaluationsPage = () => {
     if (criteria.length > 0) {
       const initialScores = criteria.map((c) => {
         const existingResult = submission?.criterionResults?.find(
-          (r) => r.rubricId === c.rubricId
+          (r) => r.rubricId === c.rubricId,
         )
         return {
           rubricId: c.rubricId,
@@ -104,24 +131,80 @@ const JudgeManualEvaluationsPage = () => {
     )
   }
 
-  if (submissionError || rubricError || downloadError || isContestError) {
+  if (isContestError || !contestData || !isValidContestId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for contest
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("evaluation.errors.submissionOrRubric")} />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
 
-  if (!round || !submission) {
+  if (!round || !isValidRoundId || isRubricError) {
+    let errorMessage = null
+
+    // Handle specific error for round
+    if (!isValidRoundId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (!round) {
+      errorMessage = t("errors:common.notFound")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName={t("evaluation.errors.submission")} />
+        <ErrorState
+          itemName={t("common:common.round")}
+          message={errorMessage}
+        />
+      </PageContainer>
+    )
+  }
+
+  if (
+    isSubmissionError ||
+    !submission ||
+    !isValidSubmissionId ||
+    isDownloadError
+  ) {
+    let errorMessage = null
+
+    // Handle specific error status codes for submission
+    if (!isValidSubmissionId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (submissionError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (submissionError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState
+          itemName={t("evaluation.errors.submission")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
@@ -130,7 +213,7 @@ const JudgeManualEvaluationsPage = () => {
 
   const handleScoreChange = (rubricId, field, value) => {
     setScores((prev) =>
-      prev.map((s) => (s.rubricId === rubricId ? { ...s, [field]: value } : s))
+      prev.map((s) => (s.rubricId === rubricId ? { ...s, [field]: value } : s)),
     )
 
     // Clear error for this field as soon as user types
@@ -152,7 +235,7 @@ const JudgeManualEvaluationsPage = () => {
       toast.error(
         t("evaluation.errors.validationSummary", {
           count: Object.keys(validationErrors).length,
-        })
+        }),
       )
       return
     }
@@ -191,7 +274,7 @@ const JudgeManualEvaluationsPage = () => {
               message={t("evaluation.alert", {
                 status: t(
                   `manualSubmissions.filter.${submission.status}`,
-                  submission.status
+                  submission.status,
                 ).toLowerCase(),
               })}
             />

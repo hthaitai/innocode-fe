@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { validate as uuidValidate } from "uuid"
 import {
   useFetchManualSubmissionsQuery,
   useLazyDownloadSubmissionQuery,
@@ -18,18 +19,22 @@ import TablePagination from "../../../../shared/components/TablePagination"
 import { useTranslation } from "react-i18next"
 
 const JudgeManualSubmissionsPage = () => {
-  const { t } = useTranslation("judge")
+  const { t } = useTranslation(["judge", "common", "errors"])
   const { contestId, roundId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
   const [statusFilter, setStatusFilter] = useState("Pending")
   const navigate = useNavigate()
 
+  const isValidContestId = uuidValidate(contestId)
+  const isValidRoundId = uuidValidate(roundId)
+
   const {
     data: contestData,
     isLoading: isContestLoading,
     isError: isContestError,
-  } = useGetContestByIdQuery(contestId)
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
   const roundData = contestData?.rounds?.find((r) => r.roundId === roundId)
 
@@ -37,12 +42,15 @@ const JudgeManualSubmissionsPage = () => {
     data: submissionsData,
     isLoading: isSubmissionsLoading,
     isError: isSubmissionsError,
-  } = useFetchManualSubmissionsQuery({
-    statusFilter,
-    pageNumber,
-    pageSize,
-    roundIdSearch: roundId,
-  })
+  } = useFetchManualSubmissionsQuery(
+    {
+      statusFilter,
+      pageNumber,
+      pageSize,
+      roundIdSearch: roundId,
+    },
+    { skip: !isValidContestId || !isValidRoundId },
+  )
 
   const submissions = submissionsData?.data || []
   const pagination = submissionsData?.additionalData || {}
@@ -50,21 +58,34 @@ const JudgeManualSubmissionsPage = () => {
   const handleRubricEvaluation = (submissionId) => {
     if (!submissionId) return
     navigate(
-      `/judge/contests/${contestId}/rounds/${roundId}/submissions/${submissionId}/evaluation`
+      `/judge/contests/${contestId}/rounds/${roundId}/submissions/${submissionId}/evaluation`,
     )
   }
 
   const columns = getJudgeSubmissionsColumns(handleRubricEvaluation, t)
 
-  // Breadcrumbs
-  const breadcrumbItems = BREADCRUMBS.JUDGE_ROUND_SUBMISSIONS(
-    roundData?.contestName ?? t("manualSubmissions.fallbacks.contest"),
-    roundData?.name ?? t("manualSubmissions.fallbacks.round")
-  )
+  const hasContestError = !isValidContestId || isContestError
+  const hasRoundError = !isValidRoundId || (contestData && !roundData)
+  const hasError = hasContestError || hasRoundError
+
+  // Breadcrumbs - Update to show "Not found" for error states
+  // If round is invalid/not found: "Contests > [Contest Name] > Not found"
+  const breadcrumbItems = hasError
+    ? [
+        "Contests",
+        hasContestError ? t("errors:common.notFound") : contestData?.name,
+        ...(hasRoundError && !hasContestError
+          ? [t("errors:common.notFound")]
+          : []),
+      ]
+    : BREADCRUMBS.JUDGE_ROUND_SUBMISSIONS(
+        roundData?.contestName ?? t("manualSubmissions.fallbacks.contest"),
+        roundData?.name ?? t("manualSubmissions.fallbacks.round"),
+      )
 
   const breadcrumbPaths = BREADCRUMB_PATHS.JUDGE_ROUND_SUBMISSIONS(
     contestId,
-    roundId
+    roundId,
   )
 
   if (isContestLoading || isSubmissionsLoading) {
@@ -78,24 +99,50 @@ const JudgeManualSubmissionsPage = () => {
     )
   }
 
-  if (isContestError) {
+  if (isContestError || !contestData || !isValidContestId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for contest
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("manualSubmissions.errors.round")} />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
 
-  if (contestData && !roundData && roundId) {
+  if (!roundData || !isValidRoundId) {
+    let errorMessage = null
+
+    // Handle specific error for round
+    if (!isValidRoundId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (!roundData) {
+      errorMessage = t("errors:common.notFound")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName={t("manualSubmissions.errors.round")} />
+        <ErrorState
+          itemName={t("common:common.round")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }

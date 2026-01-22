@@ -12,22 +12,22 @@ const getTestCaseColumns = (t, handleEditTestCase, handleDeleteTestCase) => [
   {
     accessorKey: "input",
     header: t("common.input"),
-    size: 180,
+    size: 170,
     meta: { className: "truncate max-w-[180px]" },
     cell: ({ row }) => row.original.input || "—",
   },
   {
     accessorKey: "expectedOutput",
     header: t("common.expectedOutput"),
-    size: 180,
+    size: 170,
     meta: { className: "truncate max-w-[180px]" },
     cell: ({ row }) => row.original.expectedOutput || "—",
   },
-  { accessorKey: "weight", header: t("common.weight"), size: 100 },
+  { accessorKey: "weight", header: t("common.weight"), size: 110 },
   {
     accessorKey: "timeLimitMs",
     header: t("common.time"),
-    size: 110,
+    size: 120,
     cell: ({ row }) =>
       row.original.timeLimitMs ? `${row.original.timeLimitMs} ms` : "—",
   },

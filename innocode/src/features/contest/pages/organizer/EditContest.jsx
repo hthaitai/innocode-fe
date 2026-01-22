@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import {
   useGetContestByIdQuery,
   useUpdateContestMutation,
@@ -22,24 +23,35 @@ import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 export default function EditContest() {
   const { contestId } = useParams()
   const navigate = useNavigate()
-  const { t } = useTranslation(["pages", "contest", "common"])
+  const { t } = useTranslation(["pages", "contest", "common", "errors"])
 
   const {
     data: contest,
     isLoading,
     isError,
+    error,
   } = useGetContestByIdQuery(contestId)
   const [updateContest, { isLoading: updating }] = useUpdateContestMutation()
+
+  console.log(contest)
 
   const [formData, setFormData] = useState(null)
   const [originalData, setOriginalData] = useState(null)
   const [errors, setErrors] = useState({})
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_EDIT(
-    contest?.name ?? t("common:common.contest")
-  )
-
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_EDIT(contestId)
+
+  // Validate UUID format first
+  const isValidUuid = uuidValidate(contestId)
+  const hasError = !isValidUuid || isError
+
+  // Update breadcrumb to show "Not found" for error states
+  // For errors: ["Contests", "Not found"] instead of ["Contests", "Not found", "Edit contest"]
+  const breadcrumbItems = hasError
+    ? ["Contests", t("errors:common.notFound")]
+    : BREADCRUMBS.ORGANIZER_CONTEST_EDIT(
+        contest?.name ?? t("common:common.contest"),
+      )
 
   // Initialize form data once contest is loaded
   useEffect(() => {
@@ -61,7 +73,7 @@ export default function EditContest() {
   const hasChanges = useMemo(() => {
     if (!formData || !originalData) return false
     return Object.keys(formData).some(
-      (key) => formData[key] !== originalData[key]
+      (key) => formData[key] !== originalData[key],
     )
   }, [formData, originalData])
 
@@ -75,7 +87,7 @@ export default function EditContest() {
       toast.error(
         t("organizerContestForm.messages.validationError", {
           count: Object.keys(validationErrors).length,
-        })
+        }),
       )
       return
     }
@@ -90,11 +102,11 @@ export default function EditContest() {
     formPayload.append("end", fromDatetimeLocal(formData.end))
     formPayload.append(
       "registrationStart",
-      fromDatetimeLocal(formData.registrationStart)
+      fromDatetimeLocal(formData.registrationStart),
     )
     formPayload.append(
       "registrationEnd",
-      fromDatetimeLocal(formData.registrationEnd)
+      fromDatetimeLocal(formData.registrationEnd),
     )
     formPayload.append("teamMembersMin", formData.teamMembersMin)
     formPayload.append("teamMembersMax", formData.teamMembersMax)
@@ -146,9 +158,23 @@ export default function EditContest() {
 
       toast.error(
         err?.data?.errorMessage ||
-          t("organizerContestForm.messages.updateError")
+          t("organizerContestForm.messages.updateError"),
       )
     }
+  }
+
+  if (!isValidUuid) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={t("errors:common.invalidId")}
+        />
+      </PageContainer>
+    )
   }
 
   if (isLoading) {
@@ -163,12 +189,24 @@ export default function EditContest() {
   }
 
   if (isError) {
+    let errorMessage = null
+
+    // Handle specific error status codes
+    if (error?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (error?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("common:common.contest")} />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }

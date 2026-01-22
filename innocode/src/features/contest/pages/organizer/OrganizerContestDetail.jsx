@@ -20,19 +20,41 @@ import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 
 const OrganizerContestDetail = () => {
   const { contestId } = useParams()
-  const { t } = useTranslation(["pages", "contest", "common"])
+  const { t } = useTranslation(["pages", "contest", "common", "errors"])
 
   const {
     data: contest,
     isLoading,
     isError,
+    error,
   } = useGetContestByIdQuery(contestId)
 
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
+
+  // Validate UUID format first
+  const isValidUuid = uuidValidate(contestId)
+  const hasError = !isValidUuid || isError
+
+  // Update breadcrumb to show "Not found" for error states
   const breadcrumbItems = BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(
-    contest?.name ?? t("common:common.contest")
+    hasError
+      ? t("errors:common.notFound")
+      : (contest?.name ?? t("common:common.contest")),
   )
 
-  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
+  if (!isValidUuid) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={t("errors:common.invalidId")}
+        />
+      </PageContainer>
+    )
+  }
 
   if (isLoading) {
     return (
@@ -46,12 +68,24 @@ const OrganizerContestDetail = () => {
   }
 
   if (isError) {
+    let errorMessage = null
+
+    // Handle specific error status codes
+    if (error?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (error?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("common:common.contest")} />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }

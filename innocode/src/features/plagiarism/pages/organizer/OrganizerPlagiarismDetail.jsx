@@ -17,18 +17,18 @@ import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 
 const OrganizerPlagiarismDetail = () => {
-  const { t } = useTranslation(["plagiarism", "common", "contest"])
+  const { t } = useTranslation(["plagiarism", "common", "errors"])
   const { contestId, submissionId } = useParams()
 
-  const isValidContestGuid = uuidValidate(contestId)
-  const isValidSubmissionGuid = uuidValidate(submissionId)
+  const isValidContestId = uuidValidate(contestId)
+  const isValidSubmissionId = uuidValidate(submissionId)
 
   const {
     data: contest,
     isLoading: contestLoading,
     isError: isContestError,
     error: contestError,
-  } = useGetContestByIdQuery(contestId, { skip: !isValidContestGuid })
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
   const {
     data: plagiarismData,
@@ -36,7 +36,7 @@ const OrganizerPlagiarismDetail = () => {
     isError: isPlagiarismError,
     error: plagiarismError,
   } = useGetPlagiarismDetailQuery(submissionId, {
-    skip: !isValidSubmissionGuid,
+    skip: !isValidSubmissionId,
   })
 
   const submission = plagiarismData?.submission
@@ -44,22 +44,27 @@ const OrganizerPlagiarismDetail = () => {
   const details = plagiarismData?.details || []
   const matches = plagiarismData?.matches || []
 
-  const isContestNotFound = !isValidContestGuid || contestError?.status === 404
-  const isSubmissionNotFound =
-    !isValidSubmissionGuid || plagiarismError?.status === 404
+  const hasContestError = !isValidContestId || isContestError
+  const hasSubmissionError = !isValidSubmissionId || isPlagiarismError
+  const hasError = hasContestError || hasSubmissionError
 
-  const breadcrumbItems = isContestNotFound
-    ? BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(t("contest:notFound"))
+  // Update breadcrumb to show "Not found" for error states
+  const breadcrumbItems = hasError
+    ? [
+        "Contests",
+        hasContestError ? t("errors:common.notFound") : contest?.name,
+        ...(hasSubmissionError && !hasContestError
+          ? ["Plagiarism", t("errors:common.notFound")]
+          : []),
+      ]
     : BREADCRUMBS.ORGANIZER_PLAGIARISM_DETAIL(
-        contest?.name ?? t("contest"),
-        isSubmissionNotFound
-          ? t("plagiarism:notFound", "Submission Not Found")
-          : submission?.studentName ?? t("student")
+        contest?.name ?? t("common:common.contest"),
+        submission?.studentName ?? t("plagiarism:submission", "Submission"),
       )
 
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_PLAGIARISM_DETAIL(
     contestId,
-    submissionId
+    submissionId,
   )
 
   if (plagiarismLoading || contestLoading) {
@@ -73,38 +78,52 @@ const OrganizerPlagiarismDetail = () => {
     )
   }
 
-  if (isContestError || !contest || !isValidContestGuid) {
-    const isNotFound =
-      contestError?.status === 404 || !contest || !isValidContestGuid
+  if (isContestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for contest
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isNotFound ? (
-          <MissingState itemName={t("common:common.contest")} />
-        ) : (
-          <ErrorState itemName={t("common:common.contest")} />
-        )}
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
 
-  if (isPlagiarismError || !plagiarismData || !isValidSubmissionGuid) {
-    const isNotFound =
-      plagiarismError?.status === 404 ||
-      !plagiarismData ||
-      !isValidSubmissionGuid
+  if (isPlagiarismError || !plagiarismData || !isValidSubmissionId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for plagiarism
+    if (!isValidSubmissionId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (plagiarismError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (plagiarismError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isNotFound ? (
-          <MissingState itemName={t("plagiarism:submission", "Submission")} />
-        ) : (
-          <ErrorState itemName={t("plagiarism:submission", "Submission")} />
-        )}
+        <ErrorState
+          itemName={t("plagiarism:submission", "Submission")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }

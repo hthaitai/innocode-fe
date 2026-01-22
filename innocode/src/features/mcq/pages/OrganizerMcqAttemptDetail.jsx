@@ -1,5 +1,6 @@
 import React from "react"
 import { useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import { AlertTriangle, Clipboard, Database } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
@@ -10,6 +11,7 @@ import { getMcqAttemptDetailColumns } from "../columns/getMcqAttemptDetailColumn
 import { Spinner } from "../../../shared/components/SpinnerFluent"
 import { useGetAttemptDetailQuery } from "@/services/mcqApi"
 import { useGetRoundByIdQuery } from "@/services/roundApi"
+import { useGetContestByIdQuery } from "@/services/contestApi"
 import TableFluentScrollable from "../../../shared/components/table/TableFluentScrollable"
 import { AnimatedSection } from "../../../shared/components/ui/AnimatedSection"
 import { LoadingState } from "../../../shared/components/ui/LoadingState"
@@ -18,32 +20,67 @@ import { MissingState } from "../../../shared/components/ui/MissingState"
 import { useTranslation } from "react-i18next"
 
 const OrganizerMcqAttemptDetail = () => {
-  const { t } = useTranslation(["common", "breadcrumbs"])
+  const { t } = useTranslation(["common", "breadcrumbs", "errors"])
   const { contestId, roundId, attemptId } = useParams()
+
+  const isValidContestId = uuidValidate(contestId)
+  const isValidRoundId = uuidValidate(roundId)
+  const isValidAttemptId = uuidValidate(attemptId)
+
+  // Fetch contest, round, and attempt data
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    isError: isContestError,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
   const {
     data: round,
     isLoading: roundLoading,
     isError: roundError,
-  } = useGetRoundByIdQuery(roundId)
+    error: roundErrorObj,
+  } = useGetRoundByIdQuery(roundId, { skip: !isValidRoundId })
+
   const {
     data: attempt,
     isLoading: attemptLoading,
     isError: attemptError,
-  } = useGetAttemptDetailQuery(attemptId)
+    error: attemptErrorObj,
+  } = useGetAttemptDetailQuery(attemptId, { skip: !isValidAttemptId })
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
-    round?.contestName ?? t("common.contest"),
-    round?.roundName ?? t("common.round"),
-    attempt?.studentName ?? t("common.studentName")
-  )
+  const hasContestError = !isValidContestId || isContestError
+  const hasRoundError = !isValidRoundId || roundError
+  const hasAttemptError = !isValidAttemptId || attemptError
+  const hasError = hasContestError || hasRoundError || hasAttemptError
+
+  // Breadcrumbs - Update to show "Not found" for error states
+  const breadcrumbItems = hasError
+    ? [
+        "Contests",
+        hasContestError ? t("errors:common.notFound") : contest?.name,
+        ...(hasRoundError && !hasContestError
+          ? [t("errors:common.notFound")]
+          : !hasRoundError && !hasContestError
+            ? [round?.roundName]
+            : []),
+        ...(!hasContestError && !hasRoundError ? ["Quiz attempts"] : []),
+        ...(hasAttemptError && !hasContestError && !hasRoundError
+          ? [t("errors:common.notFound")]
+          : []),
+      ]
+    : BREADCRUMBS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
+        contest?.name ?? round?.contestName ?? t("common.contest"),
+        round?.roundName ?? t("common.round"),
+        attempt?.studentName ?? t("common.studentName"),
+      )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_MCQ_ATTEMPT_DETAIL(
     contestId,
     roundId,
-    attemptId
+    attemptId,
   )
 
-  if (attemptLoading || roundLoading) {
+  if (contestLoading || roundLoading || attemptLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -54,24 +91,68 @@ const OrganizerMcqAttemptDetail = () => {
     )
   }
 
-  if (attemptError || roundError) {
+  if (isContestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for contest
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("common.attempt")} />
+        <ErrorState itemName={t("common.contest")} message={errorMessage} />
       </PageContainer>
     )
   }
 
-  if (!round || !attempt) {
+  if (roundError || !round || !isValidRoundId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for round
+    if (!isValidRoundId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (roundErrorObj?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (roundErrorObj?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName={t("common.attempt")} />
+        <ErrorState itemName={t("common.round")} message={errorMessage} />
+      </PageContainer>
+    )
+  }
+
+  if (attemptError || !attempt || !isValidAttemptId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for attempt
+    if (!isValidAttemptId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (attemptErrorObj?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (attemptErrorObj?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName={t("common.attempt")} message={errorMessage} />
       </PageContainer>
     )
   }

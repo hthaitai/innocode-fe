@@ -177,26 +177,19 @@ const useNotificationNavigation = (onClose) => {
       return
     }
 
-    // Submission plagiarism confirmed - navigate to plagiarism detail
+    // Submission plagiarism suspected - navigate to plagiarism detail for organizer
     if (
-      notification.type === "submission.plagiarism_confirmed" ||
-      notification.type === "SubmissionPlagiarismConfirmed"
+      notification.type === "submission.plagiarism_suspected" ||
+      notification.type === "SubmissionPlagiarismSuspected"
     ) {
       if (onClose) onClose()
       const { contestId, submissionId } = notification.parsedPayload || {}
 
-      if (contestId && submissionId) {
-        // Navigate to plagiarism detail page for organizers, or contest detail for students
-        if (userRole === "organizer") {
-          navigate(
-            `/organizer/contests/${contestId}/plagiarism/${submissionId}`,
-          )
-        } else {
-          // For students/mentors, navigate to contest detail
-          navigate(`/contest-detail/${contestId}`)
-        }
+      if (contestId && submissionId && userRole === "organizer") {
+        // Navigate to plagiarism detail page for organizers only
+        navigate(`/organizer/contests/${contestId}/plagiarism/${submissionId}`)
       } else if (contestId) {
-        // Fallback to contest detail if submission details are missing
+        // Fallback to contest detail if submission details are missing or not organizer
         navigate(`/contest-detail/${contestId}`)
       }
       return

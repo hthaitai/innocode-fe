@@ -33,18 +33,6 @@ const TeamMemberList = ({ members }) => {
                   </div>
                 </div>
               </div>
-
-              <div
-                className={`text-sm leading-5 font-semibold ${
-                  member.memberRole === "Leader"
-                    ? "animated-rainbow"
-                    : "text-[#7A7574]"
-                }`}
-              >
-                {member.memberRole
-                  ? t(`teams.roles.${member.memberRole}`)
-                  : t("teams.memberRole")}
-              </div>
             </div>
           ))
         ) : (

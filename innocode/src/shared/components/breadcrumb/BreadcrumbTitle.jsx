@@ -75,7 +75,7 @@ const BreadcrumbTitle = ({ items = [], paths = [], maxVisible = 3 }) => {
                         {hiddenItems.map((hiddenItem, i) => (
                           <span
                             key={`hidden-${i}`}
-                            className="rounded-[5px] px-3 py-1.5 cursor-pointer text-sm leading-5 text-black hover:bg-[#F0F0F0] transition-colors duration-150"
+                            className="font-normal rounded-[5px] px-3 py-1.5 cursor-pointer text-sm leading-5 text-black hover:bg-[#F0F0F0] transition-colors duration-150"
                             onClick={() => handleBreadcrumbClick(i + 1)}
                           >
                             {hiddenItem}

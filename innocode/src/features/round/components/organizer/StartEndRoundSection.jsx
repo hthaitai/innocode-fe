@@ -6,9 +6,10 @@ import {
   useStartRoundNowMutation,
   useEndRoundNowMutation,
 } from "../../../../services/roundApi"
+import { formatDateTime } from "../../../../shared/utils/dateTime"
 
 const StartEndRoundSection = ({ roundId }) => {
-  const { t } = useTranslation("round")
+  const { t } = useTranslation(["round", "errors"])
   const [startRoundNow, { isLoading: isStarting }] = useStartRoundNowMutation()
   const [endRoundNow, { isLoading: isEnding }] = useEndRoundNowMutation()
 
@@ -17,6 +18,16 @@ const StartEndRoundSection = ({ roundId }) => {
       await startRoundNow(roundId).unwrap()
       toast.success(t("actions.startSuccess"))
     } catch (error) {
+      console.error(error)
+
+      const errorCode = error?.data?.errorCode
+
+      // Check for 403 Forbidden error
+      if (error?.status === 403 && errorCode === "FORBIDDEN") {
+        toast.error(t("errors:round.forbiddenOnlyOrganizer"))
+        return
+      }
+
       if (
         error?.data?.errorMessage === "Round already ended. Cannot start now."
       ) {
@@ -45,7 +56,27 @@ const StartEndRoundSection = ({ roundId }) => {
           t("errors.previousRoundNotFinalized", {
             currentRound: match[1],
             previousRound: match[2],
-          })
+          }),
+        )
+        return
+      }
+
+      // Handle round time conflict error with date formatting
+      const conflictRegex =
+        /New round time conflicts with existing round '(.*?)' \((.*?) - (.*?)\)\./
+      const conflictMatch = errorMessage.match(conflictRegex)
+
+      if (conflictMatch) {
+        const roundName = conflictMatch[1]
+        const startDate = conflictMatch[2]
+        const endDate = conflictMatch[3]
+
+        toast.error(
+          t("round:errors.conflictError", {
+            roundName,
+            startDate: formatDateTime(startDate),
+            endDate: formatDateTime(endDate),
+          }),
         )
         return
       }
@@ -59,9 +90,13 @@ const StartEndRoundSection = ({ roundId }) => {
       await endRoundNow(roundId).unwrap()
       toast.success(t("actions.endSuccess"))
     } catch (error) {
+      const errorCode = error?.data?.errorCode
       let errorMessage = error?.data?.message || error?.data?.errorMessage
 
-      if (errorMessage === "Cannot end round before it starts.") {
+      // Check for 403 Forbidden error
+      if (error?.status === 403 && errorCode === "FORBIDDEN") {
+        errorMessage = t("errors:round.forbiddenOnlyOrganizer")
+      } else if (errorMessage === "Cannot end round before it starts.") {
         errorMessage = t("errors.endBeforeStart")
       } else if (!errorMessage) {
         errorMessage = t("actions.endError")

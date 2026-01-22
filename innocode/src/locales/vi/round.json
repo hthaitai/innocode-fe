@@ -62,6 +62,7 @@
     "fastForwardAppealReviewBeforeRoundStart": "Không thể kết thúc sớm duyệt phúc khảo trước khi vòng thi bắt đầu.",
     "finalizeBeforeDeadlines": "Chỉ được phép hoàn tất sau khi tất cả các hạn chót đã kết thúc.",
     "judgeDeadlineBeforeRoundEnd": "Hạn chấm thi không thể trước khi vòng thi kết thúc.",
+    "cannotUpdateOpened": "Không thể cập nhật vòng thi khi đang ở trạng thái 'Đang mở'.",
     "unknownError": "Đã xảy ra lỗi không xác định"
   },
   "detail": {
@@ -85,6 +86,7 @@
     "problemDescription": "Mô tả đề bài",
     "testType": "Loại kiểm thử",
     "problemConfig": "Cấu hình đề bài",
+    "status": "Trạng thái",
     "values": {
       "mcq": "Trắc nghiệm (MCQ)",
       "auto": "Chấm tự động (Coding)",
@@ -205,6 +207,7 @@
   },
   "transfer": {
     "title": "Chuyển bài nộp",
+    "subtitle": "Chọn giám khảo để phân phối lại bài nộp của họ cho người khác",
     "description": "Chọn giám khảo để chuyển các bài nộp đang chờ của họ từ vòng thi này sang các giám khảo khác.",
     "selectJudge": "Chọn giám khảo để chuyển bài nộp từ",
     "transferButton": "Chuyển bài nộp",

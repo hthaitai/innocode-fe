@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import { toast } from "react-hot-toast"
 import { ArrowLeft } from "lucide-react"
 import CertificateTemplateForm from "../../components/organizer/CertificateTemplateForm"
@@ -12,21 +13,26 @@ import { validateTemplate } from "../../validators/templateValidator"
 import { useTranslation } from "react-i18next"
 
 export default function OrganizerCertificateTemplateEdit() {
-  const { t } = useTranslation(["certificate"])
+  const { t } = useTranslation(["certificate", "common", "errors"])
   const { contestId, templateId } = useParams()
   const navigate = useNavigate()
+
+  const isValidContestId = uuidValidate(contestId)
+  const isValidTemplateId = uuidValidate(templateId)
 
   const {
     data: contest,
     isLoading: contestLoading,
     error: contestError,
-  } = useGetContestByIdQuery(contestId)
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
   const {
     data: templateData,
     isLoading: templateLoading,
     error: templateError,
-  } = useGetCertificateTemplateByIdQuery(templateId)
+  } = useGetCertificateTemplateByIdQuery(templateId, {
+    skip: !isValidTemplateId,
+  })
 
   const [editTemplate] = useEditCertificateTemplateMutation()
   const [formData, setFormData] = useState(null)
@@ -111,7 +117,7 @@ export default function OrganizerCertificateTemplateEdit() {
 
         const res = await fetch(
           "https://api.cloudinary.com/v1_1/dkb7cihxq/auto/upload",
-          { method: "POST", body: formDataUpload }
+          { method: "POST", body: formDataUpload },
         )
         const data = await res.json()
         uploadedFileUrl = data.url
@@ -142,12 +148,62 @@ export default function OrganizerCertificateTemplateEdit() {
       </div>
     )
 
-  if (contestError || templateError)
+  if (contestError || !contest || !isValidContestId) {
+    let errorMessage = t("certificate:errorContestNotFound")
+
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
-      <div className="h-screen flex items-center justify-center">
-        {t("certificate:errorLoading")}
+      <div className="h-screen flex flex-col items-center justify-center gap-3">
+        <p className="text-red-500 text-sm leading-5">
+          {t("common:common.contest")}: {errorMessage}
+        </p>
+        <button
+          onClick={() => navigate("/organizer/contests")}
+          className="button-orange"
+        >
+          {t("certificate:backToHome", { defaultValue: "Back to Contests" })}
+        </button>
       </div>
     )
+  }
+
+  if (templateError || !templateData || !isValidTemplateId) {
+    let errorMessage = t("certificate:errorLoading")
+
+    if (!isValidTemplateId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (templateError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (templateError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
+    return (
+      <div className="h-screen flex flex-col items-center justify-center gap-3">
+        <p className="text-red-500 text-sm leading-5">
+          {t("certificate:template", { defaultValue: "Template" })}:{" "}
+          {errorMessage}
+        </p>
+        <button
+          onClick={() =>
+            navigate(`/organizer/contests/${contestId}/certificates/templates`)
+          }
+          className="button-orange"
+        >
+          {t("certificate:backToTemplates", {
+            defaultValue: "Back to Templates",
+          })}
+        </button>
+      </div>
+    )
+  }
 
   if (!formData) {
     return (

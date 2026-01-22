@@ -63,8 +63,8 @@
   "registration.opened": "Registration opened for '{{contest.Name}}'.",
   "contest.registration_open": "Registration opened for '{{contest.Name}}'.",
   "judge.invitation_denied": "{{judgeName}} declined your judge invitation.",
-  "manual_grading.assigned": "You have been assigned {{submissionCount}} new submission(s) to grade in contest '{{contestName}}', round '{{roundName}}'.",
-  "manual_grading.reassigned": "Submission was reassigned to you for rescore in contest '{{contestName}}', round '{{roundName}}'.",
+  "manual_grading.assigned": "You have been assigned a submission to grade for rescore.",
+  "manual_grading.reassigned": "Submission was reassigned to you for rescore.",
   "ui": {
     "title": "Notifications",
     "empty": "No notifications.",

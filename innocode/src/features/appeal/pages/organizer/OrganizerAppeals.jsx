@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
@@ -15,7 +16,7 @@ import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSectio
 import { useTranslation } from "react-i18next"
 
 export default function OrganizerAppeals() {
-  const { t } = useTranslation(["appeal"])
+  const { t } = useTranslation(["appeal", "common", "errors"])
   const { contestId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
@@ -26,6 +27,7 @@ export default function OrganizerAppeals() {
     data: contest,
     isLoading: contestLoading,
     isError: contestError,
+    error: contestErrorData,
   } = useGetContestByIdQuery(contestId)
   const {
     data: appealsData,
@@ -41,10 +43,31 @@ export default function OrganizerAppeals() {
   const appeals = appealsData?.data ?? []
   const pagination = appealsData?.additionalData ?? {}
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_APPEALS(
-    contest?.name ?? t("appeal:contest")
-  )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_APPEALS(contestId)
+
+  // Validate UUID format first
+  const isValidUuid = uuidValidate(contestId)
+  const hasError = !isValidUuid || contestError
+
+  // Update breadcrumb to show "Not found" for error states
+  // For errors: ["Contests", "Not found"] instead of ["Contests", "Not found", "Appeals"]
+  const breadcrumbItems = hasError
+    ? ["Contests", t("errors:common.notFound")]
+    : BREADCRUMBS.ORGANIZER_APPEALS(contest?.name ?? t("common:common.contest"))
+
+  if (!isValidUuid) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={t("errors:common.invalidId")}
+        />
+      </PageContainer>
+    )
+  }
 
   if (contestLoading || appealsLoading) {
     return (
@@ -58,12 +81,28 @@ export default function OrganizerAppeals() {
   }
 
   if (contestError || appealsError) {
+    let errorMessage = null
+
+    // Handle specific error status codes for contest errors
+    if (contestError && contestErrorData) {
+      if (contestErrorData?.status === 404) {
+        errorMessage = t("errors:common.notFound")
+      } else if (contestErrorData?.status === 403) {
+        errorMessage = t("errors:common.forbidden")
+      }
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("appeal:appeals")} />
+        <ErrorState
+          itemName={
+            contestError ? t("common:common.contest") : t("appeal:appeals")
+          }
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
@@ -74,7 +113,10 @@ export default function OrganizerAppeals() {
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName={t("appeal:contest")} />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={t("errors:common.notFound")}
+        />
       </PageContainer>
     )
   }

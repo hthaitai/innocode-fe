@@ -1,14 +1,18 @@
 import React, { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import { toast } from "react-hot-toast"
 import PageContainer from "@/shared/components/PageContainer"
 import TestCaseForm from "../components/TestCaseForm"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useCreateRoundTestCaseMutation } from "../../../../services/autoEvaluationApi"
 import { useGetRoundByIdQuery } from "../../../../services/roundApi"
+import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { validateTestCase } from "../validators/testCaseValidator"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
+import { LoadingState } from "../../../../shared/components/ui/LoadingState"
+import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { useTranslation } from "react-i18next"
 
 const EMPTY_TEST_CASE = {
@@ -21,20 +25,48 @@ const EMPTY_TEST_CASE = {
 }
 
 export default function AddTestCase() {
-  const { t } = useTranslation(["common", "breadcrumbs"])
+  const { t } = useTranslation(["common", "breadcrumbs", "errors"])
   const navigate = useNavigate()
   const { contestId, roundId } = useParams()
-  const { data: round, isLoading, isError } = useGetRoundByIdQuery(roundId)
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_TEST_CASE_CREATE(
-    round?.contestName ?? t("common.contest"),
-    round?.roundName ?? t("common.round"),
-    t("common.testCase"),
-    t("common.createTestCase")
-  )
+  const isValidContestId = uuidValidate(contestId)
+  const isValidRoundId = uuidValidate(roundId)
+
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    isError: isContestError,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
+
+  const {
+    data: round,
+    isLoading,
+    isError,
+    error: roundErrorObj,
+  } = useGetRoundByIdQuery(roundId, { skip: !isValidRoundId })
+
+  const hasContestError = !isValidContestId || isContestError
+  const hasRoundError = !isValidRoundId || isError
+  const hasError = hasContestError || hasRoundError
+
+  const breadcrumbItems = hasError
+    ? [
+        "Contests",
+        hasContestError ? t("errors:common.notFound") : contest?.name,
+        ...(hasRoundError && !hasContestError
+          ? [t("errors:common.notFound")]
+          : []),
+      ]
+    : BREADCRUMBS.ORGANIZER_TEST_CASE_CREATE(
+        contest?.name ?? round?.contestName ?? t("common.contest"),
+        round?.roundName ?? t("common.round"),
+        t("common.testCase"),
+        t("common.createTestCase"),
+      )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_TEST_CASE_CREATE(
     contestId,
-    roundId
+    roundId,
   )
 
   const [formData, setFormData] = useState(EMPTY_TEST_CASE)
@@ -54,7 +86,7 @@ export default function AddTestCase() {
       await createTestCase({ roundId, payload: formData, contestId }).unwrap()
       toast.success(t("common.testCaseCreatedSuccess"))
       navigate(
-        `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation`
+        `/organizer/contests/${contestId}/rounds/${roundId}/auto-evaluation`,
       )
     } catch (err) {
       console.error(err)
@@ -62,41 +94,55 @@ export default function AddTestCase() {
     }
   }
 
-  if (isLoading) {
+  if (contestLoading || isLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="min-h-[70px] flex items-center justify-center">
-          <Spinner />
-        </div>
+        <LoadingState />
       </PageContainer>
     )
   }
 
-  if (isError) {
+  if (isContestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="text-red-600 text-sm leading-5 border border-red-200 rounded-[5px] bg-red-50 flex items-center px-5 min-h-[70px]">
-          {t("common.failedToLoadItem", { item: t("common.round") })}
-        </div>
+        <ErrorState itemName={t("common.contest")} message={errorMessage} />
       </PageContainer>
     )
   }
 
-  if (!round) {
+  if (isError || !round || !isValidRoundId) {
+    let errorMessage = null
+
+    if (!isValidRoundId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (roundErrorObj?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (roundErrorObj?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <div className="text-[#7A7574] text-sm leading-5 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]">
-          {t("common.itemUnavailable", { item: t("common.round") })}
-        </div>
+        <ErrorState itemName={t("common.round")} message={errorMessage} />
       </PageContainer>
     )
   }

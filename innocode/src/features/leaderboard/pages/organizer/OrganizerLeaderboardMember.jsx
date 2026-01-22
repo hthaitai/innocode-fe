@@ -1,9 +1,11 @@
 import React, { useState } from "react"
 import { useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import { useTranslation } from "react-i18next"
 import { Calendar, Award } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
+import { useGetContestByIdQuery } from "@/services/contestApi"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useModal } from "@/shared/hooks/useModal"
 import { AnimatedSection } from "@/shared/components/ui/AnimatedSection"
@@ -14,38 +16,71 @@ import { formatScore } from "@/shared/utils/formatNumber"
 import { formatDateTime } from "@/shared/utils/dateTime"
 
 const OrganizerLeaderboardMember = () => {
-  const { t } = useTranslation(["leaderboard", "pages", "round"])
+  const { t } = useTranslation([
+    "leaderboard",
+    "pages",
+    "round",
+    "common",
+    "errors",
+  ])
   const { contestId, teamId, memberId } = useParams()
   const { openModal } = useModal()
 
+  const isValidContestId = uuidValidate(contestId)
+  const isValidTeamId = uuidValidate(teamId)
+  const isValidMemberId = uuidValidate(memberId)
+
+  const {
+    data: contest,
+    isLoading: isContestLoading,
+    isError: isContestError,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
+
   const {
     data: leaderboardData,
-    isLoading,
-    error,
+    isLoading: isLeaderboardLoading,
+    error: leaderboardError,
   } = useGetLeaderboardByContestQuery(
     { contestId, pageNumber: 1, pageSize: 10 },
-    { skip: !contestId }
+    { skip: !isValidContestId },
   )
 
   const team = leaderboardData?.data?.teamIdList?.find(
-    (t) => t.teamId === teamId
+    (t) => t.teamId === teamId,
   )
   const member = team?.members?.find((m) => m.memberId === memberId)
 
-  const contestName =
-    leaderboardData?.data?.contestName ?? t("leaderboard:contest")
+  const contestName = contest?.name ?? t("leaderboard:contest")
   const teamName = team?.teamName ?? t("leaderboard:team")
   const memberName = member?.memberName ?? t("leaderboard:member")
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD_MEMBER(
-    contestName,
-    teamName,
-    memberName
-  )
+  const hasContestError = !isValidContestId || isContestError
+  const hasTeamError = !isValidTeamId || !team
+  const hasMemberError = !isValidMemberId || !member
+
+  // Breadcrumbs - Update to show "Not found" for error states
+  const breadcrumbItems = hasContestError
+    ? ["Contests", t("errors:common.notFound")]
+    : hasTeamError
+      ? ["Contests", contestName, "Leaderboard", t("errors:common.notFound")]
+      : hasMemberError
+        ? [
+            "Contests",
+            contestName,
+            "Leaderboard",
+            teamName,
+            t("errors:common.notFound"),
+          ]
+        : BREADCRUMBS.ORGANIZER_LEADERBOARD_MEMBER(
+            contestName,
+            teamName,
+            memberName,
+          )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_LEADERBOARD_MEMBER(
     contestId,
     teamId,
-    memberId
+    memberId,
   )
 
   const handleAward = () => {
@@ -64,7 +99,7 @@ const OrganizerLeaderboardMember = () => {
     })
   }
 
-  if (isLoading) {
+  if (isContestLoading || isLeaderboardLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -75,24 +110,71 @@ const OrganizerLeaderboardMember = () => {
     )
   }
 
-  if (error) {
+  if (isContestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="member" />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
 
-  if (!member) {
+  if (leaderboardError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="member" />
+        <ErrorState itemName={t("leaderboard:leaderboard")} />
+      </PageContainer>
+    )
+  }
+
+  if (!team || !isValidTeamId) {
+    let errorMessage = null
+
+    if (!isValidTeamId) {
+      errorMessage = t("errors:common.invalidId")
+    }
+
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName={t("leaderboard:team")} message={errorMessage} />
+      </PageContainer>
+    )
+  }
+
+  if (!member || !isValidMemberId) {
+    let errorMessage = null
+
+    if (!isValidMemberId) {
+      errorMessage = t("errors:common.invalidId")
+    }
+
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName={t("leaderboard:member")} message={errorMessage} />
       </PageContainer>
     )
   }

@@ -1,9 +1,11 @@
 import React from "react"
 import { useParams, Link } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import { useTranslation } from "react-i18next"
 import { User, ChevronRight } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
 import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
+import { useGetContestByIdQuery } from "@/services/contestApi"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import LeaderboardTeamInfo from "../../components/LeaderboardTeamInfo"
 import { useState } from "react"
@@ -16,36 +18,53 @@ import { ErrorState } from "@/shared/components/ui/ErrorState"
 import { formatScore } from "@/shared/utils/formatNumber"
 
 const OrganizerLeaderboardTeam = () => {
-  const { t } = useTranslation(["leaderboard", "pages"])
+  const { t } = useTranslation(["leaderboard", "pages", "common", "errors"])
   const { contestId, teamId } = useParams()
   const { openModal } = useModal()
 
+  const isValidContestId = uuidValidate(contestId)
+  const isValidTeamId = uuidValidate(teamId)
+
+  const {
+    data: contest,
+    isLoading: isContestLoading,
+    isError: isContestError,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
+
   const {
     data: leaderboardData,
-    isLoading,
-    error,
+    isLoading: isLeaderboardLoading,
+    error: leaderboardError,
   } = useGetLeaderboardByContestQuery(
     { contestId, pageNumber: 1, pageSize: 10 },
-    { skip: !contestId }
+    { skip: !isValidContestId },
   )
 
   const team = leaderboardData?.data?.teamIdList?.find(
-    (t) => t.teamId === teamId
+    (t) => t.teamId === teamId,
   )
-  const contestName =
-    leaderboardData?.data?.contestName ?? t("leaderboard:contest")
+  const contestName = contest?.name ?? t("leaderboard:contest")
   const teamName = team?.teamName ?? t("leaderboard:team")
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD_DETAIL(
-    contestName ?? "Contest",
-    teamName
-  )
+  const hasContestError = !isValidContestId || isContestError
+  const hasTeamError = !isValidTeamId || !team
+
+  // Breadcrumbs - Update to show "Not found" for error states
+  const breadcrumbItems = hasContestError
+    ? ["Contests", t("errors:common.notFound")]
+    : hasTeamError
+      ? ["Contests", contestName, "Leaderboard", t("errors:common.notFound")]
+      : BREADCRUMBS.ORGANIZER_LEADERBOARD_DETAIL(
+          contestName ?? "Contest",
+          teamName,
+        )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_LEADERBOARD_DETAIL(
     contestId,
-    teamId
+    teamId,
   )
 
-  if (isLoading) {
+  if (isContestLoading || isLeaderboardLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -56,25 +75,55 @@ const OrganizerLeaderboardTeam = () => {
     )
   }
 
-  if (error) {
+  if (isContestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName="team" />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
+      </PageContainer>
+    )
+  }
+
+  if (leaderboardError) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName={t("leaderboard:leaderboard")} />
       </PageContainer>
     )
   }
 
   // Team not found
-  if (!team) {
+  if (!team || !isValidTeamId) {
+    let errorMessage = null
+
+    if (!isValidTeamId) {
+      errorMessage = t("errors:common.invalidId")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <MissingState itemName="team" />
+        <ErrorState itemName={t("leaderboard:team")} message={errorMessage} />
       </PageContainer>
     )
   }
@@ -144,7 +193,7 @@ const OrganizerLeaderboardTeam = () => {
                         <p className="text-[14px] leading-5">
                           {member.memberName} (
                           {t(
-                            `leaderboard:roles.${member.memberRole?.toLowerCase()}`
+                            `leaderboard:roles.${member.memberRole?.toLowerCase()}`,
                           )}
                           )
                         </p>

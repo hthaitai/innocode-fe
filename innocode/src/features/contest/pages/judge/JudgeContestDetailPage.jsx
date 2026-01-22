@@ -1,5 +1,6 @@
 import React from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { useGetRoundsByContestIdQuery } from "../../../../services/roundApi" // Ensure this is correct based on what I saw earlier
 import PageContainer from "../../../../shared/components/PageContainer"
@@ -12,29 +13,36 @@ import JudgeRoundList from "../../components/judge/JudgeRoundList"
 import { useTranslation } from "react-i18next"
 
 const JudgeContestDetailPage = () => {
-  const { t } = useTranslation("judge")
+  const { t } = useTranslation(["judge", "common", "errors"])
   const { contestId } = useParams()
   const navigate = useNavigate()
+
+  const isValidContestId = uuidValidate(contestId)
 
   const {
     data: contest,
     isLoading: isContestLoading,
     isError: isContestError,
-  } = useGetContestByIdQuery(contestId)
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
   const {
     data: roundsData,
     isLoading: isRoundsLoading,
     isError: isRoundsError,
-  } = useGetRoundsByContestIdQuery(contestId)
+  } = useGetRoundsByContestIdQuery(contestId, { skip: !isValidContestId })
 
   const rounds =
     roundsData?.data?.filter((r) => r.problemType === "Manual") ?? []
 
-  // Breadcrumbs
-  const breadcrumbItems = BREADCRUMBS.JUDGE_CONTEST_DETAIL(
-    contest?.name ?? t("contestDetail.fallbackName")
-  )
+  const hasContestError = !isValidContestId || isContestError
+
+  // Breadcrumbs - Update to show "Not found" for error states
+  const breadcrumbItems = hasContestError
+    ? ["Contests", t("errors:common.notFound")]
+    : BREADCRUMBS.JUDGE_CONTEST_DETAIL(
+        contest?.name ?? t("contestDetail.fallbackName"),
+      )
   const breadcrumbPaths = BREADCRUMB_PATHS.JUDGE_CONTEST_DETAIL(contestId)
 
   // Check loading state
@@ -50,7 +58,31 @@ const JudgeContestDetailPage = () => {
   }
 
   // Check error state
-  if (isContestError || isRoundsError) {
+  if (isContestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
+      </PageContainer>
+    )
+  }
+
+  if (isRoundsError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}

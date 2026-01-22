@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { validate as uuidValidate } from "uuid"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
@@ -15,7 +16,13 @@ import { useLiveLeaderboard } from "../../hooks/useLiveLeaderboard"
 import LeaderboardStatusInfo from "../../components/LeaderboardStatusInfo"
 
 const OrganizerLeaderboard = () => {
-  const { t } = useTranslation(["leaderboard", "pages", "common", "contest"])
+  const { t } = useTranslation([
+    "leaderboard",
+    "pages",
+    "common",
+    "contest",
+    "errors",
+  ])
   const { contestId } = useParams()
   const [pageNumber, setPageNumber] = useState(1)
   const pageSize = 10
@@ -24,6 +31,7 @@ const OrganizerLeaderboard = () => {
     data: contest,
     isLoading: contestLoading,
     isError: isContestError,
+    error: contestError,
   } = useGetContestByIdQuery(contestId)
 
   const {
@@ -51,11 +59,33 @@ const OrganizerLeaderboard = () => {
     !!contestId && !isFrozen,
   )
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_LEADERBOARD(
-    contest?.name ?? t("common:common.contest"),
-  )
-
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_LEADERBOARD(contestId)
+
+  // Validate UUID format first
+  const isValidUuid = uuidValidate(contestId)
+  const hasError = !isValidUuid || isContestError
+
+  // Update breadcrumb to show "Not found" for error states
+  // For errors: ["Contests", "Not found"] instead of ["Contests", "Not found", "Leaderboard"]
+  const breadcrumbItems = hasError
+    ? ["Contests", t("errors:common.notFound")]
+    : BREADCRUMBS.ORGANIZER_LEADERBOARD(
+        contest?.name ?? t("common:common.contest"),
+      )
+
+  if (!isValidUuid) {
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={t("errors:common.invalidId")}
+        />
+      </PageContainer>
+    )
+  }
 
   if (contestLoading || leaderboardLoading) {
     return (
@@ -69,12 +99,24 @@ const OrganizerLeaderboard = () => {
   }
 
   if (isContestError) {
+    let errorMessage = null
+
+    // Handle specific error status codes
+    if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("common:common.contest")} />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }

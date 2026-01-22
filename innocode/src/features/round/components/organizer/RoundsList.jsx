@@ -3,6 +3,7 @@ import { Calendar, ChevronRight } from "lucide-react"
 import { formatDateTime, toDatetimeLocal } from "@/shared/utils/dateTime"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import StatusBadge from "@/shared/components/StatusBadge"
 
 const RoundsList = ({ contestId, rounds, disableNavigation = false }) => {
   const navigate = useNavigate()
@@ -55,6 +56,10 @@ const RoundsList = ({ contestId, rounds, disableNavigation = false }) => {
               )}
             </div>
 
+            {round.status && (
+              <StatusBadge status={round.status} translate="round" />
+            )}
+
             {!disableNavigation && (
               <div className="flex items-center gap-2">
                 <ChevronRight
@@ -63,7 +68,7 @@ const RoundsList = ({ contestId, rounds, disableNavigation = false }) => {
                   onClick={(e) => {
                     e.stopPropagation()
                     navigate(
-                      `/organizer/contests/${contestId}/rounds/${round.roundId}`
+                      `/organizer/contests/${contestId}/rounds/${round.roundId}`,
                     )
                   }}
                 />

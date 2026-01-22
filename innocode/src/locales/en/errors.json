@@ -9,6 +9,7 @@
     "unexpectedError": "An unexpected error occurred",
     "validationError": "Please check your input and try again",
     "badRequest": "Invalid request. Please check your input",
+    "invalidId": "Invalid ID format. Please check the URL and try again.",
     "duplicate": "This item already exists",
     "conflict": "Conflict occurred. Please try again",
     "gone": "The requested resource is no longer available"

@@ -1,8 +1,10 @@
 import React, { useState } from "react"
 import { useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import PageContainer from "@/shared/components/PageContainer"
 import ManageAutoResults from "../components/ManageAutoResults"
 import { useGetRoundByIdQuery } from "../../../../services/roundApi"
+import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { useGetAutoTestResultsQuery } from "../../../../services/autoEvaluationApi"
@@ -13,7 +15,7 @@ import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { useTranslation } from "react-i18next"
 
 const AutoTestResultsPage = () => {
-  const { t } = useTranslation(["common", "breadcrumbs"])
+  const { t } = useTranslation(["common", "breadcrumbs", "errors"])
   const { contestId, roundId } = useParams()
 
   const [page, setPage] = useState(1)
@@ -22,38 +24,64 @@ const AutoTestResultsPage = () => {
   const [studentNameSearch, setStudentNameSearch] = useState("")
   const [teamNameSearch, setTeamNameSearch] = useState("")
 
+  const isValidContestId = uuidValidate(contestId)
+  const isValidRoundId = uuidValidate(roundId)
+
+  const {
+    data: contest,
+    isLoading: contestLoading,
+    isError: isContestError,
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
+
   const {
     data: round,
     isLoading: roundLoading,
     isError: roundError,
-  } = useGetRoundByIdQuery(roundId)
+    error: roundErrorObj,
+  } = useGetRoundByIdQuery(roundId, { skip: !isValidRoundId })
 
   const {
     data: resultsData,
     isLoading: resultsLoading,
     isError: resultsError,
-  } = useGetAutoTestResultsQuery({
-    roundId,
-    pageNumber: page,
-    pageSize,
-    studentNameSearch,
-    teamNameSearch,
-  })
+  } = useGetAutoTestResultsQuery(
+    {
+      roundId,
+      pageNumber: page,
+      pageSize,
+      studentNameSearch,
+      teamNameSearch,
+    },
+    { skip: !isValidRoundId },
+  )
 
   const results = resultsData?.data ?? []
   const pagination = resultsData?.additionalData ?? {}
 
-  // Breadcrumbs
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_AUTO_RESULTS(
-    round?.contestName ?? t("common.contest"),
-    round?.name ?? t("common.round")
-  )
+  const hasContestError = !isValidContestId || isContestError
+  const hasRoundError = !isValidRoundId || roundError
+  const hasError = hasContestError || hasRoundError
+
+  // Breadcrumbs - Update to show "Not found" for error states
+  const breadcrumbItems = hasError
+    ? [
+        "Contests",
+        hasContestError ? t("errors:common.notFound") : contest?.name,
+        ...(hasRoundError && !hasContestError
+          ? [t("errors:common.notFound")]
+          : []),
+      ]
+    : BREADCRUMBS.ORGANIZER_AUTO_RESULTS(
+        contest?.name ?? round?.contestName ?? t("common.contest"),
+        round?.name ?? t("common.round"),
+      )
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_AUTO_RESULTS(
     contestId,
-    roundId
+    roundId,
   )
 
-  if (roundLoading || resultsLoading) {
+  if (contestLoading || roundLoading || resultsLoading) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
@@ -64,24 +92,55 @@ const AutoTestResultsPage = () => {
     )
   }
 
-  if (roundError || resultsError) {
+  if (isContestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName={t("common.contest")} message={errorMessage} />
+      </PageContainer>
+    )
+  }
+
+  if (roundError || !round || !isValidRoundId) {
+    let errorMessage = null
+
+    if (!isValidRoundId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (roundErrorObj?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (roundErrorObj?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
+    return (
+      <PageContainer
+        breadcrumb={breadcrumbItems}
+        breadcrumbPaths={breadcrumbPaths}
+      >
+        <ErrorState itemName={t("common.round")} message={errorMessage} />
+      </PageContainer>
+    )
+  }
+
+  if (resultsError) {
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
         <ErrorState itemName={t("common.autoResults")} />
-      </PageContainer>
-    )
-  }
-
-  if (!round) {
-    return (
-      <PageContainer
-        breadcrumb={breadcrumbItems}
-        breadcrumbPaths={breadcrumbPaths}
-      >
-        <MissingState itemName={t("common.round")} />
       </PageContainer>
     )
   }

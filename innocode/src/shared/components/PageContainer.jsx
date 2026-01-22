@@ -15,6 +15,7 @@ export default function PageContainer({
   loading = false,
   error = null,
   missing = false,
+  hideBreadcrumb = false,
 }) {
   const { t, i18n } = useTranslation("common")
   const hasState = loading || error || missing
@@ -30,7 +31,9 @@ export default function PageContainer({
       {breadcrumb && (
         <div className="bg-[#f3f3f3] sticky top-16 z-20 flex items-center justify-between pt-4 pb-5 px-4 md:px-0 ">
           <div className="flex-1 min-w-0 max-w-[1024px] mx-auto">
-            <div className="flex items-center space-x-2 w-max max-w-full">
+            <div
+              className={`flex items-center space-x-2 w-max max-w-full ${hideBreadcrumb ? "invisible" : ""}`}
+            >
               <BreadcrumbTitle
                 items={translatedBreadcrumb}
                 paths={breadcrumbPaths}
@@ -59,10 +62,10 @@ export default function PageContainer({
                   {typeof error === "string"
                     ? error
                     : error?.data?.errorMessage
-                    ? error.data.errorMessage
-                    : error?.message
-                    ? error.message
-                    : t("common.pleaseTryAgain")}
+                      ? error.data.errorMessage
+                      : error?.message
+                        ? error.message
+                        : t("common.pleaseTryAgain")}
                 </p>
 
                 {error?.errorCode && (

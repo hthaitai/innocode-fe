@@ -83,13 +83,13 @@ export default function CreateContest() {
     } catch (err) {
       console.error(err)
 
-      // Network / Cold Start specific handling
+      // Network / Cold Start specific handling - handle silently
       if (
         err.status === "FETCH_ERROR" ||
         err.message?.includes("Failed to fetch") ||
         !err.status
       ) {
-        toast.error(t("contest:suggestion.serverColdStart"))
+        console.log("Server cold start detected, request may need retry")
         return
       }
 

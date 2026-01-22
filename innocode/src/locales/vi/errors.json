@@ -9,6 +9,7 @@
     "unexpectedError": "Đã xảy ra lỗi không mong muốn",
     "validationError": "Vui lòng kiểm tra thông tin nhập và thử lại",
     "badRequest": "Yêu cầu không hợp lệ. Vui lòng kiểm tra thông tin nhập",
+    "invalidId": "Định dạng ID không hợp lệ. Vui lòng kiểm tra URL và thử lại.",
     "duplicate": "Mục này đã tồn tại",
     "conflict": "Xảy ra xung đột. Vui lòng thử lại",
     "gone": "Tài nguyên yêu cầu không còn khả dụng"
@@ -154,7 +155,7 @@
     "badRequestPolicies": "Policies không được để trống.",
     "badRequestPolicyKey": "Yêu cầu khóa policy.",
     "internalServerErrorDeletePolicy": "Lỗi xóa policy Cuộc thi: {ex.Message}",
-    "forbidden": "Chỉ ban tổ chức tạo cuộc thi này mới có thể sửa đổi policies.",
+    "forbidden": "Chỉ ban tổ chức tạo cuộc thi này mới có thể sửa đổi.",
     "unauthenticated": "Yêu cầu đăng nhập.",
     "unauthenticatedInvalidContext": "Ngữ cảnh người dùng không hợp lệ.",
     "internalServerErrorCancel": "Lỗi hủy Cuộc thi: {ex.Message}",

@@ -62,6 +62,7 @@
     "fastForwardAppealReviewBeforeRoundStart": "Cannot fast-forward appeal review before round starts.",
     "finalizeBeforeDeadlines": "Finalize is only allowed after all deadlines are completed.",
     "judgeDeadlineBeforeRoundEnd": "Judge deadline cannot be before round end.",
+    "cannotUpdateOpened": "Cannot update round while it is in 'Opened' status.",
     "unknownError": "An unknown error occurred"
   },
   "detail": {
@@ -85,6 +86,7 @@
     "problemDescription": "Problem description",
     "testType": "Test type",
     "problemConfig": "Problem configuration",
+    "status": "Status",
     "values": {
       "mcq": "Multiple Choice Questions (MCQ)",
       "auto": "Auto Evaluation (Auto-graded Coding)",
@@ -205,6 +207,7 @@
   },
   "transfer": {
     "title": "Transfer submissions",
+    "subtitle": "Select a judge to redistribute their submissions to others",
     "description": "Choose a judge to transfer their pending submissions from this round to other judges.",
     "selectJudge": "Select a judge to transfer submissions from",
     "transferButton": "Transfer submissions",

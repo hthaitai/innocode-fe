@@ -63,8 +63,8 @@
   "registration.opened": "Đăng ký đã mở cho cuộc thi '{{contest.Name}}'.",
   "contest.registration_open": "Đăng ký đã mở cho cuộc thi '{{contest.Name}}'.",
   "judge.invitation_denied": "{{judgeName}} đã từ chối lời mời làm giám khảo của bạn.",
-  "manual_grading.assigned": "Bạn đã được phân công chấm {{submissionCount}} bài nộp mới trong cuộc thi '{{contestName}}', vòng thi '{{roundName}}'.",
-  "manual_grading.reassigned": "Bài nộp đã được phân công lại cho bạn để chấm lại trong cuộc thi '{{contestName}}', vòng thi '{{roundName}}'.",
+  "manual_grading.assigned": "Bạn đã được phân công chấm lại một bài nộp.",
+  "manual_grading.reassigned": "Bài nộp đã được phân công lại cho bạn để chấm lại.",
   "ui": {
     "title": "Thông báo",
     "empty": "Không có thông báo nào.",

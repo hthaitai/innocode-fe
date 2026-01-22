@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { validate as uuidValidate } from "uuid"
 import { toast } from "react-hot-toast"
 import { ArrowLeft, Loader } from "lucide-react"
 import PageContainer from "@/shared/components/PageContainer"
@@ -27,15 +28,17 @@ const EMPTY_TEMPLATE = {
 }
 
 export default function OrganizerCertificateTemplateCreate() {
-  const { t } = useTranslation(["certificate"])
+  const { t } = useTranslation(["certificate", "common", "errors"])
   const { contestId } = useParams()
   const navigate = useNavigate()
+
+  const isValidContestId = uuidValidate(contestId)
 
   const {
     data: contest,
     isLoading: contestLoading,
     error: contestError,
-  } = useGetContestByIdQuery(contestId)
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
   const [uploadTemplate] = useUploadCertificateTemplateMutation()
   const [formData, setFormData] = useState(EMPTY_TEMPLATE)
@@ -64,7 +67,7 @@ export default function OrganizerCertificateTemplateCreate() {
 
         const res = await fetch(
           "https://api.cloudinary.com/v1_1/dkb7cihxq/auto/upload",
-          { method: "POST", body: formDataUpload }
+          { method: "POST", body: formDataUpload },
         )
         const data = await res.json()
         uploadedFileUrl = data.url
@@ -97,14 +100,29 @@ export default function OrganizerCertificateTemplateCreate() {
       </div>
     )
 
-  if (contestError || !contest) {
+  if (contestError || !contest || !isValidContestId) {
+    let errorMessage = t("certificate:errorContestNotFound")
+
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <div className="h-screen flex flex-col items-center justify-center gap-3">
         <p className="text-red-500 text-sm leading-5">
-          {t("certificate:errorContestNotFound")}
+          {t("common:common.contest")}: {errorMessage}
         </p>
-        <button onClick={() => navigate("/")} className="button-orange">
-          {t("certificate:backToHome")}
+        <button
+          onClick={() => navigate("/organizer/contests")}
+          className="button-orange"
+        >
+          {t("certificate:backToHome", {
+            defaultValue: "Back to Contests",
+          })}
         </button>
       </div>
     )

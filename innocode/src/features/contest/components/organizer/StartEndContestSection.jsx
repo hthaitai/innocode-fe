@@ -11,16 +11,21 @@ const StartEndContestSection = ({ contestId }) => {
   const [startContestNow, { isLoading: isStarting }] =
     useStartContestNowMutation()
   const [endContestNow, { isLoading: isEnding }] = useEndContestNowMutation()
-  const { t } = useTranslation(["pages", "contest"])
+  const { t } = useTranslation(["pages", "contest", "errors"])
 
   const handleStartNow = async () => {
     try {
       await startContestNow(contestId).unwrap()
       toast.success(t("organizerContestDetail.control.startSuccess"))
     } catch (error) {
+      console.error(error)
+      const errorCode = error?.data?.errorCode
       let errorMessage = error?.data?.message || error?.data?.errorMessage
 
-      if (errorMessage === "Contest already ended. Cannot start now.") {
+      // Check for 403 Forbidden error
+      if (error?.status === 403 && errorCode === "FORBIDDEN") {
+        errorMessage = t("errors:contest.forbidden")
+      } else if (errorMessage === "Contest already ended. Cannot start now.") {
         errorMessage = t("contest:validation.contestEnded")
       } else if (
         errorMessage ===
@@ -39,9 +44,13 @@ const StartEndContestSection = ({ contestId }) => {
       await endContestNow(contestId).unwrap()
       toast.success(t("organizerContestDetail.control.endSuccess"))
     } catch (error) {
+      const errorCode = error?.data?.errorCode
       let errorMessage = error?.data?.message || error?.data?.errorMessage
 
-      if (
+      // Check for 403 Forbidden error
+      if (error?.status === 403 && errorCode === "FORBIDDEN") {
+        errorMessage = t("errors:contest.forbidden")
+      } else if (
         errorMessage ===
         "Contest has not started yet (start time is in the future)."
       ) {

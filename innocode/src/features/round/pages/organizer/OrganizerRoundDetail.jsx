@@ -1,6 +1,7 @@
 import React from "react"
 import { useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { validate as uuidValidate } from "uuid"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import RoundInfo from "../../components/organizer/RoundInfo"
@@ -21,26 +22,42 @@ import TransferSubmissionsSection from "../../components/organizer/TransferSubmi
 
 const OrganizerRoundDetail = () => {
   const { contestId, roundId } = useParams()
-  const { t } = useTranslation(["round", "common", "contest"])
+  const { t } = useTranslation(["round", "common", "contest", "errors"])
+
+  const isValidContestId = uuidValidate(contestId)
+  const isValidRoundId = uuidValidate(roundId)
 
   const {
     data: contest,
     isLoading: isContestLoading,
     isError: isContestError,
-  } = useGetContestByIdQuery(contestId)
+    error: contestError,
+  } = useGetContestByIdQuery(contestId, { skip: !isValidContestId })
 
   const {
     data: round,
     isLoading: isRoundLoading,
     isError: isRoundError,
-  } = useGetRoundByIdQuery(roundId)
+    error: roundError,
+  } = useGetRoundByIdQuery(roundId, { skip: !isValidRoundId })
 
-  console.log(round)
+  const hasContestError = !isValidContestId || isContestError
+  const hasRoundError = !isValidRoundId || isRoundError
+  const hasError = hasContestError || hasRoundError
 
-  const breadcrumbItems = BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
-    contest?.name ?? t("common:common.contest"),
-    round?.roundName ?? t("common:common.round"),
-  )
+  // Update breadcrumb to show "Not found" for error states
+  const breadcrumbItems = hasError
+    ? [
+        "Contests",
+        hasContestError ? t("errors:common.notFound") : contest?.name,
+        ...(hasRoundError && !hasContestError
+          ? [t("errors:common.notFound")]
+          : []),
+      ]
+    : BREADCRUMBS.ORGANIZER_ROUND_DETAIL(
+        contest?.name ?? t("common:common.contest"),
+        round?.roundName ?? t("common:common.round"),
+      )
 
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_ROUND_DETAIL(
     contestId,
@@ -58,24 +75,52 @@ const OrganizerRoundDetail = () => {
     )
   }
 
-  if (isContestError) {
+  if (isContestError || !contest || !isValidContestId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for contest
+    if (!isValidContestId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (contestError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (contestError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("common:common.contest")} />
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
 
-  if (isRoundError) {
+  if (isRoundError || !round || !isValidRoundId) {
+    let errorMessage = null
+
+    // Handle specific error status codes for round
+    if (!isValidRoundId) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (roundError?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (roundError?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
+
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        <ErrorState itemName={t("common:common.round")} />
+        <ErrorState
+          itemName={t("common:common.round")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }

@@ -186,5 +186,9 @@
     "success": "Invite sent and email delivered!",
     "errorGeneric": "Failed to send invite",
     "errorMissingInfo": "Missing contest or judge info"
+  },
+  "noJudgesAvailable": {
+    "title": "No judges available",
+    "description": "There are no judges assigned to this contest yet. Please invite judges first before transferring submissions."
   }
 }

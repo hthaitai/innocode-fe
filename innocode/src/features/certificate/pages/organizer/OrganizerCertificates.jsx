@@ -17,7 +17,7 @@ import { MissingState } from "@/shared/components/ui/MissingState"
 const OrganizerCertificates = () => {
   const { contestId } = useParams()
   const navigate = useNavigate()
-  const { t } = useTranslation(["pages", "common", "contest"])
+  const { t } = useTranslation(["pages", "common", "contest", "errors"])
 
   const isValidGuid = uuidValidate(contestId)
 
@@ -28,41 +28,41 @@ const OrganizerCertificates = () => {
     error,
   } = useGetContestByIdQuery(contestId, { skip: !isValidGuid })
 
-  const isNotFound = !isValidGuid || error?.status === 404
+  const hasError = !isValidGuid || isError
 
-  const breadcrumbItems = isNotFound
-    ? BREADCRUMBS.ORGANIZER_CONTEST_DETAIL(t("contest:notFound"))
+  // Update breadcrumb to show "Not found" for error states
+  // For errors: ["Contests", "Not found"] instead of ["Contests", "Not found", "Certificates"]
+  const breadcrumbItems = hasError
+    ? ["Contests", t("errors:common.notFound")]
     : BREADCRUMBS.ORGANIZER_CERTIFICATES(contest?.name || "...")
 
-  const breadcrumbPaths = isNotFound
-    ? BREADCRUMB_PATHS.ORGANIZER_CONTEST_DETAIL(contestId)
-    : BREADCRUMB_PATHS.ORGANIZER_CERTIFICATES(contestId)
+  const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CERTIFICATES(contestId)
 
   const menuItems = [
     {
       title: t("organizerContestDetail.relatedSettings.templateGallery.title"),
       subtitle: t(
-        "organizerContestDetail.relatedSettings.templateGallery.subtitle"
+        "organizerContestDetail.relatedSettings.templateGallery.subtitle",
       ),
       icon: <LayoutTemplate size={20} />,
       path: "templates",
     },
     {
       title: t(
-        "organizerContestDetail.relatedSettings.issuedStudentCertificates.title"
+        "organizerContestDetail.relatedSettings.issuedStudentCertificates.title",
       ),
       subtitle: t(
-        "organizerContestDetail.relatedSettings.issuedStudentCertificates.subtitle"
+        "organizerContestDetail.relatedSettings.issuedStudentCertificates.subtitle",
       ),
       icon: <GraduationCap size={20} />,
       path: "issued/students",
     },
     {
       title: t(
-        "organizerContestDetail.relatedSettings.issuedTeamCertificates.title"
+        "organizerContestDetail.relatedSettings.issuedTeamCertificates.title",
       ),
       subtitle: t(
-        "organizerContestDetail.relatedSettings.issuedTeamCertificates.subtitle"
+        "organizerContestDetail.relatedSettings.issuedTeamCertificates.subtitle",
       ),
       icon: <Icon icon="mdi:certificate-outline" width={20} height={20} />,
       path: "issued/teams",
@@ -81,18 +81,26 @@ const OrganizerCertificates = () => {
   }
 
   if (isError || !contest || !isValidGuid) {
-    const isNotFound = error?.status === 404 || !contest || !isValidGuid
+    let errorMessage = null
+
+    // Handle specific error status codes
+    if (!isValidGuid) {
+      errorMessage = t("errors:common.invalidId")
+    } else if (error?.status === 404) {
+      errorMessage = t("errors:common.notFound")
+    } else if (error?.status === 403) {
+      errorMessage = t("errors:common.forbidden")
+    }
 
     return (
       <PageContainer
         breadcrumb={breadcrumbItems}
         breadcrumbPaths={breadcrumbPaths}
       >
-        {isNotFound ? (
-          <MissingState itemName={t("common:common.contest")} />
-        ) : (
-          <ErrorState itemName={t("common:common.contest")} />
-        )}
+        <ErrorState
+          itemName={t("common:common.contest")}
+          message={errorMessage}
+        />
       </PageContainer>
     )
   }
