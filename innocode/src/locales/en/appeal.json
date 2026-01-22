@@ -44,5 +44,39 @@
   "submitReview": "Submit review",
   "reviewAppealWithTeam": "Review appeal: {{teamName}}",
   "selectDecision": "Select decision",
-  "decisionReasonPlaceholder": "Provide reason for your decision"
+  "decisionReasonPlaceholder": "Provide reason for your decision",
+  "createAppeal": {
+    "title": "Request an Appeal",
+    "roundLabel": "Round:",
+    "roundTypeLabel": "Round Type:",
+    "roundTypes": {
+      "mcqTest": "MCQ Test",
+      "manual": "Manual Problem",
+      "autoEvaluation": "Auto Evaluation"
+    },
+    "reasonLabel": "Reason *",
+    "reasonPlaceholder": "Please provide a detailed reason for your appeal...",
+    "reasonHelperText": "Explain why you are requesting an appeal for this round",
+    "resolutionLabel": "Appeal Resolution *",
+    "resolutionOptions": {
+      "retake": "Retake",
+      "rescore": "Rescore",
+      "recheckPlagiarism": "Recheck Plagiarism"
+    },
+    "mcqDefaultResolution": "Default resolution for MCQ rounds",
+    "selected": "Selected",
+    "evidenceLabel": "Evidence (Optional)",
+    "uploadEvidencePlaceholder": "Click to upload evidence files",
+    "filesSelected": "{{count}} file(s) selected",
+    "evidenceNoteLabel": "Note (Optional)",
+    "evidenceNotePlaceholder": "Add a note for this evidence...",
+    "supportedFormats": "Supported formats: Images, PDF, Word documents",
+    "submitButton": "Submit Appeal",
+    "success": "Appeal submitted successfully!",
+    "errors": {
+      "reasonRequired": "Please provide a reason for the appeal",
+      "missingInfo": "Missing required information",
+      "resolutionRequired": "Please select an appeal resolution"
+    }
+  }
 }

@@ -33,7 +33,6 @@ export const useContests = () => {
           setPagination(paginationData)
         }
 
-        console.log("📦 Contests array:", contestsArray)
 
         setContests(Array.isArray(contestsArray) ? contestsArray : [])
       } catch (error) {

@@ -7,6 +7,7 @@ import useQuizSubmit from "../hooks/useQuizSubmit"
 import useMCQTestFlow from "../hooks/useMCQTestFlow"
 import { useModal } from "@/shared/hooks/useModal"
 import quizApi from "@/api/quizApi"
+import { useTranslation } from "react-i18next"
 
 const MCQTest = () => {
   const { roundId, contestId } = useParams()
@@ -14,6 +15,7 @@ const MCQTest = () => {
   const { quiz, loading: quizLoading, error: quizError } = useQuiz(roundId)
   const { submitQuiz, isSubmitting } = useQuizSubmit()
   const { openModal } = useModal()
+  const { t } = useTranslation()
 
   // MCQ Test Flow hook
   const {
@@ -334,12 +336,17 @@ const MCQTest = () => {
     const unansweredCount = quiz.mcqTest.totalQuestions - answeredCount
 
     const title =
-      unansweredCount > 0 ? "Confirm Submission" : "Submit Your Answers"
+      unansweredCount > 0
+        ? t("quiz.confirmSubmission")
+        : t("quiz.submitYourAnswers")
 
     const description =
       unansweredCount > 0
-        ? `You have ${unansweredCount} unanswered question(s) out of ${quiz.mcqTest.totalQuestions} total questions. Are you sure you want to submit?`
-        : `You have answered all ${quiz.mcqTest.totalQuestions} questions. Are you sure you want to submit your answers?`
+        ? t("quiz.unansweredQuestions", {
+            count: unansweredCount,
+            total: quiz.mcqTest.totalQuestions,
+          })
+        : t("quiz.allQuestionsAnswered", { total: quiz.mcqTest.totalQuestions })
 
     openModal("confirm", {
       title,
@@ -348,14 +355,14 @@ const MCQTest = () => {
           <p className="text-[#2d3748]">{description}</p>
           <div className="bg-[#f9fafb] border border-[#E5E5E5] rounded-[5px] p-3">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-[#7A7574]">Answered:</span>
+              <span className="text-[#7A7574]">{t("quiz.answered")}</span>
               <span className="font-semibold text-green-600">
                 {answeredCount}/{quiz.mcqTest.totalQuestions}
               </span>
             </div>
             {unansweredCount > 0 && (
               <div className="flex items-center justify-between text-sm mt-2">
-                <span className="text-[#7A7574]">Unanswered:</span>
+                <span className="text-[#7A7574]">{t("quiz.unanswered")}</span>
                 <span className="font-semibold text-orange-600">
                   {unansweredCount}
                 </span>
@@ -370,7 +377,7 @@ const MCQTest = () => {
                 className="text-yellow-600 flex-shrink-0 mt-0.5"
               />
               <p className="text-sm text-yellow-800">
-                Once submitted, you cannot change your answers.
+                {t("quiz.cannotChangeWarning")}
               </p>
             </div>
           </div>
@@ -430,7 +437,7 @@ const MCQTest = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading quiz...</p>
+            <p className="text-gray-600 font-medium">{t("quiz.loadingQuiz")}</p>
           </div>
         </div>
       </PageContainer>
@@ -493,13 +500,15 @@ const MCQTest = () => {
                 <div>
                   <h1 className="text-2xl font-bold">{quiz.roundName}</h1>
                   <p className="text-sm text-gray-600">
-                    Question {currentQuestion + 1} of{" "}
+                    {t("quiz.question")} {currentQuestion + 1} {t("quiz.of")}{" "}
                     {quiz.mcqTest.totalQuestions}
                   </p>
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="text-right">
-                    <p className="text-sm text-gray-600">Time Remaining</p>
+                    <p className="text-sm text-gray-600">
+                      {t("quiz.timeRemaining")}
+                    </p>
                     <p
                       className={`text-xl font-bold ${
                         timeRemaining !== null && timeRemaining < 300
@@ -515,7 +524,9 @@ const MCQTest = () => {
                     disabled={isSubmitting}
                     className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    {isSubmitting ? "Submitting..." : "Submit Contest"}
+                    {isSubmitting
+                      ? t("quiz.submitting")
+                      : t("quiz.submitContest")}
                   </button>
                 </div>
               </div>
@@ -622,7 +633,7 @@ const MCQTest = () => {
                   <div className="mb-6">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-gray-700">
-                        Progress
+                        {t("quiz.progress")}
                       </span>
                       <span className="text-sm font-semibold text-green-600">
                         {answeredCount}/{quiz.mcqTest.totalQuestions}
@@ -639,7 +650,7 @@ const MCQTest = () => {
                   {/* Question Navigator */}
                   <div>
                     <h3 className="text-sm font-medium text-gray-700 mb-3">
-                      Questions
+                      {t("quiz.questions")}
                     </h3>
                     <div className="grid grid-cols-5 gap-2">
                       {quiz.mcqTest.questions.map((q, index) => (
@@ -665,15 +676,21 @@ const MCQTest = () => {
                     <div className="space-y-2 text-xs">
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                        <span className="text-gray-600">Current</span>
+                        <span className="text-gray-600">
+                          {t("quiz.current")}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
-                        <span className="text-gray-600">Answered</span>
+                        <span className="text-gray-600">
+                          {t("quiz.answered")}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 bg-gray-100 border border-gray-300 rounded"></div>
-                        <span className="text-gray-600">Not Answered</span>
+                        <span className="text-gray-600">
+                          {t("quiz.notAnswered")}
+                        </span>
                       </div>
                     </div>
                   </div>

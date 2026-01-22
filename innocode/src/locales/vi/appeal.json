@@ -44,5 +44,39 @@
   "submitReview": "Gửi đánh giá",
   "reviewAppealWithTeam": "Xem xét khiếu nại: {{teamName}}",
   "selectDecision": "Chọn quyết định",
-  "decisionReasonPlaceholder": "Cung cấp lý do cho quyết định của bạn"
+  "decisionReasonPlaceholder": "Cung cấp lý do cho quyết định của bạn",
+  "createAppeal": {
+    "title": "Yêu cầu khiếu nại",
+    "roundLabel": "Vòng thi:",
+    "roundTypeLabel": "Loại vòng thi:",
+    "roundTypes": {
+      "mcqTest": "Bài kiểm tra MCQ",
+      "manual": "Bài toán thủ công",
+      "autoEvaluation": "Tự động đánh giá"
+    },
+    "reasonLabel": "Lý do *",
+    "reasonPlaceholder": "Vui lòng cung cấp lý do chi tiết cho khiếu nại của bạn...",
+    "reasonHelperText": "Giải thích lý do bạn yêu cầu khiếu nại cho vòng thi này",
+    "resolutionLabel": "Hướng giải quyết *",
+    "resolutionOptions": {
+      "retake": "Làm lại",
+      "rescore": "Chấm lại",
+      "recheckPlagiarism": "Kiểm tra đạo văn lại"
+    },
+    "mcqDefaultResolution": "Hướng giải quyết mặc định cho vòng thi MCQ",
+    "selected": "Đã chọn",
+    "evidenceLabel": "Bằng chứng (Tùy chọn)",
+    "uploadEvidencePlaceholder": "Nhấp để tải lên tệp bằng chứng",
+    "filesSelected": "Đã chọn {{count}} tệp",
+    "evidenceNoteLabel": "Ghi chú (Tùy chọn)",
+    "evidenceNotePlaceholder": "Thêm ghi chú cho bằng chứng này...",
+    "supportedFormats": "Định dạng được hỗ trợ: Hình ảnh, PDF, Tài liệu Word",
+    "submitButton": "Gửi khiếu nại",
+    "success": "Gửi khiếu nại thành công!",
+    "errors": {
+      "reasonRequired": "Vui lòng cung cấp lý do cho khiếu nại",
+      "missingInfo": "Thiếu thông tin bắt buộc",
+      "resolutionRequired": "Vui lòng chọn hướng giải quyết khiếu nại"
+    }
+  }
 }

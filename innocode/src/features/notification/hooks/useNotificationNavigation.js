@@ -195,6 +195,18 @@ const useNotificationNavigation = (onClose) => {
       return
     }
 
+    // Certificate issued - navigate to certificate page for students and mentors
+    if (
+      (targetType === "certificate" ||
+        notification.type === "CertificateIssued" ||
+        notification.type === "certificate.issued") &&
+      (userRole === "student" || userRole === "mentor")
+    ) {
+      if (onClose) onClose()
+      navigate("/certificate")
+      return
+    }
+
     // Round or Contest started/ended notifications - navigate to contest detail
     const message = notification.message || ""
     const notificationType = notification.type || ""

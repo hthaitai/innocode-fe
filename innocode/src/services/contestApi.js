@@ -169,6 +169,10 @@ export const contestApi = api.injectEndpoints({
       transformResponse: (response) => response.data,
       providesTags: (result, error, id) => [{ type: "Contests", id }],
     }),
+    getMentorReport: builder.query({
+      query: (id) => `contests/${id}/mentor-report`,
+      transformResponse: (response) => response.data,
+    }),
   }),
 })
 
@@ -190,4 +194,5 @@ export const {
   useLazyGetContestReportQuery,
   useGetMyContestsQuery,
   useGetContestTimelineQuery,
+  useLazyGetMentorReportQuery,
 } = contestApi

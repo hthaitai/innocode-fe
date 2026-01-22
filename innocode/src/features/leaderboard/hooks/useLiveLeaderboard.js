@@ -47,37 +47,18 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
         isForSameContest &&
         isConnectingRef.current
       ) {
-        if (import.meta.env.VITE_ENV === "development") {
-          console.log(
-            "Connection already in progress for same contest, skipping..."
-          )
-        }
         return
       }
 
       // If connection is already connected for the same contest, verify group subscription
       if (state === signalR.HubConnectionState.Connected && isForSameContest) {
-        if (import.meta.env.VITE_ENV === "development") {
-          console.log(
-            "Connection already active for same contest, verifying group subscription"
-          )
-        }
         const groupName = `leaderboard_${contestId}`
         connectionRef.current
           .invoke("JoinGroup", groupName)
           .catch(() =>
             connectionRef.current.invoke("JoinLeaderboardGroup", contestId)
           )
-          .then(() => {
-            if (import.meta.env.VITE_ENV === "development") {
-              console.log("✅ Verified group subscription")
-            }
-          })
-          .catch((err) => {
-            if (import.meta.env.VITE_ENV === "development") {
-              console.warn("Could not verify group subscription:", err)
-            }
-          })
+          .catch(() => {})
         // Don't recreate connection, just verify subscription
         return
       }
@@ -89,19 +70,7 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
         state === signalR.HubConnectionState.Disconnected ||
         state === signalR.HubConnectionState.Disconnecting
       ) {
-        if (import.meta.env.VITE_ENV === "development") {
-          console.log("Stopping existing connection before reconnecting", {
-            isForSameContest,
-            state,
-            previousContestId,
-            newContestId: contestId,
-          })
-        }
-        connectionRef.current.stop().catch((err) => {
-          if (import.meta.env.VITE_ENV === "development") {
-            console.warn("Error stopping existing connection:", err)
-          }
-        })
+        connectionRef.current.stop().catch(() => {})
         connectionRef.current = null
       }
     }
@@ -144,7 +113,6 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
       // Only attempt reconnect if this is still the current contest
       if (currentContestIdRef.current === contestId && enabled) {
         if (error) {
-          console.error("SignalR connection closed with error:", error)
           setConnectionError(error.message || "Connection closed")
 
           // Manual reconnection if automatic reconnect fails
@@ -164,19 +132,15 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
       }
     })
 
-    connection.onreconnecting((error) => {
+    connection.onreconnecting(() => {
       setIsConnected(false)
-      if (error) {
-        console.warn("SignalR reconnecting...", error)
-      }
     })
 
-    connection.onreconnected((connectionId) => {
+    connection.onreconnected(() => {
       setIsConnected(true)
       setConnectionError(null)
       reconnectAttemptsRef.current = 0
       isConnectingRef.current = false
-      console.log("SignalR reconnected:", connectionId)
 
       // Re-subscribe to contest updates after reconnection
       if (currentContestIdRef.current) {
@@ -189,39 +153,25 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
               currentContestIdRef.current
             )
           )
-          .catch((err) => {
-            console.error(
-              "Could not rejoin leaderboard group after reconnection:",
-              err
-            )
-          })
+          .catch(() => {})
       }
     })
 
     // Listen for leaderboard updates
-    connection.on("LeaderboardUpdated", (data) => {
-      if (import.meta.env.VITE_ENV === "development") {
-        console.log("📊 Live leaderboard update received:", data)
-      }
-
+    connection.on("LeaderboardUpdated", () => {
       // Trigger refetch to get fresh data from API
       if (refetchRef.current && typeof refetchRef.current === "function") {
         try {
-          if (import.meta.env.VITE_ENV === "development") {
-            console.log("🔄 Triggering leaderboard refetch...")
-          }
           refetchRef.current()
         } catch (error) {
-          console.error("Error triggering refetch:", error)
+          // Silent error handling
         }
       }
     })
 
     // Optional: Listen for successful group join confirmation
-    connection.on("JoinedGroup", (data) => {
-      if (import.meta.env.VITE_ENV === "development") {
-        console.log("✅ Joined leaderboard group:", data)
-      }
+    connection.on("JoinedGroup", () => {
+      // Group joined successfully
     })
 
     // Start connection
@@ -230,11 +180,6 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
       .then(() => {
         // Check if contestId hasn't changed during connection
         if (currentContestIdRef.current !== contestId) {
-          if (import.meta.env.VITE_ENV === "development") {
-            console.warn(
-              "ContestId changed during connection, disconnecting..."
-            )
-          }
           connection.stop()
           return
         }
@@ -244,10 +189,6 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
         setConnectionError(null)
         reconnectAttemptsRef.current = 0
 
-        if (import.meta.env.VITE_ENV === "development") {
-          console.log("✅ SignalR connected to leaderboard hub")
-        }
-
         // Join the contest leaderboard group
         // Backend uses group name format: "leaderboard_{contestId}"
         if (contestId) {
@@ -256,40 +197,13 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
           return connection
             .invoke("JoinGroup", groupName)
             .catch(() => connection.invoke("JoinLeaderboardGroup", contestId))
-            .catch((err) => {
-              if (import.meta.env.VITE_ENV === "development") {
-                console.warn(
-                  "Could not join group, but connection is active:",
-                  err
-                )
-              }
-              return Promise.resolve()
-            })
-        }
-      })
-      .then(() => {
-        if (contestId && import.meta.env.VITE_ENV === "development") {
-          console.log(
-            `✅ Subscribed to contest ${contestId} leaderboard updates`
-          )
+            .catch(() => Promise.resolve())
         }
       })
       .catch((error) => {
         isConnectingRef.current = false
         setIsConnected(false)
-        console.error("❌ SignalR connection error:", error)
         setConnectionError(error.message || "Failed to connect")
-
-        // Log more details for debugging
-        if (import.meta.env.VITE_ENV === "development") {
-          console.error("Connection error details:", {
-            contestId,
-            enabled,
-            connectionState: connectionRef.current?.state,
-            errorMessage: error.message,
-            errorStack: error.stack,
-          })
-        }
 
         // Retry connection if it failed and we still have the same contestId
         if (currentContestIdRef.current === contestId && enabled) {
@@ -302,11 +216,6 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
                 enabled &&
                 !isConnectingRef.current
               ) {
-                if (import.meta.env.VITE_ENV === "development") {
-                  console.log(
-                    `🔄 Retrying connection (attempt ${reconnectAttemptsRef.current}/${MAX_RECONNECT_ATTEMPTS})...`
-                  )
-                }
                 connectRef.current()
               }
             }, RECONNECT_DELAY)
@@ -342,26 +251,18 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
               contestIdToLeave
             )
           )
-          .catch((err) => {
-            console.warn("Could not leave leaderboard group:", err)
-          })
+          .catch(() => {})
           .finally(() => {
-            connectionRef.current?.stop().catch((err) => {
-              console.warn("Error stopping connection:", err)
-            })
+            connectionRef.current?.stop().catch(() => {})
             connectionRef.current = null
             setIsConnected(false)
           })
       } else {
         // If not connected, just stop
-        connectionRef.current.stop().catch((err) => {
-          console.warn("Error stopping connection:", err)
-        })
+        connectionRef.current.stop().catch(() => {})
         connectionRef.current = null
         setIsConnected(false)
       }
-
-      console.log("SignalR disconnected")
     }
   }, [])
 
@@ -396,19 +297,6 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
     // 2. No connection exists
     // 3. Connection exists but is disconnected
     if (contestIdChanged || !connection || !isConnectionActive) {
-      if (import.meta.env.VITE_ENV === "development") {
-        console.log(`🔄 Connecting to leaderboard for contest: ${contestId}`, {
-          previousContestId,
-          currentContestId: contestId,
-          hasConnection: !!connection,
-          connectionState: connection?.state,
-          reason: contestIdChanged
-            ? "contestId changed"
-            : !connection
-            ? "no connection"
-            : "connection disconnected",
-        })
-      }
       connectRef.current()
     } else if (isConnectionActive && !contestIdChanged) {
       // Connection exists and is connected for the same contest
@@ -418,27 +306,13 @@ export const useLiveLeaderboard = (contestId, refetch, enabled = true) => {
       connection
         .invoke("JoinGroup", groupName)
         .catch(() => connection.invoke("JoinLeaderboardGroup", contestId))
-        .then(() => {
-          if (import.meta.env.VITE_ENV === "development") {
-            console.log(
-              `✅ Re-verified subscription to contest ${contestId} leaderboard group`
-            )
-          }
-        })
-        .catch((err) => {
-          if (import.meta.env.VITE_ENV === "development") {
-            console.warn("Could not verify/rejoin leaderboard group:", err)
-          }
-        })
+        .catch(() => {})
     }
 
     // Cleanup function - only disconnect if contestId changed or disabled
     return () => {
       // Only cleanup if contestId changed or component unmounting
       if (currentContestIdRef.current !== contestId || !enabled) {
-        if (import.meta.env.VITE_ENV === "development") {
-          console.log(`🔌 Cleaning up connection for contest: ${contestId}`)
-        }
         disconnectRef.current()
       }
     }

@@ -333,7 +333,12 @@
     "points": "points",
     "awardTeamCertificate": "Award team certificate",
     "issueTeamCertificate": "Issue a certificate for the entire team",
-    "leaderboardTitle": "Leaderboard"
+    "leaderboardTitle": "Leaderboard",
+    "downloadReport": "Download Report",
+    "downloading": "Downloading...",
+    "noTeamInContest": "You must have a team in this contest to download the report",
+    "reportDownloadStarted": "Report download started",
+    "reportDownloadFailed": "Failed to download report"
   },
   "provinces": {
     "provincesManagement": "Provinces Management",
@@ -1218,5 +1223,26 @@
       "totalStudents": "Total Students",
       "totalCertificates": "Total Certificates"
     }
+  },
+  "quiz": {
+    "confirmSubmission": "Confirm Submission",
+    "submitYourAnswers": "Submit Your Answers",
+    "unansweredQuestions": "You have {{count}} unanswered question(s) out of {{total}} total questions. Are you sure you want to submit?",
+    "allQuestionsAnswered": "You have answered all {{total}} questions. Are you sure you want to submit your answers?",
+    "answered": "Answered:",
+    "unanswered": "Unanswered:",
+    "cannotChangeWarning": "Once submitted, you cannot change your answers.",
+    "timeRemaining": "Time Remaining",
+    "submitting": "Submitting...",
+    "submitContest": "Submit Contest",
+    "loadingQuiz": "Loading quiz...",
+    "question": "Question",
+    "of": "of",
+    "progress": "Progress",
+    "questions": "Questions",
+    "current": "Current",
+    "notAnswered": "Not Answered",
+    "previous": "Previous",
+    "next": "Next"
   }
 }

@@ -333,7 +333,12 @@
     "points": "điểm",
     "awardTeamCertificate": "Trao chứng chỉ đội",
     "issueTeamCertificate": "Cấp chứng chỉ cho toàn bộ đội",
-    "leaderboardTitle": "Bảng xếp hạng"
+    "leaderboardTitle": "Bảng xếp hạng",
+    "downloadReport": "Tải xuống báo cáo",
+    "downloading": "Đang tải xuống...",
+    "noTeamInContest": "Bạn phải có đội trong cuộc thi này để tải xuống báo cáo",
+    "reportDownloadStarted": "Bắt đầu tải xuống báo cáo",
+    "reportDownloadFailed": "Không thể tải xuống báo cáo"
   },
   "provinces": {
     "provincesManagement": "Quản lý Tỉnh/Thành phố",
@@ -1203,5 +1208,26 @@
       "totalStudents": "Tổng số học sinh",
       "totalCertificates": "Tổng chứng chỉ"
     }
+  },
+  "quiz": {
+    "confirmSubmission": "Xác nhận nộp bài",
+    "submitYourAnswers": "Nộp bài trả lời",
+    "unansweredQuestions": "Bạn có {{count}} câu hỏi chưa trả lời trong tổng số {{total}} câu hỏi. Bạn có chắc chắn muốn nộp bài không?",
+    "allQuestionsAnswered": "Bạn đã trả lời tất cả {{total}} câu hỏi. Bạn có chắc chắn muốn nộp bài trả lời của mình không?",
+    "answered": "Đã trả lời:",
+    "unanswered": "Chưa trả lời:",
+    "cannotChangeWarning": "Sau khi nộp bài, bạn không thể thay đổi câu trả lời của mình.",
+    "timeRemaining": "Thời gian còn lại",
+    "submitting": "Đang nộp bài...",
+    "submitContest": "Nộp bài thi",
+    "loadingQuiz": "Đang tải bài kiểm tra...",
+    "question": "Câu hỏi",
+    "of": "trong số",
+    "progress": "Tiến độ",
+    "questions": "Câu hỏi",
+    "current": "Hiện tại",
+    "notAnswered": "Chưa trả lời",
+    "previous": "Trước",
+    "next": "Tiếp theo"
   }
 }

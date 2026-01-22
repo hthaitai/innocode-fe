@@ -31,7 +31,8 @@
     "rank": "Hạng",
     "teamName": "Tên đội",
     "members": "Thành viên",
-    "teamScore": "Điểm đội"
+    "teamScore": "Điểm đội",
+    "status": "Trạng thái"
   },
   "actions": {
     "freeze": "Bật",
@@ -60,5 +61,10 @@
   "roles": {
     "leader": "Trưởng nhóm",
     "member": "Thành viên"
-  }
+  },
+  "downloadReport": "Tải xuống báo cáo",
+  "downloading": "Đang tải xuống...",
+  "noTeamInContest": "Bạn phải có đội trong cuộc thi này để tải xuống báo cáo",
+  "reportDownloadStarted": "Bắt đầu tải xuống báo cáo",
+  "reportDownloadFailed": "Không thể tải xuống báo cáo"
 }
