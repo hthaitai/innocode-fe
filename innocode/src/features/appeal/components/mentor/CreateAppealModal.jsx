@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import BaseModal from "@/shared/components/BaseModal";
-import { TextField } from "@mui/material";
-import { useCreateAppealMutation } from "@/services/appealApi";
-import { toast } from "react-hot-toast";
-import { Icon } from "@iconify/react";
-import DropdownFluent from "@/shared/components/DropdownFluent";
-import TextFieldFluent from "@/shared/components/TextFieldFluent";
+import React, { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
+import BaseModal from "@/shared/components/BaseModal"
+import { TextField } from "@mui/material"
+import { useCreateAppealMutation } from "@/services/appealApi"
+import { toast } from "react-hot-toast"
+import { Icon } from "@iconify/react"
+import DropdownFluent from "@/shared/components/DropdownFluent"
+import TextFieldFluent from "@/shared/components/TextFieldFluent"
 
 export default function CreateAppealModal({
   isOpen,
@@ -17,87 +18,88 @@ export default function CreateAppealModal({
   roundName,
   roundType,
 }) {
-  const [reason, setReason] = useState("");
-  const [evidences, setEvidences] = useState([]); // Array of { file, note }
-  const [appealResolution, setAppealResolution] = useState(""); // Single selected resolution
-  const [createAppeal, { isLoading }] = useCreateAppealMutation();
+  const { t } = useTranslation(["appeal", "common"])
+  const [reason, setReason] = useState("")
+  const [evidences, setEvidences] = useState([]) // Array of { file, note }
+  const [appealResolution, setAppealResolution] = useState("") // Single selected resolution
+  const [createAppeal, { isLoading }] = useCreateAppealMutation()
 
   // Get available resolution options based on roundType
   const getResolutionOptions = () => {
     if (roundType === "McqTest") {
-      return [{ value: "Retake", label: "Retake" }];
+      return [{ value: "Retake", label: t("createAppeal.resolutionOptions.retake") }]
     } else if (roundType === "AutoEvaluation") {
       return [
-        { value: "Retake", label: "Retake" },
-        { value: "RecheckPlagiarism", label: "Recheck Plagiarism" },
-      ];
+        { value: "Retake", label: t("createAppeal.resolutionOptions.retake") },
+        { value: "RecheckPlagiarism", label: t("createAppeal.resolutionOptions.recheckPlagiarism") },
+      ]
     } else if (roundType === "Manual") {
       return [
-        { value: "Retake", label: "Retake" },
-        { value: "Rescore", label: "Rescore" },
-        { value: "RecheckPlagiarism", label: "Recheck Plagiarism" },
-      ];
+        { value: "Retake", label: t("createAppeal.resolutionOptions.retake") },
+        { value: "Rescore", label: t("createAppeal.resolutionOptions.rescore") },
+        { value: "RecheckPlagiarism", label: t("createAppeal.resolutionOptions.recheckPlagiarism") },
+      ]
     }
-    return [];
-  };
+    return []
+  }
 
   useEffect(() => {
     if (isOpen) {
-      setReason("");
-      setEvidences([]);
+      setReason("")
+      setEvidences([])
       // Set default appealResolution based on roundType
       if (roundType === "McqTest") {
-        setAppealResolution("Retake");
+        setAppealResolution("Retake")
       } else if (roundType === "AutoEvaluation") {
-        setAppealResolution("Retake");
+        setAppealResolution("Retake")
       } else if (roundType === "Manual") {
-        setAppealResolution("Retake");
+        setAppealResolution("Retake")
       } else {
-        setAppealResolution("");
+        setAppealResolution("")
       }
     }
-  }, [isOpen, roundType]);
+  }, [isOpen, roundType])
 
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files)
     const newEvidences = files.map((file) => ({
       file,
       note: "",
       id: Date.now() + Math.random(), // Unique ID for each evidence
-    }));
-    setEvidences((prev) => [...prev, ...newEvidences]);
+    }))
+    setEvidences((prev) => [...prev, ...newEvidences])
     // Reset input to allow selecting the same file again
-    e.target.value = "";
-  };
+    e.target.value = ""
+  }
 
   const handleRemoveEvidence = (id) => {
-    setEvidences((prev) => prev.filter((ev) => ev.id !== id));
-  };
+    setEvidences((prev) => prev.filter((ev) => ev.id !== id))
+  }
 
   const handleEvidenceNoteChange = (id, note) => {
     setEvidences((prev) =>
-      prev.map((ev) => (ev.id === id ? { ...ev, note } : ev))
-    );
-  };
+      prev.map((ev) => (ev.id === id ? { ...ev, note } : ev)),
+    )
+  }
 
   const handleResolutionChange = (value) => {
-    setAppealResolution(value);
-  };
+    setAppealResolution(value)
+  }
 
   const handleSubmit = async () => {
     if (!reason.trim()) {
-      toast.error("Please provide a reason for the appeal");
-      return;
+      toast.error(t("createAppeal.errors.reasonRequired"))
+      return
     }
 
     if (!roundId || !teamId || !studentId) {
-      toast.error("Missing required information");
-      return;
+      toast.error(t("createAppeal.errors.missingInfo"))
+      return
     }
 
     if (!appealResolution || appealResolution.trim() === "") {
-      toast.error("Please select an appeal resolution");
-      return;
+      toast.error(t("createAppeal.errors.resolutionRequired"))
+      return
     }
 
     const appealData = {
@@ -107,48 +109,48 @@ export default function CreateAppealModal({
       Reason: reason,
       Evidences: evidences && evidences.length > 0 ? evidences : [],
       AppealResolution: appealResolution,
-    };
+    }
 
     try {
-      await createAppeal(appealData).unwrap();
+      await createAppeal(appealData).unwrap()
 
-      toast.success("Appeal submitted successfully!");
-      onClose();
+      toast.success(t("createAppeal.success"))
+      onClose()
     } catch (error) {
-      console.error("Error creating appeal:", error);
+      console.error("Error creating appeal:", error)
       console.error("Error details:", {
         status: error?.status,
         data: error?.data,
         message: error?.message,
-      });
+      })
 
-      const errorMessage = error?.data?.errorMessage;
-      toast.dismiss();
+      const errorMessage = error?.data?.errorMessage
+      toast.dismiss()
 
-      toast.error(errorMessage);
+      toast.error(errorMessage)
     }
-  };
+  }
 
   const footer = (
     <div className="flex justify-end gap-2">
       <button className="button-white" onClick={onClose} disabled={isLoading}>
-        Cancel
+        {t("cancel")}
       </button>
       <button
         className="button-orange"
         onClick={handleSubmit}
         disabled={isLoading || !reason.trim()}
       >
-        {isLoading ? "Submitting..." : "Submit Appeal"}
+        {isLoading ? t("submitting") : t("createAppeal.submitButton")}
       </button>
     </div>
-  );
+  )
 
   return (
     <BaseModal
       isOpen={isOpen}
       onClose={onClose}
-      title="Request an Appeal"
+      title={t("createAppeal.title")}
       size="md"
       footer={footer}
     >
@@ -158,21 +160,21 @@ export default function CreateAppealModal({
           <div className="bg-gray-50 rounded px-3 py-2 border border-gray-200">
             {roundName && (
               <>
-                <p className="text-xs text-gray-600 mb-1">Round:</p>
+                <p className="text-xs text-gray-600 mb-1">{t("createAppeal.roundLabel")}</p>
                 <p className="text-sm font-medium text-gray-900">{roundName}</p>
               </>
             )}
             {roundType && (
               <>
-                <p className="text-xs text-gray-600 mb-1 mt-2">Round Type:</p>
+                <p className="text-xs text-gray-600 mb-1 mt-2">{t("createAppeal.roundTypeLabel")}</p>
                 <p className="text-sm font-medium text-gray-900">
                   {roundType === "McqTest"
-                    ? "MCQ Test"
+                    ? t("createAppeal.roundTypes.mcqTest")
                     : roundType === "Manual"
-                    ? "Manual Problem"
-                    : roundType === "AutoEvaluation"
-                    ? "Auto Evaluation"
-                    : roundType}
+                      ? t("createAppeal.roundTypes.manual")
+                      : roundType === "AutoEvaluation"
+                        ? t("createAppeal.roundTypes.autoEvaluation")
+                        : roundType}
                 </p>
               </>
             )}
@@ -182,34 +184,34 @@ export default function CreateAppealModal({
         {/* Reason Field */}
         <div>
           <TextField
-            label="Reason *"
+            label={t("createAppeal.reasonLabel")}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             fullWidth
             multiline
             rows={4}
-            placeholder="Please provide a detailed reason for your appeal..."
+            placeholder={t("createAppeal.reasonPlaceholder")}
             required
-            helperText="Explain why you are requesting an appeal for this round"
+            helperText={t("createAppeal.reasonHelperText")}
           />
         </div>
 
         {/* Appeal Resolution Field */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Appeal Resolution *
+            {t("createAppeal.resolutionLabel")}
           </label>
           {roundType === "McqTest" ? (
             <div className="bg-gray-50 rounded px-3 py-2 border border-gray-200">
-              <p className="text-sm font-medium text-gray-900">Retake</p>
+              <p className="text-sm font-medium text-gray-900">{t("createAppeal.resolutionOptions.retake")}</p>
               <p className="text-xs text-gray-500 mt-1">
-                Default resolution for MCQ rounds
+                {t("createAppeal.mcqDefaultResolution")}
               </p>
             </div>
           ) : (
             <div className="space-y-2 border border-gray-300 rounded px-4 py-3 bg-white">
               {getResolutionOptions().map((option) => {
-                const isChecked = appealResolution === option.value;
+                const isChecked = appealResolution === option.value
                 return (
                   <label
                     key={option.value}
@@ -223,15 +225,17 @@ export default function CreateAppealModal({
                       onChange={() => handleResolutionChange(option.value)}
                       className="w-4 h-4 text-[#E05307] accent-[#E05307] cursor-pointer"
                     />
-                    <span className="text-sm text-gray-700">{option.label}</span>
+                    <span className="text-sm text-gray-700">
+                      {option.label}
+                    </span>
                   </label>
-                );
+                )
               })}
             </div>
           )}
           {appealResolution && (
             <p className="text-xs text-gray-500 mt-2">
-              Selected: {appealResolution}
+              {t("createAppeal.selected")}: {appealResolution}
             </p>
           )}
         </div>
@@ -239,7 +243,7 @@ export default function CreateAppealModal({
         {/* Evidence Upload */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Evidence (Optional)
+            {t("createAppeal.evidenceLabel")}
           </label>
           <div className="border border-gray-300 rounded px-4 py-3 bg-gray-50">
             <input
@@ -257,8 +261,8 @@ export default function CreateAppealModal({
               <Icon icon="mdi:paperclip" width={20} />
               <span>
                 {evidences.length > 0
-                  ? `${evidences.length} file(s) selected`
-                  : "Click to upload evidence files"}
+                  ? t("createAppeal.filesSelected", { count: evidences.length })
+                  : t("createAppeal.uploadEvidencePlaceholder")}
               </span>
             </label>
           </div>
@@ -271,7 +275,11 @@ export default function CreateAppealModal({
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <Icon icon="mdi:file" width={16} className="text-gray-600 flex-shrink-0" />
+                      <Icon
+                        icon="mdi:file"
+                        width={16}
+                        className="text-gray-600 flex-shrink-0"
+                      />
                       <span className="text-sm text-gray-700 truncate">
                         {evidence.file.name}
                       </span>
@@ -285,12 +293,12 @@ export default function CreateAppealModal({
                     </button>
                   </div>
                   <TextFieldFluent
-                    label="Note (Optional)"
+                    label={t("createAppeal.evidenceNoteLabel")}
                     value={evidence.note}
                     onChange={(e) =>
                       handleEvidenceNoteChange(evidence.id, e.target.value)
                     }
-                    placeholder="Add a note for this evidence..."
+                    placeholder={t("createAppeal.evidenceNotePlaceholder")}
                     multiline
                     rows={2}
                   />
@@ -299,10 +307,10 @@ export default function CreateAppealModal({
             </div>
           )}
           <p className="text-xs text-gray-500 mt-2">
-            Supported formats: Images, PDF, Word documents
+            {t("createAppeal.supportedFormats")}
           </p>
         </div>
       </div>
     </BaseModal>
-  );
+  )
 }

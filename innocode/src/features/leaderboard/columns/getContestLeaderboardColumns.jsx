@@ -1,5 +1,6 @@
 import { Trophy, Medal, Award } from "lucide-react"
 import { formatScore } from "@/shared/utils/formatNumber"
+import StatusBadge from "@/shared/components/StatusBadge"
 
 export const getContestLeaderboardColumns = (t) => [
   {
@@ -57,5 +58,21 @@ export const getContestLeaderboardColumns = (t) => [
       return `${count} ${suffix}`
     },
     meta: { className: "truncate max-w-[180px]" },
+  },
+  {
+    accessorKey: "status",
+    header: t ? t("leaderboard:columns.status") : "Status",
+    size: 150,
+    cell: ({ row }) => {
+      const status = row.original?.status
+      if (!status) return "—"
+      return (
+        <StatusBadge
+          status={status}
+          translate="team"
+        />
+      )
+    },
+    meta: { className: "truncate max-w-[150px]" },
   },
 ]

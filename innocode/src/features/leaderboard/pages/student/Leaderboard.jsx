@@ -12,24 +12,31 @@ import {
   Wifi,
   WifiOff,
   MedalIcon,
+  Download,
 } from "lucide-react"
 import { formatDateTime } from "@/shared/utils/dateTime"
 import { formatScore } from "@/shared/utils/formatNumber"
 import { BREADCRUMBS, createBreadcrumbWithPaths } from "@/config/breadcrumbs"
-import { useGetTeamsByContestIdQuery } from "@/services/leaderboardApi"
-import { useGetContestByIdQuery } from "@/services/contestApi"
+import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
+import { useGetContestByIdQuery, useLazyGetMentorReportQuery } from "@/services/contestApi"
+import { useGetMyTeamQuery } from "@/services/teamApi"
+import { useAuth } from "@/context/AuthContext"
 import useContests from "../../../contest/hooks/useContests"
 import { Icon } from "@iconify/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useLiveLeaderboard } from "../../hooks/useLiveLeaderboard"
+import StatusBadge from "@/shared/components/StatusBadge"
+import { toast } from "react-hot-toast"
 
 const Leaderboard = () => {
   const { t } = useTranslation("pages")
   const { contestId: urlContestId } = useParams()
+  const { user } = useAuth()
 
   const { contests, loading: contestsLoading } = useContests()
 
   const [expandedTeamId, setExpandedTeamId] = useState(null)
+  const [downloadingReport, setDownloadingReport] = useState(false)
 
   // Toggle team expansion
   const toggleTeamExpansion = (teamId) => {
@@ -68,6 +75,58 @@ const Leaderboard = () => {
     urlContestId || null,
   )
 
+  // Fetch mentor's teams to validate participation
+  const { data: myTeamsData } = useGetMyTeamQuery(undefined, {
+    skip: user?.role !== "mentor",
+  })
+
+  // Check if mentor has a team in the selected contest
+  const mentorHasTeamInContest = useMemo(() => {
+    if (user?.role !== "mentor" || !selectedContestId || !myTeamsData) return false
+    
+    return myTeamsData.some((team) => {
+      const teamContestId = team.contestId || team.contest_id
+      return String(teamContestId) === String(selectedContestId)
+    })
+  }, [user?.role, selectedContestId, myTeamsData])
+
+  // Lazy query for mentor report
+  const [getMentorReport, { isLoading: reportLoading }] = useLazyGetMentorReportQuery()
+
+  // Handle download leaderboard report
+  const handleDownloadReport = async () => {
+    if (!selectedContestId || !mentorHasTeamInContest) {
+      toast.error(t("leaderboard.noTeamInContest") || "You must have a team in this contest to download the report")
+      return
+    }
+
+    try {
+      setDownloadingReport(true)
+      const response = await getMentorReport(selectedContestId).unwrap()
+      
+      if (response?.url) {
+        // Create a temporary anchor element to trigger download
+        const link = document.createElement("a")
+        link.href = response.url
+        link.download = `leaderboard-report-${selectedContestId}.zip`
+        link.target = "_blank"
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        
+        toast.success(t("leaderboard.reportDownloadStarted") || "Report download started")
+      } else {
+        toast.error(t("leaderboard.reportDownloadFailed") || "Failed to get report URL")
+      }
+    } catch (error) {
+      console.error("Error downloading report:", error)
+      const errorMessage = error?.data?.message || error?.message || t("leaderboard.reportDownloadFailed") || "Failed to download report"
+      toast.error(errorMessage)
+    } finally {
+      setDownloadingReport(false)
+    }
+  }
+
   useEffect(() => {
     if (!selectedContestId && availableContests.length > 0) {
       setSelectedContestId(availableContests[0].contestId)
@@ -87,13 +146,20 @@ const Leaderboard = () => {
 
   // Fetch leaderboard data using RTK Query
   const {
-    data: leaderboardData,
+    data: leaderboardResponse,
     isLoading: loading,
     error,
     refetch,
-  } = useGetTeamsByContestIdQuery(selectedContestId, {
-    skip: !selectedContestId,
-  })
+  } = useGetLeaderboardByContestQuery(
+    {
+      contestId: selectedContestId,
+      pageNumber: 1,
+      pageSize: 1000, // Get all teams for student view
+    },
+    {
+      skip: !selectedContestId,
+    },
+  )
 
   // Connect to live leaderboard hub - pass refetch function to trigger updates
   const { isConnected, connectionError } = useLiveLeaderboard(
@@ -110,60 +176,19 @@ const Leaderboard = () => {
     }
   }, [selectedContestId, refetch])
 
-  // Debug: Log leaderboard data
-  useEffect(() => {
-    if (import.meta.env.VITE_ENV === "development") {
-      console.log(
-        "🔍 [Leaderboard Component] selectedContestId:",
-        selectedContestId,
-      )
-      console.log(
-        "🔍 [Leaderboard Component] leaderboardData:",
-        leaderboardData,
-      )
-      console.log(
-        "🔍 [Leaderboard Component] leaderboardData type:",
-        typeof leaderboardData,
-      )
-      console.log(
-        "🔍 [Leaderboard Component] leaderboardData isArray:",
-        Array.isArray(leaderboardData),
-      )
-      console.log("🔍 [Leaderboard Component] loading:", loading)
-      console.log("🔍 [Leaderboard Component] error:", error)
-    }
-  }, [leaderboardData, selectedContestId, loading, error])
+  // Extract data from API response
+  const leaderboardData = leaderboardResponse?.data || null
+  
+  // Handle data structure - Extract teamIdList from response
+  const entries = leaderboardData?.teamIdList || []
 
-  // Handle data structure - Use RTK Query data (will be updated via refetch)
-  const entries = Array.isArray(leaderboardData)
-    ? leaderboardData // Fallback for old format
-    : leaderboardData?.teams ||
-      leaderboardData?.teamIdList ||
-      leaderboardData?.entries ||
-      []
 
-  // Debug: Log entries
-  useEffect(() => {
-    if (import.meta.env.VITE_ENV === "development") {
-      console.log("🔍 [Leaderboard Component] entries:", entries)
-      console.log("🔍 [Leaderboard Component] entries length:", entries.length)
-      if (entries.length > 0) {
-        console.log("🔍 [Leaderboard Component] first entry:", entries[0])
-        console.log(
-          "🔍 [Leaderboard Component] first entry keys:",
-          Object.keys(entries[0] || {}),
-        )
-      }
-    }
-  }, [entries])
 
   // Get contest info from selected contest or from data
   const contestInfo = {
     contestName: selectedContest?.name || leaderboardData?.contestName || null,
     contestId: selectedContestId,
-    totalTeamCount: Array.isArray(entries)
-      ? entries.length
-      : leaderboardData?.totalTeamCount || 0,
+    totalTeamCount: leaderboardData?.totalTeamCount || entries.length,
     snapshotAt: leaderboardData?.snapshotAt || null,
   }
 
@@ -461,6 +486,19 @@ const Leaderboard = () => {
                 </p>
               </div>
             </div>
+            {/* Download Report Button for Mentor */}
+            {user?.role === "mentor" && selectedContestId && mentorHasTeamInContest && (
+              <button
+                onClick={handleDownloadReport}
+                disabled={downloadingReport || reportLoading}
+                className="button-orange flex items-center gap-2 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Download size={18} />
+                {downloadingReport || reportLoading
+                  ? t("leaderboard.downloading") || "Downloading..."
+                  : t("leaderboard.downloadReport") || "Download Report"}
+              </button>
+            )}
           </div>
         </div>
 
@@ -541,6 +579,11 @@ const Leaderboard = () => {
                         <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full group-hover:text-[#ff6b35] transition-colors">
                           {entries[1]?.teamName || "—"}
                         </p>
+                        {entries[1]?.status && (
+                          <div className="mb-1">
+                            <StatusBadge status={entries[1]?.status} translate="team" />
+                          </div>
+                        )}
                         <p className="text-2xl font-bold text-[#ff6b35]">
                           {formatScore(entries[1]?.score)}{" "}
                           {t("leaderboard.pts")}
@@ -585,6 +628,11 @@ const Leaderboard = () => {
                         <p className="text-base font-bold text-[#2d3748] text-center mb-2 truncate w-full group-hover:text-yellow-600 transition-colors">
                           {entries[0]?.teamName || "—"}
                         </p>
+                        {entries[0]?.status && (
+                          <div className="mb-2">
+                            <StatusBadge status={entries[0]?.status} translate="team" />
+                          </div>
+                        )}
                         <p className="text-3xl font-bold text-[#ff6b35]">
                           {formatScore(entries[0]?.score)}{" "}
                           {t("leaderboard.pts")}
@@ -610,6 +658,11 @@ const Leaderboard = () => {
                         <p className="text-sm font-semibold text-[#2d3748] text-center mb-1 truncate w-full group-hover:text-amber-600 transition-colors">
                           {entries[2]?.teamName || "—"}
                         </p>
+                        {entries[2]?.status && (
+                          <div className="mb-1">
+                            <StatusBadge status={entries[2]?.status} translate="team" />
+                          </div>
+                        )}
                         <p className="text-2xl font-bold text-[#ff6b35]">
                           {formatScore(entries[2]?.score)}{" "}
                           {t("leaderboard.pts")}
@@ -686,14 +739,19 @@ const Leaderboard = () => {
                             <p className="font-semibold text-[#2d3748] truncate">
                               {entry.teamName || "—"}
                             </p>
-                            {(entry.members?.length || 0) > 0 && (
-                              <p className="text-xs text-[#7A7574]">
-                                {entry.members?.length || 0}{" "}
-                                {(entry.members?.length || 0) !== 1
-                                  ? t("leaderboard.members")
-                                  : t("leaderboard.member")}
-                              </p>
-                            )}
+                            <div className="flex items-center gap-2 mt-1">
+                              {(entry.members?.length || 0) > 0 && (
+                                <p className="text-xs text-[#7A7574]">
+                                  {entry.members?.length || 0}{" "}
+                                  {(entry.members?.length || 0) !== 1
+                                    ? t("leaderboard.members")
+                                    : t("leaderboard.member")}
+                                </p>
+                              )}
+                              {entry.status && (
+                                <StatusBadge status={entry.status} translate="team" />
+                              )}
+                            </div>
                           </div>
 
                           {/* Score */}

@@ -31,7 +31,8 @@
     "rank": "Rank",
     "teamName": "Team name",
     "members": "Members",
-    "teamScore": "Team score"
+    "teamScore": "Team score",
+    "status": "Status"
   },
   "actions": {
     "freeze": "On",
@@ -60,5 +61,10 @@
   "roles": {
     "leader": "Leader",
     "member": "Member"
-  }
+  },
+  "downloadReport": "Download Report",
+  "downloading": "Downloading...",
+  "noTeamInContest": "You must have a team in this contest to download the report",
+  "reportDownloadStarted": "Report download started",
+  "reportDownloadFailed": "Failed to download report"
 }
