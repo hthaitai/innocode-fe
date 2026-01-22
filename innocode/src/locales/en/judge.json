@@ -42,7 +42,8 @@
     "opened": "Opened",
     "closed": "Closed",
     "incoming": "Incoming",
-    "finalized": "Finalized"
+    "finalized": "Finalized",
+    "finished": "Finished"
   },
   "contestList": {
     "title": "Contests",
@@ -64,12 +65,14 @@
   "manualSubmissions": {
     "title": "Manual Submissions",
     "table": {
+      "submission": "Submission",
       "student": "Student",
       "team": "Team",
       "status": "Status",
       "score": "Score",
       "actions": "Actions"
     },
+    "empty": "No submissions found",
     "filter": {
       "Pending": "Pending",
       "Finished": "Finished",
@@ -90,6 +93,7 @@
     }
   },
   "evaluation": {
+    "breadcrumb": "Evaluation",
     "alert": "This submission is {{status}} and cannot be edited.",
     "submissionInfo": {
       "title": "Submission information",

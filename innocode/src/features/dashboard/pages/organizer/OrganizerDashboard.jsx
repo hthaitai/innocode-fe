@@ -52,6 +52,7 @@ const OrganizerDashboard = () => {
     data: contestsData,
     isLoading: contestsLoading,
     error: contestsError,
+    refetch: refetchContests,
   } = useGetOrganizerDashboardContestsQuery({
     page: page,
     size: pageSize,
@@ -72,6 +73,7 @@ const OrganizerDashboard = () => {
   // SignalR for real-time updates
   const handleSignalRUpdate = (data) => {
     refetchMetrics()
+    refetchContests()
 
     // Show notification
     const message = data?.message || data?.Message
@@ -156,6 +158,8 @@ const OrganizerDashboard = () => {
             contests={contests}
             pagination={pagination}
             setPage={setPage}
+            refetch={refetchContests}
+            isConnected={isConnected}
           />
         )
       // case "contestDetails":

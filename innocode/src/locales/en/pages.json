@@ -553,6 +553,10 @@
         "title": "Leaderboard",
         "subtitle": "View and refresh contest leaderboard"
       },
+      "certificates": {
+        "title": "Certificates",
+        "subtitle": "Manage certificates and templates"
+      },
       "templateGallery": {
         "title": "Template gallery",
         "subtitle": "Browse templates for this contest or upload new ones"

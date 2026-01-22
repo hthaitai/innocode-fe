@@ -57,6 +57,7 @@
   "submission.result_available": "Submission result is available.",
   "submission.result": "Submission result is available.",
   "submission.status_updated": "Submission status updated.",
+  "submission.status_changed": "Submission was auto-scored 0 because the judge deadline passed.",
   "certificate.issued": "Certificate issued.",
   "appeal.created": "New appeal submitted.",
   "submission.plagiarism_suspected": "A submission was flagged as plagiarism suspected.",

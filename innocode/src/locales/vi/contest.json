@@ -69,6 +69,12 @@
   "certificate": {
     "noTemplates": "Chưa có mẫu chứng chỉ nào được tạo."
   },
+  "relatedSettings": {
+    "certificates": {
+      "title": "Chứng chỉ",
+      "subtitle": "Quản lý chứng chỉ và mẫu"
+    }
+  },
   "nextProgress": "Tiến trình tiếp theo",
   "notFound": "Không tìm thấy cuộc thi",
   "validation": {

@@ -331,12 +331,11 @@ export const BREADCRUMBS = {
     contestName,
     roundName,
   ],
-  JUDGE_ROUND_SUBMISSION_EVALUATION: (contestName, roundName) => [
-    "Contests",
+  JUDGE_ROUND_SUBMISSION_EVALUATION: (
     contestName,
     roundName,
-    "Evaluation",
-  ],
+    submissionLabel,
+  ) => ["Contests", contestName, roundName, submissionLabel],
   //Staff
   STAFF_PROVINCES: ["Provinces"],
   STAFF_SCHOOLS: ["Schools"],

@@ -13,8 +13,6 @@ export default function JudgeInviteAccept() {
   const { t } = useTranslation("judge")
   const { user } = useAuth()
 
-  console.log(user)
-
   const [acceptInvite] = useAcceptJudgeInviteMutation()
 
   useEffect(() => {
@@ -24,7 +22,7 @@ export default function JudgeInviteAccept() {
         toast.error(
           t("inviteResponse.emailRequiredAction", {
             action: t("inviteResponse.acceptButton").toLowerCase(),
-          })
+          }),
         )
         navigate("/")
         return
@@ -35,8 +33,9 @@ export default function JudgeInviteAccept() {
         toast.success(t("inviteResponse.messages.acceptToast"))
         navigate("/")
       } catch (err) {
+        console.error("Error accepting judge invite:", err)
         toast.error(
-          err?.data?.message || t("inviteResponse.messages.acceptFailed")
+          err?.data?.message || t("inviteResponse.messages.acceptFailed"),
         )
         navigate("/")
       }

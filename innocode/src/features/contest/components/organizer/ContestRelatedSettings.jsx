@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next"
 import { useMemo } from "react"
 
 const ContestRelatedSettings = ({ contestId }) => {
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["pages", "contest"])
 
   const items = useMemo(
     () => [
@@ -52,9 +52,9 @@ const ContestRelatedSettings = ({ contestId }) => {
         path: "leaderboard",
       },
       {
-        title: "Certificates",
-        subtitle: "Manage certificates and templates",
-        icon: <Award size={20} />, // Using Award icon instead of individual icons
+        title: t("contest:relatedSettings.certificates.title"),
+        subtitle: t("contest:relatedSettings.certificates.subtitle"),
+        icon: <Award size={20} />,
         path: "certificates",
       },
       {

@@ -48,6 +48,8 @@ const JudgeManualEvaluationsPage = () => {
     error: submissionError,
   } = useFetchSubmissionByIdQuery(submissionId, { skip: !isValidSubmissionId })
 
+  console.log(submission)
+
   const {
     data: rubricData,
     isLoading: rubricLoading,
@@ -84,6 +86,7 @@ const JudgeManualEvaluationsPage = () => {
     : BREADCRUMBS.JUDGE_ROUND_SUBMISSION_EVALUATION(
         round?.contestName ?? t("manualSubmissions.fallbacks.contest"),
         round?.name ?? t("manualSubmissions.fallbacks.round"),
+        t("evaluation.breadcrumb"),
       )
   const breadcrumbPaths = BREADCRUMB_PATHS.JUDGE_ROUND_SUBMISSION_EVALUATION(
     contestId,

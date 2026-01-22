@@ -5,7 +5,13 @@ import "@/styles/typography.css"
 import OrganizerContestCard from "./OrganizerContestCard"
 import TablePagination from "@/shared/components/TablePagination"
 
-const OrganizerContestsTab = ({ contests, pagination, setPage }) => {
+const OrganizerContestsTab = ({
+  contests,
+  pagination,
+  setPage,
+  refetch,
+  isConnected,
+}) => {
   const { t } = useTranslation(["pages", "common", "contest", "dashboard"])
 
   const handlePageChange = (newPage) => {

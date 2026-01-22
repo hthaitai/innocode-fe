@@ -69,6 +69,12 @@
   "certificate": {
     "noTemplates": "No templates created yet."
   },
+  "relatedSettings": {
+    "certificates": {
+      "title": "Certificates",
+      "subtitle": "Manage certificates and templates"
+    }
+  },
   "nextProgress": "Next progress",
   "notFound": "Contest not found",
   "validation": {

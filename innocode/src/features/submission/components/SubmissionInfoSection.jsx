@@ -9,24 +9,16 @@ export default function SubmissionInfoSection({ submission, onDownload }) {
 
   const submissionData = [
     {
-      label: t("evaluation.submissionInfo.author"),
-      value: submission?.submitedByStudentName,
+      label: t("evaluation.submissionInfo.contestName"),
+      value: submission?.contestName,
     },
     {
-      label: t("evaluation.submissionInfo.teamName"),
-      value: submission?.teamName,
+      label: t("evaluation.submissionInfo.roundName"),
+      value: submission?.roundName,
     },
-    // {
-    //   label: t("evaluation.submissionInfo.contestName"),
-    //   value: submission?.contestName,
-    // },
-    // {
-    //   label: t("evaluation.submissionInfo.roundName"),
-    //   value: submission?.roundName,
-    // },
     {
       label: t("evaluation.submissionInfo.status"),
-      value: <StatusBadge status={submission?.status} />,
+      value: <StatusBadge status={submission?.status} translate="judge" />,
     },
     {
       label: t("evaluation.submissionInfo.judgeEmail"),

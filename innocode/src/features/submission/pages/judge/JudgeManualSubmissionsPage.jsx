@@ -6,16 +6,14 @@ import {
 } from "../../../../services/submissionApi"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import PageContainer from "../../../../shared/components/PageContainer"
-import TableFluent from "../../../../shared/components/TableFluent"
+import JudgeSubmissionsList from "../../../submission/components/judge/JudgeSubmissionsList"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
-import { getJudgeSubmissionsColumns } from "../../../submission/columns/getJudgeSubmissionsColumns"
 import JudgeSubmissionsActions from "../../../problems/manual/components/JudgeSubmissionsActions"
 import { useParams, useNavigate } from "react-router-dom"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
-import TablePagination from "../../../../shared/components/TablePagination"
 import { useTranslation } from "react-i18next"
 
 const JudgeManualSubmissionsPage = () => {
@@ -52,17 +50,9 @@ const JudgeManualSubmissionsPage = () => {
     { skip: !isValidContestId || !isValidRoundId },
   )
 
-  const submissions = submissionsData?.data || []
-  const pagination = submissionsData?.additionalData || {}
-
-  const handleRubricEvaluation = (submissionId) => {
-    if (!submissionId) return
-    navigate(
-      `/judge/contests/${contestId}/rounds/${roundId}/submissions/${submissionId}/evaluation`,
-    )
-  }
-
-  const columns = getJudgeSubmissionsColumns(handleRubricEvaluation, t)
+  const submissions = submissionsData?.data ?? []
+  console.log(submissions)
+  const pagination = submissionsData?.additionalData ?? {}
 
   const hasContestError = !isValidContestId || isContestError
   const hasRoundError = !isValidRoundId || (contestData && !roundData)
@@ -169,14 +159,11 @@ const JudgeManualSubmissionsPage = () => {
           setStatusFilter={setStatusFilter}
         />
 
-        <TableFluent data={submissions} columns={columns} />
-
-        {submissions.length > 0 && (
-          <TablePagination
-            pagination={pagination}
-            onPageChange={setPageNumber}
-          />
-        )}
+        <JudgeSubmissionsList
+          contestId={contestId}
+          roundId={roundId}
+          submissions={submissions}
+        />
       </AnimatedSection>
     </PageContainer>
   )

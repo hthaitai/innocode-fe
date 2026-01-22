@@ -195,6 +195,42 @@ const useNotificationNavigation = (onClose) => {
       return
     }
 
+    // Submission plagiarism confirmed - navigate to plagiarism detail for organizer
+    if (
+      notification.type === "submission.plagiarism_confirmed" ||
+      notification.type === "SubmissionPlagiarismConfirmed"
+    ) {
+      if (onClose) onClose()
+      const { contestId, submissionId } = notification.parsedPayload || {}
+
+      if (contestId && submissionId && userRole === "organizer") {
+        // Navigate to plagiarism detail page for organizers only
+        navigate(`/leaderboard/${contestId}`)
+      } else if (contestId) {
+        // Fallback to contest detail if submission details are missing or not organizer
+        navigate(`/contest-detail/${contestId}`)
+      }
+      return
+    }
+
+    // Submission status changed - navigate to leaderboard for organizer
+    if (
+      notification.type === "submission.status_changed" ||
+      notification.type === "SubmissionStatusChanged"
+    ) {
+      if (onClose) onClose()
+      const { contestId } = notification.parsedPayload || {}
+
+      if (contestId && userRole === "organizer") {
+        // Navigate to leaderboard page for organizers
+        navigate(`/leaderboard/${contestId}`)
+      } else if (contestId) {
+        // Fallback to contest detail if not organizer
+        navigate(`/contest-detail/${contestId}`)
+      }
+      return
+    }
+
     // Round or Contest started/ended notifications - navigate to contest detail
     const message = notification.message || ""
     const notificationType = notification.type || ""

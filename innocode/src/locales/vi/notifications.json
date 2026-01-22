@@ -57,6 +57,7 @@
   "submission.result_available": "Kết quả bài nộp đã có sẵn.",
   "submission.result": "Kết quả bài nộp đã có sẵn.",
   "submission.status_updated": "Trạng thái bài nộp đã được cập nhật.",
+  "submission.status_changed": "Bài nộp đã được tự động chấm 0 điểm do quá hạn chấm của giám khảo.",
   "certificate.issued": "Chứng chỉ đã được cấp.",
   "appeal.created": "Đơn khiếu nại mới đã được gửi.",
   "submission.plagiarism_suspected": "Một bài nộp bị nghi ngờ đạo văn.",

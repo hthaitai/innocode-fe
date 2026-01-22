@@ -42,7 +42,8 @@
     "opened": "Đã mở",
     "closed": "Đã đóng",
     "incoming": "Sắp tới",
-    "finalized": "Đã kết thúc"
+    "finalized": "Đã kết thúc",
+    "finished": "Đã hoàn thành"
   },
   "contestList": {
     "title": "Cuộc thi",
@@ -64,12 +65,14 @@
   "manualSubmissions": {
     "title": "Bài nộp thủ công",
     "table": {
+      "submission": "Bài nộp",
       "student": "Sinh viên",
       "team": "Đội",
       "status": "Trạng thái",
       "score": "Điểm",
       "actions": "Hành động"
     },
+    "empty": "Không tìm thấy bài nộp",
     "filter": {
       "Pending": "Đang chờ",
       "Finished": "Đã hoàn thành",
@@ -90,6 +93,7 @@
     }
   },
   "evaluation": {
+    "breadcrumb": "Đánh giá",
     "alert": "Bài nộp này {{status}} và không thể chỉnh sửa.",
     "submissionInfo": {
       "title": "Thông tin bài nộp",

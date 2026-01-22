@@ -22,7 +22,7 @@ export default function JudgeInviteDecline() {
         toast.error(
           t("inviteResponse.emailRequiredAction", {
             action: t("inviteResponse.declineButton").toLowerCase(),
-          })
+          }),
         )
         navigate("/")
         return
@@ -33,8 +33,9 @@ export default function JudgeInviteDecline() {
         toast.success(t("inviteResponse.messages.declineToast"))
         navigate("/")
       } catch (err) {
+        console.error("Error declining judge invite:", err)
         toast.error(
-          err?.data?.message || t("inviteResponse.messages.declineFailed")
+          err?.data?.message || t("inviteResponse.messages.declineFailed"),
         )
         navigate("/")
       }

@@ -551,6 +551,10 @@
         "title": "Bảng xếp hạng",
         "subtitle": "Xem và làm mới bảng xếp hạng"
       },
+      "certificates": {
+        "title": "Chứng chỉ",
+        "subtitle": "Quản lý chứng chỉ và mẫu"
+      },
       "templateGallery": {
         "title": "Thư viện mẫu",
         "subtitle": "Duyệt mẫu chứng chỉ hoặc tải lên mẫu mới"
