@@ -38,7 +38,7 @@ function MentorAppeal() {
     undefined,
     {
       skip: !user?.id,
-    }
+    },
   )
 
   // Fetch contests list
@@ -51,7 +51,7 @@ function MentorAppeal() {
   // Get contest IDs from mentor's teams
   const mentorContestIds = useMemo(() => {
     if (!myTeamsData || !Array.isArray(myTeamsData)) return new Set()
-    
+
     const contestIds = new Set()
     myTeamsData.forEach((team) => {
       const contestId = team.contestId || team.contest_id
@@ -78,7 +78,7 @@ function MentorAppeal() {
 
   // Use contestId from URL or first available contest
   const [selectedContestId, setSelectedContestId] = useState(
-    urlContestId || null
+    urlContestId || null,
   )
 
   useEffect(() => {
@@ -89,7 +89,7 @@ function MentorAppeal() {
 
   // Get selected contest details
   const selectedContest = availableContests.find(
-    (c) => c.contestId === selectedContestId
+    (c) => c.contestId === selectedContestId,
   )
 
   // Fetch contest details
@@ -280,7 +280,7 @@ function MentorAppeal() {
     roundName,
     teamId,
     studentId,
-    roundType
+    roundType,
   ) => {
     openModal("createAppeal", {
       contestId: selectedContestId,
@@ -298,7 +298,7 @@ function MentorAppeal() {
     if (currentContest) {
       return createBreadcrumbWithPaths(
         "APPEAL",
-        currentContest.name || currentContest.title || t("appeal.appeals")
+        currentContest.name || currentContest.title || t("appeal.appeals"),
       )
     }
     return { items: BREADCRUMBS.APPEAL, paths: ["/appeal"] }
@@ -466,8 +466,8 @@ function MentorAppeal() {
                                     round.roundType === "McqTest"
                                       ? "mdi:checkbox-multiple-marked-circle"
                                       : round.roundType === "Manual"
-                                      ? "mdi:file-document-edit"
-                                      : "mdi:code-tags"
+                                        ? "mdi:file-document-edit"
+                                        : "mdi:code-tags"
                                   }
                                   className="text-blue-600"
                                   width={20}
@@ -528,7 +528,7 @@ function MentorAppeal() {
                                       {t("appeal.score")}
                                     </span>
                                     <span className="font-medium text-blue-600">
-                                      {round.score}
+                                      {formatScore(round.score)}
                                     </span>
                                   </div>
                                 )}
@@ -542,7 +542,7 @@ function MentorAppeal() {
                                 round.roundName,
                                 round.teamId,
                                 round.studentId,
-                                round.roundType
+                                round.roundType,
                               )
                             }
                             className="button-orange font-semibold flex items-center gap-2 px-4 py-2 ml-4 whitespace-nowrap"
@@ -787,9 +787,9 @@ function MentorAppeal() {
                                   decision?.toLowerCase() === "accepted"
                                     ? "bg-green-50 border-green-200"
                                     : decision?.toLowerCase() === "rejected" ||
-                                      decision?.toLowerCase() === "denied"
-                                    ? "bg-red-50 border-red-200"
-                                    : "bg-blue-50 border-blue-200"
+                                        decision?.toLowerCase() === "denied"
+                                      ? "bg-red-50 border-red-200"
+                                      : "bg-blue-50 border-blue-200"
                                 }`}
                               >
                                 {decision && (
@@ -799,10 +799,10 @@ function MentorAppeal() {
                                       decision?.toLowerCase() === "accepted"
                                         ? "text-green-700"
                                         : decision?.toLowerCase() ===
-                                            "rejected" ||
-                                          decision?.toLowerCase() === "denied"
-                                        ? "text-red-700"
-                                        : "text-[#2d3748]"
+                                              "rejected" ||
+                                            decision?.toLowerCase() === "denied"
+                                          ? "text-red-700"
+                                          : "text-[#2d3748]"
                                     }`}
                                   >
                                     {decision}

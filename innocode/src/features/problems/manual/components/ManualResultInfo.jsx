@@ -2,6 +2,7 @@ import React from "react"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
+import { formatScore } from "@/shared/utils/formatNumber"
 import { useTranslation } from "react-i18next"
 
 const ManualResultInfo = ({ submission }) => {
@@ -23,7 +24,7 @@ const ManualResultInfo = ({ submission }) => {
       value:
         submission.totalScore !== undefined &&
         submission.maxPossibleScore !== undefined
-          ? `${submission.totalScore} / ${submission.maxPossibleScore}`
+          ? `${formatScore(submission.totalScore)} / ${formatScore(submission.maxPossibleScore)}`
           : "—",
     },
   ]

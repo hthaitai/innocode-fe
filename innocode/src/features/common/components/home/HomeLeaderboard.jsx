@@ -2,6 +2,7 @@ import React from "react"
 import { Trophy, Medal, Award, ArrowRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
+import { formatScore } from "@/shared/utils/formatNumber"
 
 const HomeLeaderboard = ({ contest, teams, loading, onViewFull }) => {
   const { t } = useTranslation("home")
@@ -13,10 +14,6 @@ const HomeLeaderboard = ({ contest, teams, loading, onViewFull }) => {
     if (rank === 2) return <Medal className="w-5 h-5 text-gray-400" />
     if (rank === 3) return <Award className="w-5 h-5 text-amber-600" />
     return null
-  }
-
-  const formatScore = (score) => {
-    return (score ?? 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   }
 
   return (

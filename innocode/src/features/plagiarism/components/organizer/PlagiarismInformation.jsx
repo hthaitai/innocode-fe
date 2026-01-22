@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next"
 import InfoSection from "@/shared/components/InfoSection"
 import DetailTable from "@/shared/components/DetailTable"
 import { formatDateTime } from "@/shared/utils/dateTime"
+import { formatScore } from "@/shared/utils/formatNumber"
 
 const PlagiarismInformation = ({ submission }) => {
   const { t } = useTranslation(["plagiarism"])
@@ -18,7 +19,7 @@ const PlagiarismInformation = ({ submission }) => {
             label: t("submissionScore"),
             value:
               submission.score !== undefined && submission.score !== null
-                ? `${submission.score} ${t("points")}`
+                ? `${formatScore(submission.score)} ${t("points")}`
                 : "—",
           },
           {

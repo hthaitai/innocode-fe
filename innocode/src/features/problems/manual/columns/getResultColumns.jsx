@@ -1,6 +1,7 @@
 import { ExpandColumn } from "@/shared/components/ExpandColumn"
 import { ChevronRight } from "lucide-react"
 import { formatDateTime } from "../../../../shared/utils/dateTime"
+import { formatScore } from "@/shared/utils/formatNumber"
 
 export const getResultColumns = (t) => [
   {
@@ -35,7 +36,7 @@ export const getResultColumns = (t) => [
     accessorKey: "totalScore",
     size: 80,
     cell: ({ row }) =>
-      `${row.original.totalScore} / ${row.original.maxPossibleScore}`,
+      `${formatScore(row.original.totalScore)} / ${formatScore(row.original.maxPossibleScore)}`,
     meta: { className: "truncate max-w-[80px]" },
   },
 ]
