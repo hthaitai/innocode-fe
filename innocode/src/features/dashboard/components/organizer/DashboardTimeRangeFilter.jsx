@@ -32,8 +32,8 @@ const DashboardTimeRangeFilter = ({
       label: t("dashboard.timeRange.last6Months", "Last 6 months"),
     },
     {
-      value: TimeRangePredefined.CurrentYear,
-      label: t("dashboard.timeRange.currentYear", "Current year"),
+      value: TimeRangePredefined.LastYear,
+      label: t("dashboard.timeRange.lastYear", "Last year"),
     },
     {
       value: TimeRangePredefined.Custom,

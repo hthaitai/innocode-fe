@@ -13,15 +13,8 @@ export const validateSchool = (data) => {
     errors.province_id = "Province is required"
   }
 
-  // ----- contact -----
-  if (data.contact && data.contact.length > 255) {
-    errors.contact = "Contact cannot exceed 255 characters"
-  } else if (
-    data.contact &&
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.contact)
-  ) {
-    errors.contact = "Invalid email format"
-  }
+  // ----- contact ----- (no validation)
+  // ----- address ----- (no validation)
 
   return errors
 }

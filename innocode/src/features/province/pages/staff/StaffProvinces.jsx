@@ -1,61 +1,61 @@
-import React, { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { BREADCRUMBS } from "@/config/breadcrumbs";
-import PageContainer from "@/shared/components/PageContainer";
-import TableFluent from "@/shared/components/TableFluent";
-import { MapPin, Pencil, Trash2 } from "lucide-react";
-import Actions from "../../../../shared/components/Actions";
-import { useModal } from "../../../../shared/hooks/useModal";
+import React, { useEffect } from "react"
+import { useTranslation } from "react-i18next"
+import { BREADCRUMBS } from "@/config/breadcrumbs"
+import PageContainer from "@/shared/components/PageContainer"
+import TableFluent from "@/shared/components/TableFluent"
+import { MapPin, Pencil, Trash2 } from "lucide-react"
+import Actions from "../../../../shared/components/Actions"
+import { useModal } from "../../../../shared/hooks/useModal"
 import {
   useAddProvinceMutation,
   useDeleteProvinceMutation,
   useGetAllProvincesQuery,
   useUpdateProvinceMutation,
-} from "../../../../services/provinceApi";
+} from "../../../../services/provinceApi"
 
 const StaffProvinces = () => {
-  const { t } = useTranslation("pages");
-  const { openModal } = useModal();
+  const { t } = useTranslation("pages")
+  const { openModal } = useModal()
 
   // ----- Fetch Data -----
   const {
     data: provincesData,
     isLoading: loading,
     error,
-  } = useGetAllProvincesQuery({ pageNumber: 1, pageSize: 100 });
+  } = useGetAllProvincesQuery({ pageNumber: 1, pageSize: 100 })
 
   // ----- Mutations -----
-  const [addProvince] = useAddProvinceMutation();
-  const [updateProvince] = useUpdateProvinceMutation();
-  const [deleteProvince] = useDeleteProvinceMutation();
+  const [addProvince] = useAddProvinceMutation()
+  const [updateProvince] = useUpdateProvinceMutation()
+  const [deleteProvince] = useDeleteProvinceMutation()
 
   // ----- CRUD Modals -----
   const handleProvinceModal = (mode, province = {}) => {
-    console.log("🔍 handleProvinceModal - mode:", mode);
-    console.log("🔍 handleProvinceModal - province:", province);
+    console.log("🔍 handleProvinceModal - mode:", mode)
+    console.log("🔍 handleProvinceModal - province:", province)
     openModal("province", {
       mode,
       initialData: province,
       onSubmit: async (data) => {
         try {
           if (mode === "create") {
-            await addProvince(data).unwrap();
+            await addProvince(data).unwrap()
           } else if (mode === "edit") {
             await updateProvince({
               id: province.provinceId || province.province_id,
               data,
-            }).unwrap();
+            }).unwrap()
           }
         } catch (err) {
-          console.error("Error saving province:", err);
-          throw err; // Re-throw để modal có thể xử lý error
+          console.error("Error saving province:", err)
+          throw err // Re-throw để modal có thể xử lý error
         }
       },
-    });
-  };
+    })
+  }
 
   const handleDeleteProvince = (province) => {
-    console.log("🔍 handleDeleteProvince - province:", province);
+    console.log("🔍 handleDeleteProvince - province:", province)
     openModal("confirmDelete", {
       type: "province",
       item: province,
@@ -63,15 +63,15 @@ const StaffProvinces = () => {
         try {
           await deleteProvince({
             id: province.provinceId || province.province_id,
-          }).unwrap();
-          onClose();
+          }).unwrap()
+          onClose()
         } catch (err) {
-          console.error("Error deleting province:", err);
+          console.error("Error deleting province:", err)
           // Error sẽ được xử lý bởi modal hoặc toast
         }
       },
-    });
-  };
+    })
+  }
 
   // ----- Table Columns -----
   const provincesColumns = [
@@ -109,21 +109,21 @@ const StaffProvinces = () => {
         />
       ),
     },
-  ];
+  ]
 
   // Extract items from response
   // Response structure: { data: Array, additionalData: {...}, message: string, ... }
-  const provinces = provincesData?.data || [];
+  const provinces = provincesData?.data || []
 
   // Log provinces for debugging
   useEffect(() => {
-    console.log("🔍 provincesData (raw):", provincesData);
-    console.log("🔍 provinces (extracted):", provinces);
-    console.log("🔍 provinces count:", provinces.length);
+    console.log("🔍 provincesData (raw):", provincesData)
+    console.log("🔍 provinces (extracted):", provinces)
+    console.log("🔍 provinces count:", provinces.length)
     if (provinces.length > 0) {
-      console.log("🔍 First province:", provinces[0]);
+      console.log("🔍 First province:", provinces[0])
     }
-  }, [provincesData, provinces]);
+  }, [provincesData, provinces])
 
   return (
     <PageContainer
@@ -137,7 +137,9 @@ const StaffProvinces = () => {
           <div className="flex gap-5 items-center">
             <MapPin size={20} />
             <div>
-              <p className="text-[14px] leading-[20px]">{t("provinces.provincesManagement")}</p>
+              <p className="text-[14px] leading-[20px]">
+                {t("provinces.provincesManagement")}
+              </p>
               <p className="text-[12px] leading-[16px] text-[#7A7574]">
                 {t("provinces.createAndManageProvinces")}
               </p>
@@ -158,7 +160,7 @@ const StaffProvinces = () => {
         />
       </div>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default StaffProvinces;
+export default StaffProvinces

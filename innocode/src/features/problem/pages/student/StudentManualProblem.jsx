@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import PageContainer from "@/shared/components/PageContainer"
 import { Icon } from "@iconify/react"
 import { ArrowLeft, FileText, Upload, Clock, Calendar, X } from "lucide-react"
-import useContestDetail from "@/features/contest/hooks/useContestDetail"
+import useRoundDetail from "../../hooks/useRoundDetail"
 import { useRoundTimer } from "../../hooks/useRoundTimer"
 import { useDropzone } from "react-dropzone"
 import { toast } from "react-hot-toast"
@@ -31,11 +31,10 @@ const StudentManualProblem = () => {
   const [finishRound, { isLoading: finishing }] = useFinishRoundMutation()
   const [submitNullSubmission] = useSubmitNullSubmissionMutation()
 
-  // ✅ Fetch contest data to get round information
-  const { contest, loading, error } = useContestDetail(contestId)
+  // ✅ Fetch round data directly
+  const { round, loading, error, errorCode } = useRoundDetail(roundId)
 
-  // ✅ Find the specific round by roundId
-  const round = contest?.rounds?.find((r) => r.roundId === roundId)
+  // ✅ Get problem from round
   const problem = round?.problem
 
   // Auto-submit when time expires (direct submit without modal)
@@ -61,7 +60,7 @@ const StudentManualProblem = () => {
   // Timer for round
   const { timeRemaining, formatTime, isExpired } = useRoundTimer(
     round,
-    handleAutoSubmit
+    handleAutoSubmit,
   )
 
   const onDrop = useCallback(
@@ -79,13 +78,13 @@ const StudentManualProblem = () => {
           toast.error(
             t("manualProblemPage.fileTooLarge", {
               defaultValue: "File size must be less than 10MB",
-            })
+            }),
           )
         } else if (rejection.errors[0].code === "file-invalid-type") {
           toast.error(
             t("manualProblemPage.invalidFileType", {
               defaultValue: "Only .zip and .rar files are allowed",
-            })
+            }),
           )
         }
       }
@@ -95,7 +94,7 @@ const StudentManualProblem = () => {
         setSavedSubmissionId(null) // Reset saved submissionId when new file is selected
       }
     },
-    [isExpired]
+    [isExpired],
   )
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -176,7 +175,7 @@ const StudentManualProblem = () => {
         toast.error(
           t("manualProblemPage.failedToGetSubmissionId", {
             defaultValue: "Failed to get submission ID. Please try again.",
-          })
+          }),
         )
         return
       }
@@ -317,25 +316,52 @@ const StudentManualProblem = () => {
 
   // Error state
   if (error) {
+    // Check if this is a FORBIDDEN error (round already finished)
+    const isForbidden = errorCode === "FORBIDDEN"
+
+    // Translate error message
+    const errorMessage = isForbidden
+      ? tError("round.forbiddenAlreadyFinished", {
+          defaultValue:
+            "Bạn đã hoàn thành vòng thi này và không thể truy cập nội dung của nó nữa.",
+        })
+      : error
+
     return (
       <PageContainer bg={false}>
         <div className="max-w-5xl mt-[38px] mx-auto">
           <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6 text-center">
             <Icon
-              icon="mdi:alert-circle"
+              icon={isForbidden ? "mdi:check-circle" : "mdi:alert-circle"}
               width="48"
-              className="mx-auto mb-2 text-red-500"
+              className={`mx-auto mb-2 ${isForbidden ? "text-green-500" : "text-red-500"}`}
             />
-            <p className="text-[#7A7574]">
-              {t("manualProblemPage.failedToLoadProblem")}
+            <p className="text-[#2d3748] font-semibold text-lg mb-2">
+              {isForbidden
+                ? t("manualProblemPage.roundAlreadyFinished", {
+                    defaultValue: "Round Already Finished",
+                  })
+                : t("manualProblemPage.failedToLoadProblem")}
             </p>
-            <p className="text-sm text-[#7A7574] mt-1">{error}</p>
-            <button
-              onClick={() => navigate(`/contest-detail/${contestId}`)}
-              className="button-orange mt-4"
-            >
-              Back to Contest
-            </button>
+            <p className="text-sm text-[#7A7574] mt-1">{errorMessage}</p>
+
+            {isForbidden ? (
+              <div className="flex gap-3 justify-center mt-4">
+                <button
+                  onClick={() => navigate(`/contest-detail/${contestId}`)}
+                  className="button-white"
+                >
+                  {t("manualProblemPage.backToContest")}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => navigate(`/contest-detail/${contestId}`)}
+                className="button-orange mt-4"
+              >
+                {t("manualProblemPage.backToContest")}
+              </button>
+            )}
           </div>
         </div>
       </PageContainer>
@@ -414,7 +440,7 @@ const StudentManualProblem = () => {
                   {round.roundName || round.name || "Manual Problem"}
                 </h1>
                 <p className="text-sm text-[#7A7574]">
-                  {contest.name} • Round {round.roundName}
+                  {round.contestName} • Round {round.roundName}
                 </p>
               </div>
             </div>
@@ -425,8 +451,8 @@ const StudentManualProblem = () => {
                 round.status === "Closed"
                   ? "bg-[#fde8e8] text-[#d93025]"
                   : round.status === "Opened"
-                  ? "bg-[#e6f4ea] text-[#34a853]"
-                  : "bg-[#fef7e0] text-[#fbbc05]"
+                    ? "bg-[#e6f4ea] text-[#34a853]"
+                    : "bg-[#fef7e0] text-[#fbbc05]"
               }`}
             >
               {round.status}
@@ -451,9 +477,24 @@ const StudentManualProblem = () => {
 
         {/* Problem Description */}
         <div className="bg-white border border-[#E5E5E5] rounded-[8px] p-6 mb-4">
-          <h2 className="text-lg font-semibold text-[#2d3748] mb-4">
-            {t("manualProblemPage.problemDescription")}
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-[#2d3748]">
+              {t("manualProblemPage.problemDescription")}
+            </h2>
+            {/* Download Template Button */}
+            {problem.templateUrl && (
+              <a
+                href={problem.templateUrl}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-[#ff6b35] text-white rounded-[5px] hover:bg-[#ff5722] transition-colors text-sm font-medium"
+              >
+                <Icon icon="mdi:download" width="18" />
+                {t("manualProblemPage.downloadTemplate")}
+              </a>
+            )}
+          </div>
           <div className="text-[#4a5568] space-y-3">
             {problem.description ? (
               <div className="whitespace-pre-line">{problem.description}</div>
@@ -522,8 +563,8 @@ const StudentManualProblem = () => {
                 isExpired
                   ? "border-gray-300 bg-gray-100 cursor-not-allowed opacity-50"
                   : isDragActive
-                  ? "border-[#ff6b35] bg-[#fff5f2] cursor-pointer"
-                  : "border-[#E5E5E5] bg-white hover:border-[#ff6b35] hover:bg-[#fff5f2] cursor-pointer"
+                    ? "border-[#ff6b35] bg-[#fff5f2] cursor-pointer"
+                    : "border-[#E5E5E5] bg-white hover:border-[#ff6b35] hover:bg-[#fff5f2] cursor-pointer"
               }`}
             >
               {!isExpired && <input {...getInputProps()} />}
@@ -575,8 +616,8 @@ const StudentManualProblem = () => {
                     {isExpired
                       ? t("manualProblemPage.fileUploadDisabled")
                       : isDragActive
-                      ? t("manualProblemPage.dropFileHere")
-                      : t("manualProblemPage.dragAndDropFile")}
+                        ? t("manualProblemPage.dropFileHere")
+                        : t("manualProblemPage.dragAndDropFile")}
                   </p>
                   <div className="button-orange inline-flex items-center gap-2">
                     <div className="ml-[5px]">
@@ -622,10 +663,10 @@ const StudentManualProblem = () => {
                 isExpired
                   ? t("manualProblemPage.timeIsUpDisabled")
                   : !selectedFile
-                  ? t("manualProblemPage.pleaseSelectFile")
-                  : selectedFile && selectedFile.size === 0
-                  ? t("manualProblemPage.fileIsEmpty")
-                  : ""
+                    ? t("manualProblemPage.pleaseSelectFile")
+                    : selectedFile && selectedFile.size === 0
+                      ? t("manualProblemPage.fileIsEmpty")
+                      : ""
               }
             >
               {saving ? (
@@ -672,12 +713,12 @@ const StudentManualProblem = () => {
                 isExpired
                   ? t("manualProblemPage.timeIsUpDisabled")
                   : !savedSubmissionId
-                  ? t("manualProblemPage.pleaseSaveFirst")
-                  : !selectedFile
-                  ? t("manualProblemPage.fileNotFound")
-                  : selectedFile && selectedFile.size === 0
-                  ? t("manualProblemPage.fileIsEmpty")
-                  : ""
+                    ? t("manualProblemPage.pleaseSaveFirst")
+                    : !selectedFile
+                      ? t("manualProblemPage.fileNotFound")
+                      : selectedFile && selectedFile.size === 0
+                        ? t("manualProblemPage.fileIsEmpty")
+                        : ""
               }
             >
               {finishing ? (
@@ -715,14 +756,14 @@ const StudentManualProblem = () => {
                   <strong>{t("manualProblemPage.save")}:</strong>{" "}
                   {t("manualProblemPage.saveInstruction").replace(
                     /^Save: /,
-                    ""
+                    "",
                   )}
                 </li>
                 <li>
                   <strong>{t("manualProblemPage.submit")}:</strong>{" "}
                   {t("manualProblemPage.submitInstruction").replace(
                     /^Submit: /,
-                    ""
+                    "",
                   )}
                 </li>
               </ul>

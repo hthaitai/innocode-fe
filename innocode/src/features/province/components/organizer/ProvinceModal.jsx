@@ -4,8 +4,6 @@ import BaseModal from "@/shared/components/BaseModal"
 import { validateProvince } from "@/shared/validators/provinceValidator"
 import ProvinceForm from "./ProvinceForm"
 
-
-
 export default function ProvinceModal({
   isOpen,
   mode = "create",

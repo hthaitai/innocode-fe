@@ -56,7 +56,7 @@ const translateErrorMessage = (message, namespace, error = {}) => {
   // Nếu ngôn ngữ là tiếng Việt hoặc ngôn ngữ khác, translate dựa trên errorCode
   // Ưu tiên 1: Translate bằng errorCode (chính xác nhất)
   if (errorCode) {
-    const codeTranslation = translateByErrorCode(errorCode, namespace)
+    const codeTranslation = translateByErrorCode(errorCode, namespace, message)
     if (codeTranslation) return codeTranslation
   }
 
@@ -77,19 +77,127 @@ const translateErrorMessage = (message, namespace, error = {}) => {
 /**
  * Translate by error code
  */
-const translateByErrorCode = (errorCode, namespace) => {
+const translateByErrorCode = (errorCode, namespace, message = "") => {
+  const lowerMsg = message.toLowerCase()
+
+  // Disambiguation for shared error codes
+  const upperCode = errorCode.toUpperCase()
+
+  if (upperCode === "NAME_EXISTS") {
+    if (lowerMsg.includes("school"))
+      return i18n.t(`${namespace}:school.nameExists`)
+    if (lowerMsg.includes("province"))
+      return i18n.t(`${namespace}:province.nameExists`)
+    if (lowerMsg.includes("team")) return i18n.t(`${namespace}:team.nameExists`)
+    return i18n.t(`${namespace}:common.duplicate`)
+  }
+
+  if (upperCode === "FORBIDDEN") {
+    if (lowerMsg.includes("mentor"))
+      return i18n.t(`${namespace}:appeal.forbidden`)
+    if (lowerMsg.includes("organizer"))
+      return i18n.t(`${namespace}:contest.forbidden`)
+    if (lowerMsg.includes("finished"))
+      return i18n.t(`${namespace}:quiz.forbiddenAlreadyFinished`)
+    if (lowerMsg.includes("own team"))
+      return i18n.t(`${namespace}:appeal.forbiddenOwnTeam`)
+    if (lowerMsg.includes("not in team"))
+      return i18n.t(`${namespace}:submission.forbiddenNotInTeam`)
+    if (lowerMsg.includes("top-"))
+      return i18n.t(`${namespace}:submission.forbiddenTopCutoff`)
+    if (lowerMsg.includes("plagiarism"))
+      return i18n.t(`${namespace}:submission.forbiddenNoPermissionView`)
+    if (lowerMsg.includes("judge"))
+      return i18n.t(`${namespace}:contestJudge.forbidden`)
+    if (lowerMsg.includes("staff") || lowerMsg.includes("admin"))
+      return i18n.t(`${namespace}:config.forbidden`)
+    if (lowerMsg.includes("school manager"))
+      return i18n.t(`${namespace}:mentorManagement.forbidden`)
+    return i18n.t(`${namespace}:common.forbidden`)
+  }
+
+  if (upperCode === "NOT_FOUND") {
+    if (lowerMsg.includes("log"))
+      return i18n.t(`${namespace}:activityLog.logNotFound`)
+    if (lowerMsg.includes("appeal"))
+      return i18n.t(`${namespace}:appeal.notFound`)
+    if (lowerMsg.includes("round")) return i18n.t(`${namespace}:round.notFound`)
+    if (lowerMsg.includes("team")) return i18n.t(`${namespace}:team.notFound`)
+    if (lowerMsg.includes("student"))
+      return i18n.t(`${namespace}:student.studentNotFound`)
+    if (lowerMsg.includes("contest"))
+      return i18n.t(`${namespace}:contest.notFound`)
+    if (lowerMsg.includes("mentor"))
+      return i18n.t(`${namespace}:mentor.notFound`)
+    if (lowerMsg.includes("problem"))
+      return i18n.t(`${namespace}:problem.notFound`)
+    if (lowerMsg.includes("submission"))
+      return i18n.t(`${namespace}:submission.notFound`)
+    if (lowerMsg.includes("user"))
+      return i18n.t(`${namespace}:user.userNotFound`)
+    if (lowerMsg.includes("invite"))
+      return i18n.t(`${namespace}:judgeInvite.inviteNotFound`)
+    if (lowerMsg.includes("certificate"))
+      return i18n.t(`${namespace}:certificate.certNotFound`)
+    if (lowerMsg.includes("province"))
+      return i18n.t(`${namespace}:province.notFound`)
+    if (lowerMsg.includes("school"))
+      return i18n.t(`${namespace}:school.schoolNotFound`)
+    return i18n.t(`${namespace}:common.notFound`)
+  }
+
+  if (upperCode === "BADREQUEST" || upperCode === "BAD_REQUEST") {
+    if (lowerMsg.includes("pageSize") || lowerMsg.includes("page number"))
+      return i18n.t(`${namespace}:common.badRequest`)
+    if (lowerMsg.includes("member"))
+      return i18n.t(`${namespace}:appeal.badRequestNotMember`)
+    if (lowerMsg.includes("reviewed"))
+      return i18n.t(`${namespace}:appeal.badRequestAlreadyReviewed`)
+    if (lowerMsg.includes("resolution"))
+      return i18n.t(`${namespace}:appeal.badRequestResolutionRequired`)
+    if (lowerMsg.includes("at least one criterion"))
+      return i18n.t(`${namespace}:problem.badRequestAtLeastOne`)
+    if (lowerMsg.includes("flagged"))
+      return i18n.t(`${namespace}:submission.badRequestFlagged`)
+    if (lowerMsg.includes("exceeds max"))
+      return i18n.t(`${namespace}:submission.badRequestScoreExceedsMax`)
+    if (lowerMsg.includes("negative"))
+      return i18n.t(`${namespace}:submission.badRequestScoreNegative`)
+    if (lowerMsg.includes("file extension") || lowerMsg.includes("file type"))
+      return i18n.t(`${namespace}:submission.fileTypeNotSupported`)
+    if (lowerMsg.includes("evidence"))
+      return i18n.t(`${namespace}:schoolCreationRequest.invalidEvidenceType`)
+    return i18n.t(`${namespace}:common.validationError`)
+  }
+
+  if (upperCode === "UNAUTHENTICATED" || upperCode === "UNAUTHORIZED") {
+    if (lowerMsg.includes("context"))
+      return i18n.t(`${namespace}:auth.unauthenticatedInvalidContext`)
+    if (lowerMsg.includes("user id"))
+      return i18n.t(`${namespace}:contest.unauthenticatedInvalidUserId`)
+    return i18n.t(`${namespace}:common.unauthorized`)
+  }
+
+  if (
+    upperCode === "CONFLICT" ||
+    upperCode === "DUPLICATE" ||
+    upperCode === "EXISTED"
+  ) {
+    if (lowerMsg.includes("email"))
+      return i18n.t(`${namespace}:auth.emailExists`)
+    if (lowerMsg.includes("name"))
+      return i18n.t(`${namespace}:common.duplicate`)
+    if (lowerMsg.includes("team")) return i18n.t(`${namespace}:team.nameExists`)
+    if (lowerMsg.includes("contest"))
+      return i18n.t(`${namespace}:contest.duplicate`)
+    if (lowerMsg.includes("registration"))
+      return i18n.t(`${namespace}:roleRegistration.registrationExists`)
+    return i18n.t(`${namespace}:common.duplicate`)
+  }
+
   const codeMap = {
     // Common codes
-    NOT_FOUND: `${namespace}:common.notFound`,
-    UNAUTHORIZED: `${namespace}:common.unauthorized`,
-    FORBIDDEN: `${namespace}:common.forbidden`,
-    VALIDATION_ERROR: `${namespace}:common.validationError`,
     INTERNAL_SERVER_ERROR: `${namespace}:common.serverError`,
-    BADREQUEST: `${namespace}:common.badRequest`,
-    BAD_REQUEST: `${namespace}:common.badRequest`,
-    DUPLICATE: `${namespace}:common.duplicate`,
-    EXISTED: `${namespace}:common.duplicate`,
-    CONFLICT: `${namespace}:common.conflict`,
     GONE: `${namespace}:common.gone`,
 
     // ActivityLog
@@ -98,12 +206,6 @@ const translateByErrorCode = (errorCode, namespace) => {
 
     // Appeal
     APPEAL_NOT_FOUND: `${namespace}:appeal.notFound`,
-    FORBIDDEN: `${namespace}:appeal.forbidden`,
-    NOT_FOUND: `${namespace}:appeal.notFound`,
-    DUPLICATE: `${namespace}:appeal.duplicate`,
-    BADREQUEST: `${namespace}:appeal.badRequest`,
-    INTERNAL_SERVER_ERROR: `${namespace}:appeal.internalServerError`,
-    UNAUTHENTICATED: `${namespace}:appeal.unauthenticated`,
 
     // Attachment
     ATTACHMENT_NOT_FOUND: `${namespace}:attachment.notFound`,
@@ -120,7 +222,6 @@ const translateByErrorCode = (errorCode, namespace) => {
     SCHOOL_NOT_FOUND: `${namespace}:auth.schoolNotFound`,
     USER_UNVERIFIED: `${namespace}:auth.userUnverified`,
     USER_INACTIVE: `${namespace}:auth.userInactive`,
-    UNAUTHENTICATED: `${namespace}:auth.unauthenticated`,
     ALREADY_VERIFIED: `${namespace}:auth.alreadyVerified`,
     INVALID_TOKEN: `${namespace}:auth.invalidToken`,
     INVALID_TOKEN_TYPE: `${namespace}:auth.invalidTokenType`,
@@ -144,8 +245,6 @@ const translateByErrorCode = (errorCode, namespace) => {
     CERTIFICATE_TYPE_INVALID: `${namespace}:certificate.typeInvalid`,
     CERT_NOT_FOUND: `${namespace}:certificate.certNotFound`,
     CONTEST_NOT_FOUND: `${namespace}:certificate.contestNotFound`,
-    UNAUTHORIZED: `${namespace}:certificate.unauthorized`,
-    BAD_REQUEST: `${namespace}:certificate.badRequest`,
 
     // Config
     CONFIG_NOT_FOUND: `${namespace}:config.notFound`,
@@ -153,8 +252,6 @@ const translateByErrorCode = (errorCode, namespace) => {
     INVALID_WINDOW: `${namespace}:config.invalidWindow`,
     INVALID_KEY: `${namespace}:config.invalidKey`,
     INVALID_INPUT: `${namespace}:config.invalidInput`,
-    FORBIDDEN: `${namespace}:config.forbidden`,
-    NOT_FOUND: `${namespace}:config.notFound`,
 
     // Contest
     CONTEST_ALREADY_DELETED: `${namespace}:contest.alreadyDeleted`,
@@ -166,14 +263,7 @@ const translateByErrorCode = (errorCode, namespace) => {
     INVALID_IMAGE: `${namespace}:contest.invalidImage`,
     INVALID_STATE: `${namespace}:contest.invalidState`,
     DATE_CONFLICT: `${namespace}:contest.dateConflict`,
-    BADREQUEST: `${namespace}:contest.badRequest`,
-    NOT_FOUND: `${namespace}:contest.notFound`,
-    INTERNAL_SERVER_ERROR: `${namespace}:contest.internalServerError`,
-    BADREQUEST_POLICIES: `${namespace}:contest.badRequestPolicies`,
-    BADREQUEST_POLICY_KEY: `${namespace}:contest.badRequestPolicyKey`,
     INTERNAL_SERVER_ERROR_DELETE_POLICY: `${namespace}:contest.internalServerErrorDeletePolicy`,
-    FORBIDDEN: `${namespace}:contest.forbidden`,
-    UNAUTHENTICATED: `${namespace}:contest.unauthenticated`,
     INTERNAL_SERVER_ERROR_CANCEL: `${namespace}:contest.internalServerErrorCancel`,
     INVALID_STATE_ENDED: `${namespace}:contest.invalidStateEnded`,
     INVALID_STATE_NOT_STARTED: `${namespace}:contest.invalidStateNotStarted`,
@@ -458,7 +548,6 @@ const translateByErrorCode = (errorCode, namespace) => {
     FORBIDDEN: `${namespace}:team.forbidden`,
     UNAUTHENTICATED: `${namespace}:team.unauthenticated`,
     CONFLICT: `${namespace}:team.conflict`,
-
 
     // TestCase
     TEST_CASE_NOT_FOUND: `${namespace}:testCase.notFound`,

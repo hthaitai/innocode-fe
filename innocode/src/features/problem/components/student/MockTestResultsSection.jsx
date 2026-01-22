@@ -107,27 +107,56 @@ const MockTestResultsSection = ({ testResult, isLoading }) => {
 
     const details = testResult.details || []
 
+    // 🔍 DEBUG: Log để xem cấu trúc dữ liệu thực tế
+    console.log("🔍 [MockTest] Final Submit Format - testResult:", testResult)
+    console.log("🔍 [MockTest] Details array:", details)
+    if (details.length > 0) {
+      console.log("🔍 [MockTest] First detail sample:", details[0])
+    }
+
     // Tính toán summary từ details
     totalCases = details.length
     const passedDetails = details.filter((d) => d.note?.includes("success"))
     passedCount = passedDetails.length
     failedCount = totalCases - passedCount
 
-    // Tính raw score từ weight của các test case passed
-    rawScore = passedDetails.reduce((sum, d) => sum + (d.weight || 0), 0)
+    console.log(
+      `🔍 [MockTest] Passed details count: ${passedCount}/${totalCases}`,
+    )
+
+    // Lấy raw score từ testResult.score (đã được backend tính chính xác)
+    // Thay vì tính từ weight để tránh lỗi làm tròn (33.33 × 3 = 99.99)
+    rawScore = testResult.score || 0
 
     // Lấy thông tin từ testResult
-    score = testResult.score // Điểm sau penalty
+    score = testResult.score // Điểm sau penalty (trong trường hợp mock test thường giống rawScore)
     submissionAttemptNumber = testResult.submissionAttemptNumber
     status = testResult.status
 
     // Convert details thành format dễ hiển thị
     testCases = details.map((detail, index) => {
-      // Parse note để lấy test case name và status
-      // Format: "test 1: success" hoặc "test 1: failed"
-      const noteMatch = detail.note?.match(/^(test \d+):\s*(\w+)$/i)
-      const testCaseName = noteMatch ? noteMatch[1] : `Test Case ${index + 1}`
-      const statusText = noteMatch ? noteMatch[2] : "unknown"
+      // Parse note để lấy status
+      // Backend trả về note có thể là:
+      // - "success" hoặc "failed" (format đơn giản)
+      // - "test 1: success" (format có test case name)
+      let statusText = "unknown"
+      let testCaseName = `Test Case ${index + 1}`
+
+      if (detail.note) {
+        // Thử match format "test 1: success"
+        const noteMatch = detail.note.match(/^(test \d+):\s*(\w+)$/i)
+        if (noteMatch) {
+          testCaseName = noteMatch[1]
+          statusText = noteMatch[2]
+        } else {
+          // Format đơn giản: chỉ có "success" hoặc "failed"
+          statusText = detail.note.trim()
+        }
+      }
+
+      console.log(
+        `🔍 [MockTest] Test case ${index + 1}: note="${detail.note}", parsed status="${statusText}"`,
+      )
 
       return {
         id: testCaseName,

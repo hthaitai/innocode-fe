@@ -125,34 +125,6 @@ const ContestDetail = () => {
     skip: !shouldFetchLeaderboard,
   })
 
-  // Debug: Log leaderboard data in ContestDetail
-  useEffect(() => {
-    if (import.meta.env.VITE_ENV === "development" && shouldFetchLeaderboard) {
-      console.log("🔍 [ContestDetail] contestId:", contestId)
-      console.log(
-        "🔍 [ContestDetail] shouldFetchLeaderboard:",
-        shouldFetchLeaderboard,
-      )
-      console.log("🔍 [ContestDetail] leaderboardData:", leaderboardData)
-      console.log(
-        "🔍 [ContestDetail] leaderboardData type:",
-        typeof leaderboardData,
-      )
-      console.log(
-        "🔍 [ContestDetail] leaderboardData isArray:",
-        Array.isArray(leaderboardData),
-      )
-      console.log("🔍 [ContestDetail] leaderboardLoading:", leaderboardLoading)
-      console.log("🔍 [ContestDetail] leaderboardError:", leaderboardError)
-    }
-  }, [
-    leaderboardData,
-    contestId,
-    shouldFetchLeaderboard,
-    leaderboardLoading,
-    leaderboardError,
-  ])
-
   // Handle data structure - API returns teams array directly or wrapped
   // transformResponse now always returns object with teams array
   const leaderboardEntries = Array.isArray(leaderboardData)
@@ -161,20 +133,6 @@ const ContestDetail = () => {
       leaderboardData?.teamIdList ||
       leaderboardData?.entries ||
       []
-
-  // Debug: Log entries
-  useEffect(() => {
-    if (import.meta.env.VITE_ENV === "development" && shouldFetchLeaderboard) {
-      console.log("🔍 [ContestDetail] leaderboardEntries:", leaderboardEntries)
-      console.log(
-        "🔍 [ContestDetail] leaderboardEntries length:",
-        leaderboardEntries.length,
-      )
-      if (leaderboardEntries.length > 0) {
-        console.log("🔍 [ContestDetail] first entry:", leaderboardEntries[0])
-      }
-    }
-  }, [leaderboardEntries, shouldFetchLeaderboard])
 
   // Get contest info from contest data
   const leaderboardContestInfo = {
@@ -295,8 +253,9 @@ const ContestDetail = () => {
                 studentIdSearch: currentUserId,
               },
             )
-            const results = res.data?.data || res.data || []
-            return results.length > 0 ? round : null
+            // The API returns the result object in res.data if it exists
+            const resultData = res.data
+            return resultData ? round : null
           } catch (err) {
             if (err?.response?.status === 404) {
               return null
@@ -335,6 +294,12 @@ const ContestDetail = () => {
         return "text-blue-500 bg-blue-500/10"
       case "completed":
         return "text-green-500 bg-green-500/10"
+      case "paused":
+        return "text-yellow-500 bg-yellow-500/10"
+      case "delayed":
+        return "text-orange-600 bg-orange-600/10"
+      case "cancelled":
+        return "text-red-500 bg-red-500/10"
       default:
         return "text-gray-500 bg-gray-500/10"
     }
@@ -582,6 +547,9 @@ const ContestDetail = () => {
                     registrationopen: "contest.statusLabels.registrationopen",
                     registrationclosed:
                       "contest.statusLabels.registrationclosed",
+                    paused: "contest.statusLabels.paused",
+                    delayed: "contest.statusLabels.delayed",
+                    cancelled: "contest.statusLabels.cancelled",
                     draft: "contest.statusLabels.draft",
                   }
 
@@ -1187,7 +1155,7 @@ const ContestDetail = () => {
                     ...completedManualProblems.map((r) => ({
                       ...r,
                       type: "manual",
-                      route: `/manual-problem/${contestId}/${r.roundId}`,
+                      route: `/manual-result/${contestId}/${r.roundId}`,
                       icon: "mdi:file-document-check",
                       label: t("contest.manual"),
                     })),

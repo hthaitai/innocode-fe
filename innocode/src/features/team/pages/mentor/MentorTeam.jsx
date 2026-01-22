@@ -155,7 +155,7 @@ const MentorTeam = () => {
   useEffect(() => {
     if (pendingInvites.length > 0) {
       const pendingStudentIds = new Set(
-        pendingInvites.map((invite) => invite.studentId)
+        pendingInvites.map((invite) => invite.studentId),
       )
       setInvitedStudentIds((prev) => {
         const updated = new Set(prev)
@@ -169,7 +169,7 @@ const MentorTeam = () => {
   useEffect(() => {
     if (myTeam && myTeam.members) {
       const memberIds = new Set(
-        (myTeam.members || []).map((m) => m.studentId || m.student_id)
+        (myTeam.members || []).map((m) => m.studentId || m.student_id),
       )
       // Remove students from invited list if they became members
       setInvitedStudentIds((prev) => {
@@ -191,16 +191,16 @@ const MentorTeam = () => {
 
     // Filter out students who are already members, have been invited, or have pending invites
     const existingMemberIds = (myTeam?.members || []).map(
-      (m) => m.studentId || m.student_id
+      (m) => m.studentId || m.student_id,
     )
     const pendingInviteStudentIds = new Set(
-      pendingInvites.map((invite) => invite.studentId)
+      pendingInvites.map((invite) => invite.studentId),
     )
     const availableStudents = allStudentsList.filter(
       (s) =>
         !existingMemberIds.includes(s.studentId) &&
         !invitedStudentIds.has(s.studentId) &&
-        !pendingInviteStudentIds.has(s.studentId)
+        !pendingInviteStudentIds.has(s.studentId),
     )
 
     return { students: availableStudents, allStudents: allStudentsList }
@@ -307,10 +307,10 @@ const MentorTeam = () => {
         const baseUrl =
           import.meta.env.VITE_FRONTEND_URL || window.location.origin
         const acceptUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(
-          token
+          token,
         )}&email=${encodeURIComponent(studentEmail)}&action=accept`
         const declineUrl = `${baseUrl}/team-invite?token=${encodeURIComponent(
-          token
+          token,
         )}&email=${encodeURIComponent(studentEmail)}&action=decline`
 
         // Send invitation email
@@ -755,47 +755,47 @@ const MentorTeam = () => {
                                     member.student_id ||
                                     index
                                   }
-                                  className="flex items-center justify-between p-4 bg-[#f9fafb] rounded-[5px] hover:bg-[#f3f4f6] transition-colors"
+                                  className="flex items-start p-4 bg-[#f9fafb] rounded-[5px] hover:bg-[#f3f4f6] transition-colors gap-3"
                                 >
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#ff8c5a] text-white flex items-center justify-center font-semibold shadow-sm">
-                                      {memberInitial}
-                                    </div>
-                                    <div>
-                                      <p className="font-semibold text-[#2d3748]">
+                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#ff8c5a] text-white flex items-center justify-center font-semibold shadow-sm">
+                                    {memberInitial}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-2">
+                                      <p className="font-semibold text-[#2d3748] truncate">
                                         {memberName}
                                       </p>
-                                      {memberEmail && (
-                                        <div className="flex items-center gap-2 mt-1">
+                                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium whitespace-nowrap">
+                                        {t("team.active")}
+                                      </span>
+                                    </div>
+                                    {memberEmail && (
+                                      <div className="flex items-center justify-between gap-2 mt-1">
+                                        <div className="flex items-center gap-2 min-w-0">
                                           <Mail
                                             size={14}
-                                            className="text-[#7A7574]"
+                                            className="text-[#7A7574] flex-shrink-0"
                                           />
-                                          <p className="text-sm text-[#7A7574]">
+                                          <p className="text-sm text-[#7A7574] truncate">
                                             {memberEmail}
                                           </p>
                                         </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium whitespace-nowrap">
-                                      {t("team.active")}
-                                    </span>
-                                    <button
-                                      onClick={() => {
-                                        setMemberToDelete(member)
-                                        setShowDeleteMemberConfirm(true)
-                                      }}
-                                      disabled={deletingTeamMember}
-                                      className="p-2 text-red-600 hover:bg-red-50 rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                      title={t("team.removeMemberTitle")}
-                                    >
-                                      <Icon
-                                        icon="mdi:delete-outline"
-                                        width="18"
-                                      />
-                                    </button>
+                                        <button
+                                          onClick={() => {
+                                            setMemberToDelete(member)
+                                            setShowDeleteMemberConfirm(true)
+                                          }}
+                                          disabled={deletingTeamMember}
+                                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-[5px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                                          title={t("team.removeMemberTitle")}
+                                        >
+                                          <Icon
+                                            icon="mdi:delete-outline"
+                                            width="18"
+                                          />
+                                        </button>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               )
@@ -841,7 +841,7 @@ const MentorTeam = () => {
 
                               // If not in invite, try to find in allStudents list (not filtered)
                               const studentInfo = allStudents.find(
-                                (s) => s.studentId === invite.studentId
+                                (s) => s.studentId === invite.studentId,
                               )
 
                               // Get student name with priority: invite object > students list > fallback

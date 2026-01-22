@@ -108,6 +108,7 @@
     "failedToLoadRounds": "Không thể tải vòng thi",
     "noRoundsScheduled": "Chưa có vòng thi nào được lên lịch",
     "viewResult": "Xem kết quả",
+    "viewMyResult": "Xem kết quả của tôi",
     "startTest": "Bắt đầu bài kiểm tra",
     "startProblem": "Bắt đầu bài tập",
     "startChallenge": "Bắt đầu thử thách",
@@ -191,14 +192,18 @@
       "ongoing": "Đang diễn ra",
       "paused": "Tạm dừng",
       "completed": "Đã kết thúc",
-      "delayed": "Bị trễ",
+      "delayed": "Bị trì hoãn",
       "draft": "Nháp",
       "cancelled": "Đã hủy",
       "totalvalidcontests": "Tổng cuộc thi hợp lệ",
       "opened": "Đang mở",
       "closed": "Đã đóng",
+      "finished": "Đã hoàn thành",
       "finalized": "Đã hoàn tất",
-      "incoming": "Sắp diễn ra"
+      "incoming": "Sắp diễn ra",
+      "pending": "Đang chờ",
+      "plagiarismsuspected": "Nghi ngờ đạo văn",
+      "plagiarismconfirmed": "Xác nhận đạo văn"
     },
     "openCodeModal": {
       "title": "Nhập mã mở vòng thi",
@@ -400,6 +405,7 @@
     "schoolInUseError": "Không thể xóa trường học đang có học sinh, giáo viên hoặc đội tham gia",
     "enterSchoolName": "Nhập tên trường",
     "selectProvince": "Chọn tỉnh/thành phố",
+    "enterAddress": "Nhập địa chỉ trường",
     "enterContact": "Nhập email liên hệ"
   },
   "roleRegistrations": {
@@ -1053,7 +1059,11 @@
     "saveInstruction": "Lưu: Lưu tệp của bạn trước (bắt buộc trước khi nộp)",
     "submitInstruction": "Nộp: Nộp và hoàn thành vòng thi (đánh dấu vòng thi là đã hoàn thành) - Chỉ khả dụng sau khi lưu",
     "fileSavedCanSubmit": "Tệp đã được lưu thành công. Bạn có thể nộp bây giờ.",
-    "failedToGetSubmissionId": "Không thể lấy ID bài nộp. Vui lòng thử lại."
+    "failedToGetSubmissionId": "Không thể lấy ID bài nộp. Vui lòng thử lại.",
+    "downloadTemplate": "Tải xuống Template",
+    "templateAvailable": "Template bài tập có sẵn để tải xuống",
+    "roundAlreadyFinished": "Vòng thi đã hoàn thành",
+    "viewResult": "Xem kết quả"
   },
   "manualResultPage": {
     "loadingResult": "Đang tải kết quả...",
@@ -1074,6 +1084,44 @@
     "judgedBy": "Chấm bởi",
     "evaluationCriteria": "Tiêu chí đánh giá",
     "criteria": "Tiêu chí"
+  },
+  "mentorDashboard": {
+    "title": "Bảng điều khiển Mentor",
+    "stats": {
+      "totalTeams": "Đội quản lý",
+      "totalStudents": "Học sinh hướng dẫn",
+      "contestsParticipated": "Cuộc thi tham gia",
+      "totalCertificates": "Tổng chứng chỉ"
+    },
+    "bestTeam": {
+      "title": "Đội thi xuất sắc nhất",
+      "certs": "Chứng chỉ",
+      "teamCerts": "Chứng chỉ đội",
+      "studentCerts": "Chứng chỉ học sinh"
+    },
+    "noBestTeam": "Chưa có dữ liệu thành tích.",
+    "statusBreakdown": {
+      "title": "Phân bổ trạng thái đội",
+      "eliminated": "Đã bị loại",
+      "disqualified": "Bị truất quyền"
+    },
+    "activity": {
+      "title": "Hoạt động cuộc thi",
+      "ongoing": "Đang diễn ra",
+      "upcoming": "Sắp tới",
+      "completed": "Đã kết thúc"
+    },
+    "recentCerts": {
+      "title": "Chứng chỉ gần đây",
+      "team": "Đội thi",
+      "contest": "Cuộc thi",
+      "type": "Loại",
+      "date": "Ngày cấp",
+      "empty": "Chưa có chứng chỉ nào được cấp."
+    },
+    "notifications": {
+      "dashboardUpdated": "Bảng điều khiển của bạn đã được cập nhật dữ liệu mới nhất!"
+    }
   },
   "dashboard": {
     "title": "Bảng điều khiển",
@@ -1112,7 +1160,7 @@
       "currentMonth": "Tháng hiện tại",
       "last3Months": "3 tháng gần đây",
       "last6Months": "6 tháng gần đây",
-      "currentYear": "Năm hiện tại",
+      "lastYear": "Năm ngoái",
       "custom": "Tùy chỉnh",
       "startDate": "Ngày bắt đầu",
       "endDate": "Ngày kết thúc"
@@ -1124,7 +1172,7 @@
       "contestStatusDistribution": "Phân bố trạng thái cuộc thi",
       "showsContestCreation": "Hiển thị số lượng cuộc thi được tạo theo từng tháng",
       "showsTeamRegistration": "Hiển thị số lượng đội đăng ký theo từng tháng",
-      "note": "Lưu ý: Các cuộc thi Nháp và Đã hủy không được tính để đảm bảo tính rõ ràng"
+      "note": "Lưu ý: Các cuộc thi Nháp và Đã hủy không được tính để đảm bảo tính minh bạch"
     },
     "topPerformance": {
       "title": "BẢNG XẾP HẠNG XUẤT SẮC",

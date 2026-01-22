@@ -60,6 +60,11 @@ const allMenus = {
     labelKey: "sidebar.notifications",
     icon: "lucide:bell",
   },
+  mentorDashboard: {
+    path: "/mentor/dashboard",
+    labelKey: "sidebar.dashboard",
+    icon: "lucide:chart-spline",
+  },
 
   //judge
   judgeContests: {
@@ -133,6 +138,7 @@ const menuByRole = {
     "notifications",
   ],
   mentor: [
+    "mentorDashboard",
     "profile",
     "contests",
     "team",

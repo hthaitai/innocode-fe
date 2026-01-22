@@ -65,7 +65,7 @@ const Leaderboard = () => {
 
   // Use contestId from URL or first available contest
   const [selectedContestId, setSelectedContestId] = useState(
-    urlContestId || null
+    urlContestId || null,
   )
 
   useEffect(() => {
@@ -82,7 +82,7 @@ const Leaderboard = () => {
 
   // Get selected contest details from availableContests
   const selectedContest = availableContests.find(
-    (c) => c.contestId === selectedContestId
+    (c) => c.contestId === selectedContestId,
   )
 
   // Fetch leaderboard data using RTK Query
@@ -99,7 +99,7 @@ const Leaderboard = () => {
   const { isConnected, connectionError } = useLiveLeaderboard(
     selectedContestId || null, // Always pass a value, never undefined
     refetch, // Pass refetch function to trigger when updates are received
-    !!selectedContestId
+    !!selectedContestId,
   )
 
   // Refetch when contest changes
@@ -115,19 +115,19 @@ const Leaderboard = () => {
     if (import.meta.env.VITE_ENV === "development") {
       console.log(
         "🔍 [Leaderboard Component] selectedContestId:",
-        selectedContestId
+        selectedContestId,
       )
       console.log(
         "🔍 [Leaderboard Component] leaderboardData:",
-        leaderboardData
+        leaderboardData,
       )
       console.log(
         "🔍 [Leaderboard Component] leaderboardData type:",
-        typeof leaderboardData
+        typeof leaderboardData,
       )
       console.log(
         "🔍 [Leaderboard Component] leaderboardData isArray:",
-        Array.isArray(leaderboardData)
+        Array.isArray(leaderboardData),
       )
       console.log("🔍 [Leaderboard Component] loading:", loading)
       console.log("🔍 [Leaderboard Component] error:", error)
@@ -151,7 +151,7 @@ const Leaderboard = () => {
         console.log("🔍 [Leaderboard Component] first entry:", entries[0])
         console.log(
           "🔍 [Leaderboard Component] first entry keys:",
-          Object.keys(entries[0] || {})
+          Object.keys(entries[0] || {}),
         )
       }
     }
@@ -223,7 +223,10 @@ const Leaderboard = () => {
       case "plagiarismsuspected":
       case "incoming":
       case "upcoming":
+      case "paused":
         return "text-yellow-500"
+      case "delayed":
+        return "text-orange-600"
       case "plagiarismconfirmed":
       case "cancelled":
         return "text-red-500"
@@ -301,7 +304,7 @@ const Leaderboard = () => {
                             {round.status && (
                               <span
                                 className={`text-xs ml-4 ${getStatusColorClass(
-                                  round.status
+                                  round.status,
                                 )}`}
                               >
                                 {(() => {
@@ -328,8 +331,8 @@ const Leaderboard = () => {
                               round.roundType === "McqTest"
                                 ? "mdi:checkbox-multiple-marked-circle"
                                 : round.roundType === "Manual"
-                                ? "mdi:file-document-edit"
-                                : "mdi:code-tags"
+                                  ? "mdi:file-document-edit"
+                                  : "mdi:code-tags"
                             }
                             className="text-gray-400"
                             width={12}
@@ -641,7 +644,7 @@ const Leaderboard = () => {
                         {entries.find((e) => e.teamId === expandedTeamId) && (
                           <div className="bg-white rounded-lg border border-[#E5E5E5] p-4">
                             {renderTeamMembers(
-                              entries.find((e) => e.teamId === expandedTeamId)
+                              entries.find((e) => e.teamId === expandedTeamId),
                             )}
                           </div>
                         )}

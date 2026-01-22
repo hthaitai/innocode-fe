@@ -41,6 +41,12 @@ const ContestCard = ({ contest, onClick }) => {
         return "text-green-500 bg-green-500/10"
       case "registrationclosed":
         return "text-orange-500 bg-orange-500/10"
+      case "paused":
+        return "text-yellow-500 bg-yellow-500/10"
+      case "delayed":
+        return "text-orange-600 bg-orange-600/10"
+      case "cancelled":
+        return "text-red-500 bg-red-500/10"
       case "draft":
         return "text-gray-500 bg-gray-500/10"
       default:
@@ -67,6 +73,9 @@ const ContestCard = ({ contest, onClick }) => {
       published: "contest.statusLabels.published",
       registrationopen: "contest.statusLabels.registrationopen",
       registrationclosed: "contest.statusLabels.registrationclosed",
+      paused: "contest.statusLabels.paused",
+      delayed: "contest.statusLabels.delayed",
+      cancelled: "contest.statusLabels.cancelled",
       draft: "contest.statusLabels.draft",
     }
 
@@ -120,7 +129,7 @@ const ContestCard = ({ contest, onClick }) => {
           <div className="mb-2">
             <span
               className={`inline-block px-2 py-1 text-xs font-semibold rounded ${getStatusColor(
-                contest.statusLabel || contest.status
+                contest.statusLabel || contest.status,
               )}`}
             >
               {statusLabel}
@@ -141,8 +150,8 @@ const ContestCard = ({ contest, onClick }) => {
             {contest.teamLimitMax > 0
               ? `${contest.teamLimitMax} ${t("contest.teams")}`
               : contest.teams > 0
-              ? `${contest.teams} ${t("contest.teams")}`
-              : t("contest.noLimit")}
+                ? `${contest.teams} ${t("contest.teams")}`
+                : t("contest.noLimit")}
           </span>
           <span className="contest-card__time">
             <Icon icon="mdi:clock-outline" className="inline mr-1" />
