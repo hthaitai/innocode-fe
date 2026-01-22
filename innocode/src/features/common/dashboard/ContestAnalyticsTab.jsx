@@ -118,10 +118,44 @@ const ContestAnalyticsTab = () => {
     )
   }
 
+  // Function to translate month/year labels
+  const translateDateLabel = (label) => {
+    // Expected format: "Jan 2024", "Feb 2024", etc.
+    const parts = label.split(" ")
+    if (parts.length === 2) {
+      const [month, year] = parts
+
+      // Only translate if current language is Vietnamese
+      if (
+        t("common.language") === "vi" ||
+        window.localStorage.getItem("i18nextLng")?.startsWith("vi")
+      ) {
+        const monthMap = {
+          Jan: "T1",
+          Feb: "T2",
+          Mar: "T3",
+          Apr: "T4",
+          May: "T5",
+          Jun: "T6",
+          Jul: "T7",
+          Aug: "T8",
+          Sep: "T9",
+          Oct: "T10",
+          Nov: "T11",
+          Dec: "T12",
+        }
+        const translatedMonth = monthMap[month] || month
+        return `${translatedMonth} ${year}`
+      }
+    }
+    return label
+  }
+
   // Transform trend data
   const trendData =
     chartData?.labels?.map((label, index) => ({
-      name: label,
+      name: translateDateLabel(label),
+      originalName: label, // Keep original for potential API needs
       contests: chartData.contestCreationTrend?.[index] || 0,
       teams: chartData.teamRegistrationTrend?.[index] || 0,
     })) || []
@@ -370,6 +404,22 @@ const ContestAnalyticsTab = () => {
                         borderRadius: "8px",
                         border: "none",
                         boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      }}
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0]
+                          return (
+                            <div className="bg-white p-3 border border-gray-200 rounded-[5px] shadow-lg">
+                              <p className="text-caption-1-strong text-gray-800 mb-1">
+                                {translateStatus(data.name)}
+                              </p>
+                              <p className="text-caption-1 text-gray-600">
+                                {data.value} {t("dashboard.overview.contests")}
+                              </p>
+                            </div>
+                          )
+                        }
+                        return null
                       }}
                     />
                   </PieChart>

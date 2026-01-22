@@ -1172,7 +1172,7 @@
       "contestStatusDistribution": "Phân bố trạng thái cuộc thi",
       "showsContestCreation": "Hiển thị số lượng cuộc thi được tạo theo từng tháng",
       "showsTeamRegistration": "Hiển thị số lượng đội đăng ký theo từng tháng",
-      "note": "Lưu ý: Các cuộc thi Nháp và Đã hủy không được tính để đảm bảo tính rõ ràng"
+      "note": "Lưu ý: Các cuộc thi Nháp và Đã hủy không được tính để đảm bảo tính minh bạch"
     },
     "topPerformance": {
       "title": "BẢNG XẾP HẠNG XUẤT SẮC",

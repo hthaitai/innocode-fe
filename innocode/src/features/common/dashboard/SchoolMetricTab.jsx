@@ -173,13 +173,17 @@ const SchoolMetricTab = () => {
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="flex items-center gap-1 text-orange-600 font-bold">
-                        <span className="text-body-2">{school.totalTeams}</span>
-                        <UsersRound className="w-3 h-3" />
+                      <div className="text-[10px] text-gray-400 italic">
+                        {t("dashboard.schoolMetric.totalTeams")}{" "}
+                        {school.totalTeams}
                       </div>
                       <div className="text-[10px] text-gray-400 italic">
-                        {school.totalCertificates}{" "}
-                        {t("dashboard.schoolMetric.totalCertificates")}
+                        {t("dashboard.schoolMetric.totalStudents")}{" "}
+                        {school.totalStudents}
+                      </div>
+                      <div className="text-[10px] text-gray-400 italic">
+                        {t("dashboard.schoolMetric.totalCertificates")}{" "}
+                        {school.totalCertificates}
                       </div>
                     </div>
                   </div>
