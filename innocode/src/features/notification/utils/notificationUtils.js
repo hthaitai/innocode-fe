@@ -122,6 +122,11 @@ export const buildInterpolationValues = (
   if (parsedPayload.reg?.requestedRole)
     values["reg.RequestedRole"] = parsedPayload.reg.requestedRole
 
+  // Direct registration fields (for role_registration.submitted)
+  if (parsedPayload.fullname) values.fullname = parsedPayload.fullname
+  if (parsedPayload.requestedRole)
+    values.requestedRole = parsedPayload.requestedRole
+
   // Team name
   if (parsedPayload.team?.Name) values["team.Name"] = parsedPayload.team.Name
   if (parsedPayload.team?.name) values["team.Name"] = parsedPayload.team.name
@@ -131,8 +136,22 @@ export const buildInterpolationValues = (
   if (parsedPayload.req?.Name) values["req.Name"] = parsedPayload.req.Name
   if (parsedPayload.req?.name) values["req.Name"] = parsedPayload.req.name
 
-  // School name
-  if (parsedPayload.schoolName) values.schoolName = parsedPayload.schoolName
+  // Direct name field (for school.creation_request.submitted)
+  if (
+    parsedPayload.name &&
+    !values["req.Name"] &&
+    targetType === "school_creation_request"
+  ) {
+    values.name = parsedPayload.name
+  }
+
+  // School name - handle both direct schoolName field and name field for school notifications
+  if (parsedPayload.schoolName) {
+    values.schoolName = parsedPayload.schoolName
+  } else if (parsedPayload.name && targetType === "school") {
+    // For school.approved, school.rejected notifications, map 'name' to 'schoolName'
+    values.schoolName = parsedPayload.name
+  }
 
   return values
 }
