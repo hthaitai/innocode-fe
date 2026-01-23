@@ -104,10 +104,7 @@ const OrganizerMcqCreate = () => {
     } catch (err) {
       console.error("Failed to add questions:", err)
 
-      if (isFetchError(err)) {
-        toast.error(t("contest:suggestion.connectionError"))
-        return
-      }
+      if (isFetchError(err)) return
 
       toast.error(err?.Message || t("common.failedToAddQuestions"))
     }

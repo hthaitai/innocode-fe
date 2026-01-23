@@ -88,10 +88,7 @@ export default function OrganizerCertificateTemplateCreate() {
     } catch (err) {
       console.error(err)
 
-      if (isFetchError(err)) {
-        toast.error(t("contest:suggestion.connectionError"))
-        return
-      }
+      if (isFetchError(err)) return
 
       toast.error(t("certificate:somethingWrong"))
     } finally {

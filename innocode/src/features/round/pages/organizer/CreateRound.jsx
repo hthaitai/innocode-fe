@@ -165,10 +165,7 @@ const CreateRound = () => {
     } catch (err) {
       console.error(err)
 
-      if (isFetchError(err)) {
-        toast.error(t("contest:suggestion.connectionError"))
-        return
-      }
+      if (isFetchError(err)) return
 
       const errorMessage = err?.data?.errorMessage || t("create.errorGeneric")
       const formattedError = formatRoundError(errorMessage)

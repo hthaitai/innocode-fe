@@ -135,10 +135,7 @@ export default function EditTestCase() {
     } catch (err) {
       console.error(err)
 
-      if (isFetchError(err)) {
-        toast.error(t("contest:suggestion.connectionError"))
-        return
-      }
+      if (isFetchError(err)) return
 
       toast.error(err?.data?.errorMessage || t("common.failedToUpdateTestCase"))
     }

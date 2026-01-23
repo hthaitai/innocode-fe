@@ -34,10 +34,7 @@ const RoundMockTestUpload = ({ roundId }) => {
     } catch (error) {
       console.error("Upload failed", error)
 
-      if (isFetchError(error)) {
-        toast.error(t("contest:suggestion.connectionError"))
-        return
-      }
+      if (isFetchError(error)) return
 
       toast.error(t("mockTest.errorGeneric"))
     } finally {

@@ -35,7 +35,6 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
           console.error(err)
 
           if (isFetchError(err)) {
-            toast.error(tContest("suggestion.connectionError"))
             throw err
           }
 
@@ -68,7 +67,6 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
           console.error(err)
 
           if (isFetchError(err)) {
-            toast.error(tContest("suggestion.connectionError"))
             throw err
           }
 

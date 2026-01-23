@@ -8,6 +8,7 @@ import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { fromDatetimeLocal } from "../../../../shared/utils/dateTime"
 import { isFetchError } from "@/shared/utils/apiUtils"
+
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { useTranslation } from "react-i18next"
 
@@ -90,12 +91,11 @@ export default function CreateContest() {
     } catch (err) {
       console.error(err)
 
-      // Network / Cold Start specific handling
-      // Network / Cold Start specific handling
       if (isFetchError(err)) {
-        toast.error(tContest("suggestion.connectionError"))
-        // Do NOT return here, let isLocalSubmitting reset in finally
-      } else if (err?.data?.errorCode === "DUPLICATE") {
+        return
+      }
+
+      if (err?.data?.errorCode === "DUPLICATE") {
         const errorMessage = tContest("validation.contestNameExists")
         toast.error(errorMessage)
         setErrors((prev) => ({

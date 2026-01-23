@@ -74,10 +74,7 @@ export default function RubricModal({
     } catch (err) {
       console.error("Failed to save rubric", err)
 
-      if (isFetchError(err)) {
-        toast.error(t("contest:suggestion.connectionError"))
-        return
-      }
+      if (isFetchError(err)) return
 
       toast.error(t("common.failedToSaveRubric"))
     }

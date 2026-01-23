@@ -43,6 +43,9 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
       onClose()
     } catch (err) {
       console.error(err)
+
+      if (isFetchError(err)) return
+
       const errorMessage =
         err?.data?.errorMessage ||
         err?.data?.message ||
@@ -50,11 +53,6 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
         err?.error ||
         err?.error ||
         t("errorReviewFailed")
-
-      if (isFetchError(err)) {
-        toast.error(t("contest:suggestion.connectionError"))
-        return
-      }
 
       if (errorMessage === "Appeal has already been reviewed.") {
         toast.error(t("appealAlreadyReviewed"))

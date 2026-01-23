@@ -75,11 +75,11 @@ const CertificateTemplateModal = ({
     } catch (err) {
       console.error(err)
 
-      if (isFetchError(err)) {
-        toast.error(t("contest:suggestion.connectionError"))
-        // we can return here but we need to stop loading action in finally block
-        // the finally block handles that.
-      } else if (err?.data?.errorCode === "DUPLICATE_CERTIFICATE") {
+      console.error(err)
+
+      if (isFetchError(err)) return
+
+      if (err?.data?.errorCode === "DUPLICATE_CERTIFICATE") {
         toast.error(t("leaderboard:modal.certificateAlreadyExists"))
       } else {
         toast.error(

@@ -1,9 +1,10 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { useAcceptJudgeInviteMutation } from "../../../services/contestJudgeApi"
 import { useAuth } from "@/context/AuthContext"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 export default function JudgeInviteAccept() {
   const [params] = useSearchParams()
@@ -12,6 +13,7 @@ export default function JudgeInviteAccept() {
   const navigate = useNavigate()
   const { t } = useTranslation("judge")
   const { user } = useAuth()
+  const attemptedRef = useRef(false)
 
   const [acceptInvite] = useAcceptJudgeInviteMutation()
 
@@ -34,6 +36,8 @@ export default function JudgeInviteAccept() {
         navigate("/")
       } catch (err) {
         console.error("Error accepting judge invite:", err)
+        if (isFetchError(err)) return
+
         toast.error(
           err?.data?.message || t("inviteResponse.messages.acceptFailed"),
         )
@@ -41,7 +45,10 @@ export default function JudgeInviteAccept() {
       }
     }
 
-    if (inviteCode) handleAccept()
+    if (inviteCode && !attemptedRef.current) {
+      attemptedRef.current = true
+      handleAccept()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inviteCode, email])
 

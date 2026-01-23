@@ -256,10 +256,9 @@ const JudgeManualEvaluationsPage = () => {
       toast.success(t("evaluation.toast.success"))
       navigate(`/judge/contests/${contestId}/rounds/${roundId}/submissions`)
     } catch (err) {
-      if (isFetchError(err)) {
-        toast.error(t("contest:suggestion.connectionError"))
-        return
-      }
+      console.error(err)
+
+      if (isFetchError(err)) return
       const errorMessage =
         err?.data?.errorMessage || err?.error || t("evaluation.toast.error")
       toast.error(errorMessage)

@@ -207,10 +207,7 @@ const EditRound = () => {
     } catch (err) {
       console.error(err)
 
-      if (isFetchError(err)) {
-        toast.error(t("contest:suggestion.connectionError"))
-        return
-      }
+      if (isFetchError(err)) return
 
       const errorMessage = err?.data?.errorMessage || t("edit.errorGeneric")
 

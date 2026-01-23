@@ -52,10 +52,7 @@ export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
     } catch (err) {
       console.error(err)
 
-      if (isFetchError(err)) {
-        toast.error(t("contest:suggestion.connectionError"))
-        return
-      }
+      if (isFetchError(err)) return
 
       toast.error(err?.data?.message || t("common.failedToImportCsv"))
     }
