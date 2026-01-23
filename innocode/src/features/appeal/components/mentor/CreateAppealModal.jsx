@@ -8,6 +8,7 @@ import { Icon } from "@iconify/react"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
 import translateApiError from "@/shared/utils/translateApiError"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 export default function CreateAppealModal({
   isOpen,
@@ -136,6 +137,10 @@ export default function CreateAppealModal({
         message: error?.message,
         fullError: JSON.stringify(error, null, 2),
       })
+
+      if (isFetchError(error)) {
+        return
+      }
 
       toast.dismiss()
 
