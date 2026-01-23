@@ -42,6 +42,15 @@ const RoundTimeTravelSection = ({ roundId, isRetakeRound, problemType }) => {
         msg = t("errors.finalizeBeforeDeadlines")
       } else if (msg === "Judge deadline cannot be before round end.") {
         msg = t("errors.judgeDeadlineBeforeRoundEnd")
+      } else if (
+        msg ===
+        "Appeal submit deadline can only be fast-forwarded after all judge deadlines are completed."
+      ) {
+        msg = t("errors.appealSubmitBeforeJudgeDeadline")
+      } else if (
+        msg === "Appeal review cannot end before appeal submit deadline."
+      ) {
+        msg = t("errors.appealReviewBeforeAppealSubmit")
       }
 
       toast.error(msg)

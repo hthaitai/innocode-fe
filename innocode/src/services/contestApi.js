@@ -75,6 +75,7 @@ export const contestApi = api.injectEndpoints({
       transformResponse: (response) => response.data,
       providesTags: (result, error, id) => [{ type: "Contests", id }],
     }),
+    
     addContest: builder.mutation({
       query: (data) => ({
         url: "contests/advanced",

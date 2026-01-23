@@ -18,7 +18,15 @@ const ManualResultInfo = ({ submission }) => {
         ? formatDateTime(submission.submittedAt)
         : "—",
     },
-    { label: t("common.judgedBy"), value: submission.judgedBy || "—" },
+    {
+      label: t("common.judgedBy"),
+      value:
+        submission.judgedBy === "Not yet evaluated" ||
+        submission.judgedBy === "Unknown" ||
+        !submission.judgedBy
+          ? t("common.notScored")
+          : submission.judgedBy,
+    },
     {
       label: t("common.score"),
       value:

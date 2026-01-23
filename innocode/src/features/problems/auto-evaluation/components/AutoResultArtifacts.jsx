@@ -7,9 +7,8 @@ const AutoResultArtifacts = ({ artifacts }) => {
   const handleDownload = async (fileUrl, filename) => {
     try {
       const res = await fetch(fileUrl)
-      const text = await res.text() // get the file content
+      const blob = await res.blob()
 
-      const blob = new Blob([text], { type: "text/plain;charset=utf-8" })
       const url = URL.createObjectURL(blob)
 
       const a = document.createElement("a")
@@ -47,7 +46,7 @@ const AutoResultArtifacts = ({ artifacts }) => {
               onClick={() =>
                 handleDownload(
                   artifact.url,
-                  `submission-${artifact.artifactId}.py`
+                  `submission-${artifact.artifactId}.py`,
                 )
               }
               className="button-orange"

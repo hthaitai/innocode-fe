@@ -2,18 +2,18 @@ import React from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { validate as uuidValidate } from "uuid"
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
-import { useGetRoundsByContestIdQuery } from "../../../../services/roundApi" // Ensure this is correct based on what I saw earlier
+import { useGetRoundsByContestIdQuery } from "../../../../services/roundApi"
 import PageContainer from "../../../../shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
-import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import JudgeRoundList from "../../components/judge/JudgeRoundList"
 import { useTranslation } from "react-i18next"
+import JudgeContestInfo from "../../components/judge/JudgeContestInfo"
 
 const JudgeContestDetailPage = () => {
-  const { t } = useTranslation(["judge", "common", "errors"])
+  const { t } = useTranslation(["judge", "common", "errors", "contest"])
   const { contestId } = useParams()
   const navigate = useNavigate()
 
@@ -103,15 +103,41 @@ const JudgeContestDetailPage = () => {
       breadcrumbPaths={breadcrumbPaths}
     >
       <AnimatedSection>
-        {rounds.length === 0 ? (
-          <div
-            className={`text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]`}
-          >
-            {t("contestDetail.noRounds")}
+        <div className="space-y-5">
+          {/* Contest Image */}
+          <div className="border border-[#E5E5E5] mb-4 w-[335px] h-[188px] rounded-[5px] overflow-hidden bg-white flex items-center justify-center">
+            {contest?.imgUrl ? (
+              <img
+                src={contest.imgUrl}
+                alt={contest.name || "Contest Image"}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-[#7A7574] text-sm">
+                {t("contestDetail.noImage", "No image available")}
+              </span>
+            )}
           </div>
-        ) : (
-          <JudgeRoundList rounds={rounds} onRoundClick={handleRoundClick} />
-        )}
+
+          {/* Contest Info */}
+          <JudgeContestInfo contest={contest} />
+
+          {/* Rounds */}
+          <div>
+            <div className="text-sm leading-5 font-semibold pt-3 pb-2">
+              {t("judge:contestDetail.manualRounds", "Manual Rounds")}
+            </div>
+            {rounds.length === 0 ? (
+              <div
+                className={`text-[#7A7574] text-xs leading-4 border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-center items-center min-h-[70px]`}
+              >
+                {t("judge:contestDetail.noRounds")}
+              </div>
+            ) : (
+              <JudgeRoundList rounds={rounds} onRoundClick={handleRoundClick} />
+            )}
+          </div>
+        </div>
       </AnimatedSection>
     </PageContainer>
   )

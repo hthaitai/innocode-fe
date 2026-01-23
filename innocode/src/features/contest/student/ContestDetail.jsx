@@ -17,7 +17,7 @@ import {
   JoystickIcon,
   RefreshCcw,
 } from "lucide-react"
-import useContestDetail from "../hooks/useContestDetail"
+
 import CountdownTimer from "@/shared/components/countdowntimer/CountdownTimer"
 import { useAuth } from "@/context/AuthContext"
 import useTeams from "@/features/team/hooks/useTeams"
@@ -32,7 +32,10 @@ import { useModal } from "@/shared/hooks/useModal"
 import RoundTimeline from "@/features/round/components/RoundTimeline"
 import useRoundTimeline from "@/features/round/hooks/useRoundTimeline"
 import ContestTimeline from "../components/ContestTimeline"
-import { useGetContestTimelineQuery } from "@/services/contestApi"
+import {
+  useGetContestByIdQuery,
+  useGetContestTimelineQuery,
+} from "@/services/contestApi"
 
 // Wrapper component to fetch and display timeline for each round
 const RoundTimelineWrapper = ({ roundId, refetchKey }) => {
@@ -61,7 +64,11 @@ const ContestDetail = () => {
   const [timelineRefetchKey, setTimelineRefetchKey] = useState(0)
 
   // Fetch contest data from API
-  const { contest: apiContest, loading, error } = useContestDetail(contestId)
+  const {
+    data: apiContest,
+    isLoading: loading,
+    error,
+  } = useGetContestByIdQuery(contestId)
 
   // Fetch rounds separately using RTK Query (only when rounds tab is active or contest is loaded)
   const {

@@ -53,7 +53,8 @@
   "contestDetail": {
     "fallbackName": "Contest",
     "errorItem": "contest or rounds",
-    "noRounds": "No rounds found"
+    "noRounds": "No rounds found",
+    "manualRounds": "Manual rounds"
   },
   "round": {
     "problemType": "Problem Type",

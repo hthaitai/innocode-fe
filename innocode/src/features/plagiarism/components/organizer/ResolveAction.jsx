@@ -26,7 +26,7 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
       onConfirm: async () => {
         try {
           await approvePlagiarism(submissionId).unwrap()
-          toast.success(t("confirmSuccess"))
+          toast.success(t("dismissSuccess"))
           closeModal()
           navigate(`/organizer/contests/${contestId}/plagiarism`)
         } catch (err) {
@@ -52,7 +52,7 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
         try {
           // Deny Plagiarism Case = Mark as Valid = Accept Submission
           await denyPlagiarism(submissionId).unwrap()
-          toast.success(t("dismissSuccess"))
+          toast.success(t("confirmSuccess"))
           closeModal()
           navigate(`/organizer/contests/${contestId}/plagiarism`)
         } catch (err) {

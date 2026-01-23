@@ -104,10 +104,15 @@ const JudgeManualEvaluationsPage = () => {
 
   useEffect(() => {
     if (criteria.length > 0) {
+      // If status is Pending, it means it's a fresh evaluation or a rescore
+      // We start with empty scores in this case to avoid showing previous judge's scores
+      const isPending = submission?.status === "Pending"
+
       const initialScores = criteria.map((c) => {
-        const existingResult = submission?.criterionResults?.find(
-          (r) => r.rubricId === c.rubricId,
-        )
+        const existingResult =
+          !isPending &&
+          submission?.criterionResults?.find((r) => r.rubricId === c.rubricId)
+
         return {
           rubricId: c.rubricId,
           score: existingResult?.score ?? 0,

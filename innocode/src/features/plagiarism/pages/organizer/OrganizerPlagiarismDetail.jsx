@@ -39,6 +39,8 @@ const OrganizerPlagiarismDetail = () => {
     skip: !isValidSubmissionId,
   })
 
+  console.log(plagiarismData)
+
   const submission = plagiarismData?.submission
   const artifacts = plagiarismData?.artifacts || []
   const details = plagiarismData?.details || []
@@ -135,12 +137,8 @@ const OrganizerPlagiarismDetail = () => {
     >
       <AnimatedSection>
         <div className="space-y-5">
-          <PlagiarismInformation submission={submission} />
-
-          <div>
-            <div className="text-sm font-semibold pt-3 pb-2">
-              {t("submittedFiles")}
-            </div>
+          <div className="space-y-1">
+            <PlagiarismInformation submission={submission} />
             <SubmittedFiles artifacts={artifacts} />
           </div>
 

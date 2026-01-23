@@ -1,6 +1,9 @@
 import { formatDateTime } from "@/shared/utils/dateTime"
+import { Download } from "lucide-react"
 
-export const getMatchedSubmissionsColumns = (t) => [
+import Actions from "@/shared/components/Actions"
+
+export const getMatchedSubmissionsColumns = (t, handleDownload) => [
   {
     accessorKey: "studentName",
     header: t("plagiarism:student"),
@@ -18,7 +21,7 @@ export const getMatchedSubmissionsColumns = (t) => [
   {
     accessorKey: "score",
     header: t("plagiarism:score"),
-    size: 120,
+    size: 100,
     cell: ({ row }) => {
       const score = row.original.score
       return score !== undefined && score !== null ? score.toString() : "—"
@@ -30,5 +33,36 @@ export const getMatchedSubmissionsColumns = (t) => [
     size: 180,
     cell: ({ row }) => formatDateTime(row.original.submittedAt),
     meta: { className: "truncate max-w-[150px]" },
+  },
+  {
+    id: "actions",
+    header: "",
+    size: 80,
+    enableSorting: false,
+    enableHiding: false,
+    cell: ({ row }) => {
+      const artifact = row.original.artifacts?.[0]
+      if (!artifact) return null
+
+      return (
+        <Actions
+          row={row.original}
+          items={[
+            {
+              label: t("common:buttons.download"),
+              icon: Download,
+              onClick: () =>
+                handleDownload(
+                  artifact.url,
+                  `submission-${artifact.artifactId}.${artifact.url
+                    .split(".")
+                    .pop()}`,
+                ),
+            },
+          ]}
+        />
+      )
+    },
+    meta: { className: "text-right w-[80px]" },
   },
 ]

@@ -53,7 +53,8 @@
   "contestDetail": {
     "fallbackName": "Cuộc thi",
     "errorItem": "cuộc thi hoặc vòng thi",
-    "noRounds": "Không tìm thấy vòng thi nào"
+    "noRounds": "Không tìm thấy vòng thi nào",
+    "manualRounds": "Vòng thi thủ công"
   },
   "round": {
     "problemType": "Loại bài toán",

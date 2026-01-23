@@ -43,5 +43,7 @@
   "runtime": "Runtime",
   "memory": "Memory",
   "createdAt": "Created at",
-  "points": "points"
+  "weight": "Weight",
+  "points": "points",
+  "studentSubmission": "Student submission"
 }

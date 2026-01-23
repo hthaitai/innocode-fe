@@ -103,7 +103,7 @@ export default function ProblemConfigurationSection({
                     handleNestedChange(
                       "problemConfig",
                       "mockTestWeight",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   error={!!errors.mockTestWeight}
@@ -122,7 +122,7 @@ export default function ProblemConfigurationSection({
                   handleNestedChange(
                     "problemConfig",
                     "description",
-                    e.target.value
+                    e.target.value,
                   )
                 }
                 error={!!errors.problemConfigDescription}
@@ -143,7 +143,11 @@ export default function ProblemConfigurationSection({
             )}
 
             <div className="flex flex-col gap-2">
-              <Label>{t("form.uploadTemplateLabel")}</Label>
+              <Label>
+                {formData.problemConfig?.testType === "MockTest"
+                  ? t("form.uploadStudentTemplateLabel")
+                  : t("form.uploadTemplateLabel")}
+              </Label>
               <div>
                 <input
                   type="file"
@@ -198,7 +202,7 @@ export default function ProblemConfigurationSection({
                   handleNestedChange(
                     "problemConfig",
                     "description",
-                    e.target.value
+                    e.target.value,
                   )
                 }
                 error={!!errors.problemConfigDescription}

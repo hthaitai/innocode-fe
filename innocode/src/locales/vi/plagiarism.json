@@ -22,7 +22,7 @@
   "submittedFiles": "Tệp đã nộp",
   "noFiles": "Bài nộp này không có tệp nào.",
   "codeFile": "Tệp mã nguồn",
-  "testCaseDetails": "Chi tiết test case",
+  "testCaseDetails": "Chi tiết trường hợp kiểm thử",
   "matchedSubmissions": "Bài nộp trùng khớp",
   "resolvePlagiarismCase": "Xét duyệt tính hợp lệ",
   "resolveDescription": "Xác định xem bài nộp này là hợp lệ hay có đạo văn.",
@@ -43,5 +43,7 @@
   "runtime": "Thời gian chạy",
   "memory": "Bộ nhớ",
   "createdAt": "Ngày tạo",
-  "points": "điểm"
+  "weight": "Trọng số",
+  "points": "điểm",
+  "studentSubmission": "Bài nộp của sinh viên"
 }

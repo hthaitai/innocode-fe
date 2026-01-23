@@ -15,9 +15,7 @@ const SubmittedFiles = ({ artifacts }) => {
 
     try {
       const res = await fetch(artifact.url)
-      const text = await res.text()
-
-      const blob = new Blob([text], { type: "text/plain;charset=utf-8" })
+      const blob = await res.blob()
       const url = URL.createObjectURL(blob)
 
       const a = document.createElement("a")
@@ -57,7 +55,7 @@ const SubmittedFiles = ({ artifacts }) => {
                 <FileCode size={20} />
                 <div className="flex flex-col justify-center">
                   <p className="text-[14px] leading-[20px]">
-                    {artifact.type === "code" ? t("codeFile") : artifact.type}
+                    {t("studentSubmission")}
                   </p>
                   <p className="text-[12px] leading-[16px] text-[#7A7574]">
                     {formatDateTime(artifact.createdAt)}

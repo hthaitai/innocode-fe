@@ -40,14 +40,18 @@ export default function RubricItem({
               id={`score-${item.rubricId}`}
               type="number"
               value={scoreObj?.score ?? ""}
-              onChange={(e) =>
-                !readOnly &&
-                onChange(
-                  item.rubricId,
-                  "score",
-                  e.target.value === "" ? "" : Number(e.target.value)
-                )
-              }
+              onChange={(e) => {
+                if (readOnly) return
+                const val = e.target.value
+                if (val === "") {
+                  onChange(item.rubricId, "score", "")
+                  return
+                }
+                const num = Number(val)
+                if (!isNaN(num) && num >= 0) {
+                  onChange(item.rubricId, "score", num)
+                }
+              }}
               style={{ width: "80px" }}
               disabled={readOnly}
               error={!!error?.score}

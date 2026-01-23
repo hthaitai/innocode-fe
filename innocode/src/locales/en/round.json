@@ -46,7 +46,9 @@
     "fileBasedLabel": "File-based",
     "mockTestWeight": "Mock test weight",
     "downloadTemplateLabel": "Download template file",
-    "uploadTemplateLabel": "Upload template file"
+    "downloadStudentTemplateLabel": "Download student template file",
+    "uploadTemplateLabel": "Upload template file",
+    "uploadStudentTemplateLabel": "Upload student template file"
   },
   "contestPeriod": "Contest Period",
   "errors": {
@@ -63,12 +65,15 @@
     "finalizeBeforeDeadlines": "Finalize is only allowed after all deadlines are completed.",
     "judgeDeadlineBeforeRoundEnd": "Judge deadline cannot be before round end.",
     "cannotUpdateOpened": "Cannot update round while it is in 'Opened' status.",
+    "appealSubmitBeforeJudgeDeadline": "Appeal submit deadline can only be fast-forwarded after all judge deadlines are completed.",
+    "appealReviewBeforeAppealSubmit": "Appeal review cannot end before appeal submit deadline.",
     "unknownError": "An unknown error occurred"
   },
   "detail": {
     "relatedSettings": "Related settings",
     "moreActions": "More actions",
     "downloadTemplate": "Download template",
+    "downloadStudentTemplate": "Download student template",
     "templateFile": "Template file"
   },
   "info": {

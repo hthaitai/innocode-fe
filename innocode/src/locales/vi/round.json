@@ -46,7 +46,9 @@
     "fileBasedLabel": "Nộp file",
     "mockTestWeight": "Trọng số thi thử",
     "downloadTemplateLabel": "Tải xuống file mẫu",
-    "uploadTemplateLabel": "Tải lên file mẫu"
+    "downloadStudentTemplateLabel": "Tải xuống file mẫu cho sinh viên",
+    "uploadTemplateLabel": "Tải lên file mẫu",
+    "uploadStudentTemplateLabel": "Tải lên file mẫu cho sinh viên"
   },
   "contestPeriod": "Thời gian cuộc thi",
   "errors": {
@@ -63,12 +65,15 @@
     "finalizeBeforeDeadlines": "Chỉ được phép hoàn tất sau khi tất cả các hạn chót đã kết thúc.",
     "judgeDeadlineBeforeRoundEnd": "Hạn chấm thi không thể trước khi vòng thi kết thúc.",
     "cannotUpdateOpened": "Không thể cập nhật vòng thi khi đang ở trạng thái 'Đang mở'.",
+    "appealSubmitBeforeJudgeDeadline": "Hạn nộp phúc khảo chỉ có thể được tua nhanh sau khi tất cả các hạn chấm bài đã hoàn tất.",
+    "appealReviewBeforeAppealSubmit": "Hạn duyệt phúc khảo không thể kết thúc trước hạn nộp phúc khảo.",
     "unknownError": "Đã xảy ra lỗi không xác định"
   },
   "detail": {
     "relatedSettings": "Cài đặt liên quan",
     "moreActions": "Thao tác khác",
     "downloadTemplate": "Tải file mẫu",
+    "downloadStudentTemplate": "Tải file mẫu sinh viên",
     "templateFile": "File mẫu"
   },
   "info": {

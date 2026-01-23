@@ -11,7 +11,7 @@ const StudentMockTestTemplateDownload = () => {
 
   return (
     <div className="flex flex-col gap-2">
-      <Label>{t("form.downloadTemplateLabel")}</Label>
+      <Label>{t("form.downloadStudentTemplateLabel")}</Label>
       <button
         type="button"
         className="button-white px-3 w-fit"
@@ -25,7 +25,7 @@ const StudentMockTestTemplateDownload = () => {
           document.body.removeChild(link)
         }}
       >
-        {t("detail.downloadTemplate")}
+        {t("detail.downloadStudentTemplate")}
       </button>
     </div>
   )
