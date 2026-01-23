@@ -19,7 +19,7 @@ const ManageContests = ({ contests, pagination, setPage, setSearchName }) => {
   const navigate = useNavigate()
   const { openModal } = useModal()
   const [deleteContest] = useDeleteContestMutation()
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation(["pages", "contest"])
 
   // Handlers
   const handleSearch = (value) => {
@@ -38,18 +38,14 @@ const ManageContests = ({ contests, pagination, setPage, setSearchName }) => {
   const handleDeleteContest = useCallback(
     (contest) => {
       openModal("confirm", {
-        title: t("contest.delete.title", "Delete Contest"),
-        description: t(
-          "contest.delete.confirmMessage",
-          `Are you sure you want to delete "${contest.name}"? This action cannot be undone.`,
-          { name: contest.name },
-        ),
+        title: t("contest:delete.title"),
+        description: t("contest:delete.confirmMessage", {
+          name: contest.name,
+        }),
         onConfirm: async () => {
           try {
             await deleteContest({ id: contest.contestId }).unwrap()
-            toast.success(
-              t("contest.delete.success", "Contest deleted successfully!"),
-            )
+            toast.success(t("contest:delete.success"))
 
             // Handle pagination after delete
             const count = contests.length
@@ -58,7 +54,7 @@ const ManageContests = ({ contests, pagination, setPage, setSearchName }) => {
             }
           } catch (err) {
             console.error("❌ Failed to delete contest:", err)
-            toast.error(t("contest.delete.error", "Failed to delete contest."))
+            toast.error(t("contest:delete.error"))
           }
         },
       })
