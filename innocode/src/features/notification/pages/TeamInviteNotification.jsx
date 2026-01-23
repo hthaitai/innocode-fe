@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { useParams, useNavigate } from "react-router-dom"
 import { Icon } from "@iconify/react"
 import PageContainer from "@/shared/components/PageContainer"
@@ -15,6 +16,7 @@ import {
 import { toast } from "react-hot-toast"
 
 const TeamInviteNotification = () => {
+  const { t } = useTranslation("notifications")
   const { notificationId } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -88,7 +90,7 @@ const TeamInviteNotification = () => {
       const email = query?.email
 
       if (!token || !email) {
-        throw new Error("Missing token or email in invitation")
+        throw new Error(t("ui.team_invite.missing_token"))
       }
 
       const result =
@@ -102,8 +104,8 @@ const TeamInviteNotification = () => {
         responseData?.message ||
         result?.message ||
         (actionType === "accept"
-          ? "Invitation accepted successfully. You are now a member of the team."
-          : "Invitation declined successfully.")
+          ? t("ui.team_invite.success_accepted")
+          : t("ui.team_invite.success_declined"))
 
       setStatus("success")
       setMessage(successMessage)
@@ -147,7 +149,9 @@ const TeamInviteNotification = () => {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-orange-500 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading invitation...</p>
+            <p className="text-gray-600 font-medium">
+              {t("ui.team_invite.loading")}
+            </p>
           </div>
         </div>
       </PageContainer>
@@ -165,16 +169,16 @@ const TeamInviteNotification = () => {
               className="text-red-500 mx-auto mb-4"
             />
             <h2 className="text-xl font-semibold text-gray-800 mb-2">
-              Invalid Invitation
+              {t("ui.team_invite.invalid_title")}
             </h2>
             <p className="text-gray-600 mb-4">
-              This notification is not a valid team invitation.
+              {t("ui.team_invite.invalid_message")}
             </p>
             <button
               onClick={() => navigate("/notifications")}
               className="button-orange"
             >
-              Back to Notifications
+              {t("ui.team_invite.back_to_notifications")}
             </button>
           </div>
         </div>
@@ -194,17 +198,17 @@ const TeamInviteNotification = () => {
                 className="text-orange-500 mx-auto mb-4"
               />
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                Team Invitation
+                {t("ui.team_invite.title")}
               </h2>
               <p className="text-gray-600 mb-6">
-                {parsedPayload.message ||
-                  `You have been invited to join team '${
-                    parsedPayload.teamName || "Team"
-                  }'`}
+                {t("ui.team_invite.message_default", {
+                  teamName:
+                    parsedPayload.teamName || t("ui.team_invite.team_fallback"),
+                })}
               </p>
               {parsedPayload.contestName && (
                 <p className="text-sm text-gray-500 mb-6">
-                  Contest:{" "}
+                  {t("ui.team_invite.contest_label")}{" "}
                   {parsedPayload.contestId ? (
                     <button
                       onClick={() =>
@@ -229,7 +233,7 @@ const TeamInviteNotification = () => {
                   className="button-white flex-1"
                 >
                   <Icon icon="mdi:close" width="18" className="inline mr-2" />
-                  Decline
+                  {t("ui.team_invite.decline")}
                 </button>
                 <button
                   onClick={handleAcceptInvite}
@@ -237,7 +241,7 @@ const TeamInviteNotification = () => {
                   className="button-orange flex-1"
                 >
                   <Icon icon="mdi:check" width="18" className="inline mr-2" />
-                  Accept
+                  {t("ui.team_invite.accept")}
                 </button>
               </div>
             </div>
@@ -247,10 +251,10 @@ const TeamInviteNotification = () => {
             <div className="text-center">
               <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-[#ff6b35] mx-auto mb-4"></div>
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                Processing...
+                {t("ui.team_invite.processing")}
               </h2>
               <p className="text-gray-600">
-                Please wait while we process your request.
+                {t("ui.team_invite.processing_message")}
               </p>
             </div>
           )}
@@ -263,7 +267,7 @@ const TeamInviteNotification = () => {
                 className="text-green-500 mx-auto mb-4"
               />
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                Success!
+                {t("ui.team_invite.success_title")}
               </h2>
               <p className="text-gray-600 mb-4">{message}</p>
             </div>
@@ -277,14 +281,14 @@ const TeamInviteNotification = () => {
                 className="text-red-500 mx-auto mb-4"
               />
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                Error
+                {t("ui.team_invite.error_title")}
               </h2>
               <p className="text-gray-600 mb-4">{message}</p>
               <button
                 onClick={() => navigate("/notifications")}
                 className="button-orange"
               >
-                Back to Notifications
+                {t("ui.team_invite.back_to_notifications")}
               </button>
             </div>
           )}

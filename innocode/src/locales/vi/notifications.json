@@ -74,6 +74,25 @@
     "markAllAsRead": "Đánh dấu tất cả là đã đọc",
     "unreadCount_one": "{{count}} thông báo chưa đọc",
     "unreadCount_other": "{{count}} thông báo chưa đọc",
-    "allRead": "Tất cả thông báo đã đọc"
+    "allRead": "Tất cả thông báo đã đọc",
+    "team_invite": {
+      "loading": "Đang tải lời mời...",
+      "invalid_title": "Lời mời không hợp lệ",
+      "invalid_message": "Thông báo này không phải là một lời mời tham gia đội hợp lệ.",
+      "back_to_notifications": "Quay lại Thông báo",
+      "title": "Lời mời tham gia đội",
+      "message_default": "Bạn đã được mời tham gia đội '{{teamName}}'",
+      "contest_label": "Cuộc thi:",
+      "decline": "Từ chối",
+      "accept": "Chấp nhận",
+      "processing": "Đang xử lý...",
+      "processing_message": "Vui lòng chờ trong khi chúng tôi xử lý yêu cầu của bạn.",
+      "success_title": "Thành công!",
+      "error_title": "Lỗi",
+      "missing_token": "Thiếu mã xác thực hoặc email trong lời mời",
+      "success_accepted": "Đã chấp nhận lời mời thành công. Bạn đã trở thành thành viên của đội.",
+      "success_declined": "Đã từ chối lời mời thành công.",
+      "team_fallback": "Đội"
+    }
   }
 }

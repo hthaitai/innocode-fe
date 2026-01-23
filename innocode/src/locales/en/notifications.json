@@ -74,6 +74,25 @@
     "markAllAsRead": "Mark all as read",
     "unreadCount_one": "{{count}} unread notification",
     "unreadCount_other": "{{count}} unread notifications",
-    "allRead": "All notifications read"
+    "allRead": "All notifications read",
+    "team_invite": {
+      "loading": "Loading invitation...",
+      "invalid_title": "Invalid Invitation",
+      "invalid_message": "This notification is not a valid team invitation.",
+      "back_to_notifications": "Back to Notifications",
+      "title": "Team Invitation",
+      "message_default": "You have been invited to join team '{{teamName}}'",
+      "contest_label": "Contest:",
+      "decline": "Decline",
+      "accept": "Accept",
+      "processing": "Processing...",
+      "processing_message": "Please wait while we process your request.",
+      "success_title": "Success!",
+      "error_title": "Error",
+      "missing_token": "Missing token or email in invitation",
+      "success_accepted": "Invitation accepted successfully. You are now a member of the team.",
+      "success_declined": "Invitation declined successfully.",
+      "team_fallback": "Team"
+    }
   }
 }
