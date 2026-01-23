@@ -7,6 +7,7 @@ import {
 } from "@/services/plagiarismApi"
 import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
+import { executeWithRetry } from "@/shared/utils/apiUtils"
 
 const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
   const { t } = useTranslation(["plagiarism"])
@@ -25,10 +26,10 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
       cancelText: t("cancel"),
       onConfirm: async () => {
         try {
-          await approvePlagiarism(submissionId).unwrap()
+          await executeWithRetry(approvePlagiarism, submissionId)
           toast.success(t("dismissSuccess"))
-          closeModal()
           navigate(`/organizer/contests/${contestId}/plagiarism`)
+          // closeModal is handled by ConfirmModal on success
         } catch (err) {
           console.error(err)
           const errorMessage =
@@ -37,6 +38,7 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
             err?.error ||
             t("confirmError")
           toast.error(errorMessage)
+          throw err // Re-throw to keep modal open
         }
       },
     })
@@ -51,10 +53,10 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
       onConfirm: async () => {
         try {
           // Deny Plagiarism Case = Mark as Valid = Accept Submission
-          await denyPlagiarism(submissionId).unwrap()
+          await executeWithRetry(denyPlagiarism, submissionId)
           toast.success(t("confirmSuccess"))
-          closeModal()
           navigate(`/organizer/contests/${contestId}/plagiarism`)
+          // closeModal is handled by ConfirmModal on success
         } catch (err) {
           console.error(err)
           const errorMessage =
@@ -63,6 +65,7 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
             err?.error ||
             t("dismissError")
           toast.error(errorMessage)
+          throw err // Re-throw to keep modal open
         }
       },
     })

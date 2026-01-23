@@ -46,6 +46,7 @@ export const submissionApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, { submissionId }) => [
         { type: "ManualSubmissions", id: submissionId },
+        { type: "ManualSubmissions", id: "LIST" },
       ],
     }),
 

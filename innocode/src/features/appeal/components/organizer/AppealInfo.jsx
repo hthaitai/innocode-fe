@@ -6,24 +6,37 @@ import { formatDateTime } from "@/shared/utils/dateTime"
 import StatusBadge from "@/shared/components/StatusBadge"
 
 const AppealInfo = ({ appeal }) => {
+  console.log(appeal)
   const { t } = useTranslation(["appeal"])
   const safe = (val) =>
     val === null || val === undefined || val === "" ? "—" : val
 
   const data = [
     // Appeal specifics
-    { label: t("appeal:status"), value: <StatusBadge status={appeal.state} /> },
+    {
+      label: t("appeal:status"),
+      value: (
+        <StatusBadge
+          status={appeal.state}
+          label={appeal.state ? t(`appeal:states.${appeal.state}`) : undefined}
+        />
+      ),
+    },
     { label: t("appeal:student"), value: safe(appeal.ownerName) },
     { label: t("appeal:reason"), value: safe(appeal.reason) },
     { spacer: true },
 
     // Decision info
     { label: t("appeal:mentor"), value: safe(appeal.mentorName) },
-    { label: t("appeal:decision"), value: safe(appeal.decision) },
-    // { label: t("appeal:mentorReason"), value: safe(appeal.decisionReason) },
+    {
+      label: t("appeal:decision"),
+      value: appeal.decision ? t(`appeal:decisions.${appeal.decision}`) : "—",
+    },
     {
       label: t("appeal:resolution"),
-      value: safe(appeal.appealResolution),
+      value: appeal.appealResolution
+        ? t(`appeal:resolutions.${appeal.appealResolution}`)
+        : "—",
     },
     { spacer: true },
 
@@ -31,7 +44,12 @@ const AppealInfo = ({ appeal }) => {
     { label: t("appeal:team"), value: safe(appeal.teamName) },
     { label: t("appeal:contest"), value: safe(appeal.contestName) },
     { label: t("appeal:round"), value: safe(appeal.roundName) },
-    { label: t("appeal:type"), value: safe(appeal.targetType) },
+    {
+      label: t("appeal:type"),
+      value: appeal.targetType
+        ? t(`appeal:targetTypes.${appeal.targetType}`)
+        : "—",
+    },
     { spacer: true },
 
     // Miscellaneous

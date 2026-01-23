@@ -119,6 +119,15 @@
   },
   "suggestion": {
     "useSuggestedName": "Use suggested name:",
-    "serverColdStart": "Unable to connect to server. The server might be waking up (cold start), please try again in 30 seconds."
+    "serverColdStart": "Unable to connect to server. The server might be waking up (cold start), please try again in 30 seconds.",
+    "connectionError": "Connection failed. Please check your internet or try again."
+  },
+  "delete": {
+    "title": "Delete contest",
+    "button": "Delete contest",
+    "buttonLoading": "Deleting...",
+    "confirmMessage": "Are you sure you want to delete \"{{name}}\"?",
+    "success": "Contest deleted successfully!",
+    "error": "Failed to delete contest."
   }
 }

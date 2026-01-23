@@ -9,6 +9,7 @@ import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { fromDatetimeLocal } from "../../../../shared/utils/dateTime"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { useTranslation } from "react-i18next"
+import { executeWithRetry } from "@/shared/utils/apiUtils"
 
 const EMPTY_CONTEST = {
   year: new Date().getFullYear(),
@@ -31,8 +32,10 @@ const EMPTY_CONTEST = {
 export default function CreateContest() {
   const navigate = useNavigate()
   const { t } = useTranslation("pages")
+  const { t: tContest } = useTranslation("contest")
   const [formData, setFormData] = useState(EMPTY_CONTEST)
   const [errors, setErrors] = useState({})
+  const [isLocalSubmitting, setIsLocalSubmitting] = useState(false)
   const [addContest, { isLoading }] = useAddContestMutation()
 
   // Breadcrumbs (consistent style)
@@ -40,6 +43,9 @@ export default function CreateContest() {
   const breadcrumbPaths = BREADCRUMB_PATHS.ORGANIZER_CONTEST_CREATE
 
   const handleSubmit = async () => {
+    // Prevent double submission
+    if (isLoading || isLocalSubmitting) return
+
     const validationErrors = validateContest(formData, { isEdit: false, t })
     setErrors(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
@@ -52,6 +58,7 @@ export default function CreateContest() {
     }
 
     try {
+      setIsLocalSubmitting(true)
       const formPayload = new FormData()
 
       formPayload.append("Year", formData.year)
@@ -77,24 +84,23 @@ export default function CreateContest() {
 
       if (formData.imgFile) formPayload.append("ImageFile", formData.imgFile)
 
-      await addContest(formPayload).unwrap()
+      await executeWithRetry(addContest, formPayload)
       toast.success(t("organizerContestForm.messages.createSuccess"))
       navigate("/organizer/contests")
     } catch (err) {
       console.error(err)
 
-      // Network / Cold Start specific handling - handle silently
+      // Network / Cold Start specific handling
       if (
         err.status === "FETCH_ERROR" ||
         err.message?.includes("Failed to fetch") ||
         !err.status
       ) {
         console.log("Server cold start detected, request may need retry")
-        return
-      }
-
-      if (err?.data?.errorCode === "DUPLICATE") {
-        const errorMessage = t("contest:validation.contestNameExists")
+        toast.error(tContest("suggestion.connectionError"))
+        // Do NOT return here, let isLocalSubmitting reset in finally
+      } else if (err?.data?.errorCode === "DUPLICATE") {
+        const errorMessage = tContest("validation.contestNameExists")
         toast.error(errorMessage)
         setErrors((prev) => ({
           ...prev,
@@ -103,13 +109,14 @@ export default function CreateContest() {
             ? { nameSuggestion: err.data.additionalData.suggestion }
             : {}),
         }))
-        return
+      } else {
+        toast.error(
+          err?.data?.errorMessage ||
+            t("organizerContestForm.messages.createError"),
+        )
       }
-
-      toast.error(
-        err?.data?.errorMessage ||
-          t("organizerContestForm.messages.createError"),
-      )
+    } finally {
+      setIsLocalSubmitting(false)
     }
   }
 
@@ -125,7 +132,7 @@ export default function CreateContest() {
           errors={errors}
           setErrors={setErrors}
           onSubmit={handleSubmit}
-          isSubmitting={isLoading}
+          isSubmitting={isLoading || isLocalSubmitting}
           mode="create"
         />
       </AnimatedSection>

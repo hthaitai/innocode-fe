@@ -80,5 +80,24 @@
       "noRetakeRoundConfigured": "Vòng thi này chưa được cấu hình vòng thi lại để thực hiện Thi lại.",
       "unknown": "Đã xảy ra lỗi không xác định. Vui lòng thử lại."
     }
+  },
+  "decisions": {
+    "Pending": "Đang chờ xử lý",
+    "Approved": "Đã chấp nhận",
+    "Rejected": "Đã từ chối"
+  },
+  "resolutions": {
+    "Retake": "Thi lại",
+    "Rescore": "Chấm lại",
+    "RecheckPlagiarism": "Kiểm tra đạo văn lại"
+  },
+  "states": {
+    "Opened": "Đang mở",
+    "Closed": "Đã đóng"
+  },
+  "targetTypes": {
+    "McqTest": "Trắc nghiệm",
+    "AutoEvaluation": "Chấm tự động",
+    "Manual": "Chấm thủ công"
   }
 }

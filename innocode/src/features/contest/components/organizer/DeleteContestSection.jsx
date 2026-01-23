@@ -10,21 +10,21 @@ const DeleteContestSection = ({ contest }) => {
   const { openModal } = useModal()
   const navigate = useNavigate()
   const [deleteContest, { isLoading }] = useDeleteContestMutation()
-  const { t } = useTranslation("pages")
+  const { t } = useTranslation("contest")
 
   const handleDelete = useCallback(() => {
     openModal("confirm", {
-      title: t("organizerContestDetail.delete.title"),
-      description: t("organizerContestDetail.delete.confirmMessage", {
+      title: t("delete.title"),
+      description: t("delete.confirmMessage", {
         name: contest.name,
       }),
       onConfirm: async () => {
         try {
           await deleteContest({ id: contest.contestId }).unwrap()
-          toast.success(t("organizerContestDetail.delete.success"))
+          toast.success(t("delete.success"))
           navigate("/organizer/contests")
         } catch (err) {
-          toast.error(t("organizerContestDetail.delete.error"))
+          toast.error(t("delete.error"))
         }
       },
     })
@@ -34,18 +34,14 @@ const DeleteContestSection = ({ contest }) => {
     <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">
       <div className="flex items-center gap-5">
         <Trash size={20} />
-        <span className="text-sm leading-5">
-          {t("organizerContestDetail.delete.title")}
-        </span>
+        <span className="text-sm leading-5">{t("delete.title")}</span>
       </div>
       <button
         className="button-red"
         onClick={handleDelete}
         disabled={isLoading}
       >
-        {isLoading
-          ? t("organizerContestDetail.delete.buttonLoading")
-          : t("organizerContestDetail.delete.button")}
+        {isLoading ? t("delete.buttonLoading") : t("delete.button")}
       </button>
     </div>
   )

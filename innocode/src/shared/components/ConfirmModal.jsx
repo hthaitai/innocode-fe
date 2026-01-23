@@ -1,3 +1,4 @@
+import React from "react"
 import Modal from "@/shared/components/BaseModal"
 import { useTranslation } from "react-i18next"
 
@@ -11,8 +12,14 @@ const ConfirmModal = ({
 }) => {
   const { t } = useTranslation("common")
 
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
+
   const handleConfirm = async () => {
+    // Prevent double submission
+    if (isSubmitting || isLoading) return
+
     try {
+      setIsSubmitting(true)
       // Call the onConfirm callback
       await onConfirm()
       // Automatically close modal after successful confirmation
@@ -21,6 +28,8 @@ const ConfirmModal = ({
       // If onConfirm throws an error, don't close the modal
       // This allows users to see error messages and try again
       console.error("Confirm action failed:", error)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -35,16 +44,18 @@ const ConfirmModal = ({
           <button
             className="button-white"
             onClick={onClose}
-            disabled={isLoading}
+            disabled={isLoading || isSubmitting}
           >
             {t("buttons.cancel")}
           </button>
           <button
-            className={` ${isLoading ? "button-gray" : "button-orange"}`}
+            className={` ${isLoading || isSubmitting ? "button-gray" : "button-orange"}`}
             onClick={handleConfirm}
-            disabled={isLoading}
+            disabled={isLoading || isSubmitting}
           >
-            {t("buttons.confirm")}
+            {isSubmitting
+              ? t("buttons.processing", "Processing...")
+              : t("buttons.confirm")}
           </button>
         </>
       }

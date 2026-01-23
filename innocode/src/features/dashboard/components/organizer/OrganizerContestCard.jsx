@@ -4,22 +4,7 @@ import { Trophy } from "lucide-react"
 import StatusBadge from "@/shared/components/StatusBadge"
 import DetailTable from "@/shared/components/DetailTable"
 import ExpandableCard from "@/shared/components/ExpandableCard"
-
-const formatDateTime = (dateString, locale = "en-US") => {
-  if (!dateString) return "—"
-  try {
-    const date = new Date(dateString)
-    return date.toLocaleDateString(locale, {
-      year: "numeric",
-      month: "short",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  } catch {
-    return dateString
-  }
-}
+import { formatDateTime } from "@/shared/utils/dateTime"
 
 const OrganizerContestCard = ({ contest }) => {
   const { t } = useTranslation(["pages", "common", "dashboard"])

@@ -120,6 +120,15 @@
   },
   "suggestion": {
     "useSuggestedName": "Sử dụng tên gợi ý:",
-    "serverColdStart": "Không thể kết nối đến máy chủ. Máy chủ có thể đang khởi động lại (cold start), vui lòng thử lại sau 30 giây."
+    "serverColdStart": "Không thể kết nối đến máy chủ. Máy chủ có thể đang khởi động lại (cold start), vui lòng thử lại sau 30 giây.",
+    "connectionError": "Kết nối thất bại. Vui lòng kiểm tra mạng hoặc thử lại."
+  },
+  "delete": {
+    "title": "Xóa cuộc thi",
+    "button": "Xóa cuộc thi",
+    "buttonLoading": "Đang xóa...",
+    "confirmMessage": "Bạn có chắc chắn muốn xóa \"{{name}}\" không?",
+    "success": "Xóa cuộc thi thành công!",
+    "error": "Xóa cuộc thi thất bại."
   }
 }

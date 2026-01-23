@@ -80,5 +80,24 @@
       "noRetakeRoundConfigured": "This round does not have a retake round configured for Retake resolution.",
       "unknown": "An unknown error occurred. Please try again."
     }
+  },
+  "decisions": {
+    "Pending": "Pending",
+    "Approved": "Approved",
+    "Rejected": "Rejected"
+  },
+  "resolutions": {
+    "Retake": "Retake",
+    "Rescore": "Rescore",
+    "RecheckPlagiarism": "Recheck Plagiarism"
+  },
+  "states": {
+    "Opened": "Opened",
+    "Closed": "Closed"
+  },
+  "targetTypes": {
+    "McqTest": "MCQ Test",
+    "AutoEvaluation": "Auto Evaluation",
+    "Manual": "Manual Problem"
   }
 }

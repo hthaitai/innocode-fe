@@ -41,10 +41,10 @@ const OrganizerPlagiarismDetail = () => {
 
   console.log(plagiarismData)
 
-  const submission = plagiarismData?.submission
-  const artifacts = plagiarismData?.artifacts || []
-  const details = plagiarismData?.details || []
-  const matches = plagiarismData?.matches || []
+  const submission = plagiarismData?.submission ?? {}
+  const artifacts = plagiarismData?.artifacts ?? []
+  const details = plagiarismData?.details ?? []
+  const matches = plagiarismData?.matches ?? []
 
   const hasContestError = !isValidContestId || isContestError
   const hasSubmissionError = !isValidSubmissionId || isPlagiarismError
