@@ -37,6 +37,7 @@
     "badRequestAlreadyReviewed": "Khiếu nại đã được xem xét.",
     "internalServerErrorReview": "Lỗi xem xét khiếu nại: {ex.Message}",
     "badRequestResolutionRequired": "Phải chỉ định giải pháp khiếu nại (Thi lại hoặc Chấm lại) cho loại bài toán thủ công.",
+    "deadlinePassed": "Hạn chót nộp khiếu nại đã hết.",
     "unauthenticated": "Yêu cầu đăng nhập.",
     "unauthenticatedInvalidContext": "Ngữ cảnh người dùng không hợp lệ."
   },
@@ -498,6 +499,7 @@
   },
   "submission": {
     "notFound": "Không tìm thấy bài nộp với ID {id}.",
+    "deadlinePassed": "Hạn chót nộp bài đã qua.",
     "internalServerErrorUpdate": "Lỗi cập nhật Bài nộp: {ex.Message}",
     "notFoundRound": "Vòng thi {roundId} không có bài toán",
     "badRequest": "ID Người dùng trống",

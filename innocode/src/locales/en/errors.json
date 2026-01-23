@@ -40,6 +40,7 @@
     "badRequestAlreadyReviewed": "Appeal has already been reviewed.",
     "internalServerErrorReview": "Error reviewing appeal: {ex.Message}",
     "badRequestResolutionRequired": "Appeal resolution (Retake or Rescore) must be specified for manual problem type.",
+    "deadlinePassed": "Appeal submission deadline has passed.",
     "unauthenticated": "Sign in required.",
     "unauthenticatedInvalidContext": "Invalid user context."
   },
@@ -501,6 +502,7 @@
   },
   "submission": {
     "notFound": "Submission with ID {id} not found.",
+    "deadlinePassed": "Submission deadline has passed.",
     "internalServerErrorUpdate": "Error updating Submission: {ex.Message}",
     "notFoundRound": "The round {roundId} does not have problem",
     "badRequest": "Null User Id",

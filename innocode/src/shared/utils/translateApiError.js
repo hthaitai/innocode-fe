@@ -153,8 +153,12 @@ const translateByErrorCode = (errorCode, namespace, message = "") => {
       return i18n.t(`${namespace}:appeal.badRequestNotMember`)
     if (lowerMsg.includes("reviewed"))
       return i18n.t(`${namespace}:appeal.badRequestAlreadyReviewed`)
-    if (lowerMsg.includes("resolution"))
+    if (lowerMsg.includes("resolution")) {
+      if (lowerMsg.includes("retake round")) {
+        return i18n.t("appeal:createAppeal.errors.noRetakeRoundConfigured")
+      }
       return i18n.t(`${namespace}:appeal.badRequestResolutionRequired`)
+    }
     if (lowerMsg.includes("at least one criterion"))
       return i18n.t(`${namespace}:problem.badRequestAtLeastOne`)
     if (lowerMsg.includes("flagged"))
@@ -675,6 +679,17 @@ const matchCommonMessage = (message, namespace) => {
       translation: `${namespace}:auth.emailExists`,
     },
     {
+      pattern: /deadline.*passed|hết hạn|hạn chót/i,
+      translation: (msg) =>
+        msg.toLowerCase().includes("appeal")
+          ? `${namespace}:appeal.deadlinePassed`
+          : `${namespace}:submission.deadlinePassed`,
+    },
+    {
+      pattern: /retake round.*not.*configured|no retake round configured/i,
+      translation: "appeal:createAppeal.errors.noRetakeRoundConfigured",
+    },
+    {
       pattern: /duplicate|trùng lặp/i,
       translation: `${namespace}:common.duplicate`,
     },
@@ -683,7 +698,9 @@ const matchCommonMessage = (message, namespace) => {
   for (const { pattern, translation } of patterns) {
     if (pattern.test(lowerMessage)) {
       try {
-        return i18n.t(translation)
+        const key =
+          typeof translation === "function" ? translation(message) : translation
+        return i18n.t(key)
       } catch (e) {
         continue
       }

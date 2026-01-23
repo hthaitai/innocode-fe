@@ -76,7 +76,9 @@
     "errors": {
       "reasonRequired": "Vui lòng cung cấp lý do cho khiếu nại",
       "missingInfo": "Thiếu thông tin bắt buộc",
-      "resolutionRequired": "Vui lòng chọn hướng giải quyết khiếu nại"
+      "resolutionRequired": "Vui lòng chọn hướng giải quyết khiếu nại",
+      "noRetakeRoundConfigured": "Vòng thi này chưa được cấu hình vòng thi lại để thực hiện Thi lại.",
+      "unknown": "Đã xảy ra lỗi không xác định. Vui lòng thử lại."
     }
   }
 }
