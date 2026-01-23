@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast"
 import { Icon } from "@iconify/react"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 import TextFieldFluent from "@/shared/components/TextFieldFluent"
+import translateApiError from "@/shared/utils/translateApiError"
 
 export default function CreateAppealModal({
   isOpen,
@@ -27,17 +28,28 @@ export default function CreateAppealModal({
   // Get available resolution options based on roundType
   const getResolutionOptions = () => {
     if (roundType === "McqTest") {
-      return [{ value: "Retake", label: t("createAppeal.resolutionOptions.retake") }]
+      return [
+        { value: "Retake", label: t("createAppeal.resolutionOptions.retake") },
+      ]
     } else if (roundType === "AutoEvaluation") {
       return [
         { value: "Retake", label: t("createAppeal.resolutionOptions.retake") },
-        { value: "RecheckPlagiarism", label: t("createAppeal.resolutionOptions.recheckPlagiarism") },
+        {
+          value: "RecheckPlagiarism",
+          label: t("createAppeal.resolutionOptions.recheckPlagiarism"),
+        },
       ]
     } else if (roundType === "Manual") {
       return [
         { value: "Retake", label: t("createAppeal.resolutionOptions.retake") },
-        { value: "Rescore", label: t("createAppeal.resolutionOptions.rescore") },
-        { value: "RecheckPlagiarism", label: t("createAppeal.resolutionOptions.recheckPlagiarism") },
+        {
+          value: "Rescore",
+          label: t("createAppeal.resolutionOptions.rescore"),
+        },
+        {
+          value: "RecheckPlagiarism",
+          label: t("createAppeal.resolutionOptions.recheckPlagiarism"),
+        },
       ]
     }
     return []
@@ -108,7 +120,7 @@ export default function CreateAppealModal({
       StudentId: studentId,
       Reason: reason,
       Evidences: evidences && evidences.length > 0 ? evidences : [],
-      AppealResolution: appealResolution,
+      AppealResolution: [appealResolution],
     }
 
     try {
@@ -122,12 +134,14 @@ export default function CreateAppealModal({
         status: error?.status,
         data: error?.data,
         message: error?.message,
+        fullError: JSON.stringify(error, null, 2),
       })
 
-      const errorMessage = error?.data?.errorMessage
       toast.dismiss()
 
-      toast.error(errorMessage)
+      // Translate and show error message
+      const translatedMessage = translateApiError(error)
+      toast.error(translatedMessage)
     }
   }
 
@@ -160,13 +174,17 @@ export default function CreateAppealModal({
           <div className="bg-gray-50 rounded px-3 py-2 border border-gray-200">
             {roundName && (
               <>
-                <p className="text-xs text-gray-600 mb-1">{t("createAppeal.roundLabel")}</p>
+                <p className="text-xs text-gray-600 mb-1">
+                  {t("createAppeal.roundLabel")}
+                </p>
                 <p className="text-sm font-medium text-gray-900">{roundName}</p>
               </>
             )}
             {roundType && (
               <>
-                <p className="text-xs text-gray-600 mb-1 mt-2">{t("createAppeal.roundTypeLabel")}</p>
+                <p className="text-xs text-gray-600 mb-1 mt-2">
+                  {t("createAppeal.roundTypeLabel")}
+                </p>
                 <p className="text-sm font-medium text-gray-900">
                   {roundType === "McqTest"
                     ? t("createAppeal.roundTypes.mcqTest")
@@ -203,7 +221,9 @@ export default function CreateAppealModal({
           </label>
           {roundType === "McqTest" ? (
             <div className="bg-gray-50 rounded px-3 py-2 border border-gray-200">
-              <p className="text-sm font-medium text-gray-900">{t("createAppeal.resolutionOptions.retake")}</p>
+              <p className="text-sm font-medium text-gray-900">
+                {t("createAppeal.resolutionOptions.retake")}
+              </p>
               <p className="text-xs text-gray-500 mt-1">
                 {t("createAppeal.mcqDefaultResolution")}
               </p>
