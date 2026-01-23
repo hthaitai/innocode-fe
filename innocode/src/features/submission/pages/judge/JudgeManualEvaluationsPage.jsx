@@ -21,9 +21,10 @@ import { MissingState } from "../../../../shared/components/ui/MissingState"
 import { WarningState } from "../../../../shared/components/ui/WarningState"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { useTranslation } from "react-i18next"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 const JudgeManualEvaluationsPage = () => {
-  const { t } = useTranslation(["judge", "common", "errors"])
+  const { t } = useTranslation(["judge", "common", "errors", "contest"])
   const { contestId, roundId, submissionId } = useParams()
   const navigate = useNavigate()
 
@@ -255,6 +256,10 @@ const JudgeManualEvaluationsPage = () => {
       toast.success(t("evaluation.toast.success"))
       navigate(`/judge/contests/${contestId}/rounds/${roundId}/submissions`)
     } catch (err) {
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
       const errorMessage =
         err?.data?.errorMessage || err?.error || t("evaluation.toast.error")
       toast.error(errorMessage)

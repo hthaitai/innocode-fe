@@ -6,9 +6,10 @@ import {
   useGetMcqTemplateQuery,
 } from "@/services/mcqApi"
 import { useTranslation } from "react-i18next"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
-  const { t } = useTranslation("common")
+  const { t } = useTranslation(["common", "contest"])
   const { data: templateData, isFetching: fetchingTemplate } =
     useGetMcqTemplateQuery()
   const templateUrl = templateData?.data
@@ -50,6 +51,12 @@ export default function McqCsvModal({ isOpen, onClose, testId, onUpload }) {
       onClose()
     } catch (err) {
       console.error(err)
+
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
+
       toast.error(err?.data?.message || t("common.failedToImportCsv"))
     }
   }

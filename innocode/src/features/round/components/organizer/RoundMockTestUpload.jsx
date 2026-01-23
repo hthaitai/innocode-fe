@@ -8,11 +8,12 @@ import {
 } from "@/services/roundApi"
 import { toast } from "react-hot-toast"
 import { Spinner } from "@/shared/components/SpinnerFluent"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 const RoundMockTestUpload = ({ roundId }) => {
   const fileInputRef = useRef(null)
   const { contestId } = useParams()
-  const { t } = useTranslation("round")
+  const { t } = useTranslation(["round", "contest"])
   const [uploadMockTest, { isLoading }] = useUploadMockTestMutation()
   const { data: mockTestUrl } = useGetRoundMockTestUrlQuery(roundId, {
     skip: !roundId,
@@ -32,6 +33,12 @@ const RoundMockTestUpload = ({ roundId }) => {
       toast.success(t("mockTest.success"))
     } catch (error) {
       console.error("Upload failed", error)
+
+      if (isFetchError(error)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
+
       toast.error(t("mockTest.errorGeneric"))
     } finally {
       // Reset input so same file can be selected again

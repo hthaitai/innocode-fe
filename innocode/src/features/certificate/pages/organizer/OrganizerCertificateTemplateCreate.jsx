@@ -11,6 +11,7 @@ import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { validateTemplate } from "../../validators/templateValidator"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { useTranslation } from "react-i18next"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 const EMPTY_TEMPLATE = {
   name: "",
@@ -28,7 +29,7 @@ const EMPTY_TEMPLATE = {
 }
 
 export default function OrganizerCertificateTemplateCreate() {
-  const { t } = useTranslation(["certificate", "common", "errors"])
+  const { t } = useTranslation(["certificate", "common", "errors", "contest"])
   const { contestId } = useParams()
   const navigate = useNavigate()
 
@@ -86,6 +87,12 @@ export default function OrganizerCertificateTemplateCreate() {
       navigate(`/organizer/contests/${contestId}/certificates/templates`)
     } catch (err) {
       console.error(err)
+
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
+
       toast.error(t("certificate:somethingWrong"))
     } finally {
       setSubmitting(false)

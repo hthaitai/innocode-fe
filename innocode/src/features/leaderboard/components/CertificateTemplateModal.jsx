@@ -10,6 +10,7 @@ import TablePagination from "@/shared/components/TablePagination"
 import toast from "react-hot-toast"
 import TemplatePreviewCanvas from "../../certificate/components/organizer/TemplatePreviewCanvas"
 import { useTranslation } from "react-i18next"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 const CertificateTemplateModal = ({
   isOpen,
@@ -17,7 +18,7 @@ const CertificateTemplateModal = ({
   contestId,
   recipients = [],
 }) => {
-  const { t } = useTranslation(["leaderboard"])
+  const { t } = useTranslation(["leaderboard", "contest"])
   const [selectedTemplate, setSelectedTemplate] = useState(null)
   const [page, setPage] = useState(1)
   const [loadingAction, setLoadingAction] = useState(null)
@@ -74,7 +75,11 @@ const CertificateTemplateModal = ({
     } catch (err) {
       console.error(err)
 
-      if (err?.data?.errorCode === "DUPLICATE_CERTIFICATE") {
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        // we can return here but we need to stop loading action in finally block
+        // the finally block handles that.
+      } else if (err?.data?.errorCode === "DUPLICATE_CERTIFICATE") {
         toast.error(t("leaderboard:modal.certificateAlreadyExists"))
       } else {
         toast.error(

@@ -42,3 +42,21 @@ export const executeWithRetry = async (
     }
   }
 }
+
+/**
+ * Checks if an error is a fetch error (network issue).
+ *
+ * @param {Object} err - The error object
+ * @returns {boolean} - True if it is a fetch error
+ */
+export const isFetchError = (err) => {
+  if (
+    err.status === "FETCH_ERROR" ||
+    err.message?.includes("Failed to fetch") ||
+    !err.status
+  ) {
+    console.log("Server cold start detected, request may need retry")
+    return true
+  }
+  return false
+}

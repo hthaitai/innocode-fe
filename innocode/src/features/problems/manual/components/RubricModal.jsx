@@ -9,6 +9,7 @@ import {
 import { validateRubric } from "../validators/rubricValidator"
 import toast from "react-hot-toast"
 import { useTranslation } from "react-i18next"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 export default function RubricModal({
   isOpen,
@@ -17,7 +18,7 @@ export default function RubricModal({
   contestId,
   initialData = null,
 }) {
-  const { t } = useTranslation("common")
+  const { t } = useTranslation(["common", "contest"])
   const isEditMode = !!initialData
   const { data: rubricData } = useFetchRubricQuery(roundId)
   const criteria = rubricData?.data?.criteria ?? []
@@ -57,7 +58,7 @@ export default function RubricModal({
     try {
       if (isEditMode) {
         const updated = criteria.map((c) =>
-          c.rubricId === initialData.rubricId ? { ...c, ...formData } : c
+          c.rubricId === initialData.rubricId ? { ...c, ...formData } : c,
         )
         await updateRubric({ roundId, criteria: updated, contestId }).unwrap()
         toast.success(t("common.criterionUpdatedSuccess"))
@@ -72,6 +73,12 @@ export default function RubricModal({
       onClose()
     } catch (err) {
       console.error("Failed to save rubric", err)
+
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
+
       toast.error(t("common.failedToSaveRubric"))
     }
   }
@@ -99,8 +106,8 @@ export default function RubricModal({
             ? t("common.updating")
             : t("common.creating")
           : isEditMode
-          ? t("common.updateCriterion")
-          : t("common.createCriterion")}
+            ? t("common.updateCriterion")
+            : t("common.createCriterion")}
       </button>
     </div>
   )

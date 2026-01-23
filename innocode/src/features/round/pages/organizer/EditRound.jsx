@@ -28,6 +28,7 @@ import {
   BUFFER_ERROR_REGEX,
   CONFLICT_ERROR_REGEX,
 } from "@/features/round/utils/errorUtils"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 const EditRound = () => {
   const { contestId, roundId } = useParams()
@@ -205,6 +206,12 @@ const EditRound = () => {
       navigate(`/organizer/contests/${contestId}/rounds/${roundId}`)
     } catch (err) {
       console.error(err)
+
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
+
       const errorMessage = err?.data?.errorMessage || t("edit.errorGeneric")
 
       // Handle specific error: Cannot update opened round

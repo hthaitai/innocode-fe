@@ -6,6 +6,7 @@ import {
   useFetchRubricTemplateQuery,
 } from "../../../../services/manualProblemApi"
 import { useTranslation } from "react-i18next"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 export default function RubricCsvModal({
   isOpen,
@@ -13,7 +14,7 @@ export default function RubricCsvModal({
   roundId,
   contestId,
 }) {
-  const { t } = useTranslation("common")
+  const { t } = useTranslation(["common", "contest"])
   const { data: templateUrl } = useFetchRubricTemplateQuery()
   const [importRubricCsv, { isLoading: importing }] =
     useImportRubricCsvMutation()
@@ -45,6 +46,12 @@ export default function RubricCsvModal({
       onClose()
     } catch (err) {
       console.error(err)
+
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
+
       toast.error(err?.data?.message || t("common.failedToImportCsv"))
     }
   }

@@ -7,10 +7,11 @@ import {
 } from "@/services/plagiarismApi"
 import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
-import { executeWithRetry } from "@/shared/utils/apiUtils"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
   const { t } = useTranslation(["plagiarism"])
+  const { t: tContest } = useTranslation("contest")
   const { openModal, closeModal } = useModal()
   const navigate = useNavigate()
 
@@ -26,12 +27,18 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
       cancelText: t("cancel"),
       onConfirm: async () => {
         try {
-          await executeWithRetry(approvePlagiarism, submissionId)
+          await approvePlagiarism(submissionId).unwrap()
           toast.success(t("dismissSuccess"))
           navigate(`/organizer/contests/${contestId}/plagiarism`)
           // closeModal is handled by ConfirmModal on success
         } catch (err) {
           console.error(err)
+
+          if (isFetchError(err)) {
+            toast.error(tContest("suggestion.connectionError"))
+            throw err
+          }
+
           const errorMessage =
             err?.data?.message ||
             err?.data?.Message ||
@@ -53,12 +60,18 @@ const ResolveAction = ({ contestId, submissionId, plagiarismData }) => {
       onConfirm: async () => {
         try {
           // Deny Plagiarism Case = Mark as Valid = Accept Submission
-          await executeWithRetry(denyPlagiarism, submissionId)
+          await denyPlagiarism(submissionId).unwrap()
           toast.success(t("confirmSuccess"))
           navigate(`/organizer/contests/${contestId}/plagiarism`)
           // closeModal is handled by ConfirmModal on success
         } catch (err) {
           console.error(err)
+
+          if (isFetchError(err)) {
+            toast.error(tContest("suggestion.connectionError"))
+            throw err
+          }
+
           const errorMessage =
             err?.data?.message ||
             err?.data?.Message ||

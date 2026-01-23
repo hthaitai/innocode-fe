@@ -14,6 +14,7 @@ import {
   fromDatetimeLocal,
   toDatetimeLocal,
 } from "../../../../shared/utils/dateTime"
+import { isFetchError } from "@/shared/utils/apiUtils"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { useTranslation } from "react-i18next"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
@@ -128,6 +129,11 @@ export default function EditContest() {
       navigate(`/organizer/contests/${contestId}`)
     } catch (err) {
       console.error(err)
+
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
 
       if (err?.data?.errorCode === "DUPLICATE") {
         const errorMessage = t("contest:validation.contestNameExists")

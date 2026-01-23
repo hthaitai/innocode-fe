@@ -6,9 +6,10 @@ import { useReviewAppealMutation } from "../../../../services/appealApi"
 import DropdownFluent from "@/shared/components/DropdownFluent"
 import Label from "../../../../shared/components/form/Label"
 import { toast } from "react-hot-toast"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
-  const { t } = useTranslation(["appeal"])
+  const { t } = useTranslation(["appeal", "contest"])
   const [decision, setDecision] = useState("Approved")
   const [decisionReason, setDecisionReason] = useState("")
   const [error, setError] = useState("")
@@ -47,7 +48,13 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
         err?.data?.message ||
         err?.data?.Message ||
         err?.error ||
+        err?.error ||
         t("errorReviewFailed")
+
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
 
       if (errorMessage === "Appeal has already been reviewed.") {
         toast.error(t("appealAlreadyReviewed"))

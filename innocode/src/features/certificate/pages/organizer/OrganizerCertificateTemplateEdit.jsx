@@ -11,9 +11,10 @@ import {
 import { useGetContestByIdQuery } from "../../../../services/contestApi"
 import { validateTemplate } from "../../validators/templateValidator"
 import { useTranslation } from "react-i18next"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 export default function OrganizerCertificateTemplateEdit() {
-  const { t } = useTranslation(["certificate", "common", "errors"])
+  const { t } = useTranslation(["certificate", "common", "errors", "contest"])
   const { contestId, templateId } = useParams()
   const navigate = useNavigate()
 
@@ -135,6 +136,12 @@ export default function OrganizerCertificateTemplateEdit() {
       navigate(`/organizer/contests/${contestId}/certificates/templates`)
     } catch (err) {
       console.error(err)
+
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
+
       toast.error(err?.data?.message || t("certificate:somethingWrong"))
     } finally {
       setSubmitting(false)

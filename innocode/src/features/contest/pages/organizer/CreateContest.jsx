@@ -7,9 +7,9 @@ import { validateContest } from "@/features/contest/validators/contestValidator"
 import PageContainer from "@/shared/components/PageContainer"
 import { BREADCRUMBS, BREADCRUMB_PATHS } from "@/config/breadcrumbs"
 import { fromDatetimeLocal } from "../../../../shared/utils/dateTime"
+import { isFetchError } from "@/shared/utils/apiUtils"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import { useTranslation } from "react-i18next"
-import { executeWithRetry } from "@/shared/utils/apiUtils"
 
 const EMPTY_CONTEST = {
   year: new Date().getFullYear(),
@@ -84,19 +84,15 @@ export default function CreateContest() {
 
       if (formData.imgFile) formPayload.append("ImageFile", formData.imgFile)
 
-      await executeWithRetry(addContest, formPayload)
+      await addContest(formPayload).unwrap()
       toast.success(t("organizerContestForm.messages.createSuccess"))
       navigate("/organizer/contests")
     } catch (err) {
       console.error(err)
 
       // Network / Cold Start specific handling
-      if (
-        err.status === "FETCH_ERROR" ||
-        err.message?.includes("Failed to fetch") ||
-        !err.status
-      ) {
-        console.log("Server cold start detected, request may need retry")
+      // Network / Cold Start specific handling
+      if (isFetchError(err)) {
         toast.error(tContest("suggestion.connectionError"))
         // Do NOT return here, let isLocalSubmitting reset in finally
       } else if (err?.data?.errorCode === "DUPLICATE") {

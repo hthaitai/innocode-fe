@@ -17,9 +17,10 @@ import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { LoadingState } from "../../../../shared/components/ui/LoadingState"
 import { ErrorState } from "../../../../shared/components/ui/ErrorState"
 import { useTranslation } from "react-i18next"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 export default function EditTestCase() {
-  const { t } = useTranslation(["common", "breadcrumbs", "errors"])
+  const { t } = useTranslation(["common", "breadcrumbs", "errors", "contest"])
   const navigate = useNavigate()
   const { contestId, roundId, testCaseId } = useParams()
 
@@ -133,6 +134,12 @@ export default function EditTestCase() {
       )
     } catch (err) {
       console.error(err)
+
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
+
       toast.error(err?.data?.errorMessage || t("common.failedToUpdateTestCase"))
     }
   }

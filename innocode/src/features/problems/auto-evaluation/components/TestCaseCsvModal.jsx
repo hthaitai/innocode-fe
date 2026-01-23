@@ -6,6 +6,7 @@ import {
   useGetTestCaseTemplateQuery,
   useImportTestCasesCsvMutation,
 } from "@/services/autoEvaluationApi"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 export default function TestCaseCsvModal({
   isOpen,
@@ -13,7 +14,7 @@ export default function TestCaseCsvModal({
   roundId,
   contestId,
 }) {
-  const { t } = useTranslation("common")
+  const { t } = useTranslation(["common", "contest"])
   const { data: templateResponse } = useGetTestCaseTemplateQuery()
   const templateUrl = templateResponse?.data
 
@@ -54,6 +55,12 @@ export default function TestCaseCsvModal({
       onClose()
     } catch (err) {
       console.error(err)
+
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
+
       toast.error(err?.data?.message || t("common.failedToImportTestCases"))
     }
   }

@@ -25,10 +25,10 @@ import { EMPTY_ROUND } from "../../constants/roundConstants"
 import { Spinner } from "../../../../shared/components/SpinnerFluent"
 import { AnimatedSection } from "../../../../shared/components/ui/AnimatedSection"
 import {
-  formatRoundError,
   BUFFER_ERROR_REGEX,
   CONFLICT_ERROR_REGEX,
 } from "@/features/round/utils/errorUtils"
+import { isFetchError } from "@/shared/utils/apiUtils"
 
 import { NotificationState } from "../../../../shared/components/ui/NotificationState"
 
@@ -164,6 +164,12 @@ const CreateRound = () => {
       navigate(`/organizer/contests/${contestId}`)
     } catch (err) {
       console.error(err)
+
+      if (isFetchError(err)) {
+        toast.error(t("contest:suggestion.connectionError"))
+        return
+      }
+
       const errorMessage = err?.data?.errorMessage || t("create.errorGeneric")
       const formattedError = formatRoundError(errorMessage)
 
