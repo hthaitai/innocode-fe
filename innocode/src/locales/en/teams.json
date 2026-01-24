@@ -25,5 +25,31 @@
   "roles": {
     "Leader": "Leader",
     "Member": "Member"
+  },
+  "inviteResponse": {
+    "title": {
+      "invalid": "Invalid Invitation",
+      "processing": "Processing...",
+      "success": "Success!",
+      "error": "Error"
+    },
+    "message": {
+      "acceptSuccess": "Invitation accepted successfully. You are now a member of the team.",
+      "declineSuccess": "Invitation declined successfully.",
+      "serverError": "Server error occurred. Please try again later or contact support.",
+      "acceptFailed": "Failed to accept invitation. Please try again.",
+      "declineFailed": "Failed to decline invitation. Please try again.",
+      "serverErrorProcessed": "Server error occurred. The invitation may have already been processed. Please check your team status.",
+      "contactSupportProcessed": "Server error occurred. The invitation may have already been processed. Please check your team status or contact support if the issue persists.",
+      "invalidRequest": "Invalid request. The invitation may have expired or already been processed.",
+      "unexpectedError": "An unexpected error occurred. Please try again.",
+      "processing": "Please wait while we process your request.",
+      "redirecting": "Redirecting to home...",
+      "invalidLinkNoToken": "Invalid invitation link. No token provided.",
+      "invalidLinkNoEmail": "Invalid invitation link. Email is missing. Please use the link from your invitation email."
+    },
+    "button": {
+      "home": "Go to Home"
+    }
   }
 }

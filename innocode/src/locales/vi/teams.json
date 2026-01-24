@@ -25,5 +25,31 @@
   "roles": {
     "Leader": "Trưởng nhóm",
     "Member": "Thành viên"
+  },
+  "inviteResponse": {
+    "title": {
+      "invalid": "Lời mời không hợp lệ",
+      "processing": "Đang xử lý...",
+      "success": "Thành công!",
+      "error": "Lỗi"
+    },
+    "message": {
+      "acceptSuccess": "Chấp nhận lời mời thành công. Bạn đã là thành viên của đội.",
+      "declineSuccess": "Đã từ chối lời mời thành công.",
+      "serverError": "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",
+      "acceptFailed": "Chấp nhận lời mời thất bại. Vui lòng thử lại.",
+      "declineFailed": "Từ chối lời mời thất bại. Vui lòng thử lại.",
+      "serverErrorProcessed": "Đã xảy ra lỗi máy chủ. Lời mời có thể đã được xử lý. Vui lòng kiểm tra trạng thái đội của bạn.",
+      "contactSupportProcessed": "Đã xảy ra lỗi máy chủ. Lời mời có thể đã được xử lý. Vui lòng kiểm tra trạng thái đội hoặc liên hệ hỗ trợ nếu vấn đề vẫn tiếp diễn.",
+      "invalidRequest": "Yêu cầu không hợp lệ. Lời mời có thể đã hết hạn hoặc đã được xử lý.",
+      "unexpectedError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.",
+      "processing": "Vui lòng chờ trong khi chúng tôi xử lý yêu cầu của bạn.",
+      "redirecting": "Đang chuyển hướng về trang chủ...",
+      "invalidLinkNoToken": "Liên kết lời mời không hợp lệ. Không tìm thấy token.",
+      "invalidLinkNoEmail": "Liên kết lời mời không hợp lệ. Thiếu email. Vui lòng sử dụng liên kết từ email lời mời của bạn."
+    },
+    "button": {
+      "home": "Về trang chủ"
+    }
   }
 }
