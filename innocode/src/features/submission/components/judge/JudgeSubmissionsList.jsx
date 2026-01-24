@@ -43,10 +43,12 @@ const JudgeSubmissionsList = ({ contestId, roundId, submissions }) => {
                 <p className="text-[14px] leading-[20px]">
                   {submissionText} {submissionNumber}
                 </p>
-                <p className="text-[12px] leading-[16px] text-[#7A7574]">
-                  {t("manualSubmissions.table.score")}: {totalScore} /{" "}
-                  {maxScore}
-                </p>
+                {submission.status !== "Pending" && (
+                  <p className="text-[12px] leading-[16px] text-[#7A7574]">
+                    {t("manualSubmissions.table.score")}: {totalScore} /{" "}
+                    {maxScore}
+                  </p>
+                )}
               </div>
             </div>
 
