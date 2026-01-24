@@ -23,6 +23,7 @@ import { TimeRangePredefined } from "@/features/common/dashboard/TimeRangeFilter
 import DashboardTimeRangeFilter from "@/features/dashboard/components/organizer/DashboardTimeRangeFilter"
 import toast from "react-hot-toast"
 import "@/styles/typography.css"
+import { LoadingState } from "@/shared/components/ui/LoadingState"
 
 const MentorDashboard = () => {
   const navigate = useNavigate()
@@ -71,12 +72,7 @@ const MentorDashboard = () => {
         breadcrumb={BREADCRUMBS.MENTOR_DASHBOARD}
         breadcrumbPaths={BREADCRUMB_PATHS.MENTOR_DASHBOARD}
       >
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
-          <span className="ml-3 text-body-1 text-gray-600">
-            {t("common.loading")}
-          </span>
-        </div>
+        <LoadingState />
       </PageContainer>
     )
   }
@@ -183,152 +179,6 @@ const MentorDashboard = () => {
             value={data.totalTeamCertificates}
             color="green"
           />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Best Performing Team */}
-          <div className="lg:col-span-2">
-            <div className="bg-white border border-[#E5E5E5] rounded-[5px] h-full overflow-hidden flex flex-col">
-              <div className="p-5 border-b border-[#E5E5E5] flex items-center justify-between">
-                <h3 className="text-subtitle-1 text-gray-800 flex items-center gap-2">
-                  <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                  {t(
-                    "pages:mentorDashboard.bestTeam.title",
-                    "Best Performing Team",
-                  )}
-                </h3>
-              </div>
-              <div className="p-6 flex-grow flex flex-col justify-center">
-                {data.bestPerformingTeam ? (
-                  <div className="space-y-6">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="text-title-2 text-primary-600 mb-1">
-                          {data.bestPerformingTeam.teamName}
-                        </h4>
-                        <p className="text-body-1 text-gray-500">
-                          {data.bestPerformingTeam.contestName}
-                        </p>
-                      </div>
-                      <div className="bg-yellow-50 text-yellow-700 px-4 py-2 rounded-full border border-yellow-100 flex items-center gap-2">
-                        <Award className="w-5 h-5" />
-                        <span className="text-subtitle-2 font-bold">
-                          {data.bestPerformingTeam.totalCertificates}{" "}
-                          {t(
-                            "pages:mentorDashboard.bestTeam.certs",
-                            "Certificates",
-                          )}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-blue-50 p-4 rounded-[5px] border border-blue-100">
-                        <p className="text-caption-1 text-blue-600 uppercase tracking-wider mb-1">
-                          {t(
-                            "pages:mentorDashboard.bestTeam.teamCerts",
-                            "Team Certificates",
-                          )}
-                        </p>
-                        <p className="text-title-2 text-blue-800">
-                          {data.bestPerformingTeam.teamCertificates}
-                        </p>
-                      </div>
-                      <div className="bg-purple-50 p-4 rounded-[5px] border border-purple-100">
-                        <p className="text-caption-1 text-purple-600 uppercase tracking-wider mb-1">
-                          {t(
-                            "pages:mentorDashboard.bestTeam.studentCerts",
-                            "Student Certificates",
-                          )}
-                        </p>
-                        <p className="text-title-2 text-purple-800">
-                          {data.bestPerformingTeam.studentCertificates}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500 italic">
-                    {t(
-                      "pages:mentorDashboard.noBestTeam",
-                      "No performance data available yet.",
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Team Status Breakdown - Simple Ring/Bar Visualization */}
-          <div className="bg-white border border-[#E5E5E5] rounded-[5px] p-5">
-            <h3 className="text-subtitle-1 text-gray-800 mb-6">
-              {t(
-                "pages:mentorDashboard.statusBreakdown.title",
-                "Team Status Breakdown",
-              )}
-            </h3>
-            <div className="space-y-4">
-              <StatusProgress
-                label={t("contest:statusLabels.ongoing", "Active")}
-                value={data.teamStatusBreakdown?.activeTeams}
-                total={data.totalTeamsManaged}
-                color="bg-blue-500"
-              />
-              <StatusProgress
-                label={t("contest:statusLabels.completed", "Completed")}
-                value={data.teamStatusBreakdown?.completedTeams}
-                total={data.totalTeamsManaged}
-                color="bg-green-500"
-              />
-              <StatusProgress
-                label={t(
-                  "pages:mentorDashboard.statusBreakdown.eliminated",
-                  "Eliminated",
-                )}
-                value={data.teamStatusBreakdown?.eliminatedTeams}
-                total={data.totalTeamsManaged}
-                color="bg-orange-500"
-              />
-              <StatusProgress
-                label={t(
-                  "pages:mentorDashboard.statusBreakdown.disqualified",
-                  "Disqualified",
-                )}
-                value={data.teamStatusBreakdown?.disqualifiedTeams}
-                total={data.totalTeamsManaged}
-                color="bg-red-500"
-              />
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-[#E5E5E5]">
-              <h4 className="text-caption-1-strong text-gray-500 uppercase mb-4">
-                {t("pages:mentorDashboard.activity.title", "Contest Activity")}
-              </h4>
-              <div className="grid grid-cols-3 gap-2">
-                <ActivityIndicator
-                  label={t("pages:mentorDashboard.activity.ongoing", "Ongoing")}
-                  count={data.contestActivity?.ongoingContests}
-                  color="blue"
-                />
-                <ActivityIndicator
-                  label={t(
-                    "pages:mentorDashboard.activity.upcoming",
-                    "Upcoming",
-                  )}
-                  count={data.contestActivity?.upcomingContests}
-                  color="orange"
-                />
-                <ActivityIndicator
-                  label={t(
-                    "pages:mentorDashboard.activity.completed",
-                    "Completed",
-                  )}
-                  count={data.contestActivity?.completedContests}
-                  color="green"
-                />
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Recent Certificates */}
