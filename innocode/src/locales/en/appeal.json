@@ -39,6 +39,7 @@
   "reviewSuccess": "Appeal reviewed successfully",
   "errorReviewFailed": "Failed to review appeal",
   "appealAlreadyReviewed": "Appeal has already been reviewed",
+  "appealReviewWindowClosed": "Appeal review window is closed",
   "cancel": "Cancel",
   "submitting": "Submitting...",
   "submitReview": "Submit review",

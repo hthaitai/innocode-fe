@@ -54,8 +54,15 @@ export default function ReviewAppealModal({ isOpen, appeal, onClose }) {
         err?.error ||
         t("errorReviewFailed")
 
+      const errorCode = err?.data?.errorCode
+
       if (errorMessage === "Appeal has already been reviewed.") {
         toast.error(t("appealAlreadyReviewed"))
+      } else if (
+        errorCode === "APPEAL_REVIEW_DEADLINE_PASSED" ||
+        errorMessage === "Appeal review window is closed."
+      ) {
+        toast.error(t("appealReviewWindowClosed"))
       } else {
         setError(errorMessage)
       }

@@ -39,6 +39,7 @@
   "reviewSuccess": "Đã xem xét khiếu nại thành công",
   "errorReviewFailed": "Không thể xem xét khiếu nại",
   "appealAlreadyReviewed": "Khiếu nại đã được xem xét trước đó",
+  "appealReviewWindowClosed": "Thời gian xem xét khiếu nại đã kết thúc",
   "cancel": "Hủy",
   "submitting": "Đang gửi...",
   "submitReview": "Gửi đánh giá",
