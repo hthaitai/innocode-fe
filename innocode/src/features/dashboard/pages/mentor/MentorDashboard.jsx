@@ -143,7 +143,78 @@ const MentorDashboard = () => {
             </span>
           </div>
         </div>
+        <div className=" gap-6">
+          {/* Team Status Breakdown - Simple Ring/Bar Visualization */}
+          <div className="bg-white border border-[#E5E5E5] rounded-[5px] p-5">
+            <h3 className="text-subtitle-1 text-gray-800 mb-6">
+              {t(
+                "pages:mentorDashboard.statusBreakdown.title",
+                "Team Status Breakdown",
+              )}
+            </h3>
+            <div className="space-y-4">
+              <StatusProgress
+                label={t("contest:statusLabels.ongoing", "Active")}
+                value={data.teamStatusBreakdown?.activeTeams}
+                total={data.totalTeamsManaged}
+                color="bg-blue-500"
+              />
+              <StatusProgress
+                label={t("contest:statusLabels.completed", "Completed")}
+                value={data.teamStatusBreakdown?.completedTeams}
+                total={data.totalTeamsManaged}
+                color="bg-green-500"
+              />
+              <StatusProgress
+                label={t(
+                  "pages:mentorDashboard.statusBreakdown.eliminated",
+                  "Eliminated",
+                )}
+                value={data.teamStatusBreakdown?.eliminatedTeams}
+                total={data.totalTeamsManaged}
+                color="bg-orange-500"
+              />
+              <StatusProgress
+                label={t(
+                  "pages:mentorDashboard.statusBreakdown.disqualified",
+                  "Disqualified",
+                )}
+                value={data.teamStatusBreakdown?.disqualifiedTeams}
+                total={data.totalTeamsManaged}
+                color="bg-red-500"
+              />
+            </div>
 
+            <div className="mt-8 pt-6 border-t border-[#E5E5E5]">
+              <h4 className="text-caption-1-strong text-gray-500 uppercase mb-4">
+                {t("pages:mentorDashboard.activity.title", "Contest Activity")}
+              </h4>
+              <div className="grid grid-cols-3 gap-2">
+                <ActivityIndicator
+                  label={t("pages:mentorDashboard.activity.ongoing", "Ongoing")}
+                  count={data.contestActivity?.ongoingContests}
+                  color="blue"
+                />
+                <ActivityIndicator
+                  label={t(
+                    "pages:mentorDashboard.activity.upcoming",
+                    "Upcoming",
+                  )}
+                  count={data.contestActivity?.upcomingContests}
+                  color="orange"
+                />
+                <ActivityIndicator
+                  label={t(
+                    "pages:mentorDashboard.activity.completed",
+                    "Completed",
+                  )}
+                  count={data.contestActivity?.completedContests}
+                  color="green"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
         {/* Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
