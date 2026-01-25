@@ -98,19 +98,6 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-          <p>{t("footer:copyright", { year: new Date().getFullYear() })}</p>
-          <div className="flex gap-6">
-            {/* <Link to="/policy" className="hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link to="/policy" className="hover:text-white transition-colors">
-              Terms of Service
-            </Link> */}
-          </div>
-        </div>
       </div>
     </footer>
   )
