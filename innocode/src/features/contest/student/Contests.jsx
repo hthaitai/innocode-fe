@@ -21,9 +21,7 @@ const Contests = () => {
     pagination,
     onPageChange,
   } = useContests()
-  const [inputValue, setInputValue] = useState("") // Input value (can change while typing)
-
-  // Backend đã validate status, không cần filter ở frontend
+  const [inputValue, setInputValue] = useState("")
   const filteredContests = useMemo(() => {
     if (!contests || !Array.isArray(contests)) {
       return []
@@ -31,8 +29,6 @@ const Contests = () => {
 
     return contests
   }, [contests])
-
-  // Group by status - use status field directly without extra validation
   const ongoingContests = filteredContests.filter((c) => {
     const status = c.status?.toLowerCase() || ""
     return [
@@ -77,28 +73,17 @@ const Contests = () => {
     )
   })
 
-  // Catch-all for any other status to ensure they are displayed (e.g. at the bottom or appended to a group)
-  // For now, let's just stick to the main groups. If a contest has a weird status, it might be missed if we don't handle it.
-  // To be safe as per "không hiển thị contest ra", let's add an "Other" category or dump them in one of the lists?
-  // Use a derived list to check what's left?
-  // Actually, simplest is to ensure the lists above cover the common cases.
-  // If the user has a specific status failing, they would mention it.
-  // The request was "don't validate statuses to not show", likely referring to the logic `if (status === 'published' && date < now)`.
-  // By removing the date check, we solved the main issue.
-
   const handleSearch = (term) => {
-    // Only trigger search when user clicks search button or presses Enter
     searchContests(term)
   }
 
   const handleInputChange = (e) => {
-    // Update input value without triggering search
     setInputValue(e.target.value)
   }
 
   const handleClearSearch = () => {
     setInputValue("")
-    searchContests("") // Clear search results
+    searchContests("")
   }
 
   const handleContestClick = (contest) => {
