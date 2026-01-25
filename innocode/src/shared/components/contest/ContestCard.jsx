@@ -145,14 +145,7 @@ const ContestCard = ({ contest, onClick }) => {
 
         {/* Meta Info */}
         <div className="contest-card__meta">
-          <span className="contest-card__teams">
-            <Icon icon="mdi:account-group" className="inline mr-1" />
-            {contest.teamLimitMax > 0
-              ? `${contest.teamLimitMax} ${t("contest.teams")}`
-              : contest.teams > 0
-                ? `${contest.teams} ${t("contest.teams")}`
-                : t("contest.noLimit")}
-          </span>
+          {" "}
           <span className="contest-card__time">
             <Icon icon="mdi:clock-outline" className="inline mr-1" />
             {timeLeft}
