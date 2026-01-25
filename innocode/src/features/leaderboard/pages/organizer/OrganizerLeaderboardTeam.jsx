@@ -151,6 +151,7 @@ const OrganizerLeaderboardTeam = () => {
     >
       <AnimatedSection>
         <div className="space-y-5">
+          <LeaderboardTeamInfo team={team} />
           {team && (
             <div className="mb-1">
               <div className="border border-[#E5E5E5] rounded-[5px] bg-white px-5 flex justify-between items-center min-h-[70px]">

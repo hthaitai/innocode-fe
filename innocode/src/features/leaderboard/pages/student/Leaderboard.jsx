@@ -18,7 +18,10 @@ import { formatDateTime } from "@/shared/utils/dateTime"
 import { formatScore } from "@/shared/utils/formatNumber"
 import { BREADCRUMBS, createBreadcrumbWithPaths } from "@/config/breadcrumbs"
 import { useGetLeaderboardByContestQuery } from "@/services/leaderboardApi"
-import { useGetContestByIdQuery, useLazyGetMentorReportQuery } from "@/services/contestApi"
+import {
+  useGetContestByIdQuery,
+  useLazyGetMentorReportQuery,
+} from "@/services/contestApi"
 import { useGetMyTeamQuery } from "@/services/teamApi"
 import { useAuth } from "@/context/AuthContext"
 import useContests from "../../../contest/hooks/useContests"
@@ -82,8 +85,9 @@ const Leaderboard = () => {
 
   // Check if mentor has a team in the selected contest
   const mentorHasTeamInContest = useMemo(() => {
-    if (user?.role !== "mentor" || !selectedContestId || !myTeamsData) return false
-    
+    if (user?.role !== "mentor" || !selectedContestId || !myTeamsData)
+      return false
+
     return myTeamsData.some((team) => {
       const teamContestId = team.contestId || team.contest_id
       return String(teamContestId) === String(selectedContestId)
@@ -91,19 +95,23 @@ const Leaderboard = () => {
   }, [user?.role, selectedContestId, myTeamsData])
 
   // Lazy query for mentor report
-  const [getMentorReport, { isLoading: reportLoading }] = useLazyGetMentorReportQuery()
+  const [getMentorReport, { isLoading: reportLoading }] =
+    useLazyGetMentorReportQuery()
 
   // Handle download leaderboard report
   const handleDownloadReport = async () => {
     if (!selectedContestId || !mentorHasTeamInContest) {
-      toast.error(t("leaderboard.noTeamInContest") || "You must have a team in this contest to download the report")
+      toast.error(
+        t("leaderboard.noTeamInContest") ||
+          "You must have a team in this contest to download the report",
+      )
       return
     }
 
     try {
       setDownloadingReport(true)
       const response = await getMentorReport(selectedContestId).unwrap()
-      
+
       if (response?.url) {
         // Create a temporary anchor element to trigger download
         const link = document.createElement("a")
@@ -113,14 +121,22 @@ const Leaderboard = () => {
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
-        
-        toast.success(t("leaderboard.reportDownloadStarted") || "Report download started")
+
+        toast.success(
+          t("leaderboard.reportDownloadStarted") || "Report download started",
+        )
       } else {
-        toast.error(t("leaderboard.reportDownloadFailed") || "Failed to get report URL")
+        toast.error(
+          t("leaderboard.reportDownloadFailed") || "Failed to get report URL",
+        )
       }
     } catch (error) {
       console.error("Error downloading report:", error)
-      const errorMessage = error?.data?.message || error?.message || t("leaderboard.reportDownloadFailed") || "Failed to download report"
+      const errorMessage =
+        error?.data?.message ||
+        error?.message ||
+        t("leaderboard.reportDownloadFailed") ||
+        "Failed to download report"
       toast.error(errorMessage)
     } finally {
       setDownloadingReport(false)
@@ -178,11 +194,9 @@ const Leaderboard = () => {
 
   // Extract data from API response
   const leaderboardData = leaderboardResponse?.data || null
-  
+
   // Handle data structure - Extract teamIdList from response
   const entries = leaderboardData?.teamIdList || []
-
-
 
   // Get contest info from selected contest or from data
   const contestInfo = {
@@ -268,123 +282,125 @@ const Leaderboard = () => {
   const renderTeamMembers = (entry) => {
     const members = entry.members || []
 
-    if (members.length === 0) {
-      return (
-        <div className="px-4 py-3">
-          <p className="text-sm text-gray-500">
-            {t("leaderboard.onlyMemberCanSee")}
-          </p>
-        </div>
-      )
-    }
-
     return (
       <div className="px-4 py-4">
         <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
           <Users size={16} />
           {entry.teamName}
+          {entry.status && (
+            <StatusBadge status={entry.status} translate="team" />
+          )}
         </h4>
-        <div className="space-y-4">
-          {members.map((member, idx) => (
-            <div
-              key={member.memberId || idx}
-              className="bg-white rounded-lg border border-gray-200 p-4"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#ff8c5a] text-white flex items-center justify-center font-semibold text-sm">
-                    {member.memberName?.charAt(0)?.toUpperCase() || "M"}
+
+        {members.length === 0 ? (
+          <div className="py-2">
+            <p className="text-sm text-gray-500">
+              {t("leaderboard.onlyMemberCanSee")}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {members.map((member, idx) => (
+              <div
+                key={member.memberId || idx}
+                className="bg-white rounded-lg border border-gray-200 p-4"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#ff8c5a] text-white flex items-center justify-center font-semibold text-sm">
+                      {member.memberName?.charAt(0)?.toUpperCase() || "M"}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {member.memberName || t("leaderboard.unknownMember")}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {member.memberName || t("leaderboard.unknownMember")}
+                  <div className="text-right">
+                    <p className="text-xs text-gray-500">
+                      {t("leaderboard.totalScore")}
+                    </p>
+                    <p className="text-lg font-bold text-blue-600">
+                      {formatScore(member.totalScore) || "0"}
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs text-gray-500">
-                    {t("leaderboard.totalScore")}
-                  </p>
-                  <p className="text-lg font-bold text-blue-600">
-                    {formatScore(member.totalScore) || "0"}
-                  </p>
-                </div>
-              </div>
 
-              {/* Round Scores */}
-              {member.roundScores && member.roundScores.length > 0 ? (
-                <div className="mt-3 pt-3 border-t border-gray-200">
-                  <p className="text-xs font-medium text-gray-600 mb-2">
-                    {t("leaderboard.roundScores")}
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {member.roundScores.map((round, roundIdx) => (
-                      <div
-                        key={round.roundId || roundIdx}
-                        className="bg-gray-50 rounded px-3 py-2 border border-gray-200"
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="text-xs font-medium text-gray-700 ">
-                            {round.roundName || t("leaderboard.round")}{" "}
-                            {round.status && (
-                              <span
-                                className={`text-xs ml-4 ${getStatusColorClass(
-                                  round.status,
-                                )}`}
-                              >
-                                {(() => {
-                                  if (!round.status) return ""
-                                  const statusLower = round.status
-                                    .toLowerCase()
-                                    .replace(/\s+/g, "")
-                                  const translationKey = `contest.statusLabels.${statusLower}`
-                                  const translated = t(translationKey)
-                                  return translated !== translationKey
-                                    ? translated
-                                    : round.status
-                                })()}
+                {/* Round Scores */}
+                {member.roundScores && member.roundScores.length > 0 ? (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <p className="text-xs font-medium text-gray-600 mb-2">
+                      {t("leaderboard.roundScores")}
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                      {member.roundScores.map((round, roundIdx) => (
+                        <div
+                          key={round.roundId || roundIdx}
+                          className="bg-gray-50 rounded px-3 py-2 border border-gray-200"
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="text-xs font-medium text-gray-700 ">
+                              {round.roundName || t("leaderboard.round")}{" "}
+                              {round.status && (
+                                <span
+                                  className={`text-xs ml-4 ${getStatusColorClass(
+                                    round.status,
+                                  )}`}
+                                >
+                                  {(() => {
+                                    if (!round.status) return ""
+                                    const statusLower = round.status
+                                      .toLowerCase()
+                                      .replace(/\s+/g, "")
+                                    const translationKey = `contest.statusLabels.${statusLower}`
+                                    const translated = t(translationKey)
+                                    return translated !== translationKey
+                                      ? translated
+                                      : round.status
+                                  })()}
+                                </span>
+                              )}
+                            </p>
+                            <span className="text-xs font-bold text-nowrap text-blue-600 ml-2">
+                              {formatScore(round.score)} pts
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1 mt-1">
+                            <Icon
+                              icon={
+                                round.roundType === "McqTest"
+                                  ? "mdi:checkbox-multiple-marked-circle"
+                                  : round.roundType === "Manual"
+                                    ? "mdi:file-document-edit"
+                                    : "mdi:code-tags"
+                              }
+                              className="text-gray-400"
+                              width={12}
+                            />
+                            <p className="text-xs text-gray-500">
+                              {formatRoundType(round.roundType)}
+                            </p>
+                            {round.completedAt && (
+                              <span className="text-xs text-gray-400 ml-1">
+                                • {formatDateTime(round.completedAt)}
                               </span>
                             )}
-                          </p>
-                          <span className="text-xs font-bold text-nowrap text-blue-600 ml-2">
-                            {formatScore(round.score)} pts
-                          </span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1 mt-1">
-                          <Icon
-                            icon={
-                              round.roundType === "McqTest"
-                                ? "mdi:checkbox-multiple-marked-circle"
-                                : round.roundType === "Manual"
-                                  ? "mdi:file-document-edit"
-                                  : "mdi:code-tags"
-                            }
-                            className="text-gray-400"
-                            width={12}
-                          />
-                          <p className="text-xs text-gray-500">
-                            {formatRoundType(round.roundType)}
-                          </p>
-                          {round.completedAt && (
-                            <span className="text-xs text-gray-400 ml-1">
-                              • {formatDateTime(round.completedAt)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div className="mt-3 pt-3 border-t border-gray-200">
-                  <p className="text-xs text-gray-500">
-                    {t("leaderboard.noRoundScores")}
-                  </p>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+                ) : (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <p className="text-xs text-gray-500">
+                      {t("leaderboard.noRoundScores")}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     )
   }
@@ -487,18 +503,20 @@ const Leaderboard = () => {
               </div>
             </div>
             {/* Download Report Button for Mentor */}
-            {user?.role === "mentor" && selectedContestId && mentorHasTeamInContest && (
-              <button
-                onClick={handleDownloadReport}
-                disabled={downloadingReport || reportLoading}
-                className="button-orange flex items-center gap-2 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Download size={18} />
-                {downloadingReport || reportLoading
-                  ? t("leaderboard.downloading") || "Downloading..."
-                  : t("leaderboard.downloadReport") || "Download Report"}
-              </button>
-            )}
+            {user?.role === "mentor" &&
+              selectedContestId &&
+              mentorHasTeamInContest && (
+                <button
+                  onClick={handleDownloadReport}
+                  disabled={downloadingReport || reportLoading}
+                  className="button-orange flex items-center gap-2 px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Download size={18} />
+                  {downloadingReport || reportLoading
+                    ? t("leaderboard.downloading") || "Downloading..."
+                    : t("leaderboard.downloadReport") || "Download Report"}
+                </button>
+              )}
           </div>
         </div>
 
@@ -581,7 +599,10 @@ const Leaderboard = () => {
                         </p>
                         {entries[1]?.status && (
                           <div className="mb-1">
-                            <StatusBadge status={entries[1]?.status} translate="team" />
+                            <StatusBadge
+                              status={entries[1]?.status}
+                              translate="team"
+                            />
                           </div>
                         )}
                         <p className="text-2xl font-bold text-[#ff6b35]">
@@ -630,7 +651,10 @@ const Leaderboard = () => {
                         </p>
                         {entries[0]?.status && (
                           <div className="mb-2">
-                            <StatusBadge status={entries[0]?.status} translate="team" />
+                            <StatusBadge
+                              status={entries[0]?.status}
+                              translate="team"
+                            />
                           </div>
                         )}
                         <p className="text-3xl font-bold text-[#ff6b35]">
@@ -660,7 +684,10 @@ const Leaderboard = () => {
                         </p>
                         {entries[2]?.status && (
                           <div className="mb-1">
-                            <StatusBadge status={entries[2]?.status} translate="team" />
+                            <StatusBadge
+                              status={entries[2]?.status}
+                              translate="team"
+                            />
                           </div>
                         )}
                         <p className="text-2xl font-bold text-[#ff6b35]">
@@ -749,7 +776,10 @@ const Leaderboard = () => {
                                 </p>
                               )}
                               {entry.status && (
-                                <StatusBadge status={entry.status} translate="team" />
+                                <StatusBadge
+                                  status={entry.status}
+                                  translate="team"
+                                />
                               )}
                             </div>
                           </div>

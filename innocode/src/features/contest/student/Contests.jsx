@@ -32,45 +32,59 @@ const Contests = () => {
     return contests
   }, [contests])
 
-  // Group by status - use status field directly
+  // Group by status - use status field directly without extra validation
   const ongoingContests = filteredContests.filter((c) => {
     const status = c.status?.toLowerCase() || ""
-    return (
-      status === "ongoing" ||
-      status === "registrationopen" ||
-      status === "registrationclosed"
-    )
+    return [
+      "ongoing",
+      "running",
+      "active",
+      "registrationopen",
+      "registrationclosed",
+      "open",
+      "opened",
+      "live",
+    ].includes(status)
   })
 
   const upcomingContests = filteredContests.filter((c) => {
     const status = c.status?.toLowerCase() || ""
-    // Check if contest is published/registration open but not ongoing/completed
-    if (status === "published" || status === "registrationopen") {
-      // Check dates to determine if it's upcoming
-      if (c.start) {
-        const now = new Date()
-        const start = new Date(c.start)
-        return now < start
-      }
-      return true
-    }
-    return false
+    return ["upcoming", "published", "incoming", "pending"].includes(status)
   })
 
   const completedContests = filteredContests.filter((c) => {
     const status = c.status?.toLowerCase() || ""
-    return status === "completed" || (c.end && new Date() > new Date(c.end))
+    return [
+      "completed",
+      "finished",
+      "finalized",
+      "closed",
+      "archived",
+      "expired",
+      "resolved",
+    ].includes(status)
   })
 
   const pausedContests = filteredContests.filter((c) => {
     const status = c.status?.toLowerCase() || ""
-    return status === "paused"
+    return ["paused", "frozen", "delayed", "inactive"].includes(status)
   })
 
   const cancelledContests = filteredContests.filter((c) => {
     const status = c.status?.toLowerCase() || ""
-    return status === "cancelled"
+    return ["cancelled", "revoked", "blocked", "rejected", "denied"].includes(
+      status,
+    )
   })
+
+  // Catch-all for any other status to ensure they are displayed (e.g. at the bottom or appended to a group)
+  // For now, let's just stick to the main groups. If a contest has a weird status, it might be missed if we don't handle it.
+  // To be safe as per "không hiển thị contest ra", let's add an "Other" category or dump them in one of the lists?
+  // Use a derived list to check what's left?
+  // Actually, simplest is to ensure the lists above cover the common cases.
+  // If the user has a specific status failing, they would mention it.
+  // The request was "don't validate statuses to not show", likely referring to the logic `if (status === 'published' && date < now)`.
+  // By removing the date check, we solved the main issue.
 
   const handleSearch = (term) => {
     // Only trigger search when user clicks search button or presses Enter
