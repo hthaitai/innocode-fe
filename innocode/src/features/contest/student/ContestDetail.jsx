@@ -1543,21 +1543,11 @@ const ContestDetail = () => {
             </h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-[#7A7574]">{t("contest.format")}:</span>
-                <span className="font-medium text-[#2d3748]">
-                  {t("contest.team")}
-                </span>
-              </div>
-              <div className="flex justify-between">
                 <span className="text-[#7A7574]">{t("contest.teamSize")}:</span>
                 <span className="font-medium text-[#2d3748]">
-                  1-{contest.teamMembersMax || contest.maxTeamSize || 3}{" "}
+                  {contest.teamMembersMin}-{contest.teamMembersMax}{" "}
                   {t("contest.members")}
                 </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#7A7574]">{t("contest.language")}:</span>
-                <span className="font-medium text-[#2d3748]">Python 3</span>
               </div>
             </div>
           </div>
