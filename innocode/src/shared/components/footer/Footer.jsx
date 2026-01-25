@@ -18,17 +18,6 @@ const Footer = () => {
             <p className="text-sm leading-relaxed text-gray-400">
               {t("footer:description")}
             </p>
-            <div className="flex gap-4 pt-2">
-              <a
-                href="https://github.com/hthaitai/innocode-fe"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-[#ff6b35] transition-colors duration-200"
-                aria-label="GitHub"
-              >
-                <Github className="w-5 h-5" />
-              </a>
-            </div>
           </div>
 
           {/* Platform Links */}
