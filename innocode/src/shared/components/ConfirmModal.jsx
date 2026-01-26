@@ -54,7 +54,7 @@ const ConfirmModal = ({
             disabled={isLoading || isSubmitting}
           >
             {isSubmitting
-              ? t("buttons.processing", "Processing...")
+              ? t("buttons.loading", "Processing...")
               : t("buttons.confirm")}
           </button>
         </>
