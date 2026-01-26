@@ -187,7 +187,7 @@ const CreateSchoolRequest = () => {
                 onChange={handleFileChange}
                 className="hidden"
                 id="evidence-upload"
-                accept="image/*,.pdf,.doc,.docx"
+                accept=".zip,.rar,.pdf"
               />
               <label
                 htmlFor="evidence-upload"
