@@ -79,7 +79,8 @@
       "missingInfo": "Missing required information",
       "resolutionRequired": "Please select an appeal resolution",
       "noRetakeRoundConfigured": "This round does not have a retake round configured for Retake resolution.",
-      "unknown": "An unknown error occurred. Please try again."
+      "unknown": "An unknown error occurred. Please try again.",
+      "appealsNotAllowedForRetakeRounds": "Appeals are not allowed for retake rounds."
     }
   },
   "decisions": {

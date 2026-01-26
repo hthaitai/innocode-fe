@@ -215,7 +215,8 @@
       "verifyAndStart": "Xác thực và Bắt đầu",
       "validating": "Đang xác thực...",
       "errorRequired": "Mã mở vòng thi là bắt buộc",
-      "errorInvalid": "Mã mở vòng thi không hợp lệ. Vui lòng thử lại."
+      "errorInvalid": "Mã mở vòng thi không hợp lệ. Vui lòng thử lại.",
+      "errorEliminated": "Đội của bạn đã bị loại khỏi cuộc thi này và không thể truy cập thông tin vòng thi."
     }
   },
   "appeal": {

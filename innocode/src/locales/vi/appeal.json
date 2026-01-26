@@ -79,7 +79,8 @@
       "missingInfo": "Thiếu thông tin bắt buộc",
       "resolutionRequired": "Vui lòng chọn hướng giải quyết khiếu nại",
       "noRetakeRoundConfigured": "Vòng thi này chưa được cấu hình vòng thi lại để thực hiện Thi lại.",
-      "unknown": "Đã xảy ra lỗi không xác định. Vui lòng thử lại."
+      "unknown": "Đã xảy ra lỗi không xác định. Vui lòng thử lại.",
+      "appealsNotAllowedForRetakeRounds": "Không được phép khiếu nại đối với vòng thi lại."
     }
   },
   "decisions": {

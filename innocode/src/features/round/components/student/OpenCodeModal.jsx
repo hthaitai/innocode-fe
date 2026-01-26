@@ -38,17 +38,24 @@ const OpenCodeModal = ({ isOpen, onClose, onConfirm, roundName, roundId }) => {
         onClose()
       } else {
         setError(
-          response.data?.message || t("contest.openCodeModal.errorInvalid")
+          response.data?.message || t("contest.openCodeModal.errorInvalid"),
         )
       }
     } catch (err) {
       // Handle error - show in modal
-      const errorMessage =
-        err.response?.data?.errorMessage ||
-        err.response?.data?.message ||
-        err.message ||
-        t("contest.openCodeModal.errorInvalid")
-      setError(errorMessage)
+      if (
+        err.response?.data?.errorMessage ===
+        "Your team has been eliminated from this contest and cannot access round information."
+      ) {
+        setError(t("contest.openCodeModal.errorEliminated"))
+      } else {
+        const errorMessage =
+          err.response?.data?.errorMessage ||
+          err.response?.data?.message ||
+          err.message ||
+          t("contest.openCodeModal.errorInvalid")
+        setError(errorMessage)
+      }
     } finally {
       setLoading(false)
     }

@@ -145,6 +145,14 @@ export default function CreateAppealModal({
       toast.dismiss()
 
       // Translate and show error message
+      if (
+        error?.data?.errorMessage ===
+        "Appeals are not allowed for retake rounds."
+      ) {
+        toast.error(t("createAppeal.errors.appealsNotAllowedForRetakeRounds"))
+        return
+      }
+
       const translatedMessage = translateApiError(error)
       toast.error(translatedMessage)
     }

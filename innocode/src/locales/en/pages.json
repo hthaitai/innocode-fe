@@ -215,7 +215,8 @@
       "verifyAndStart": "Verify and Start",
       "validating": "Validating...",
       "errorRequired": "Open code is required",
-      "errorInvalid": "Invalid open code. Please try again."
+      "errorInvalid": "Invalid open code. Please try again.",
+      "errorEliminated": "Your team has been eliminated from this contest and cannot access round information."
     }
   },
   "appeal": {
