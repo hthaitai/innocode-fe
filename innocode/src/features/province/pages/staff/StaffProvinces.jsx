@@ -1,8 +1,9 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { BREADCRUMBS } from "@/config/breadcrumbs"
 import PageContainer from "@/shared/components/PageContainer"
 import TableFluent from "@/shared/components/TableFluent"
+import TablePagination from "@/shared/components/TablePagination"
 import { MapPin, Pencil, Trash2 } from "lucide-react"
 import Actions from "../../../../shared/components/Actions"
 import { useModal } from "../../../../shared/hooks/useModal"
@@ -17,12 +18,16 @@ const StaffProvinces = () => {
   const { t } = useTranslation("pages")
   const { openModal } = useModal()
 
+  // ----- State -----
+  const [page, setPage] = useState(1)
+  const pageSize = 10
+
   // ----- Fetch Data -----
   const {
     data: provincesData,
     isLoading: loading,
     error,
-  } = useGetAllProvincesQuery({ pageNumber: 1, pageSize: 100 })
+  } = useGetAllProvincesQuery({ pageNumber: page, pageSize })
 
   // ----- Mutations -----
   const [addProvince] = useAddProvinceMutation()
@@ -31,8 +36,6 @@ const StaffProvinces = () => {
 
   // ----- CRUD Modals -----
   const handleProvinceModal = (mode, province = {}) => {
-    console.log("🔍 handleProvinceModal - mode:", mode)
-    console.log("🔍 handleProvinceModal - province:", province)
     openModal("province", {
       mode,
       initialData: province,
@@ -48,14 +51,13 @@ const StaffProvinces = () => {
           }
         } catch (err) {
           console.error("Error saving province:", err)
-          throw err // Re-throw để modal có thể xử lý error
+          throw err
         }
       },
     })
   }
 
   const handleDeleteProvince = (province) => {
-    console.log("🔍 handleDeleteProvince - province:", province)
     openModal("confirmDelete", {
       type: "province",
       item: province,
@@ -67,7 +69,6 @@ const StaffProvinces = () => {
           onClose()
         } catch (err) {
           console.error("Error deleting province:", err)
-          // Error sẽ được xử lý bởi modal hoặc toast
         }
       },
     })
@@ -111,19 +112,16 @@ const StaffProvinces = () => {
     },
   ]
 
-  // Extract items from response
-  // Response structure: { data: Array, additionalData: {...}, message: string, ... }
-  const provinces = provincesData?.data || []
-
-  // Log provinces for debugging
-  useEffect(() => {
-    console.log("🔍 provincesData (raw):", provincesData)
-    console.log("🔍 provinces (extracted):", provinces)
-    console.log("🔍 provinces count:", provinces.length)
-    if (provinces.length > 0) {
-      console.log("🔍 First province:", provinces[0])
-    }
-  }, [provincesData, provinces])
+  // Extract items and pagination from response
+  const provinces = provincesData?.data ?? []
+  const pagination = provincesData?.additionalData ?? {
+    pageNumber: 1,
+    pageSize: pageSize,
+    totalPages: 1,
+    totalCount: 0,
+    hasPreviousPage: false,
+    hasNextPage: false,
+  }
 
   return (
     <PageContainer
@@ -158,6 +156,8 @@ const StaffProvinces = () => {
           columns={provincesColumns}
           title={t("provinces.provinces")}
         />
+
+        <TablePagination pagination={pagination} onPageChange={setPage} />
       </div>
     </PageContainer>
   )
