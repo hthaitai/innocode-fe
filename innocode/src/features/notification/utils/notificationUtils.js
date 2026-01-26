@@ -148,8 +148,11 @@ export const buildInterpolationValues = (
   // School name - handle both direct schoolName field and name field for school notifications
   if (parsedPayload.schoolName) {
     values.schoolName = parsedPayload.schoolName
-  } else if (parsedPayload.name && targetType === "school") {
-    // For school.approved, school.rejected notifications, map 'name' to 'schoolName'
+  } else if (
+    parsedPayload.name &&
+    (targetType === "school" || targetType === "school_creation_request")
+  ) {
+    // For school.approved, school.rejected, school.creation_request.approved/denied notifications
     values.schoolName = parsedPayload.name
   }
 

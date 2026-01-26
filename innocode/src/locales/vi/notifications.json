@@ -50,6 +50,8 @@
   "school.rejected": "Yêu cầu tạo trường '{{schoolName}}' của bạn đã bị từ chối.",
   "school.creation_request": "Yêu cầu tạo trường mới: {{req.Name}}",
   "school.creation_request.submitted": "Yêu cầu tạo trường mới: {{name}}",
+  "school.creation_request.approved": "Yêu cầu tạo trường '{{schoolName}}' của bạn đã được phê duyệt.",
+  "school.creation_request.denied": "Yêu cầu tạo trường '{{schoolName}}' của bạn đã bị từ chối.",
   "judge.invitation": "Bạn đã được mời làm giám khảo cho cuộc thi '{{contest.Name}}'.",
   "judge.invitation_revoked": "Lời mời làm giám khảo cho cuộc thi '{{contest.Name}}' của bạn đã bị thu hồi.",
   "judge.invitation_accepted": "{{judgeName}} đã chấp nhận lời mời làm giám khảo của bạn.",
